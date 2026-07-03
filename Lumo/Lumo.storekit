@@ -1,0 +1,78 @@
+{
+  "identifier" : "B7E1F2A3-4C5D-6E7F-8A9B-0C1D2E3F4A5B",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "1A2B3C4D",
+      "localizations" : [
+        {
+          "description" : "Tüm reklamları kaldırır, 4 özel tema açar",
+          "displayName" : "LUMO Premium",
+          "locale" : "tr_TR"
+        },
+        {
+          "description" : "Removes all ads, unlocks 4 exclusive themes",
+          "displayName" : "LUMO Premium",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "lumo.premium",
+      "referenceName" : "Premium",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "2B3C4D5E",
+      "localizations" : [
+        {
+          "description" : "Geliştiriciye küçük bir bahşiş",
+          "displayName" : "Kahve Ismarla",
+          "locale" : "tr_TR"
+        },
+        {
+          "description" : "A small tip for the developer",
+          "displayName" : "Buy a Coffee",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "lumo.tip.small",
+      "referenceName" : "Tip Small",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "3C4D5E6F",
+      "localizations" : [
+        {
+          "description" : "Geliştiriciye büyük bir bahşiş",
+          "displayName" : "Yıldız Ismarla",
+          "locale" : "tr_TR"
+        },
+        {
+          "description" : "A big tip for the developer",
+          "displayName" : "Buy a Star",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "lumo.tip.big",
+      "referenceName" : "Tip Big",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
