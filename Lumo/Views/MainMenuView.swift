@@ -41,7 +41,7 @@ struct MainMenuView: View {
                     .shadow(color: settings.theme.accent.opacity(0.8), radius: 20)
                     .padding(.top, 8)
 
-                Text("ışığın yolculuğu")
+                Text("the journey of light")
                     .font(.system(.subheadline, design: .rounded))
                     .foregroundStyle(.white.opacity(0.55))
                     .kerning(4)
@@ -65,8 +65,11 @@ struct MainMenuView: View {
                         AudioEngine.shared.playTap()
                         app.route = .game(progress.highestUnlocked)
                     } label: {
-                        Label(progress.completedCount == 0 ? "Oyna" : "Devam Et — Bölüm \(progress.highestUnlocked)",
-                              systemImage: "play.fill")
+                        if progress.completedCount == 0 {
+                            Label("Play", systemImage: "play.fill")
+                        } else {
+                            Label("Continue — Level \(progress.highestUnlocked)", systemImage: "play.fill")
+                        }
                     }
                     .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
 
@@ -74,7 +77,7 @@ struct MainMenuView: View {
                         AudioEngine.shared.playTap()
                         app.route = .levels
                     } label: {
-                        Label("Bölümler", systemImage: "circle.grid.3x3.fill")
+                        Label("Levels", systemImage: "circle.grid.3x3.fill")
                     }
                     .buttonStyle(GlowButtonStyle(color: settings.theme.ring.color))
 
@@ -83,15 +86,15 @@ struct MainMenuView: View {
                         if progress.endlessUnlocked { app.route = .endless }
                     } label: {
                         HStack {
-                            Label("Sonsuz Mod", systemImage: "infinity")
+                            Label("Endless Mode", systemImage: "infinity")
                             if !progress.endlessUnlocked {
                                 Spacer()
-                                Label("Bölüm 10", systemImage: "lock.fill")
+                                Label("Level \(LevelLibrary.adFreeLevels)", systemImage: "lock.fill")
                                     .font(.system(.footnote, design: .rounded))
                                     .foregroundStyle(.white.opacity(0.45))
                             } else if progress.endlessBest > 0 {
                                 Spacer()
-                                Text("Rekor: \(progress.endlessBest)")
+                                Text("Best: \(progress.endlessBest)")
                                     .font(.system(.footnote, design: .rounded).bold())
                                     .foregroundStyle(.white.opacity(0.6))
                             }
@@ -105,7 +108,11 @@ struct MainMenuView: View {
                             AudioEngine.shared.playTap()
                             app.route = .shop
                         } label: {
-                            Label(store.isPremium ? "Premium ✓" : "Mağaza", systemImage: "crown.fill")
+                            if store.isPremium {
+                                Label("Premium ✓", systemImage: "crown.fill")
+                            } else {
+                                Label("Shop", systemImage: "crown.fill")
+                            }
                         }
                         .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color))
 
@@ -113,7 +120,7 @@ struct MainMenuView: View {
                             AudioEngine.shared.playTap()
                             app.route = .settings
                         } label: {
-                            Label("Ayarlar", systemImage: "gearshape.fill")
+                            Label("Settings", systemImage: "gearshape.fill")
                         }
                         .buttonStyle(GlowButtonStyle(color: Color.white.opacity(0.7)))
                     }

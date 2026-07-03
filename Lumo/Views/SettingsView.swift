@@ -10,7 +10,7 @@ struct SettingsView: View {
             HStack {
                 BackButton { app.route = .menu }
                 Spacer()
-                Text("Ayarlar")
+                Text("Settings")
                     .font(.system(.title2, design: .rounded).bold())
                     .foregroundStyle(.white)
                 Spacer()
@@ -23,11 +23,11 @@ struct SettingsView: View {
                 VStack(spacing: 24) {
                     // Ses & titreşim
                     VStack(spacing: 4) {
-                        toggleRow("music.note", "Müzik", $settings.musicOn)
+                        toggleRow("music.note", "Music", $settings.musicOn)
                         Divider().overlay(.white.opacity(0.1))
-                        toggleRow("speaker.wave.2.fill", "Ses Efektleri", $settings.sfxOn)
+                        toggleRow("speaker.wave.2.fill", "Sound Effects", $settings.sfxOn)
                         Divider().overlay(.white.opacity(0.1))
-                        toggleRow("iphone.radiowaves.left.and.right", "Titreşim", $settings.hapticsOn)
+                        toggleRow("iphone.radiowaves.left.and.right", "Haptics", $settings.hapticsOn)
                     }
                     .padding(.vertical, 8)
                     .background {
@@ -38,7 +38,7 @@ struct SettingsView: View {
 
                     // Temalar
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Tema")
+                        Text("Theme")
                             .font(.system(.headline, design: .rounded).bold())
                             .foregroundStyle(.white.opacity(0.9))
                             .padding(.horizontal, 24)
@@ -67,10 +67,10 @@ struct SettingsView: View {
                         Text("LUMO")
                             .font(.system(.headline, design: .rounded).bold())
                             .foregroundStyle(.white.opacity(0.8))
-                        Text("Sürüm 1.0")
+                        Text("Version 1.0")
                             .font(.system(.footnote, design: .rounded))
                             .foregroundStyle(.white.opacity(0.4))
-                        Text("Tüm müzik ve sesler cihazında gerçek zamanlı sentezlenir.")
+                        Text("All music and sounds are synthesized in real time on your device.")
                             .font(.system(.caption, design: .rounded))
                             .foregroundStyle(.white.opacity(0.35))
                             .multilineTextAlignment(.center)
@@ -83,7 +83,7 @@ struct SettingsView: View {
         }
     }
 
-    private func toggleRow(_ icon: String, _ title: String, _ binding: Binding<Bool>) -> some View {
+    private func toggleRow(_ icon: String, _ title: LocalizedStringKey, _ binding: Binding<Bool>) -> some View {
         Toggle(isOn: binding) {
             Label {
                 Text(title)
@@ -143,7 +143,7 @@ private struct ThemeSwatch: View {
                             .font(.system(size: 9))
                             .foregroundStyle(theme.lumen.color)
                     }
-                    Text(theme.name)
+                    Text(theme.localizedName)
                         .font(.system(.caption, design: .rounded).bold())
                         .foregroundStyle(selected ? .white : .white.opacity(0.6))
                 }

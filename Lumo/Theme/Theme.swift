@@ -16,8 +16,11 @@ struct ThemeColor: Equatable {
 
 struct Theme: Identifiable, Equatable {
     let id: String
+    /// İngilizce ad — aynı zamanda yerelleştirme anahtarıdır (Localizable.xcstrings)
     let name: String
     let isPremium: Bool
+
+    var localizedName: String { String(localized: String.LocalizationValue(name)) }
 
     let bgTop: ThemeColor
     let bgBottom: ThemeColor
@@ -41,7 +44,7 @@ struct Theme: Identifiable, Equatable {
     )
 
     static let gece = Theme(
-        id: "gece", name: "Gece", isPremium: false,
+        id: "gece", name: "Night", isPremium: false,
         bgTop: ThemeColor(r: 0.020, g: 0.051, b: 0.102),
         bgBottom: ThemeColor(r: 0.031, g: 0.122, b: 0.216),
         ring: ThemeColor(r: 0.302, g: 0.678, b: 0.949),
@@ -53,7 +56,7 @@ struct Theme: Identifiable, Equatable {
     )
 
     static let safak = Theme(
-        id: "safak", name: "Şafak", isPremium: true,
+        id: "safak", name: "Dawn", isPremium: true,
         bgTop: ThemeColor(r: 0.184, g: 0.051, b: 0.216),
         bgBottom: ThemeColor(r: 0.475, g: 0.145, b: 0.243),
         ring: ThemeColor(r: 1.0, g: 0.596, b: 0.400),
@@ -65,7 +68,7 @@ struct Theme: Identifiable, Equatable {
     )
 
     static let orman = Theme(
-        id: "orman", name: "Orman", isPremium: true,
+        id: "orman", name: "Forest", isPremium: true,
         bgTop: ThemeColor(r: 0.016, g: 0.106, b: 0.086),
         bgBottom: ThemeColor(r: 0.043, g: 0.216, b: 0.153),
         ring: ThemeColor(r: 0.427, g: 0.878, b: 0.576),
@@ -77,7 +80,7 @@ struct Theme: Identifiable, Equatable {
     )
 
     static let mercan = Theme(
-        id: "mercan", name: "Mercan", isPremium: true,
+        id: "mercan", name: "Coral", isPremium: true,
         bgTop: ThemeColor(r: 0.024, g: 0.086, b: 0.184),
         bgBottom: ThemeColor(r: 0.008, g: 0.278, b: 0.345),
         ring: ThemeColor(r: 1.0, g: 0.502, b: 0.502),

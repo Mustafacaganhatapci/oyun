@@ -1,78 +1,132 @@
 {
-  "identifier" : "B7E1F2A3-4C5D-6E7F-8A9B-0C1D2E3F4A5B",
-  "nonRenewingSubscriptions" : [
-
-  ],
-  "products" : [
+  "identifier": "B7E1F2A3-4C5D-6E7F-8A9B-0C1D2E3F4A5B",
+  "nonRenewingSubscriptions": [],
+  "products": [
     {
-      "displayPrice" : "1.99",
-      "familyShareable" : false,
-      "internalID" : "1A2B3C4D",
-      "localizations" : [
+      "displayPrice": "1.99",
+      "familyShareable": false,
+      "internalID": "1A2B3C4D",
+      "localizations": [
         {
-          "description" : "Tüm reklamları kaldırır, 4 özel tema açar",
-          "displayName" : "LUMO Premium",
-          "locale" : "tr_TR"
+          "description": "Tüm reklamları kaldırır, 4 özel tema açar",
+          "displayName": "LUMO Premium",
+          "locale": "tr_TR"
         },
         {
-          "description" : "Removes all ads, unlocks 4 exclusive themes",
-          "displayName" : "LUMO Premium",
-          "locale" : "en_US"
+          "description": "Removes all ads, unlocks 4 exclusive themes",
+          "displayName": "LUMO Premium",
+          "locale": "en_US"
+        },
+        {
+          "description": "Entfernt alle Werbung, schaltet 4 exklusive Themes frei",
+          "displayName": "LUMO Premium",
+          "locale": "de_DE"
+        },
+        {
+          "description": "Supprime toutes les pubs, débloque 4 thèmes exclusifs",
+          "displayName": "LUMO Premium",
+          "locale": "fr_FR"
+        },
+        {
+          "description": "Elimina todos los anuncios, desbloquea 4 temas exclusivos",
+          "displayName": "LUMO Premium",
+          "locale": "es_ES"
+        },
+        {
+          "description": "全広告を削除、限定テーマ4種を解放",
+          "displayName": "LUMO プレミアム",
+          "locale": "ja_JP"
         }
       ],
-      "productID" : "lumo.premium",
-      "referenceName" : "Premium",
-      "type" : "NonConsumable"
+      "productID": "lumo.premium",
+      "referenceName": "Premium",
+      "type": "NonConsumable"
     },
     {
-      "displayPrice" : "0.99",
-      "familyShareable" : false,
-      "internalID" : "2B3C4D5E",
-      "localizations" : [
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "2B3C4D5E",
+      "localizations": [
         {
-          "description" : "Geliştiriciye küçük bir bahşiş",
-          "displayName" : "Kahve Ismarla",
-          "locale" : "tr_TR"
+          "description": "Geliştiriciye küçük bir bahşiş",
+          "displayName": "Kahve Ismarla",
+          "locale": "tr_TR"
         },
         {
-          "description" : "A small tip for the developer",
-          "displayName" : "Buy a Coffee",
-          "locale" : "en_US"
+          "description": "A small tip for the developer",
+          "displayName": "Buy a Coffee",
+          "locale": "en_US"
+        },
+        {
+          "description": "Ein kleines Trinkgeld für den Entwickler",
+          "displayName": "Kaffee spendieren",
+          "locale": "de_DE"
+        },
+        {
+          "description": "Un petit pourboire pour le développeur",
+          "displayName": "Offrir un café",
+          "locale": "fr_FR"
+        },
+        {
+          "description": "Una pequeña propina para el desarrollador",
+          "displayName": "Invitar a un café",
+          "locale": "es_ES"
+        },
+        {
+          "description": "開発者へのささやかなチップ",
+          "displayName": "コーヒーをおごる",
+          "locale": "ja_JP"
         }
       ],
-      "productID" : "lumo.tip.small",
-      "referenceName" : "Tip Small",
-      "type" : "Consumable"
+      "productID": "lumo.tip.small",
+      "referenceName": "Tip Small",
+      "type": "Consumable"
     },
     {
-      "displayPrice" : "4.99",
-      "familyShareable" : false,
-      "internalID" : "3C4D5E6F",
-      "localizations" : [
+      "displayPrice": "4.99",
+      "familyShareable": false,
+      "internalID": "3C4D5E6F",
+      "localizations": [
         {
-          "description" : "Geliştiriciye büyük bir bahşiş",
-          "displayName" : "Yıldız Ismarla",
-          "locale" : "tr_TR"
+          "description": "Geliştiriciye büyük bir bahşiş",
+          "displayName": "Yıldız Ismarla",
+          "locale": "tr_TR"
         },
         {
-          "description" : "A big tip for the developer",
-          "displayName" : "Buy a Star",
-          "locale" : "en_US"
+          "description": "A big tip for the developer",
+          "displayName": "Buy a Star",
+          "locale": "en_US"
+        },
+        {
+          "description": "Ein großes Trinkgeld für den Entwickler",
+          "displayName": "Stern spendieren",
+          "locale": "de_DE"
+        },
+        {
+          "description": "Un grand pourboire pour le développeur",
+          "displayName": "Offrir une étoile",
+          "locale": "fr_FR"
+        },
+        {
+          "description": "Una gran propina para el desarrollador",
+          "displayName": "Invitar a una estrella",
+          "locale": "es_ES"
+        },
+        {
+          "description": "開発者への大きなチップ",
+          "displayName": "スターをおごる",
+          "locale": "ja_JP"
         }
       ],
-      "productID" : "lumo.tip.big",
-      "referenceName" : "Tip Big",
-      "type" : "Consumable"
+      "productID": "lumo.tip.big",
+      "referenceName": "Tip Big",
+      "type": "Consumable"
     }
   ],
-  "settings" : {
-
-  },
-  "subscriptionGroups" : [
-
-  ],
-  "version" : {
-    "major" : 3,
-    "minor" : 0
+  "settings": {},
+  "subscriptionGroups": [],
+  "version": {
+    "major": 3,
+    "minor": 0
   }
 }

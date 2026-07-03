@@ -107,7 +107,7 @@ struct GameContainerView: View {
                 Spacer()
 
                 if let id = levelID {
-                    Text("Bölüm \(id)")
+                    Text("Level \(id)")
                         .font(.system(.headline, design: .rounded).bold())
                         .foregroundStyle(.white.opacity(0.9))
                 } else {
@@ -152,23 +152,23 @@ struct GameContainerView: View {
         ZStack {
             overlayScrim
             VStack(spacing: 14) {
-                Text("Durduruldu")
+                Text("Paused")
                     .font(.system(.largeTitle, design: .rounded).bold())
                     .foregroundStyle(.white)
                     .padding(.bottom, 12)
 
                 Button { overlay = .none } label: {
-                    Label("Devam Et", systemImage: "play.fill")
+                    Label("Resume", systemImage: "play.fill")
                 }
                 .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
 
                 Button { restart() } label: {
-                    Label("Yeniden Başla", systemImage: "arrow.counterclockwise")
+                    Label("Restart", systemImage: "arrow.counterclockwise")
                 }
                 .buttonStyle(GlowButtonStyle(color: settings.theme.ring.color))
 
                 Button { app.route = .menu } label: {
-                    Label("Ana Menü", systemImage: "house.fill")
+                    Label("Main Menu", systemImage: "house.fill")
                 }
                 .buttonStyle(GlowButtonStyle(color: Color.white.opacity(0.7)))
             }
@@ -180,7 +180,7 @@ struct GameContainerView: View {
         ZStack {
             overlayScrim
             VStack(spacing: 18) {
-                Text("Bölüm Tamamlandı!")
+                Text("Level Complete!")
                     .font(.system(.largeTitle, design: .rounded).bold())
                     .foregroundStyle(.white)
 
@@ -194,11 +194,11 @@ struct GameContainerView: View {
                                 app.route = .game(id + 1)
                             }
                         } label: {
-                            Label("Sonraki Bölüm", systemImage: "arrow.right")
+                            Label("Next Level", systemImage: "arrow.right")
                         }
                         .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
                     } else {
-                        Text("Tüm bölümleri bitirdin! 🎉")
+                        Text("You finished all levels! 🎉")
                             .font(.system(.headline, design: .rounded))
                             .foregroundStyle(settings.theme.lumen.color)
                         Button {
@@ -206,19 +206,19 @@ struct GameContainerView: View {
                                 app.route = .endless
                             }
                         } label: {
-                            Label("Sonsuz Moda Geç", systemImage: "infinity")
+                            Label("Enter Endless Mode", systemImage: "infinity")
                         }
                         .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color, prominent: true))
                     }
 
                     Button { restart() } label: {
-                        Label("Tekrar Oyna", systemImage: "arrow.counterclockwise")
+                        Label("Play Again", systemImage: "arrow.counterclockwise")
                     }
                     .buttonStyle(GlowButtonStyle(color: settings.theme.ring.color))
                 }
 
                 Button { app.route = .menu } label: {
-                    Label("Ana Menü", systemImage: "house.fill")
+                    Label("Main Menu", systemImage: "house.fill")
                 }
                 .buttonStyle(GlowButtonStyle(color: Color.white.opacity(0.7)))
             }
@@ -230,7 +230,7 @@ struct GameContainerView: View {
         ZStack {
             overlayScrim
             VStack(spacing: 14) {
-                Text("Oyun Bitti")
+                Text("Game Over")
                     .font(.system(.largeTitle, design: .rounded).bold())
                     .foregroundStyle(.white)
 
@@ -240,11 +240,11 @@ struct GameContainerView: View {
                     .shadow(color: settings.theme.accent.opacity(0.7), radius: 18)
 
                 if score >= progress.endlessBest && score > 0 {
-                    Label("Yeni Rekor!", systemImage: "trophy.fill")
+                    Label("New Record!", systemImage: "trophy.fill")
                         .font(.system(.headline, design: .rounded).bold())
                         .foregroundStyle(settings.theme.lumen.color)
                 } else {
-                    Text("Rekor: \(progress.endlessBest)")
+                    Text("Best: \(progress.endlessBest)")
                         .font(.system(.subheadline, design: .rounded))
                         .foregroundStyle(.white.opacity(0.6))
                 }
@@ -255,13 +255,13 @@ struct GameContainerView: View {
                         restart()
                     }
                 } label: {
-                    Label("Tekrar Dene", systemImage: "arrow.counterclockwise")
+                    Label("Try Again", systemImage: "arrow.counterclockwise")
                 }
                 .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
                 .padding(.top, 10)
 
                 Button { app.route = .menu } label: {
-                    Label("Ana Menü", systemImage: "house.fill")
+                    Label("Main Menu", systemImage: "house.fill")
                 }
                 .buttonStyle(GlowButtonStyle(color: Color.white.opacity(0.7)))
             }

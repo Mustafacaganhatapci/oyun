@@ -111,10 +111,10 @@ struct AdPlaceholderView: View {
                 Image(systemName: "megaphone.fill")
                     .font(.system(size: 54))
                     .foregroundStyle(.white.opacity(0.7))
-                Text("Reklam")
+                Text("Ad")
                     .font(.system(.largeTitle, design: .rounded).bold())
                     .foregroundStyle(.white)
-                Text("Gerçek sürümde burada geçiş reklamı gösterilir.\nPremium ile tüm reklamlar kalkar.")
+                Text("In the real version an interstitial ad is shown here.\nPremium removes all ads.")
                     .font(.callout)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.white.opacity(0.6))
@@ -126,7 +126,7 @@ struct AdPlaceholderView: View {
                         .padding(.bottom, 40)
                 } else {
                     Button(action: onClose) {
-                        Label("Kapat", systemImage: "xmark")
+                        Label("Close", systemImage: "xmark")
                             .font(.system(.headline, design: .rounded))
                             .foregroundStyle(.black)
                             .padding(.horizontal, 28)

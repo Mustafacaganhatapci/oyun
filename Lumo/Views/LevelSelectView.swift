@@ -12,7 +12,7 @@ struct LevelSelectView: View {
             HStack {
                 BackButton { app.route = .menu }
                 Spacer()
-                Text("Bölümler")
+                Text("Levels")
                     .font(.system(.title2, design: .rounded).bold())
                     .foregroundStyle(.white)
                 Spacer()
@@ -31,7 +31,7 @@ struct LevelSelectView: View {
 
             ScrollView {
                 // İlk 10 bölüm reklamsız — oyuncuya bunu gururla söylüyoruz
-                Label("İlk \(LevelLibrary.adFreeLevels) bölüm tamamen reklamsız", systemImage: "sparkles")
+                Label("The first \(LevelLibrary.adFreeLevels) levels are completely ad-free", systemImage: "sparkles")
                     .font(.system(.footnote, design: .rounded))
                     .foregroundStyle(.white.opacity(0.5))
                     .padding(.top, 14)

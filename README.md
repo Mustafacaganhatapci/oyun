@@ -32,6 +32,23 @@ Bir ışık küresini halkadan halkaya sıçratarak yolun sonundaki kapıya ula�
 - Tipografi: SF Rounded (sistem) — yumuşak, oyuncu, ek font dosyası gerekmez.
 - Portre + tek el: tüm oyun alanı dokunmatiktir, menü eylemleri başparmak bölgesindedir.
 
+## 🌍 6 Dil Desteği
+
+Tüm arayüz **String Catalog** (`Lumo/Localizable.xcstrings`) ile yerelleştirilmiştir:
+
+| Dil | Kod | | Dil | Kod |
+|---|---|---|---|---|
+| 🇬🇧 İngilizce (kaynak) | `en` | | 🇫🇷 Fransızca | `fr` |
+| 🇹🇷 Türkçe | `tr` | | 🇪🇸 İspanyolca | `es` |
+| 🇩🇪 Almanca | `de` | | 🇯🇵 Japonca | `ja` |
+
+- Tema adları dahil tüm metinler çevrilidir; `LUMO`, fiyatlar ve emoji gibi
+  anahtarlar `shouldTranslate: false` ile işaretlidir.
+- IAP ürün adları/açıklamaları da `Lumo.storekit` içinde 6 dilde tanımlıdır
+  (App Store Connect'te aynı metinleri kullanabilirsin).
+- Yeni dil eklemek için: Xcode'da `Localizable.xcstrings` > + > dili seç, çevirileri doldur.
+- Simülatörde test: Scheme > Options > App Language.
+
 ## 🎵 Ses Tasarımı — %100 Prosedürel
 
 Hiç ses dosyası yoktur; her şey `AVAudioEngine` ile cihazda sentezlenir:

@@ -11,7 +11,7 @@ struct ShopView: View {
             HStack {
                 BackButton { app.route = .menu }
                 Spacer()
-                Text("Mağaza")
+                Text("Shop")
                     .font(.system(.title2, design: .rounded).bold())
                     .foregroundStyle(.white)
                 Spacer()
@@ -25,7 +25,7 @@ struct ShopView: View {
                     premiumCard
 
                     // Dürüstlük ilkesi — açıkça söylüyoruz
-                    Label("Hiçbir satın alma oyun avantajı vermez. LUMO'da pay-to-win yoktur.",
+                    Label("No purchase gives a gameplay advantage. There is no pay-to-win in LUMO.",
                           systemImage: "checkmark.shield.fill")
                         .font(.system(.footnote, design: .rounded))
                         .foregroundStyle(.white.opacity(0.55))
@@ -37,7 +37,7 @@ struct ShopView: View {
                     Button {
                         Task { await store.restore() }
                     } label: {
-                        Text("Satın Alımları Geri Yükle")
+                        Text("Restore Purchases")
                             .font(.system(.subheadline, design: .rounded))
                             .foregroundStyle(.white.opacity(0.6))
                             .underline()
@@ -61,14 +61,14 @@ struct ShopView: View {
                 .foregroundStyle(.white)
 
             VStack(alignment: .leading, spacing: 10) {
-                benefit("rectangle.slash", "Tüm reklamlar sonsuza dek kalkar")
-                benefit("paintpalette.fill", "4 özel tema: Şafak, Orman, Mercan, Aurora")
-                benefit("heart.fill", "Bağımsız geliştiriciye doğrudan destek")
+                benefit("rectangle.slash", "All ads removed forever")
+                benefit("paintpalette.fill", "4 exclusive themes: Dawn, Forest, Coral, Aurora")
+                benefit("heart.fill", "Direct support for an independent developer")
             }
             .padding(.vertical, 6)
 
             if store.isPremium {
-                Label("Teşekkürler! Premium aktif", systemImage: "checkmark.circle.fill")
+                Label("Thank you! Premium is active", systemImage: "checkmark.circle.fill")
                     .font(.system(.headline, design: .rounded).bold())
                     .foregroundStyle(settings.theme.gate.color)
                     .padding(.vertical, 10)
@@ -77,7 +77,7 @@ struct ShopView: View {
                     Task { await store.purchase(product) }
                 } label: {
                     HStack {
-                        Text("Premium'a Geç")
+                        Text("Go Premium")
                         Spacer()
                         Text(product.displayPrice).bold()
                     }
@@ -101,7 +101,7 @@ struct ShopView: View {
         .padding(.horizontal, 20)
     }
 
-    private func benefit(_ icon: String, _ text: String) -> some View {
+    private func benefit(_ icon: String, _ text: LocalizedStringKey) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 15, weight: .bold))
@@ -116,10 +116,10 @@ struct ShopView: View {
 
     private var tipSection: some View {
         VStack(spacing: 12) {
-            Text("Bahşiş Kavanozu")
+            Text("Tip Jar")
                 .font(.system(.headline, design: .rounded).bold())
                 .foregroundStyle(.white.opacity(0.9))
-            Text("Oyunu sevdiysen bir kahve ısmarlayabilirsin ☕️")
+            Text("If you love the game, you can buy the developer a coffee ☕️")
                 .font(.system(.footnote, design: .rounded))
                 .foregroundStyle(.white.opacity(0.5))
 
@@ -149,7 +149,7 @@ struct ShopView: View {
             }
 
             if store.isSupporter {
-                Label("Desteğin için teşekkürler!", systemImage: "heart.fill")
+                Label("Thank you for your support!", systemImage: "heart.fill")
                     .font(.system(.footnote, design: .rounded).bold())
                     .foregroundStyle(Color(red: 1, green: 0.4, blue: 0.5))
             }
