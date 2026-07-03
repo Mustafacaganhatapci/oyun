@@ -72,20 +72,43 @@ enum LevelLibrary {
                               orbitSpeed: d.speedRange.lowerBound,
                               direction: 1))
 
+        let margin: CGFloat = 0.05   // halkalar arası asgari boşluk (normalize)
+
         for i in 1..<d.ringCount {
             let isGate = (i == d.ringCount - 1)
             let radius = rng.cg(in: d.radiusRange)
-            var candidate = CGPoint.zero
+
+            // Rastgele yelpaze denemeleri: en geniş boşluğa sahip adayı tut
+            var candidate = CGPoint(x: 0.5, y: 0.5)
+            var bestClearance = -CGFloat.greatestFiniteMagnitude
             var attempts = 0
             repeat {
                 let angle = rng.cg(in: (.pi * 0.22)...(.pi * 0.78)) // yukarı doğru yelpaze
                 let dist = rng.cg(in: d.gapRange)
-                candidate = CGPoint(x: cursor.x + cos(angle) * dist * 0.9,
-                                    y: cursor.y + sin(angle) * dist)
-                candidate.x = min(max(candidate.x, 0.16), 0.84)
-                candidate.y = min(max(candidate.y, 0.10), 0.90)
+                var p = CGPoint(x: cursor.x + cos(angle) * dist * 0.9,
+                                y: cursor.y + sin(angle) * dist)
+                p.x = min(max(p.x, 0.16), 0.84)
+                p.y = min(max(p.y, 0.10), 0.90)
+                let c = clearance(p, radius: radius, rings: rings)
+                if c > bestClearance { bestClearance = c; candidate = p }
                 attempts += 1
-            } while overlaps(candidate, radius: radius, rings: rings) && attempts < 40
+            } while bestClearance < margin && attempts < 40
+
+            // Zincir köşeye sıkıştıysa: deterministik ızgara taramasıyla,
+            // imlece makul uzaklıkta ve yeterli boşluğu olan bir nokta bul
+            if bestClearance < margin {
+                var bestScore = -CGFloat.greatestFiniteMagnitude
+                for gx in stride(from: CGFloat(0.16), through: 0.84, by: 0.04) {
+                    for gy in stride(from: CGFloat(0.10), through: 0.90, by: 0.04) {
+                        let p = CGPoint(x: gx, y: gy)
+                        guard clearance(p, radius: radius, rings: rings) >= margin else { continue }
+                        let dx = p.x - cursor.x
+                        let dy = p.y - cursor.y
+                        let score = -abs(sqrt(dx * dx + dy * dy) - 0.30)
+                        if score > bestScore { bestScore = score; candidate = p }
+                    }
+                }
+            }
 
             let dir: CGFloat = rng.cg(in: 0...1) < 0.5 ? 1 : -1
             var spec = RingSpec(center: candidate,
@@ -104,10 +127,13 @@ enum LevelLibrary {
                 }
             }
 
-            // Hareketli halkalar
+            // Hareketli halkalar — genlik, komşu halkalara çarpmayacak kadar kırpılır
             if !isGate, i > 1, rng.cg(in: 0...1) < d.movingChance {
+                let clear = clearance(candidate, radius: radius, rings: rings)
+                let amplitude = min(rng.cg(in: 0.05...max(0.051, d.movingAmplitude)),
+                                    max(0.03, clear - 0.02))
                 spec.moving = MovingSpec(axis: rng.cg(in: 0...1) < 0.6 ? .horizontal : .vertical,
-                                         amplitude: rng.cg(in: 0.05...d.movingAmplitude),
+                                         amplitude: amplitude,
                                          period: rng.cg(in: 2.4...4.2),
                                          phase: rng.cg(in: 0...(2 * .pi)))
             }
@@ -134,13 +160,15 @@ enum LevelLibrary {
         return Level(id: id, rings: rings, lumens: lumens)
     }
 
-    private static func overlaps(_ center: CGPoint, radius: CGFloat, rings: [RingSpec]) -> Bool {
+    /// Adayın mevcut halkalara olan en dar boşluğu (negatifse örtüşüyor demektir)
+    private static func clearance(_ center: CGPoint, radius: CGFloat, rings: [RingSpec]) -> CGFloat {
+        var minClearance = CGFloat.greatestFiniteMagnitude
         for r in rings {
             let dx = r.center.x - center.x
             let dy = r.center.y - center.y
-            if sqrt(dx * dx + dy * dy) < (r.radius + radius + 0.05) { return true }
+            minClearance = min(minClearance, sqrt(dx * dx + dy * dy) - (r.radius + radius))
         }
-        return false
+        return minClearance
     }
 
     // MARK: Zorluk eğrisi
