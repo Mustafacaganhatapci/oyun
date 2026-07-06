@@ -8,6 +8,8 @@ final class ProgressStore: ObservableObject {
     @Published private(set) var endlessBest: Int = 0
     @Published private(set) var speedrunBest: Double = 0     // saniye; 0 = henüz yok
     @Published private(set) var totalHops: Int = 0
+    @Published private(set) var spentStars: Int = 0          // karakter almak için harcanan yıldız
+    @Published private(set) var unlockedOrbs: Set<String> = []  // yıldızla açılan küre stilleri
 
     private let defaults = UserDefaults.standard
     private enum Key {
@@ -15,6 +17,8 @@ final class ProgressStore: ObservableObject {
         static let endlessBest = "lumo.progress.endlessBest"
         static let speedrunBest = "lumo.progress.speedrunBest"
         static let totalHops = "lumo.progress.totalHops"
+        static let spentStars = "lumo.progress.spentStars"
+        static let unlockedOrbs = "lumo.progress.unlockedOrbs"
     }
 
     init() {
@@ -25,6 +29,8 @@ final class ProgressStore: ObservableObject {
         endlessBest = defaults.integer(forKey: Key.endlessBest)
         speedrunBest = defaults.double(forKey: Key.speedrunBest)
         totalHops = defaults.integer(forKey: Key.totalHops)
+        spentStars = defaults.integer(forKey: Key.spentStars)
+        unlockedOrbs = Set(defaults.stringArray(forKey: Key.unlockedOrbs) ?? [])
     }
 
     /// Tamamlanan en yüksek bölüm + 1 oynanabilir; 1. bölüm her zaman açık.
@@ -35,9 +41,37 @@ final class ProgressStore: ObservableObject {
 
     var completedCount: Int { stars.count }
     var totalStars: Int { stars.values.reduce(0, +) }
+    /// Harcanabilir yıldız bakiyesi (toplam - harcanan)
+    var availableStars: Int { max(0, totalStars - spentStars) }
     var endlessUnlocked: Bool { stars[LevelLibrary.adFreeLevels] != nil }
 
     func isUnlocked(_ level: Int) -> Bool { level <= highestUnlocked }
+
+    // MARK: Yıldızla karakter (küre stili) satın alma
+
+    func isOrbUnlocked(_ style: OrbStyle) -> Bool {
+        switch style.unlock {
+        case .free: return true
+        case .premium: return false          // premium ayrı yönetilir (StoreManager)
+        case .stars: return unlockedOrbs.contains(style.id)
+        }
+    }
+
+    func canAfford(_ style: OrbStyle) -> Bool {
+        guard let cost = style.starCost else { return false }
+        return availableStars >= cost
+    }
+
+    /// Yeterli yıldız varsa satın alır; başarılıysa true döner.
+    @discardableResult
+    func purchaseOrb(_ style: OrbStyle) -> Bool {
+        guard let cost = style.starCost, !isOrbUnlocked(style), availableStars >= cost else { return false }
+        spentStars += cost
+        unlockedOrbs.insert(style.id)
+        defaults.set(spentStars, forKey: Key.spentStars)
+        defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
+        return true
+    }
 
     func complete(level: Int, stars newStars: Int) {
         let existing = stars[level] ?? 0

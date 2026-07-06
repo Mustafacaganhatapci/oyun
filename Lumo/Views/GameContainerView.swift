@@ -25,6 +25,7 @@ struct GameContainerView: View {
     }
 
     @State private var scene: GameScene?
+    @State private var sceneID = 0          // her yeni sahnede artar; SpriteView'i yenilemeye zorlar
     @State private var overlay: Overlay = .none
     @State private var lumenCount = 0
     @State private var endlessScore = 0
@@ -54,6 +55,7 @@ struct GameContainerView: View {
             ZStack {
                 if let scene {
                     SpriteView(scene: scene, isPaused: overlay == .paused)
+                        .id(sceneID)
                         .ignoresSafeArea()
                 }
 
@@ -131,6 +133,7 @@ struct GameContainerView: View {
                     speedIndex += 1
                     lumenCount = 0
                     scene = makeScene(size: sceneSize)
+                    sceneID += 1
                 } else {
                     let total = Date().timeIntervalSince(speedStart) + speedPenalty
                     let isRecord = progress.recordSpeedrun(time: total)
@@ -482,6 +485,7 @@ struct GameContainerView: View {
         speedStart = Date()
         overlay = .none
         scene = makeScene(size: sceneSize)
+        sceneID += 1
     }
 
     static func formatTime(_ t: Double) -> String {

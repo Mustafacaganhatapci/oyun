@@ -5,8 +5,18 @@ struct SettingsView: View {
     @EnvironmentObject private var app: AppModel
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
+    @EnvironmentObject private var progress: ProgressStore
 
     @State private var photoItem: PhotosPickerItem?
+
+    /// Bir küre stili şu an kuşanılabilir mi? (ücretsiz, yıldızla açılmış, ya da premium sahibi)
+    private func isAvailable(_ style: OrbStyle) -> Bool {
+        switch style.unlock {
+        case .free: return true
+        case .stars: return progress.isOrbUnlocked(style)
+        case .premium: return store.isPremium
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -75,22 +85,29 @@ struct SettingsView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 14) {
                                 ForEach(OrbStyle.all) { style in
+                                    let available = isAvailable(style)
                                     OrbSwatch(style: style,
                                               theme: settings.theme,
                                               selected: settings.orbStyleID == style.id,
-                                              locked: style.isPremium && !store.isPremium,
+                                              locked: !available,
                                               photoVersion: settings.orbPhotoVersion) {
-                                        if style.isPremium && !store.isPremium {
-                                            app.route = .shop
-                                        } else {
+                                        if available {
                                             AudioEngine.shared.playTap()
                                             settings.orbStyleID = style.id
+                                        } else {
+                                            // Kilitli: mağazada yıldızla/premium ile alınır
+                                            app.route = .shop
                                         }
                                     }
                                 }
                             }
                             .padding(.horizontal, 20)
                         }
+
+                        Text("Buy more characters with stars in the Shop.")
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.4))
+                            .padding(.horizontal, 24)
 
                         // Fotoğraflı küre seçiliyse fotoğraf seçme düğmesi
                         if settings.orbStyleID == "photo", store.isPremium {

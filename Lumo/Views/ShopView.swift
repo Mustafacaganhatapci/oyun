@@ -5,6 +5,7 @@ struct ShopView: View {
     @EnvironmentObject private var app: AppModel
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
+    @EnvironmentObject private var progress: ProgressStore
 
     var body: some View {
         VStack(spacing: 0) {
@@ -15,13 +16,24 @@ struct ShopView: View {
                     .font(.system(.title2, design: .rounded).bold())
                     .foregroundStyle(.white)
                 Spacer()
-                Color.clear.frame(width: 44, height: 44)
+                // Yıldız bakiyesi
+                HStack(spacing: 4) {
+                    Image(systemName: "star.fill")
+                        .font(.footnote)
+                        .foregroundStyle(settings.theme.lumen.color)
+                    Text("\(progress.availableStars)")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(.white)
+                }
+                .frame(minWidth: 44)
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)
 
             ScrollView {
                 VStack(spacing: 20) {
+                    charactersSection
+
                     premiumCard
 
                     // Dürüstlük ilkesi — açıkça söylüyoruz
@@ -47,6 +59,93 @@ struct ShopView: View {
                 .padding(.top, 20)
             }
         }
+    }
+
+    // MARK: Yıldızla alınan karakterler (küre stilleri)
+
+    private var charactersSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Characters")
+                    .font(.system(.headline, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.9))
+                Spacer()
+                Text("Unlock with stars ★")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.45))
+            }
+
+            ForEach(OrbStyle.starPurchasable) { style in
+                characterRow(style)
+            }
+        }
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(.white.opacity(0.05))
+        }
+        .padding(.horizontal, 20)
+    }
+
+    private func characterRow(_ style: OrbStyle) -> some View {
+        let owned = progress.isOrbUnlocked(style)
+        let equipped = settings.orbStyleID == style.id
+        let cost = style.starCost ?? 0
+        return HStack(spacing: 14) {
+            CharacterPreview(kind: style.kind, theme: settings.theme)
+                .frame(width: 46, height: 46)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(style.localizedName)
+                    .font(.system(.body, design: .rounded).bold())
+                    .foregroundStyle(.white)
+                if !owned {
+                    HStack(spacing: 3) {
+                        Image(systemName: "star.fill").font(.system(size: 10))
+                        Text("\(cost)").font(.system(.subheadline, design: .rounded).bold())
+                    }
+                    .foregroundStyle(settings.theme.lumen.color)
+                }
+            }
+
+            Spacer()
+
+            if equipped {
+                Label("Equipped", systemImage: "checkmark.circle.fill")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.gate.color)
+            } else if owned {
+                Button {
+                    AudioEngine.shared.playTap()
+                    settings.orbStyleID = style.id
+                } label: {
+                    Text("Equip")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+                        .background(Capsule().fill(settings.theme.accent.color))
+                }
+            } else {
+                Button {
+                    if progress.purchaseOrb(style) {
+                        AudioEngine.shared.playWin()
+                        settings.orbStyleID = style.id   // alınca hemen kuşan
+                    } else {
+                        AudioEngine.shared.playFail()
+                    }
+                } label: {
+                    Text("Buy")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(progress.canAfford(style) ? .black : .white.opacity(0.4))
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+                        .background(Capsule().fill(progress.canAfford(style)
+                                                   ? settings.theme.lumen.color
+                                                   : Color.white.opacity(0.1)))
+                }
+                .disabled(!progress.canAfford(style))
+            }
+        }
+        .padding(.vertical, 4)
     }
 
     private var premiumCard: some View {
@@ -161,5 +260,56 @@ struct ShopView: View {
                 .fill(.white.opacity(0.05))
         }
         .padding(.horizontal, 20)
+    }
+}
+
+/// Mağaza/ayarlarda küre stilinin küçük önizlemesi
+struct CharacterPreview: View {
+    let kind: OrbStyle.Kind
+    let theme: Theme
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(LinearGradient(colors: [theme.bgTop.color, theme.bgBottom.color],
+                                     startPoint: .top, endPoint: .bottom))
+            content
+        }
+        .overlay(Circle().strokeBorder(.white.opacity(0.12), lineWidth: 1))
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch kind {
+        case .classic:
+            Circle().fill(theme.orb.color).frame(width: 16, height: 16)
+                .shadow(color: theme.accent.color, radius: 6)
+        case .star:
+            Image(systemName: "star.fill").font(.system(size: 18))
+                .foregroundStyle(theme.lumen.color).shadow(color: theme.lumen.color, radius: 6)
+        case .crystal:
+            Image(systemName: "hexagon.fill").font(.system(size: 18))
+                .foregroundStyle(theme.gate.color).shadow(color: theme.gate.color, radius: 6)
+        case .comet:
+            HStack(spacing: 0) {
+                Capsule().fill(LinearGradient(colors: [.clear, theme.accent.color],
+                                              startPoint: .leading, endPoint: .trailing))
+                    .frame(width: 18, height: 4)
+                Circle().fill(.white).frame(width: 11, height: 11)
+            }
+            .shadow(color: theme.accent.color, radius: 6)
+        case .rainbow:
+            Circle()
+                .fill(AngularGradient(colors: [.red, .yellow, .green, .cyan, .purple, .red], center: .center))
+                .frame(width: 16, height: 16)
+        case .photo:
+            if let image = OrbPhotoStore.load() {
+                Image(uiImage: image).resizable().scaledToFill()
+                    .frame(width: 22, height: 22).clipShape(Circle())
+            } else {
+                Image(systemName: "person.crop.circle").font(.system(size: 18))
+                    .foregroundStyle(.white.opacity(0.8))
+            }
+        }
     }
 }

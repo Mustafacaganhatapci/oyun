@@ -2,8 +2,15 @@ import Foundation
 import SwiftUI
 import UIKit
 
+/// Bir küre stilinin nasıl açıldığı.
+enum OrbUnlock: Equatable {
+    case free               // baştan açık
+    case stars(Int)         // toplanan yıldızlarla satın alınır
+    case premium            // LUMO Premium (IAP) ile açılır
+}
+
 /// Kürenin (oyuncu "karakterinin") görsel stili.
-/// 2 stil ücretsiz, 4 stil premium — hepsi tamamen kozmetiktir.
+/// Bazıları ücretsiz, bazıları yıldızla alınır, biri premium — hepsi kozmetiktir.
 struct OrbStyle: Identifiable, Equatable {
     enum Kind: String {
         case classic    // klasik ışık küresi
@@ -17,19 +24,24 @@ struct OrbStyle: Identifiable, Equatable {
     let id: String
     /// İngilizce ad — aynı zamanda yerelleştirme anahtarı
     let name: String
-    let isPremium: Bool
+    let unlock: OrbUnlock
     let kind: Kind
 
     var localizedName: String { String(localized: String.LocalizationValue(name)) }
+    var isPremium: Bool { unlock == .premium }
+    var starCost: Int? { if case .stars(let n) = unlock { return n }; return nil }
 
     static let all: [OrbStyle] = [
-        OrbStyle(id: "classic", name: "Light", isPremium: false, kind: .classic),
-        OrbStyle(id: "star", name: "Star", isPremium: false, kind: .star),
-        OrbStyle(id: "crystal", name: "Crystal", isPremium: true, kind: .crystal),
-        OrbStyle(id: "comet", name: "Comet", isPremium: true, kind: .comet),
-        OrbStyle(id: "rainbow", name: "Rainbow", isPremium: true, kind: .rainbow),
-        OrbStyle(id: "photo", name: "Photo", isPremium: true, kind: .photo)
+        OrbStyle(id: "classic", name: "Light",   unlock: .free,        kind: .classic),
+        OrbStyle(id: "star",    name: "Star",    unlock: .free,        kind: .star),
+        OrbStyle(id: "crystal", name: "Crystal", unlock: .stars(20),   kind: .crystal),
+        OrbStyle(id: "comet",   name: "Comet",   unlock: .stars(45),   kind: .comet),
+        OrbStyle(id: "rainbow", name: "Rainbow", unlock: .stars(80),   kind: .rainbow),
+        OrbStyle(id: "photo",   name: "Photo",   unlock: .premium,     kind: .photo)
     ]
+
+    /// Yıldızla satın alınabilen stiller (mağazada listelenir)
+    static var starPurchasable: [OrbStyle] { all.filter { $0.starCost != nil } }
 
     static func style(id: String) -> OrbStyle {
         all.first { $0.id == id } ?? all[0]
