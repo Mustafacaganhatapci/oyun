@@ -6,6 +6,7 @@ enum GameEvent {
     case collect(total: Int)
     case fail
     case win(stars: Int)
+    case bonusTick(remaining: Int)
     case endlessScore(Int)
     case endlessGameOver(score: Int)
 }
@@ -25,6 +26,7 @@ final class GameScene: SKScene {
     private let captureGrace: TimeInterval = 0.35   // halkaya oturduktan sonra tehlike bağışıklığı
     private let collectDistance: CGFloat = 26
     private let maxFlightTime: TimeInterval = 4.0
+    private let respawnDelay: TimeInterval = 0.55
 
     // MARK: Durum
     private enum OrbState {
@@ -36,9 +38,12 @@ final class GameScene: SKScene {
 
     let mode: Mode
     private let theme: Theme
+    private let orbStyle: OrbStyle
+    private let orbPhoto: UIImage?
     var onEvent: ((GameEvent) -> Void)?
 
     private var level: Level?
+    private(set) var lumenTotal = 0
     private var ringSpecs: [RingSpec] = []
     private var ringNodes: [SKNode] = []
     private var ringCircles: [SKShapeNode] = []
@@ -48,6 +53,7 @@ final class GameScene: SKScene {
 
     private var orbState: OrbState = .dead
     private var orbNode: SKNode!
+    private var orbCore: SKShapeNode?
     private var trailEmitter: SKEmitterNode!
     private var lastRing = 0
     private var exitedLastRing = true
@@ -56,6 +62,17 @@ final class GameScene: SKScene {
     private var elapsed: TimeInterval = 0
     private var lastUpdate: TimeInterval = 0
     private var combo = 0
+
+    // Ölüm/yeniden doğma — SKAction'a değil, update döngüsüne bağlıdır
+    // ("kaybedince bazen başlamıyor" hatasının kesin çözümü)
+    private var deadSince: TimeInterval?
+    private var endlessOverSent = false
+    private var finished = false
+
+    // Bonus turu
+    private var isBonus = false
+    private var bonusDeadline: TimeInterval = 0
+    private var lastBonusTick = Int.max
 
     // Sonsuz mod
     private var endlessScore = 0
@@ -69,9 +86,11 @@ final class GameScene: SKScene {
 
     // MARK: Kurulum
 
-    init(size: CGSize, mode: Mode, theme: Theme) {
+    init(size: CGSize, mode: Mode, theme: Theme, orbStyle: OrbStyle, orbPhoto: UIImage? = nil) {
         self.mode = mode
         self.theme = theme
+        self.orbStyle = orbStyle
+        self.orbPhoto = orbPhoto
         super.init(size: size)
         scaleMode = .resizeFill
         backgroundColor = theme.bgBottom.uiColor
@@ -86,6 +105,8 @@ final class GameScene: SKScene {
         case .level(let id):
             let lvl = LevelLibrary.level(id)
             level = lvl
+            isBonus = lvl.kind == .bonus
+            if isBonus { bonusDeadline = lvl.bonusDuration }
             buildRings(lvl.rings)
             buildLumens(lvl.lumens)
             respawn(animated: false)
@@ -95,7 +116,6 @@ final class GameScene: SKScene {
             cam.position = CGPoint(x: size.width / 2, y: size.height / 2)
             addChild(cam)
             camera = cam
-            // Yıldız tozu kamerayla birlikte yükselsin
             if let stars = childNode(withName: "stars") {
                 stars.removeFromParent()
                 stars.position = .zero
@@ -116,7 +136,6 @@ final class GameScene: SKScene {
         bg.name = "bg"
         addChild(bg)
 
-        // Yavaşça süzülen yıldız tozu
         let stars = SKEmitterNode()
         stars.particleTexture = Self.glowTexture
         stars.particleBirthRate = 2.5
@@ -139,6 +158,8 @@ final class GameScene: SKScene {
         addChild(stars)
     }
 
+    // MARK: Küre — seçilen stile göre kurulur
+
     private func setupOrb() {
         let container = SKNode()
         container.zPosition = 20
@@ -151,18 +172,77 @@ final class GameScene: SKScene {
         glow.blendMode = .add
         container.addChild(glow)
 
-        let core = SKShapeNode(circleOfRadius: orbRadius)
-        core.fillColor = theme.orb.uiColor
-        core.strokeColor = .clear
-        container.addChild(core)
+        switch orbStyle.kind {
+        case .classic:
+            let core = SKShapeNode(circleOfRadius: orbRadius)
+            core.fillColor = theme.orb.uiColor
+            core.strokeColor = .clear
+            container.addChild(core)
+            orbCore = core
+
+        case .star:
+            let core = SKShapeNode(path: Self.starPath(radius: orbRadius * 1.5))
+            core.fillColor = theme.lumen.uiColor
+            core.strokeColor = .clear
+            core.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: 3.5)))
+            container.addChild(core)
+            orbCore = core
+
+        case .crystal:
+            let core = SKShapeNode(path: Self.polygonPath(sides: 6, radius: orbRadius * 1.35))
+            core.fillColor = theme.gate.uiColor.withAlphaComponent(0.85)
+            core.strokeColor = .white
+            core.lineWidth = 1.5
+            core.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: 6)))
+            container.addChild(core)
+            orbCore = core
+
+        case .comet:
+            let core = SKShapeNode(circleOfRadius: orbRadius * 0.85)
+            core.fillColor = .white
+            core.strokeColor = .clear
+            container.addChild(core)
+            orbCore = core
+
+        case .rainbow:
+            let core = SKShapeNode(circleOfRadius: orbRadius)
+            core.fillColor = .white   // her karede update() renklendirir
+            core.strokeColor = .clear
+            container.addChild(core)
+            orbCore = core
+
+        case .photo:
+            if let photo = orbPhoto {
+                let crop = SKCropNode()
+                let mask = SKShapeNode(circleOfRadius: orbRadius * 1.6)
+                mask.fillColor = .white
+                mask.strokeColor = .clear
+                crop.maskNode = mask
+                let sprite = SKSpriteNode(texture: SKTexture(image: photo))
+                sprite.size = CGSize(width: orbRadius * 3.2, height: orbRadius * 3.2)
+                crop.addChild(sprite)
+                container.addChild(crop)
+                let ring = SKShapeNode(circleOfRadius: orbRadius * 1.6)
+                ring.strokeColor = theme.orb.uiColor
+                ring.lineWidth = 2
+                ring.glowWidth = 4
+                container.addChild(ring)
+            } else {
+                let core = SKShapeNode(circleOfRadius: orbRadius)
+                core.fillColor = theme.orb.uiColor
+                core.strokeColor = .clear
+                container.addChild(core)
+                orbCore = core
+            }
+        }
 
         let trail = SKEmitterNode()
         trail.particleTexture = Self.glowTexture
-        trail.particleBirthRate = 110
-        trail.particleLifetime = 0.45
+        trail.particleBirthRate = orbStyle.kind == .comet ? 260 : 110
+        trail.particleLifetime = orbStyle.kind == .comet ? 0.9 : 0.45
         trail.particleAlpha = 0.5
-        trail.particleAlphaSpeed = -1.1
-        trail.particleScale = 0.24
+        trail.particleAlphaSpeed = orbStyle.kind == .comet ? -0.55 : -1.1
+        trail.particleScale = orbStyle.kind == .comet ? 0.3 : 0.24
         trail.particleScaleSpeed = -0.45
         trail.particleColor = theme.accent.uiColor
         trail.particleColorBlendFactor = 1
@@ -173,7 +253,6 @@ final class GameScene: SKScene {
 
         addChild(container)
         orbNode = container
-        // İz sahnede kalsın diye hedef düğüm sahnenin kendisi olmalı
         trail.targetNode = self
     }
 
@@ -202,7 +281,6 @@ final class GameScene: SKScene {
         container.addChild(circle)
 
         if spec.isGate {
-            // Kapı halkası: dönen kesik çizgili ikinci çember
             let dashed = SKShapeNode(path: CGPath(ellipseIn: CGRect(x: -r - 8, y: -r - 8,
                                                                     width: (r + 8) * 2, height: (r + 8) * 2),
                                                   transform: nil).copy(dashingWithPhase: 0, lengths: [8, 10]))
@@ -213,7 +291,6 @@ final class GameScene: SKScene {
             container.addChild(dashed)
         }
 
-        // Nefes alma animasyonu — sahne canlı hissettirir
         circle.run(.repeatForever(.sequence([
             .scale(to: 1.03, duration: 1.6),
             .scale(to: 0.99, duration: 1.6)
@@ -251,6 +328,7 @@ final class GameScene: SKScene {
     }
 
     private func buildLumens(_ specs: [LumenSpec]) {
+        lumenTotal = specs.count
         for spec in specs {
             let node = SKShapeNode(circleOfRadius: 7)
             node.fillColor = theme.lumen.uiColor
@@ -275,7 +353,6 @@ final class GameScene: SKScene {
                 y: p.y * playRect.height + playRect.minY)
     }
 
-    /// Halkanın t anındaki merkezi (hareketli halkalar salınır)
     private func ringCenter(_ i: Int, at t: TimeInterval) -> CGPoint {
         let spec = ringSpecs[i]
         var c = scenePoint(spec.center)
@@ -296,19 +373,30 @@ final class GameScene: SKScene {
     // MARK: Girdi — tek dokunuş, tüm ekran
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard case .attached(let ring, let angle, let direction) = orbState else { return }
-        let c = ringCenter(ring, at: elapsed)
-        let r = ringRadius(ring)
-        let pos = CGPoint(x: c.x + cos(angle) * r, y: c.y + sin(angle) * r)
-        // Teğet yön: direction=+1 (CCW) için (-sin, cos)
-        let tangent = CGVector(dx: -sin(angle) * direction, dy: cos(angle) * direction)
-        let speed = flightSpeedFactor * size.width
-        orbNode.position = pos
-        orbState = .flying(velocity: CGVector(dx: tangent.dx * speed, dy: tangent.dy * speed))
-        lastRing = ring
-        exitedLastRing = false
-        flightTime = 0
-        ringCircles[ring].run(.sequence([.scale(to: 0.92, duration: 0.08), .scale(to: 1.0, duration: 0.18)]))
+        switch orbState {
+        case .attached(let ring, let angle, let direction):
+            let c = ringCenter(ring, at: elapsed)
+            let r = ringRadius(ring)
+            let pos = CGPoint(x: c.x + cos(angle) * r, y: c.y + sin(angle) * r)
+            let tangent = CGVector(dx: -sin(angle) * direction, dy: cos(angle) * direction)
+            let speed = flightSpeedFactor * size.width
+            orbNode.position = pos
+            orbState = .flying(velocity: CGVector(dx: tangent.dx * speed, dy: tangent.dy * speed))
+            lastRing = ring
+            exitedLastRing = false
+            flightTime = 0
+            ringCircles[ring].run(.sequence([.scale(to: 0.92, duration: 0.08), .scale(to: 1.0, duration: 0.18)]))
+
+        case .dead:
+            // Güvenlik ağı: yeniden doğma herhangi bir nedenle gecikirse
+            // dokunuş anında canlandırır — oyun asla "takılı" kalmaz
+            if let since = deadSince, elapsed - since > 0.9, mode != .endless {
+                respawn(animated: true)
+            }
+
+        case .flying, .won:
+            break
+        }
     }
 
     // MARK: Ana döngü
@@ -320,6 +408,25 @@ final class GameScene: SKScene {
         elapsed += dt
 
         updateRings()
+
+        // Gökkuşağı küre: rengi sürekli akar
+        if orbStyle.kind == .rainbow, let core = orbCore {
+            let hue = CGFloat(elapsed.truncatingRemainder(dividingBy: 4) / 4)
+            core.fillColor = UIColor(hue: hue, saturation: 0.7, brightness: 1, alpha: 1)
+            trailEmitter.particleColor = core.fillColor
+        }
+
+        // Bonus geri sayımı (ölüyken de akmaya devam eder)
+        if isBonus, !finished {
+            let remaining = Int(ceil(bonusDeadline - elapsed))
+            if remaining != lastBonusTick, remaining >= 0 {
+                lastBonusTick = remaining
+                onEvent?(.bonusTick(remaining: remaining))
+            }
+            if elapsed >= bonusDeadline {
+                finishBonus()
+            }
+        }
 
         switch orbState {
         case .attached(let ring, var angle, let direction):
@@ -341,7 +448,21 @@ final class GameScene: SKScene {
             checkBounds()
             if flightTime > maxFlightTime { fail() }
 
-        case .dead, .won:
+        case .dead:
+            // Yeniden doğma zamanlaması SKAction yerine burada işlenir:
+            // sahne duraklatılsa/aksiyon kaybolsa bile bu yol her zaman çalışır
+            if let since = deadSince, elapsed - since >= respawnDelay {
+                if case .endless = mode {
+                    if !endlessOverSent {
+                        endlessOverSent = true
+                        onEvent?(.endlessGameOver(score: endlessScore))
+                    }
+                } else if !finished {
+                    respawn(animated: true)
+                }
+            }
+
+        case .won:
             break
         }
 
@@ -373,7 +494,6 @@ final class GameScene: SKScene {
             }
             guard dist <= r else { continue }
 
-            // Halkaya otur
             let angle = atan2(dy, dx)
             let cross = dx * v.dy - dy * v.dx
             let direction: CGFloat = cross >= 0 ? 1 : -1
@@ -405,7 +525,6 @@ final class GameScene: SKScene {
         guard !spec.hazardArcs.isEmpty, time - attachTime > captureGrace else { return }
         let rot = CGFloat(elapsed) * spec.hazardRotationSpeed
         for arc in spec.hazardArcs {
-            // Açıyı yayın dönmüş haline göre normalize et
             var rel = (angle - rot - arc.lowerBound).truncatingRemainder(dividingBy: 2 * .pi)
             if rel < 0 { rel += 2 * .pi }
             if rel <= (arc.upperBound - arc.lowerBound) {
@@ -426,6 +545,9 @@ final class GameScene: SKScene {
                 n.run(.sequence([.group([.scale(to: 1.8, duration: 0.18), .fadeOut(withDuration: 0.18)]),
                                  .removeFromParent()]))
                 onEvent?(.collect(total: lumenCollected.filter { $0 }.count))
+                if isBonus, lumenCollected.allSatisfy({ $0 }) {
+                    finishBonus()   // hepsi toplandıysa erken bitir
+                }
             }
         }
     }
@@ -444,28 +566,20 @@ final class GameScene: SKScene {
     private func fail() {
         if case .dead = orbState { return }
         if case .won = orbState { return }
+        if finished { return }
         orbState = .dead
+        deadSince = elapsed
         combo = 0
         burst(at: orbNode.position, color: theme.hazard.uiColor, count: 26)
         orbNode.isHidden = true
         shake()
         onEvent?(.fail)
-
-        if case .endless = mode {
-            let score = endlessScore
-            run(.wait(forDuration: 0.6)) { [weak self] in
-                self?.onEvent?(.endlessGameOver(score: score))
-            }
-        } else {
-            run(.wait(forDuration: 0.55)) { [weak self] in
-                self?.respawn(animated: true)
-            }
-        }
     }
 
     private func respawn(animated: Bool) {
-        guard !ringSpecs.isEmpty else { return }
+        guard !ringSpecs.isEmpty, !finished else { return }
         let start = level?.startRing ?? 0
+        deadSince = nil
         orbNode.isHidden = false
         orbState = .attached(ring: start, angle: -.pi / 2, direction: ringSpecs[start].direction)
         attachTime = lastUpdate
@@ -473,18 +587,41 @@ final class GameScene: SKScene {
         if animated {
             orbNode.setScale(0.2)
             orbNode.run(.scale(to: 1.0, duration: 0.25))
+            // Göz oraya çekilsin diye başlangıç halkası belirgin şekilde parlar
+            ringCircles[start].run(.sequence([.scale(to: 1.3, duration: 0.15), .scale(to: 1.0, duration: 0.3)]))
         }
     }
 
     private func win() {
+        guard !finished else { return }
+        finished = true
         orbState = .won
         let stars = lumenCollected.filter { $0 }.count
         if let gateIndex = ringSpecs.firstIndex(where: { $0.isGate }) {
-            let node = ringCircles[gateIndex]
-            node.run(.sequence([.scale(to: 1.4, duration: 0.3), .scale(to: 1.0, duration: 0.3)]))
+            ringCircles[gateIndex].run(.sequence([.scale(to: 1.4, duration: 0.3), .scale(to: 1.0, duration: 0.3)]))
         }
         burst(at: orbNode.position, color: theme.gate.uiColor, count: 40)
         run(.wait(forDuration: 0.7)) { [weak self] in
+            guard let self else { return }
+            self.onEvent?(.win(stars: stars))
+        }
+    }
+
+    /// Bonus turu sonu: yıldız sayısı toplanan lumen oranına göre
+    private func finishBonus() {
+        guard !finished else { return }
+        finished = true
+        orbState = .won
+        let collected = lumenCollected.filter { $0 }.count
+        let stars: Int
+        switch collected {
+        case lumenTotal...: stars = 3
+        case Int(Double(lumenTotal) * 0.66)...: stars = 2
+        case Int(Double(lumenTotal) * 0.33)...: stars = 1
+        default: stars = 0
+        }
+        burst(at: orbNode.position, color: theme.lumen.uiColor, count: 40)
+        run(.wait(forDuration: 0.5)) { [weak self] in
             self?.onEvent?(.win(stars: stars))
         }
     }
@@ -498,7 +635,6 @@ final class GameScene: SKScene {
     }
 
     private func extendEndlessIfNeeded(reached: Int) {
-        // Ulaşılan halkanın en az 4 ilerisine kadar halka olsun
         while ringSpecs.count < reached + 5 {
             let prev = ringSpecs[ringSpecs.count - 1]
             let n = ringSpecs.count
@@ -572,7 +708,7 @@ final class GameScene: SKScene {
         ]))
     }
 
-    // MARK: Dokular
+    // MARK: Dokular ve yollar
 
     static let glowTexture: SKTexture = {
         let side: CGFloat = 64
@@ -600,5 +736,29 @@ final class GameScene: SKScene {
                                              options: [])
         }
         return SKTexture(image: image)
+    }
+
+    static func starPath(radius: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        let points = 5
+        for i in 0..<(points * 2) {
+            let r = i % 2 == 0 ? radius : radius * 0.45
+            let a = CGFloat(i) * .pi / CGFloat(points) - .pi / 2
+            let p = CGPoint(x: cos(a) * r, y: sin(a) * r)
+            if i == 0 { path.move(to: p) } else { path.addLine(to: p) }
+        }
+        path.closeSubpath()
+        return path
+    }
+
+    static func polygonPath(sides: Int, radius: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        for i in 0..<sides {
+            let a = CGFloat(i) * 2 * .pi / CGFloat(sides) - .pi / 2
+            let p = CGPoint(x: cos(a) * radius, y: sin(a) * radius)
+            if i == 0 { path.move(to: p) } else { path.addLine(to: p) }
+        }
+        path.closeSubpath()
+        return path
     }
 }

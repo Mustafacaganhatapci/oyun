@@ -18,15 +18,23 @@ Bir ışık küresini halkadan halkaya sıçratarak yolun sonundaki kapıya ula�
 | **Kapı halkası** | Kesikli turkuaz halka. Ona oturduğun an bölüm biter. |
 | **Kombo müziği** | Düşmeden yaptığın her sıçrama, pentatonik dizide bir üst notayı çalar — iyi oynadıkça melodi yükselir. |
 
-- **30 el ayarlı bölüm** (deterministik üreteç — her cihazda birebir aynı)
+- **48 bölüm** (40 normal + 8 bonus; deterministik üreteç — her cihazda birebir aynı)
+- **Bonus turları**: her 6. bölüm süreli lumen avıdır — 25 saniyede 9 lumen, tehlike yok
 - **Sonsuz Mod**: 10. bölümü bitirince açılır; yükseldikçe zorlaşır, rekor tutulur
+- **Speed Run**: ilk 10 bölüm kronometreye karşı; her ölüm +2 sn ceza, en iyi süre kaydedilir
+- **Dünya sıralaması**: Game Center liderlik tabloları (sonsuz mod skoru + speed run süresi)
+- **Yılan haritası**: bölümler kıvrılan bir patika üzerinde ilerler, mevcut bölüm nefes alır
 - Düşünce anında yeniden doğarsın — bekleme ekranı yok, "bir kere daha" döngüsü kesintisiz
+  (yeniden doğma update döngüsüne bağlıdır; takılı kalırsa tek dokunuş anında canlandırır)
 
 ## 🎨 Tasarım Kimliği
 
 - **6 tema** (2 ücretsiz + 4 premium): Nebula, Gece, Şafak, Orman, Mercan, Aurora.
   Her tema; arka plan degradesi, halka, kapı, küre, tehlike, lumen ve vurgu renklerini
   tek yerden tanımlar (`Theme/Theme.swift`). Renk kimliği eksiksizdir.
+- **6 küre stili** (2 ücretsiz + 4 premium): Işık, Yıldız, Kristal, Kuyruklu Yıldız,
+  Gökkuşağı ve **Fotoğraf** — premium'da oyuncu kürenin içine kendi fotoğrafını koyar
+  (fotoğraf cihazda kalır, hiçbir yere yüklenmez). Tamamı kozmetiktir.
 - Neon-glow estetiği: additive blend parçacıklar, ışık izleri, nefes alan halkalar,
   süzülen yıldız tozu.
 - Tipografi: SF Rounded (sistem) — yumuşak, oyuncu, ek font dosyası gerekmez.
@@ -67,7 +75,7 @@ Hiç ses dosyası yoktur; her şey `AVAudioEngine` ile cihazda sentezlenir:
 | İlk **10 bölüm tamamen reklamsız** | `AdsManager` seviye ≤ 10 iken asla reklam çağırmaz |
 | 11. bölümden sonra | Her 2 bölüm tamamlamada 1 geçiş reklamı; sonsuz modda her 3 oyunda 1 |
 | Banner yok | Oyun alanı her zaman temiz |
-| **Premium (tek seferlik)** | Reklamları kalıcı kaldırır + 4 premium tema açar — *sadece kozmetik* |
+| **Premium (tek seferlik)** | Reklamları kalıcı kaldırır + 4 tema + 4 küre stili (fotoğraflı küre dahil) — *sadece kozmetik* |
 | Bahşiş kavanozu | ☕️ 0.99 / 🌟 4.99 — tamamen gönüllü destek |
 | Şeffaflık | Mağaza ekranında açıkça yazar: "Hiçbir satın alma oyun avantajı vermez." |
 
@@ -103,6 +111,15 @@ Lumo/
 3. iPhone simülatöründe veya cihazda çalıştır. Ek bağımlılık yoktur — proje olduğu gibi derlenir.
 4. IAP testi için: Scheme > Edit Scheme > Options > StoreKit Configuration > `Lumo.storekit`.
 
+### Game Center (dünya sıralaması)
+
+Kod hazır (`GameCenterService.swift`, entitlement ekli); yayına almak için:
+1. App Store Connect > uygulaman > Services > Game Center'ı etkinleştir.
+2. İki liderlik tablosu oluştur: `lumo.endless` (yüksek skor, tamsayı) ve
+   `lumo.speedrun` (düşük süre kazanır; değer saniyenin yüzde biri cinsinden gönderilir).
+3. Cihazda Game Center hesabı açık olmalı. Kimlik doğrulama başarısızsa oyun sessizce çevrimdışı çalışır.
+Not: İmzalama sorunu yaşarsan Signing & Capabilities'ten Game Center yeteneğini geçici kaldırabilirsin.
+
 ### Gerçek reklamları (AdMob) açmak
 
 Kod SDK'sız da tam çalışır (DEBUG'da yer tutucu reklam, RELEASE'te reklamsız akış).
@@ -122,6 +139,7 @@ Yayın öncesi:
 - [x] StoreKit 2 + Geri Yükleme düğmesi (App Review şartı)
 - [x] Reklamsız ilk deneyim (ilk 10 bölüm) — inceleme sırasında reklam sorunu yaşanmaz
 - [ ] App Store Connect'te 3 IAP ürününü oluştur (`lumo.premium`, `lumo.tip.small`, `lumo.tip.big`)
+- [ ] Game Center'ı etkinleştir + 2 liderlik tablosu (`lumo.endless`, `lumo.speedrun`)
 - [ ] Ekran görüntüleri (6.9" ve 6.5") + tanıtım metni
 - [ ] AdMob kimliklerini gerçek değerlerle değiştir
 - [ ] Gizlilik politikası URL'i (reklam SDK'sı eklenince gerekli)

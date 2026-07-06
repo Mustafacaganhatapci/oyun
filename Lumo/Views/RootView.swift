@@ -17,12 +17,16 @@ struct RootView: View {
                 LevelSelectView()
                     .transition(.move(edge: .trailing).combined(with: .opacity))
             case .game(let id):
-                GameContainerView(levelID: id)
+                GameContainerView(playMode: .level(id))
                     .id("level-\(id)")
                     .transition(.opacity)
             case .endless:
-                GameContainerView(levelID: nil)
+                GameContainerView(playMode: .endless)
                     .id("endless")
+                    .transition(.opacity)
+            case .speedrun:
+                GameContainerView(playMode: .speedrun)
+                    .id("speedrun")
                     .transition(.opacity)
             case .shop:
                 ShopView()

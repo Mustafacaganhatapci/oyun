@@ -6,12 +6,14 @@ import SwiftUI
 final class ProgressStore: ObservableObject {
     @Published private(set) var stars: [Int: Int] = [:]      // bölüm -> 0...3 yıldız
     @Published private(set) var endlessBest: Int = 0
+    @Published private(set) var speedrunBest: Double = 0     // saniye; 0 = henüz yok
     @Published private(set) var totalHops: Int = 0
 
     private let defaults = UserDefaults.standard
     private enum Key {
         static let stars = "lumo.progress.stars"
         static let endlessBest = "lumo.progress.endlessBest"
+        static let speedrunBest = "lumo.progress.speedrunBest"
         static let totalHops = "lumo.progress.totalHops"
     }
 
@@ -21,6 +23,7 @@ final class ProgressStore: ObservableObject {
             stars = decoded
         }
         endlessBest = defaults.integer(forKey: Key.endlessBest)
+        speedrunBest = defaults.double(forKey: Key.speedrunBest)
         totalHops = defaults.integer(forKey: Key.totalHops)
     }
 
@@ -52,6 +55,17 @@ final class ProgressStore: ObservableObject {
             endlessBest = score
             defaults.set(endlessBest, forKey: Key.endlessBest)
         }
+    }
+
+    /// Yeni rekor ise true döner
+    @discardableResult
+    func recordSpeedrun(time: Double) -> Bool {
+        if speedrunBest == 0 || time < speedrunBest {
+            speedrunBest = time
+            defaults.set(speedrunBest, forKey: Key.speedrunBest)
+            return true
+        }
+        return false
     }
 
     private func save() {

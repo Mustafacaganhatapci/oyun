@@ -5,12 +5,32 @@ struct MainMenuView: View {
     @EnvironmentObject private var progress: ProgressStore
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
+    @EnvironmentObject private var gameCenter: GameCenterService
 
     @State private var orbPulse = false
 
     var body: some View {
         ZStack {
             AnimatedBackground(theme: settings.theme)
+
+            // Dünya sıralaması — sağ üst köşe
+            VStack {
+                HStack {
+                    Spacer()
+                    Button {
+                        gameCenter.showLeaderboards()
+                    } label: {
+                        Image(systemName: "trophy.fill")
+                            .font(.system(size: 17, weight: .bold))
+                            .foregroundStyle(settings.theme.lumen.color)
+                            .frame(width: 44, height: 44)
+                            .background(Circle().fill(.white.opacity(0.1)))
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 8)
+                Spacer()
+            }
 
             VStack(spacing: 0) {
                 Spacer(minLength: 40)
@@ -101,6 +121,29 @@ struct MainMenuView: View {
                         }
                     }
                     .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color))
+                    .opacity(progress.endlessUnlocked ? 1 : 0.55)
+
+                    Button {
+                        AudioEngine.shared.playTap()
+                        if progress.endlessUnlocked { app.route = .speedrun }
+                    } label: {
+                        HStack {
+                            Label("Speed Run", systemImage: "stopwatch.fill")
+                            if !progress.endlessUnlocked {
+                                Spacer()
+                                Label("Level \(LevelLibrary.adFreeLevels)", systemImage: "lock.fill")
+                                    .font(.system(.footnote, design: .rounded))
+                                    .foregroundStyle(.white.opacity(0.45))
+                            } else if progress.speedrunBest > 0 {
+                                Spacer()
+                                Text(GameContainerView.formatTime(progress.speedrunBest))
+                                    .font(.system(.footnote, design: .rounded).bold())
+                                    .monospacedDigit()
+                                    .foregroundStyle(.white.opacity(0.6))
+                            }
+                        }
+                    }
+                    .buttonStyle(GlowButtonStyle(color: settings.theme.hazard.color))
                     .opacity(progress.endlessUnlocked ? 1 : 0.55)
 
                     HStack(spacing: 14) {
