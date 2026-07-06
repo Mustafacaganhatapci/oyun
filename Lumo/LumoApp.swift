@@ -23,7 +23,11 @@ struct LumoApp: App {
                 .persistentSystemOverlays(.hidden)
                 .onAppear {
                     AudioEngine.shared.startIfNeeded()
-                    gameCenter.authenticate()
+                    // Game Center kimlik doğrulaması açılış anında değil, arayüz
+                    // yerleştikten kısa süre sonra denenir (açılış çökmelerini önler).
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        gameCenter.authenticate()
+                    }
                 }
                 .onChange(of: scenePhase) { _, phase in
                     switch phase {

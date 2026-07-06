@@ -10,8 +10,11 @@ final class GameCenterService: NSObject, ObservableObject {
     static let speedrunLeaderboardID = "lumo.speedrun"
 
     @Published private(set) var isAuthenticated = false
+    private var didStartAuth = false
 
     func authenticate() {
+        guard !didStartAuth else { return }   // handler yalnızca bir kez kurulur
+        didStartAuth = true
         GKLocalPlayer.local.authenticateHandler = { [weak self] viewController, _ in
             Task { @MainActor in
                 if let viewController {
