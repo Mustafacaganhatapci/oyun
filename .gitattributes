@@ -1,0 +1,4 @@
+# JSON tabanlı Xcode dosyaları satır-satır birleştirilmesin (bozulmayı önler).
+# Çakışma olursa git sessizce karıştırmak yerine net "conflict" verir.
+Lumo/Localizable.xcstrings -text merge=ours
+Lumo.storekit            -text merge=ours
