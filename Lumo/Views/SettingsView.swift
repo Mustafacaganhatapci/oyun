@@ -9,12 +9,14 @@ struct SettingsView: View {
 
     @State private var photoItem: PhotosPickerItem?
 
-    /// Bir küre stili şu an kuşanılabilir mi? (ücretsiz, yıldızla açılmış, ya da premium sahibi)
+    /// Bir küre stili şu an kuşanılabilir mi?
+    /// Premium sahibi TÜM karakterleri kullanabilir (yıldızlı olanlar dahil).
     private func isAvailable(_ style: OrbStyle) -> Bool {
+        if store.isPremium { return true }
         switch style.unlock {
         case .free: return true
         case .stars: return progress.isOrbUnlocked(style)
-        case .premium: return store.isPremium
+        case .premium: return false
         }
     }
 
