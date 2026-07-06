@@ -7,6 +7,12 @@ struct ShopView: View {
     @EnvironmentObject private var store: StoreManager
     @EnvironmentObject private var progress: ProgressStore
 
+    @State private var codeInput = ""
+    @State private var codeState: CodeState = .idle
+    @FocusState private var codeFocused: Bool
+
+    private enum CodeState { case idle, success, failure }
+
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -36,6 +42,10 @@ struct ShopView: View {
 
                     premiumCard
 
+                    if !store.isPremium {
+                        redeemSection
+                    }
+
                     // Dürüstlük ilkesi — açıkça söylüyoruz
                     Label("No purchase gives a gameplay advantage. There is no pay-to-win in LUMO.",
                           systemImage: "checkmark.shield.fill")
@@ -59,6 +69,71 @@ struct ShopView: View {
                 .padding(.top, 20)
             }
         }
+    }
+
+    // MARK: Tanıdık kodu (premium'u ücretsiz açar)
+
+    private var redeemSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Have a code?", systemImage: "ticket.fill")
+                .font(.system(.subheadline, design: .rounded).bold())
+                .foregroundStyle(.white.opacity(0.85))
+
+            HStack(spacing: 10) {
+                TextField("", text: $codeInput, prompt: Text("Enter code").foregroundStyle(.white.opacity(0.35)))
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .focused($codeFocused)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 14).padding(.vertical, 10)
+                    .background {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(.white.opacity(0.08))
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .strokeBorder(.white.opacity(0.15), lineWidth: 1)
+                    }
+                    .onChange(of: codeInput) { _, _ in codeState = .idle }
+
+                Button {
+                    codeFocused = false
+                    if store.redeem(code: codeInput) {
+                        codeState = .success
+                        AudioEngine.shared.playWin()
+                        Haptics.shared.win()
+                    } else {
+                        codeState = .failure
+                        AudioEngine.shared.playFail()
+                    }
+                } label: {
+                    Text("Redeem")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 16).padding(.vertical, 10)
+                        .background(Capsule().fill(settings.theme.accent.color))
+                }
+                .disabled(codeInput.isEmpty)
+                .opacity(codeInput.isEmpty ? 0.5 : 1)
+            }
+
+            switch codeState {
+            case .success:
+                Label("Code accepted — Premium unlocked!", systemImage: "checkmark.circle.fill")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.gate.color)
+            case .failure:
+                Label("Invalid code", systemImage: "xmark.circle.fill")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.hazard.color)
+            case .idle:
+                EmptyView()
+            }
+        }
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(.white.opacity(0.05))
+        }
+        .padding(.horizontal, 20)
     }
 
     // MARK: Yıldızla alınan karakterler (küre stilleri)

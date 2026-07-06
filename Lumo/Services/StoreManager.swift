@@ -14,17 +14,25 @@ final class StoreManager: ObservableObject {
     static let tipBigID = "lumo.tip.big"
     static let allIDs = [premiumID, tipSmallID, tipBigID]
 
+    /// Tanıdıklara verilen premium kodları (küçük harfe çevrilip karşılaştırılır).
+    /// Bu kod gerçek satın alma yerine geçer; premium'u yerelde açar.
+    static let promoCodes: Set<String> = ["axiumdynamicsisking"]
+
     @Published private(set) var isPremium: Bool
     @Published private(set) var isSupporter: Bool
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchaseInProgress = false
 
+    private var entitled = false        // gerçek IAP satın alması var mı
+    private var promoGranted = false    // kodla açıldı mı
     private var updatesTask: Task<Void, Never>?
 
     init() {
         // Çevrimdışı açılışta arayüz doğru görünsün diye son bilinen durumu oku;
         // gerçek kaynak her zaman Transaction.currentEntitlements'tır.
-        isPremium = UserDefaults.standard.bool(forKey: "lumo.store.premiumCache")
+        entitled = UserDefaults.standard.bool(forKey: "lumo.store.premiumCache")
+        promoGranted = UserDefaults.standard.bool(forKey: "lumo.store.promo")
+        isPremium = entitled || promoGranted
         isSupporter = UserDefaults.standard.bool(forKey: "lumo.store.supporter")
 
         updatesTask = Task { [weak self] in
@@ -59,7 +67,19 @@ final class StoreManager: ObservableObject {
                 premium = true
             }
         }
-        setPremium(premium)
+        entitled = premium
+        recomputePremium()
+    }
+
+    /// Tanıdık kodunu dener. Geçerliyse premium'u kalıcı açar ve true döner.
+    @discardableResult
+    func redeem(code: String) -> Bool {
+        let normalized = code.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard Self.promoCodes.contains(normalized) else { return false }
+        promoGranted = true
+        UserDefaults.standard.set(true, forKey: "lumo.store.promo")
+        recomputePremium()
+        return true
     }
 
     func purchase(_ product: Product) async {
@@ -99,7 +119,8 @@ final class StoreManager: ObservableObject {
     private func apply(_ transaction: Transaction) {
         switch transaction.productID {
         case Self.premiumID:
-            setPremium(transaction.revocationDate == nil)
+            entitled = transaction.revocationDate == nil
+            recomputePremium()
         case Self.tipSmallID, Self.tipBigID:
             isSupporter = true
             UserDefaults.standard.set(true, forKey: "lumo.store.supporter")
@@ -108,9 +129,10 @@ final class StoreManager: ObservableObject {
         }
     }
 
-    private func setPremium(_ value: Bool) {
-        isPremium = value
-        UserDefaults.standard.set(value, forKey: "lumo.store.premiumCache")
+    /// premium = gerçek satın alma VEYA tanıdık kodu
+    private func recomputePremium() {
+        isPremium = entitled || promoGranted
+        UserDefaults.standard.set(entitled, forKey: "lumo.store.premiumCache")
     }
 
     var premiumProduct: Product? { products.first { $0.id == Self.premiumID } }
