@@ -111,14 +111,19 @@ Lumo/
 3. iPhone simülatöründe veya cihazda çalıştır. Ek bağımlılık yoktur — proje olduğu gibi derlenir.
 4. IAP testi için: Scheme > Edit Scheme > Options > StoreKit Configuration > `Lumo.storekit`.
 
-### Game Center (dünya sıralaması)
+### Game Center (dünya sıralaması) — ücretli hesap gerektirir
 
-Kod hazır (`GameCenterService.swift`, entitlement ekli); yayına almak için:
-1. App Store Connect > uygulaman > Services > Game Center'ı etkinleştir.
-2. İki liderlik tablosu oluştur: `lumo.endless` (yüksek skor, tamsayı) ve
+⚠️ **Önemli:** Game Center yetkisi (`com.apple.developer.game-center`) yalnızca
+**ücretli Apple Developer Program** üyeliğinde çalışır. Ücretsiz/kişisel hesapta bu
+yetki eklenirse uygulama açılışta çöker (libxpc entitlement reddi). Bu yüzden yetki
+şu an projeden çıkarılmıştır; kod (`GameCenterService.swift`) yerinde durur ve giriş
+yapılamazsa sessizce çevrimdışı çalışır (sıralama düğmesi bir şey yapmaz).
+
+Ücretli hesaba geçince Game Center'ı etkinleştirmek için:
+1. Xcode > hedef > Signing & Capabilities > **+ Capability > Game Center** ekle.
+2. App Store Connect > uygulaman > Services > Game Center'ı etkinleştir.
+3. İki liderlik tablosu oluştur: `lumo.endless` (yüksek skor, tamsayı) ve
    `lumo.speedrun` (düşük süre kazanır; değer saniyenin yüzde biri cinsinden gönderilir).
-3. Cihazda Game Center hesabı açık olmalı. Kimlik doğrulama başarısızsa oyun sessizce çevrimdışı çalışır.
-Not: İmzalama sorunu yaşarsan Signing & Capabilities'ten Game Center yeteneğini geçici kaldırabilirsin.
 
 ### Gerçek reklamları (AdMob) açmak
 

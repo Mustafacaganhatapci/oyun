@@ -44,10 +44,13 @@ final class GameCenterService: NSObject, ObservableObject {
         }
     }
 
-    /// Dünya sıralaması ekranını aç
+    /// Dünya sıralaması ekranını aç.
+    /// Oyuncu Game Center'a giriş yapmamışsa (ör. ücretsiz geliştirici hesabında
+    /// Game Center kapalıysa) önce girişi dener, açık değilse sessizce hiçbir şey yapmaz.
     func showLeaderboards() {
-        if !isAuthenticated {
+        guard isAuthenticated else {
             authenticate()
+            return
         }
         let vc = GKGameCenterViewController(state: .leaderboards)
         vc.gameCenterDelegate = self
