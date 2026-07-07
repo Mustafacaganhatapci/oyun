@@ -5,32 +5,12 @@ struct MainMenuView: View {
     @EnvironmentObject private var progress: ProgressStore
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
-    @EnvironmentObject private var gameCenter: GameCenterService
 
     @State private var orbPulse = false
 
     var body: some View {
         ZStack {
             AnimatedBackground(theme: settings.theme)
-
-            // Dünya sıralaması — sağ üst köşe
-            VStack {
-                HStack {
-                    Spacer()
-                    Button {
-                        gameCenter.showLeaderboards()
-                    } label: {
-                        Image(systemName: "trophy.fill")
-                            .font(.system(size: 17, weight: .bold))
-                            .foregroundStyle(settings.theme.lumen.color)
-                            .frame(width: 44, height: 44)
-                            .background(Circle().fill(.white.opacity(0.1)))
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 8)
-                Spacer()
-            }
 
             // Küçük ekranlarda taşmasın diye kaydırılabilir; büyük ekranda ortalanır
             GeometryReader { geo in

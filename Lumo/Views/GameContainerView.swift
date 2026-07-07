@@ -15,7 +15,6 @@ struct GameContainerView: View {
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
     @EnvironmentObject private var ads: AdsManager
-    @EnvironmentObject private var gameCenter: GameCenterService
 
     private enum Overlay: Equatable {
         case none, paused
@@ -137,7 +136,6 @@ struct GameContainerView: View {
                 } else {
                     let total = Date().timeIntervalSince(speedStart) + speedPenalty
                     let isRecord = progress.recordSpeedrun(time: total)
-                    gameCenter.submitSpeedrun(seconds: total)
                     overlay = .speedrunDone(time: total, isRecord: isRecord)
                 }
             case .endless:
@@ -149,7 +147,6 @@ struct GameContainerView: View {
 
         case .endlessGameOver(let score):
             progress.recordEndless(score: score)
-            gameCenter.submitEndless(score: score)
             AudioEngine.shared.playFail()
             overlay = .endlessOver(score: score)
         }
@@ -412,11 +409,6 @@ struct GameContainerView: View {
                 .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
                 .padding(.top, 10)
 
-                Button { gameCenter.showLeaderboards() } label: {
-                    Label("World Ranking", systemImage: "globe")
-                }
-                .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color))
-
                 Button { app.route = .menu } label: {
                     Label("Main Menu", systemImage: "house.fill")
                 }
@@ -461,11 +453,6 @@ struct GameContainerView: View {
                 }
                 .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
                 .padding(.top, 10)
-
-                Button { gameCenter.showLeaderboards() } label: {
-                    Label("World Ranking", systemImage: "globe")
-                }
-                .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color))
 
                 Button { app.route = .menu } label: {
                     Label("Main Menu", systemImage: "house.fill")
