@@ -130,20 +130,7 @@ struct MainMenuView: View {
                 AudioEngine.shared.playTap()
                 if progress.endlessUnlocked { app.route = .endless }
             } label: {
-                HStack(spacing: 0) {
-                    Label("Endless Mode", systemImage: "infinity")
-                    Spacer(minLength: 8)
-                    if !progress.endlessUnlocked {
-                        Label("Level \(LevelLibrary.adFreeLevels)", systemImage: "lock.fill")
-                            .font(.system(.footnote, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.45))
-                    } else if progress.endlessBest > 0 {
-                        Text("Best: \(progress.endlessBest)")
-                            .font(.system(.footnote, design: .rounded).bold())
-                            .foregroundStyle(.white.opacity(0.6))
-                    }
-                }
-                .padding(.horizontal, 2)
+                Label("Endless Mode", systemImage: "infinity")
             }
             .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color))
             .opacity(progress.endlessUnlocked ? 1 : 0.55)
@@ -152,21 +139,7 @@ struct MainMenuView: View {
                 AudioEngine.shared.playTap()
                 if progress.endlessUnlocked { app.route = .speedrun }
             } label: {
-                HStack(spacing: 0) {
-                    Label("Speed Run", systemImage: "stopwatch.fill")
-                    Spacer(minLength: 8)
-                    if !progress.endlessUnlocked {
-                        Label("Level \(LevelLibrary.adFreeLevels)", systemImage: "lock.fill")
-                            .font(.system(.footnote, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.45))
-                    } else if progress.speedrunBest > 0 {
-                        Text(GameContainerView.formatTime(progress.speedrunBest))
-                            .font(.system(.footnote, design: .rounded).bold())
-                            .monospacedDigit()
-                            .foregroundStyle(.white.opacity(0.6))
-                    }
-                }
-                .padding(.horizontal, 2)
+                Label("Speed Run", systemImage: "stopwatch.fill")
             }
             .buttonStyle(GlowButtonStyle(color: settings.theme.hazard.color))
             .opacity(progress.endlessUnlocked ? 1 : 0.55)
