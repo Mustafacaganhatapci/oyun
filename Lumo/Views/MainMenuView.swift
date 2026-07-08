@@ -5,12 +5,34 @@ struct MainMenuView: View {
     @EnvironmentObject private var progress: ProgressStore
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
+    @EnvironmentObject private var player: PlayerStore
 
     @State private var orbPulse = false
 
     var body: some View {
         ZStack {
             AnimatedBackground(theme: settings.theme)
+
+            // Dünya sıralaması — sağ üstte, ortalamayı bozmayan katman
+            VStack {
+                HStack {
+                    Spacer()
+                    Button {
+                        AudioEngine.shared.playTap()
+                        app.route = player.hasUsername ? .ranking : .username
+                    } label: {
+                        Image(systemName: "trophy.fill")
+                            .font(.system(size: 17, weight: .bold))
+                            .foregroundStyle(settings.theme.lumen.color)
+                            .frame(width: 44, height: 44)
+                            .background(Circle().fill(.white.opacity(0.1)))
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                Spacer()
+            }
+            .zIndex(1)
 
             // Küçük ekranlarda taşmasın diye kaydırılabilir; büyük ekranda ortalanır
             GeometryReader { geo in
@@ -21,10 +43,13 @@ struct MainMenuView: View {
                         logo
                             .padding(.top, 8)
 
+                        // kerning son harften sonra da boşluk ekler; sola kaymayı
+                        // dengelemek için sol tarafa aynı miktarda boşluk veriyoruz
                         Text("LUMO")
                             .font(.system(size: 54, weight: .black, design: .rounded))
                             .foregroundStyle(.white)
                             .kerning(14)
+                            .padding(.leading, 14)
                             .shadow(color: settings.theme.accent.opacity(0.8), radius: 20)
                             .padding(.top, 6)
 
@@ -32,6 +57,7 @@ struct MainMenuView: View {
                             .font(.system(.subheadline, design: .rounded))
                             .foregroundStyle(.white.opacity(0.55))
                             .kerning(4)
+                            .padding(.leading, 4)
 
                         if progress.totalStars > 0 {
                             HStack(spacing: 6) {
@@ -50,7 +76,9 @@ struct MainMenuView: View {
                             .padding(.horizontal, 28)
                             .padding(.bottom, 28)
                     }
+                    .frame(maxWidth: .infinity)
                     .frame(minHeight: geo.size.height)
+                    .multilineTextAlignment(.center)
                 }
             }
         }

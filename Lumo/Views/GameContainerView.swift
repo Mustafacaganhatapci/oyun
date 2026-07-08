@@ -15,6 +15,8 @@ struct GameContainerView: View {
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
     @EnvironmentObject private var ads: AdsManager
+    @EnvironmentObject private var player: PlayerStore
+    @EnvironmentObject private var leaderboard: LeaderboardService
 
     private enum Overlay: Equatable {
         case none, paused
@@ -136,6 +138,10 @@ struct GameContainerView: View {
                 } else {
                     let total = Date().timeIntervalSince(speedStart) + speedPenalty
                     let isRecord = progress.recordSpeedrun(time: total)
+                    if player.hasUsername {
+                        leaderboard.submit(mode: .speedrun, value: total,
+                                           username: player.username, playerID: player.playerID)
+                    }
                     overlay = .speedrunDone(time: total, isRecord: isRecord)
                 }
             case .endless:
@@ -147,6 +153,10 @@ struct GameContainerView: View {
 
         case .endlessGameOver(let score):
             progress.recordEndless(score: score)
+            if player.hasUsername {
+                leaderboard.submit(mode: .endless, value: Double(score),
+                                   username: player.username, playerID: player.playerID)
+            }
             AudioEngine.shared.playFail()
             overlay = .endlessOver(score: score)
         }
@@ -409,6 +419,11 @@ struct GameContainerView: View {
                 .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
                 .padding(.top, 10)
 
+                Button { app.route = player.hasUsername ? .ranking : .username } label: {
+                    Label("World Ranking", systemImage: "globe")
+                }
+                .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color))
+
                 Button { app.route = .menu } label: {
                     Label("Main Menu", systemImage: "house.fill")
                 }
@@ -453,6 +468,11 @@ struct GameContainerView: View {
                 }
                 .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
                 .padding(.top, 10)
+
+                Button { app.route = player.hasUsername ? .ranking : .username } label: {
+                    Label("World Ranking", systemImage: "globe")
+                }
+                .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color))
 
                 Button { app.route = .menu } label: {
                     Label("Main Menu", systemImage: "house.fill")

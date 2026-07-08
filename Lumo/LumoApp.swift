@@ -7,6 +7,8 @@ struct LumoApp: App {
     @StateObject private var settings = SettingsStore()
     @StateObject private var store = StoreManager()
     @StateObject private var ads = AdsManager()
+    @StateObject private var player = PlayerStore()
+    @StateObject private var leaderboard = LeaderboardService()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
@@ -17,10 +19,13 @@ struct LumoApp: App {
                 .environmentObject(settings)
                 .environmentObject(store)
                 .environmentObject(ads)
+                .environmentObject(player)
+                .environmentObject(leaderboard)
                 .preferredColorScheme(.dark)
                 .persistentSystemOverlays(.hidden)
                 .onAppear {
                     AudioEngine.shared.startIfNeeded()
+                    leaderboard.configureIfPossible()
                 }
                 .onChange(of: scenePhase) { _, phase in
                     switch phase {
@@ -41,6 +46,8 @@ enum Route: Equatable {
     case speedrun
     case shop
     case settings
+    case username
+    case ranking
 }
 
 @MainActor

@@ -34,6 +34,12 @@ struct RootView: View {
             case .settings:
                 SettingsView()
                     .transition(.move(edge: .trailing).combined(with: .opacity))
+            case .username:
+                UsernameView()
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            case .ranking:
+                WorldRankingView()
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
             }
 
             if ads.showingPlaceholder {

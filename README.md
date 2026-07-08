@@ -111,24 +111,43 @@ Lumo/
 3. iPhone simülatöründe veya cihazda çalıştır. Ek bağımlılık yoktur — proje olduğu gibi derlenir.
 4. IAP testi için: Scheme > Edit Scheme > Options > StoreKit Configuration > `Lumo.storekit`.
 
-### Game Center (dünya sıralaması) — ücretli hesap gerektirir
+### Dünya Sıralaması (Firebase)
 
-⚠️ **Önemli:** Game Center yetkisi (`com.apple.developer.game-center`) yalnızca
-**ücretli Apple Developer Program** üyeliğinde çalışır. Ücretsiz/kişisel hesapta bu
-yetki eklenirse uygulama açılışta çöker (libxpc entitlement reddi). Bu yüzden yetki
-şu an projeden çıkarılmıştır; kod (`GameCenterService.swift`) yerinde durur ve giriş
-yapılamazsa sessizce çevrimdışı çalışır (sıralama düğmesi bir şey yapmaz).
+Dünya sıralaması Firebase Firestore ile çalışır. Kod hazır ve `canImport` ile
+korumalı — SDK yokken uygulama yerel modda çalışır (yerel en iyi skoru gösterir).
+Etkinleştirmek için:
 
-Ücretli hesaba geçince Game Center'ı etkinleştirmek için:
-1. Xcode > hedef > Signing & Capabilities > **+ Capability > Game Center** ekle.
-2. App Store Connect > uygulaman > Services > Game Center'ı etkinleştir.
-3. İki liderlik tablosu oluştur: `lumo.endless` (yüksek skor, tamsayı) ve
-   `lumo.speedrun` (düşük süre kazanır; değer saniyenin yüzde biri cinsinden gönderilir).
+1. [Firebase konsolu](https://console.firebase.google.com)'nda yeni proje oluştur,
+   iOS uygulaması ekle (bundle id: `com.caganhatapci.lumo`).
+2. `GoogleService-Info.plist` dosyasını indir, Xcode'da `Lumo` klasörüne sürükle
+   ("Copy items if needed" işaretli).
+3. Xcode > File > Add Package Dependencies… →
+   `https://github.com/firebase/firebase-ios-sdk` → **FirebaseFirestore** ve
+   **FirebaseAuth** ürünlerini `Lumo` hedefine ekle.
+4. Firebase konsolu > Firestore Database > oluştur. Kurallar (basit, herkese açık okuma):
+   ```
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{db}/documents {
+       match /{col}/{doc} {
+         allow read: if true;
+         allow write: if request.auth != null;
+       }
+     }
+   }
+   ```
+5. Firebase konsolu > Authentication > Sign-in method > **Anonymous**'ı aç.
+
+Kod `GoogleService-Info.plist` yoksa Firebase'i hiç başlatmaz (çökme olmaz).
+Oyuncular ilk kez sıralamaya girerken bir **kullanıcı adı** belirler (3–16 karakter);
+skorlar bu adla `leaderboard_endless` ve `leaderboard_speedrun` koleksiyonlarına yazılır.
 
 ### Gerçek reklamları (AdMob) açmak
 
 Kod SDK'sız da tam çalışır (DEBUG'da yer tutucu reklam, RELEASE'te reklamsız akış).
-Yayın öncesi:
+Şu an **Google'ın resmi test reklamları** ayarlı: test geçiş reklamı birimi
+(`ca-app-pub-3940256099942544/4411468910`) ve test uygulama kimliği Info'da hazır.
+SDK'yı ekleyince gerçek test reklamları görünür. Yayın öncesi kendi kimliklerinle değiştir:
 
 1. File > Add Package Dependencies… → `https://github.com/googleads/swift-package-manager-google-mobile-ads` (11.x)
 2. Info ayarlarına `GADApplicationIdentifier` (AdMob uygulama kimliğin) ekle.

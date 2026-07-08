@@ -7,6 +7,41 @@
     "%lld / %lld": {
       "shouldTranslate": false
     },
+    "3–16 characters · letters, numbers, _ or -": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3–16 Zeichen · Buchstaben, Zahlen, _ oder -"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3–16 caracteres · letras, números, _ o -"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3–16 caractères · lettres, chiffres, _ ou -"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3〜16文字・英数字・_ または -"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3–16 karakter · harf, rakam, _ veya -"
+          }
+        }
+      }
+    },
     "4 exclusive orb styles — even your own photo in the orb": {
       "extractionState": "manual",
       "localizations": {
@@ -108,6 +143,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reklam"
+          }
+        }
+      }
+    },
+    "Add Firebase to enable the world ranking (see README). Your local best is shown below.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge Firebase hinzu, um die Weltrangliste zu aktivieren (siehe README). Deine lokale Bestleistung steht unten."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añade Firebase para activar la clasificación mundial (ver README). Tu mejor marca local está abajo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoute Firebase pour activer le classement mondial (voir README). Ton meilleur score local est ci-dessous."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "世界ランキングにはFirebaseを追加してください（README参照）。下にローカルベストを表示。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dünya sıralaması için Firebase ekle (README'ye bak). Yerel en iyin aşağıda."
           }
         }
       }
@@ -532,6 +602,41 @@
         }
       }
     },
+    "Choose a username": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle einen Benutzernamen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige un nombre de usuario"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisis un nom d'utilisateur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ユーザー名を選んでください"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir kullanıcı adı seç"
+          }
+        }
+      }
+    },
     "Close": {
       "extractionState": "manual",
       "localizations": {
@@ -812,6 +917,41 @@
         }
       }
     },
+    "Endless": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endlos"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Infinito"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Infini"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンドレス"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonsuz"
+          }
+        }
+      }
+    },
     "Endless Mode": {
       "extractionState": "manual",
       "localizations": {
@@ -1053,6 +1193,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Oyun Bitti"
+          }
+        }
+      }
+    },
+    "Global ranking not connected": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weltrangliste nicht verbunden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clasificación mundial no conectada"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Classement mondial non connecté"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "世界ランキング未接続"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Küresel sıralama bağlı değil"
           }
         }
       }
@@ -1693,6 +1868,41 @@
         }
       }
     },
+    "No scores yet — be the first!": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Punkte — sei der Erste!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún no hay puntuaciones — ¡sé el primero!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun score — sois le premier !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まだスコアなし — 一番乗りを！"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henüz skor yok — ilk sen ol!"
+          }
+        }
+      }
+    },
     "Orb Style": {
       "extractionState": "manual",
       "localizations": {
@@ -2046,6 +2256,41 @@
         }
       }
     },
+    "Save": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speichern"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guardar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydet"
+          }
+        }
+      }
+    },
     "Settings": {
       "extractionState": "manual",
       "localizations": {
@@ -2361,6 +2606,41 @@
         }
       }
     },
+    "This is the name shown on the world ranking.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Name erscheint in der Weltrangliste."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este nombre aparece en la clasificación mundial."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce nom apparaît dans le classement mondial."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この名前が世界ランキングに表示されます。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu ad dünya sıralamasında görünür."
+          }
+        }
+      }
+    },
     "Tip Jar": {
       "extractionState": "manual",
       "localizations": {
@@ -2462,6 +2742,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yıldızla aç ★"
+          }
+        }
+      }
+    },
+    "Username": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benutzername"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre de usuario"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nom d'utilisateur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ユーザー名"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanıcı Adı"
           }
         }
       }
@@ -2571,6 +2886,41 @@
         }
       }
     },
+    "Your best": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Bestleistung"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu mejor marca"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ton record"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あなたのベスト"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En iyin"
+          }
+        }
+      }
+    },
     "Your photo stays on your device only.": {
       "extractionState": "manual",
       "localizations": {
@@ -2637,6 +2987,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "ışığın yolculuğu"
+          }
+        }
+      }
+    },
+    "username": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "benutzername"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "usuario"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "nom d'utilisateur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ユーザー名"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kullanıcı adı"
+          }
+        }
+      }
+    },
+    "you": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "du"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tú"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "toi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あなた"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sen"
           }
         }
       }
