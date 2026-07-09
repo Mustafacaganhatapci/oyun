@@ -52,7 +52,14 @@ final class AudioEngine {
     func startIfNeeded() {
         guard !started else { return }
         started = true
+        // Tüm ses kurulumu arka planda yapılır: setActive/prepare/start ana
+        // thread'de çağrılınca UI'yi kilitleyebiliyor (AVAudioSession uyarısı).
+        DispatchQueue.global(qos: .userInitiated).async { [self] in
+            setupAudio()
+        }
+    }
 
+    private func setupAudio() {
         // Saygılı ses: kullanıcının kendi müziğiyle karışır, sessize alma anahtarına uyar
         try? AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
         try? AVAudioSession.sharedInstance().setActive(true)

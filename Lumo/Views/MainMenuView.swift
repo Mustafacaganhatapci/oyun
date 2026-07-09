@@ -130,7 +130,7 @@ struct MainMenuView: View {
                 AudioEngine.shared.playTap()
                 if progress.endlessUnlocked { app.route = .endless }
             } label: {
-                Label("Endless Mode", systemImage: "infinity")
+                HStack { Spacer(); Label("Endless Mode", systemImage: "infinity"); Spacer() }
             }
             .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color))
             .opacity(progress.endlessUnlocked ? 1 : 0.55)
@@ -139,7 +139,7 @@ struct MainMenuView: View {
                 AudioEngine.shared.playTap()
                 if progress.endlessUnlocked { app.route = .speedrun }
             } label: {
-                Label("Speed Run", systemImage: "stopwatch.fill")
+                HStack { Spacer(); Label("Speed Run", systemImage: "stopwatch.fill"); Spacer() }
             }
             .buttonStyle(GlowButtonStyle(color: settings.theme.hazard.color))
             .opacity(progress.endlessUnlocked ? 1 : 0.55)
