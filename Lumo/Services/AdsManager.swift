@@ -37,7 +37,12 @@ final class AdsManager: ObservableObject {
     /// Bölüm tamamlandığında çağrılır. Reklam gösterilecekse true döner
     /// ve reklam kapandığında `completion` çalışır.
     func levelCompleted(level: Int, isPremium: Bool, completion: @escaping () -> Void) -> Bool {
-        guard !isPremium, level > LevelLibrary.adFreeLevels else {
+        #if DEBUG
+        let premiumBlocks = false   // DEBUG: premium olsa bile test reklam akışı görünür
+        #else
+        let premiumBlocks = isPremium
+        #endif
+        guard !premiumBlocks, level > LevelLibrary.adFreeLevels else {
             completion()
             return false
         }
@@ -52,7 +57,12 @@ final class AdsManager: ObservableObject {
 
     /// Sonsuz mod oyunu bittiğinde çağrılır.
     func endlessEnded(isPremium: Bool, endlessUnlocked: Bool, completion: @escaping () -> Void) -> Bool {
-        guard !isPremium, endlessUnlocked else {
+        #if DEBUG
+        let premiumBlocks = false   // DEBUG: premium olsa bile test reklam akışı görünür
+        #else
+        let premiumBlocks = isPremium
+        #endif
+        guard !premiumBlocks, endlessUnlocked else {
             completion()
             return false
         }

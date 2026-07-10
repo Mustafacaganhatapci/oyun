@@ -9,6 +9,7 @@ struct LumoApp: App {
     @StateObject private var ads = AdsManager()
     @StateObject private var player = PlayerStore()
     @StateObject private var leaderboard = LeaderboardService()
+    @StateObject private var tutorial = TutorialStore()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
@@ -21,6 +22,7 @@ struct LumoApp: App {
                 .environmentObject(ads)
                 .environmentObject(player)
                 .environmentObject(leaderboard)
+                .environmentObject(tutorial)
                 .preferredColorScheme(.dark)
                 .persistentSystemOverlays(.hidden)
                 .onAppear {

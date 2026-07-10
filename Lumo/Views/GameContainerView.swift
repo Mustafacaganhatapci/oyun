@@ -17,6 +17,10 @@ struct GameContainerView: View {
     @EnvironmentObject private var ads: AdsManager
     @EnvironmentObject private var player: PlayerStore
     @EnvironmentObject private var leaderboard: LeaderboardService
+    @EnvironmentObject private var tutorial: TutorialStore
+
+    @State private var hintQueue: [TutorialHint] = []
+    private var activeHint: TutorialHint? { hintQueue.first }
 
     private enum Overlay: Equatable {
         case none, paused
@@ -55,7 +59,7 @@ struct GameContainerView: View {
         GeometryReader { geo in
             ZStack {
                 if let scene {
-                    SpriteView(scene: scene, isPaused: overlay == .paused)
+                    SpriteView(scene: scene, isPaused: overlay == .paused || activeHint != nil)
                         .id(sceneID)
                         .ignoresSafeArea()
                 }
@@ -74,12 +78,18 @@ struct GameContainerView: View {
                 case .speedrunDone(let time, let isRecord):
                     speedrunOverlay(time: time, isRecord: isRecord)
                 }
+
+                // Öğretici ipucu — oyunu dondurup mekaniği açıklar
+                if overlay == .none, let hint = activeHint {
+                    hintOverlay(hint)
+                }
             }
             .onAppear {
                 sceneSize = geo.size
                 if scene == nil {
                     if case .speedrun = playMode { speedStart = Date() }
                     scene = makeScene(size: geo.size)
+                    hintQueue = computeHints()
                 }
             }
         }
@@ -190,7 +200,7 @@ struct GameContainerView: View {
 
             Spacer()
         }
-        .allowsHitTesting(overlay == .none)
+        .allowsHitTesting(overlay == .none && activeHint == nil)
     }
 
     @ViewBuilder
@@ -480,6 +490,71 @@ struct GameContainerView: View {
                 .buttonStyle(GlowButtonStyle(color: Color.white.opacity(0.7)))
             }
             .padding(.horizontal, 40)
+        }
+    }
+
+    // MARK: Öğretici ipuçları
+
+    /// Bu bölümde ilk kez görülen mekaniklere göre gösterilecek ipuçları.
+    /// Yalnızca normal bölüm modunda çalışır (speed run süreli, endless serbest).
+    private func computeHints() -> [TutorialHint] {
+        guard case .level(let id) = playMode else { return [] }
+        let level = LevelLibrary.level(id)
+        var hints: [TutorialHint] = []
+
+        // Temel mekanik + bitiş kapısı yalnızca ilk bölümde
+        if id == 1 {
+            hints.append(.launch)
+            hints.append(.gate)
+        }
+        // Yeni gelen mekanikler ilk kez göründüğünde
+        if level.rings.contains(where: { !$0.hazardArcs.isEmpty }) {
+            hints.append(.hazard)
+        }
+        if level.rings.contains(where: { $0.moving != nil }) {
+            hints.append(.moving)
+        }
+        return hints.filter { tutorial.shouldShow($0) }
+    }
+
+    private func hintOverlay(_ hint: TutorialHint) -> some View {
+        ZStack {
+            Color.black.opacity(0.78).ignoresSafeArea()
+            VStack(spacing: 18) {
+                Image(systemName: hint.systemImage)
+                    .font(.system(size: 52))
+                    .foregroundStyle(settings.theme.accent.color)
+                    .shadow(color: settings.theme.accent.opacity(0.7), radius: 16)
+
+                Text(LocalizedStringKey(hint.titleKey))
+                    .font(.system(.title, design: .rounded).bold())
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+
+                Text(LocalizedStringKey(hint.bodyKey))
+                    .font(.system(.body, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.82))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+
+                Label("Tap to continue", systemImage: "hand.tap.fill")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.55))
+                    .padding(.top, 10)
+            }
+            .padding(.horizontal, 32)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { dismissHint() }
+        .transition(.opacity)
+    }
+
+    private func dismissHint() {
+        guard let hint = activeHint else { return }
+        AudioEngine.shared.playTap()
+        tutorial.markShown(hint)
+        withAnimation(.easeInOut(duration: 0.22)) {
+            hintQueue.removeFirst()
         }
     }
 

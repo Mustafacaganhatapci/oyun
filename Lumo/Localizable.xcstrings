@@ -882,6 +882,41 @@
         }
       }
     },
+    "Diamond": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diamant"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diamante"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diamant"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ダイヤ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elmas"
+          }
+        }
+      }
+    },
     "Direct support for an independent developer": {
       "extractionState": "manual",
       "localizations": {
@@ -1127,6 +1162,41 @@
         }
       }
     },
+    "Flame": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flamme"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Llama"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flamme"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ほのお"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alev"
+          }
+        }
+      }
+    },
     "Forest": {
       "extractionState": "manual",
       "localizations": {
@@ -1333,6 +1403,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kodun mu var?"
+          }
+        }
+      }
+    },
+    "How to play": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So wird gespielt"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cómo jugar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comment jouer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あそびかた"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nasıl oynanır"
           }
         }
       }
@@ -1654,6 +1759,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ana Menü"
+          }
+        }
+      }
+    },
+    "Moving rings": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bewegliche Ringe"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anillos móviles"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anneaux mobiles"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "うごくリング"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hareketli halkalar"
           }
         }
       }
@@ -2008,6 +2148,41 @@
         }
       }
     },
+    "Pixel": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pixel"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Píxel"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pixel"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ピクセル"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Piksel"
+          }
+        }
+      }
+    },
     "Play": {
       "extractionState": "manual",
       "localizations": {
@@ -2112,6 +2287,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gökkuşağı"
+          }
+        }
+      }
+    },
+    "Reach the dashed turquoise gate to finish the level.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erreiche das gestrichelte türkisfarbene Tor, um das Level zu beenden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Llega a la puerta turquesa punteada para terminar el nivel."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atteignez le portail turquoise en pointillés pour terminer le niveau."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点線のターコイズのゲートに着いたらクリア。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bölümü bitirmek için kesik çizgili turkuaz kapıya ulaş."
+          }
+        }
+      }
+    },
+    "Red arcs hurt. Time your tap so the orb isn't touching them.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rote Bögen sind gefährlich. Tippe so, dass die Kugel sie nicht berührt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los arcos rojos hacen daño. Calcula tu toque para que el orbe no los toque."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les arcs rouges sont dangereux. Touchez au bon moment pour que l'orbe ne les touche pas."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "赤いアークは危険。オーブが触れないようにタイミングよくタップ。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kırmızı yaylar zarar verir. Küre onlara değmeyecek şekilde zamanla dokun."
           }
         }
       }
@@ -2256,6 +2501,41 @@
         }
       }
     },
+    "Ring": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ring"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anillo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anneau"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リング"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halka"
+          }
+        }
+      }
+    },
     "Save": {
       "extractionState": "manual",
       "localizations": {
@@ -2357,6 +2637,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mağaza"
+          }
+        }
+      }
+    },
+    "Some rings drift back and forth. Wait for the right moment.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manche Ringe bewegen sich hin und her. Warte auf den richtigen Moment."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Algunos anillos se mueven de un lado a otro. Espera el momento justo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certains anneaux vont et viennent. Attendez le bon moment."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リングの中には左右に動くものもあります。タイミングを待とう。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bazı halkalar ileri geri hareket eder. Doğru anı bekle."
           }
         }
       }
@@ -2466,6 +2781,41 @@
         }
       }
     },
+    "Tap to continue": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zum Fortfahren tippen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca para continuar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touchez pour continuer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タップでつづける"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devam etmek için dokun"
+          }
+        }
+      }
+    },
     "Thank you for your support!": {
       "extractionState": "manual",
       "localizations": {
@@ -2567,6 +2917,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "İlk %lld bölüm tamamen reklamsız"
+          }
+        }
+      }
+    },
+    "The gate": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Tor"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La puerta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le portail"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲート"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapı"
+          }
+        }
+      }
+    },
+    "The orb orbits a ring. Tap anywhere to launch it toward the next ring.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Kugel umkreist einen Ring. Tippe irgendwo, um sie zum nächsten Ring zu schleudern."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El orbe gira alrededor de un anillo. Toca en cualquier parte para lanzarlo al siguiente anillo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'orbe tourne autour d'un anneau. Touchez n'importe où pour le lancer vers l'anneau suivant."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オーブはリングの周りを回ります。どこかをタップして次のリングへ飛ばそう。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Küre bir halkanın çevresinde döner. Bir sonraki halkaya fırlatmak için herhangi bir yere dokun."
           }
         }
       }
@@ -2812,6 +3232,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sürüm 1.0"
+          }
+        }
+      }
+    },
+    "Watch out!": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Achtung!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Cuidado!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attention !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "きけん！"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dikkat!"
           }
         }
       }

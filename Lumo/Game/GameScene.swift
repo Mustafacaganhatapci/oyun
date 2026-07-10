@@ -211,6 +211,43 @@ final class GameScene: SKScene {
             container.addChild(core)
             orbCore = core
 
+        case .ring:
+            let core = SKShapeNode(circleOfRadius: orbRadius * 1.15)
+            core.fillColor = .clear
+            core.strokeColor = theme.orb.uiColor
+            core.lineWidth = 3.5
+            core.glowWidth = 3
+            container.addChild(core)
+            orbCore = core
+
+        case .diamond:
+            let core = SKShapeNode(path: Self.polygonPath(sides: 4, radius: orbRadius * 1.4))
+            core.fillColor = theme.accent.uiColor
+            core.strokeColor = .white
+            core.lineWidth = 1.5
+            core.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: 4.5)))
+            container.addChild(core)
+            orbCore = core
+
+        case .flame:
+            let core = SKShapeNode(circleOfRadius: orbRadius)
+            core.fillColor = theme.hazard.uiColor
+            core.strokeColor = .clear
+            core.run(.repeatForever(.sequence([
+                .scale(to: 1.2, duration: 0.35), .scale(to: 0.85, duration: 0.35)
+            ])))
+            container.addChild(core)
+            orbCore = core
+
+        case .pixel:
+            let s = orbRadius * 1.7
+            let core = SKShapeNode(rect: CGRect(x: -s/2, y: -s/2, width: s, height: s), cornerRadius: 1)
+            core.fillColor = theme.gate.uiColor
+            core.strokeColor = .white
+            core.lineWidth = 1
+            container.addChild(core)
+            orbCore = core
+
         case .photo:
             if let photo = orbPhoto {
                 let crop = SKCropNode()

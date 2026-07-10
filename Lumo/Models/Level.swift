@@ -63,7 +63,7 @@ struct SplitMix64: RandomNumberGenerator {
 // 48 düğüm: her 6. bölüm bonus turu (6, 12, 18, ...), aralarda 40 normal bölüm.
 
 enum LevelLibrary {
-    static let count = 48
+    static let count = 90
     static let adFreeLevels = 10        // ilk 10 bölümde asla reklam yok
 
     static func isBonus(_ id: Int) -> Bool { id % 6 == 0 }
@@ -260,8 +260,9 @@ enum LevelLibrary {
     }
 
     static func difficulty(for id: Int) -> Difficulty {
-        let n = normalIndex(id)              // 1...40
-        let t = CGFloat(n - 1) / 39.0        // 0...1
+        let n = normalIndex(id)              // 1...(normal bölüm sayısı)
+        let totalNormal = max(1, count - count / 6)
+        let t = CGFloat(n - 1) / CGFloat(max(1, totalNormal - 1))   // 0...1
         switch n {
         case 1...2:   // öğretici — ama uyutmayan
             return Difficulty(ringCount: 5,
@@ -293,12 +294,14 @@ enum LevelLibrary {
                               gapRange: 0.22...0.35,
                               hazardChance: 0.72, hazardSpan: (.pi * 0.30)...(.pi * 0.52), hazardsRotate: true,
                               movingChance: 0.5, movingAmplitude: 0.11)
-        default:      // 29...40 — ustalık
-            return Difficulty(ringCount: 8,
-                              radiusRange: 0.055...0.08, speedRange: 3.2...(4.0 + 0.5 * t),
-                              gapRange: 0.21...0.33,
-                              hazardChance: 0.8, hazardSpan: (.pi * 0.32)...(.pi * 0.6), hazardsRotate: true,
-                              movingChance: 0.6, movingAmplitude: 0.12)
+        default:      // 29+ — ustalık; halka sayısı ve hız ilerledikçe artar
+            let ringCount = 8 + Int((t - 0.4) / 0.3)   // ~8 → 10 arası
+            return Difficulty(ringCount: min(max(ringCount, 8), 10),
+                              radiusRange: (0.05 - 0.005 * t)...(0.08 - 0.01 * t),
+                              speedRange: (3.2 + 0.6 * t)...(4.0 + 1.2 * t),
+                              gapRange: 0.20...0.33,
+                              hazardChance: 0.8, hazardSpan: (.pi * 0.32)...(.pi * (0.6 + 0.15 * t)), hazardsRotate: true,
+                              movingChance: 0.6 + 0.15 * t, movingAmplitude: 0.12)
         }
     }
 }

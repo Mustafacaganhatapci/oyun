@@ -252,6 +252,18 @@ private struct OrbSwatch: View {
                 .fill(AngularGradient(colors: [.red, .yellow, .green, .cyan, .purple, .red], center: .center))
                 .frame(width: 18, height: 18)
                 .shadow(color: .white.opacity(0.6), radius: 8)
+        case .ring:
+            Circle().strokeBorder(theme.orb.color, lineWidth: 3)
+                .frame(width: 20, height: 20).shadow(color: theme.orb.color, radius: 6)
+        case .diamond:
+            Image(systemName: "suit.diamond.fill").font(.system(size: 20))
+                .foregroundStyle(theme.accent.color).shadow(color: theme.accent.color, radius: 8)
+        case .flame:
+            Image(systemName: "flame.fill").font(.system(size: 20))
+                .foregroundStyle(theme.hazard.color).shadow(color: theme.hazard.color, radius: 8)
+        case .pixel:
+            RoundedRectangle(cornerRadius: 2).fill(theme.gate.color)
+                .frame(width: 17, height: 17).shadow(color: theme.gate.color, radius: 6)
         case .photo:
             if photoVersion >= 0, let image = OrbPhotoStore.load() {
                 Image(uiImage: image)

@@ -378,6 +378,14 @@ struct CharacterPreview: View {
             Circle()
                 .fill(AngularGradient(colors: [.red, .yellow, .green, .cyan, .purple, .red], center: .center))
                 .frame(width: 16, height: 16)
+        case .ring:
+            Circle().strokeBorder(theme.orb.color, lineWidth: 3).frame(width: 18, height: 18)
+        case .diamond:
+            Image(systemName: "suit.diamond.fill").font(.system(size: 18)).foregroundStyle(theme.accent.color)
+        case .flame:
+            Image(systemName: "flame.fill").font(.system(size: 18)).foregroundStyle(theme.hazard.color)
+        case .pixel:
+            RoundedRectangle(cornerRadius: 2).fill(theme.gate.color).frame(width: 15, height: 15)
         case .photo:
             if let image = OrbPhotoStore.load() {
                 Image(uiImage: image).resizable().scaledToFill()
