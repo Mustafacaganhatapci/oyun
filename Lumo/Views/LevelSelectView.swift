@@ -80,7 +80,7 @@ struct LevelSelectView: View {
                         .foregroundStyle(.white.opacity(0.5))
                         .padding(.bottom, 24)
                 }
-                .defaultScrollAnchor(.bottom)
+                .defaultScrollAnchor(initialAnchor(viewport: geo.size, contentHeight: contentHeight))
             }
         }
     }
@@ -91,6 +91,15 @@ struct LevelSelectView: View {
         let y = contentHeight - bottomPadding - index * nodeSpacing
         let x = width * (0.5 + 0.30 * sin(Double(index) * 0.85))
         return CGPoint(x: x, y: y)
+    }
+
+    /// Açılışta harita, oyuncunun kaldığı bölüm ekranın ortasına gelecek şekilde kaydırılır
+    private func initialAnchor(viewport: CGSize, contentHeight: CGFloat) -> UnitPoint {
+        let current = min(max(progress.highestUnlocked, 1), LevelLibrary.count)
+        let y = contentHeight - bottomPadding - CGFloat(current - 1) * nodeSpacing
+        let denom = max(contentHeight - viewport.height, 1)
+        let fraction = (y - viewport.height / 2) / denom
+        return UnitPoint(x: 0.5, y: min(max(fraction, 0), 1))
     }
 }
 

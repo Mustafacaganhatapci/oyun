@@ -63,7 +63,7 @@ struct SplitMix64: RandomNumberGenerator {
 // 48 düğüm: her 6. bölüm bonus turu (6, 12, 18, ...), aralarda 40 normal bölüm.
 
 enum LevelLibrary {
-    static let count = 90
+    static let count = 120
     static let adFreeLevels = 10        // ilk 10 bölümde asla reklam yok
 
     static func isBonus(_ id: Int) -> Bool { id % 6 == 0 }
@@ -294,14 +294,15 @@ enum LevelLibrary {
                               gapRange: 0.22...0.35,
                               hazardChance: 0.72, hazardSpan: (.pi * 0.30)...(.pi * 0.52), hazardsRotate: true,
                               movingChance: 0.5, movingAmplitude: 0.11)
-        default:      // 29+ — ustalık; halka sayısı ve hız ilerledikçe artar
-            let ringCount = 8 + Int((t - 0.4) / 0.3)   // ~8 → 10 arası
-            return Difficulty(ringCount: min(max(ringCount, 8), 10),
-                              radiusRange: (0.05 - 0.005 * t)...(0.08 - 0.01 * t),
-                              speedRange: (3.2 + 0.6 * t)...(4.0 + 1.2 * t),
+        default:      // 29+ — ustalık; halka sayısı, hız ve tehlikeler sona doğru sertleşir
+            let ringCount = 8 + Int(max(0, t - 0.28) * 5.6)   // 8 → 12 arası
+            return Difficulty(ringCount: min(max(ringCount, 8), 12),
+                              radiusRange: (0.05 - 0.008 * t)...(0.08 - 0.014 * t),
+                              speedRange: (3.2 + 0.9 * t)...(4.0 + 1.6 * t),
                               gapRange: 0.20...0.33,
-                              hazardChance: 0.8, hazardSpan: (.pi * 0.32)...(.pi * (0.6 + 0.15 * t)), hazardsRotate: true,
-                              movingChance: 0.6 + 0.15 * t, movingAmplitude: 0.12)
+                              hazardChance: min(0.8 + 0.15 * t, 0.95),
+                              hazardSpan: (.pi * 0.32)...(.pi * (0.6 + 0.2 * t)), hazardsRotate: true,
+                              movingChance: min(0.6 + 0.3 * t, 0.9), movingAmplitude: 0.12 + 0.03 * t)
         }
     }
 }

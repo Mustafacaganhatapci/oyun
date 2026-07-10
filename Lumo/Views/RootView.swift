@@ -5,6 +5,8 @@ struct RootView: View {
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var ads: AdsManager
 
+    @State private var splashDone = false
+
     var body: some View {
         ZStack {
             ThemeGradient(theme: settings.theme)
@@ -46,6 +48,15 @@ struct RootView: View {
                 AdPlaceholderView { ads.dismissPlaceholder() }
                     .transition(.opacity)
                     .zIndex(100)
+            }
+
+            // Açılış imzası — yalnızca uygulama başlarken bir kez
+            if !splashDone {
+                SplashView {
+                    withAnimation(.easeOut(duration: 0.5)) { splashDone = true }
+                }
+                .transition(.opacity)
+                .zIndex(200)
             }
         }
         .animation(.easeInOut(duration: 0.3), value: app.route)
