@@ -3,6 +3,7 @@ import UIKit
 
 enum GameEvent {
     case hop(combo: Int)
+    case attached(hasHazard: Bool, isMoving: Bool)   // öğretici koçu bu bilgiyle tetiklenir
     case collect(total: Int)
     case fail
     case win(stars: Int)
@@ -41,6 +42,10 @@ final class GameScene: SKScene {
     private let orbStyle: OrbStyle
     private let orbPhoto: UIImage?
     var onEvent: ((GameEvent) -> Void)?
+
+    /// Öğretici dondurması: true iken simülasyon ve dokunuş girdisi durur;
+    /// SwiftUI tarafındaki koç kaplaması açıklamayı gösterir.
+    var coachFrozen = false
 
     private var level: Level?
     private(set) var lumenTotal = 0
@@ -410,6 +415,7 @@ final class GameScene: SKScene {
     // MARK: Girdi — tek dokunuş, tüm ekran
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard !coachFrozen else { return }
         switch orbState {
         case .attached(let ring, let angle, let direction):
             let c = ringCenter(ring, at: elapsed)
@@ -442,6 +448,14 @@ final class GameScene: SKScene {
         var dt = lastUpdate == 0 ? 1.0 / 60.0 : currentTime - lastUpdate
         lastUpdate = currentTime
         dt = min(dt, 1.0 / 30.0)
+
+        // Öğretici dondurması — sahne olduğu yerde bekler; `elapsed` ilerlemediği
+        // için süreler kaymaz, tehlike bağışıklığı çözülene dek tazelenir
+        if coachFrozen {
+            attachTime = currentTime
+            return
+        }
+
         elapsed += dt
 
         updateRings()
@@ -545,6 +559,8 @@ final class GameScene: SKScene {
                 win()
             } else {
                 onEvent?(.hop(combo: combo))
+                onEvent?(.attached(hasHazard: !ringSpecs[i].hazardArcs.isEmpty,
+                                   isMoving: ringSpecs[i].moving != nil))
                 if case .endless = mode {
                     if i > endlessScore {
                         endlessScore = i

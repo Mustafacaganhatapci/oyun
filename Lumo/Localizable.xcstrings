@@ -1337,6 +1337,41 @@
         }
       }
     },
+    "Great! Tap again to hop to the next ring.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Super! Tippe erneut, um zum nächsten Ring zu springen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Genial! Toca de nuevo para saltar al siguiente anillo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Génial ! Touchez encore pour sauter à l'anneau suivant."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "いいね！もう一度タップして次のリングへ。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Harika! Sonraki halkaya geçmek için tekrar dokun."
+          }
+        }
+      }
+    },
     "Haptics": {
       "extractionState": "manual",
       "localizations": {
@@ -2043,6 +2078,41 @@
         }
       }
     },
+    "Now reach the dashed gate to finish!": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erreiche jetzt das gestrichelte Tor!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Ahora llega a la puerta punteada para terminar!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atteignez maintenant le portail en pointillés !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点線のゲートまで行けばクリア！"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şimdi kesik çizgili kapıya ulaş — bölümü bitir!"
+          }
+        }
+      }
+    },
     "Orb Style": {
       "extractionState": "manual",
       "localizations": {
@@ -2109,6 +2179,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Durduruldu"
+          }
+        }
+      }
+    },
+    "Perfect! You passed the red arc.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perfekt! Du hast den roten Bogen überwunden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Perfecto! Pasaste el arco rojo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parfait ! Vous avez passé l'arc rouge."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "パーフェクト！赤いアークを通過した。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mükemmel! Kırmızı yayı geçtin."
           }
         }
       }
@@ -2781,6 +2886,41 @@
         }
       }
     },
+    "Tap anywhere to launch the orb!": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe irgendwohin – die Kugel fliegt los!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Toca en cualquier parte para lanzar el orbe!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touchez n'importe où pour lancer l'orbe !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "どこかをタップしてオーブを飛ばそう！"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekrana dokun — küre fırlasın!"
+          }
+        }
+      }
+    },
     "Tap to continue": {
       "extractionState": "manual",
       "localizations": {
@@ -3061,6 +3201,41 @@
         }
       }
     },
+    "This ring drifts — time your jump!": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Ring bewegt sich – springe im richtigen Moment!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este anillo se mueve: ¡calcula tu salto!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cet anneau bouge – sautez au bon moment !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このリングは動く——タイミングよくジャンプ！"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu halka kayıyor — sıçramanı zamanla!"
+          }
+        }
+      }
+    },
     "Tip Jar": {
       "extractionState": "manual",
       "localizations": {
@@ -3232,6 +3407,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sürüm 1.0"
+          }
+        }
+      }
+    },
+    "Wait for the red arc to move away… then tap!": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warte, bis der rote Bogen weg ist … dann tippe!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espera a que el arco rojo se aleje… ¡y toca!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attendez que l'arc rouge s'éloigne… puis touchez !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "赤いアークが離れるのを待って…タップ！"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kırmızı yay uzaklaşana kadar bekle… şimdi dokun!"
           }
         }
       }
