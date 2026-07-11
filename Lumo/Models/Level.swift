@@ -34,10 +34,11 @@ enum LevelKind: Equatable {
 }
 
 struct Level: Identifiable, Equatable {
-    let id: Int              // 1...48
+    let id: Int              // 1...count
     let kind: LevelKind
     let rings: [RingSpec]
     let lumens: [LumenSpec]
+    var timeLimit: TimeInterval? = nil   // süreli bölüm: kapıya bu sürede ulaş (deneme başına)
     var startRing: Int { 0 }
     var bonusDuration: TimeInterval { 25 }
 }
@@ -82,6 +83,14 @@ enum LevelLibrary {
     /// id'nin kaçıncı NORMAL bölüm olduğu (zorluk eğrisi bunun üzerinden yürür)
     static func normalIndex(_ id: Int) -> Int { id - id / 6 }
 
+    /// Süreli bölümler: 12. normal bölümden itibaren her 4 normal bölümde bir.
+    /// (Speed Run ilk 10 normal bölümü kullandığından oraya hiç denk gelmez.)
+    static func isTimed(_ id: Int) -> Bool {
+        guard !isBonus(id) else { return false }
+        let n = normalIndex(id)
+        return n >= 12 && n % 4 == 0
+    }
+
     static func level(_ id: Int) -> Level {
         isBonus(id) ? bonusLevel(id) : normalLevel(id)
     }
@@ -116,7 +125,15 @@ enum LevelLibrary {
             lumens.append(LumenSpec(position: CGPoint(x: rng.cg(in: 0.3...0.7), y: rng.cg(in: 0.3...0.7))))
         }
 
-        return Level(id: id, kind: .normal, rings: rings, lumens: lumens)
+        // Süreli bölüm: halka başına tanınan süre ilerledikçe kısalır (~4s → ~2.6s)
+        var timeLimit: TimeInterval? = nil
+        if isTimed(id) {
+            let totalNormal = max(1, count - count / 6)
+            let t = Double(normalIndex(id) - 1) / Double(max(1, totalNormal - 1))
+            timeLimit = (Double(rings.count) * (4.0 - 1.4 * t)).rounded()
+        }
+
+        return Level(id: id, kind: .normal, rings: rings, lumens: lumens, timeLimit: timeLimit)
     }
 
     // MARK: Bonus turu üretimi — tehlike yok, bol lumen, süre sınırlı

@@ -66,6 +66,7 @@ struct LevelSelectView: View {
                                       unlocked: progress.isUnlocked(id),
                                       isCurrent: id == progress.highestUnlocked && (progress.stars[id] ?? 0) == 0,
                                       isBonus: LevelLibrary.isBonus(id),
+                                      isTimed: LevelLibrary.isTimed(id),
                                       theme: settings.theme) {
                                 AudioEngine.shared.playTap()
                                 app.route = .game(id)
@@ -109,6 +110,7 @@ private struct LevelNode: View {
     let unlocked: Bool
     let isCurrent: Bool
     let isBonus: Bool
+    let isTimed: Bool
     let theme: Theme
     let action: () -> Void
 
@@ -163,6 +165,16 @@ private struct LevelNode: View {
                         Image(systemName: "lock.fill")
                             .font(.subheadline)
                             .foregroundStyle(.white.opacity(0.3))
+                    }
+
+                    // Süreli bölüm rozeti
+                    if isTimed, unlocked {
+                        Image(systemName: "timer")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(theme.hazard.color)
+                            .padding(4)
+                            .background(Circle().fill(.black.opacity(0.55)))
+                            .offset(x: 22, y: -22)
                     }
                 }
 

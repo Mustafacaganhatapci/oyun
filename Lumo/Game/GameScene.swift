@@ -8,6 +8,7 @@ enum GameEvent {
     case fail
     case win(stars: Int)
     case bonusTick(remaining: Int)
+    case timeTick(remaining: Int)      // süreli bölüm geri sayımı
     case endlessScore(Int)
     case endlessGameOver(score: Int)
 }
@@ -78,6 +79,10 @@ final class GameScene: SKScene {
     private var isBonus = false
     private var bonusDeadline: TimeInterval = 0
     private var lastBonusTick = Int.max
+
+    // Süreli bölüm — süre deneme başınadır; ölünce yeniden doğuşta tazelenir
+    private var timedDeadline: TimeInterval?
+    private var lastTimeTickSent = Int.max
 
     // Sonsuz mod
     private var endlessScore = 0
@@ -479,6 +484,23 @@ final class GameScene: SKScene {
             }
         }
 
+        // Süreli bölüm geri sayımı — yalnızca küre oyundayken işler
+        if let deadline = timedDeadline, !finished {
+            let active: Bool
+            switch orbState {
+            case .attached, .flying: active = true
+            default: active = false
+            }
+            if active {
+                let remaining = Int(ceil(deadline - elapsed))
+                if remaining != lastTimeTickSent, remaining >= 0 {
+                    lastTimeTickSent = remaining
+                    onEvent?(.timeTick(remaining: remaining))
+                }
+                if elapsed >= deadline { fail() }   // süre doldu — deneme yandı
+            }
+        }
+
         switch orbState {
         case .attached(let ring, var angle, let direction):
             let spec = ringSpecs[ring]
@@ -637,6 +659,11 @@ final class GameScene: SKScene {
         orbState = .attached(ring: start, angle: -.pi / 2, direction: ringSpecs[start].direction)
         attachTime = lastUpdate
         exitedLastRing = true
+        // Süreli bölümde her deneme dolu süreyle başlar
+        if let limit = level?.timeLimit {
+            timedDeadline = elapsed + limit
+            lastTimeTickSent = Int.max
+        }
         if animated {
             orbNode.setScale(0.2)
             orbNode.run(.scale(to: 1.0, duration: 0.25))

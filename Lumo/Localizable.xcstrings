@@ -287,6 +287,41 @@
         }
       }
     },
+    "Beat the clock!": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schlag die Uhr!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Gana al reloj!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battez le chrono !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タイムアタック！"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Süreye karşı!"
+          }
+        }
+      }
+    },
     "Best Time: %@": {
       "extractionState": "manual",
       "localizations": {
@@ -3197,6 +3232,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bu ad dünya sıralamasında görünür."
+          }
+        }
+      }
+    },
+    "This level is timed! Reach the gate before the countdown hits zero.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Level ist auf Zeit! Erreiche das Tor, bevor der Countdown abläuft."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Este nivel es contrarreloj! Llega a la puerta antes de que el contador llegue a cero."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce niveau est chronométré ! Atteignez le portail avant la fin du compte à rebours."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この面は時間制限あり！カウントがゼロになる前にゲートへ。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bölüm süreli! Geri sayım sıfırlanmadan kapıya ulaş."
           }
         }
       }

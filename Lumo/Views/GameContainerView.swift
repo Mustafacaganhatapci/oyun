@@ -25,9 +25,12 @@ struct GameContainerView: View {
         case tapToLaunch, tapAgain, reachGate           // 1. bölüm akışı
         case hazardIntro, hazardTiming, hazardCleared   // kırmızı şerit: dondur → anlat → yaptır
         case movingIntro, movingTiming                  // hareketli halka
+        case timedIntro                                 // süreli bölüm tanıtımı
     }
     @State private var coach: CoachStep?
-    private var coachIsBlocking: Bool { coach == .hazardIntro || coach == .movingIntro }
+    private var coachIsBlocking: Bool {
+        coach == .hazardIntro || coach == .movingIntro || coach == .timedIntro
+    }
 
     private enum Overlay: Equatable {
         case none, paused
@@ -42,6 +45,7 @@ struct GameContainerView: View {
     @State private var lumenCount = 0
     @State private var endlessScore = 0
     @State private var bonusRemaining = 0
+    @State private var timeRemaining = -1      // süreli bölüm geri sayımı (-1: süresiz)
     @State private var sceneSize: CGSize = .zero
 
     // Speed run durumu
@@ -157,6 +161,9 @@ struct GameContainerView: View {
         case .bonusTick(let remaining):
             bonusRemaining = remaining
 
+        case .timeTick(let remaining):
+            timeRemaining = remaining
+
         case .win(let stars):
             if coach == .tapToLaunch || coach == .tapAgain || coach == .reachGate {
                 tutorial.markShown(.launch)
@@ -247,6 +254,22 @@ struct GameContainerView: View {
                         .foregroundStyle(bonusRemaining <= 5 ? settings.theme.hazard.color : .white)
                         .contentTransition(.numericText())
                         .animation(.spring(duration: 0.3), value: bonusRemaining)
+                }
+            } else if LevelLibrary.isTimed(id) {
+                VStack(spacing: 0) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "timer")
+                            .font(.system(size: 11, weight: .bold))
+                        Text("Level \(id)")
+                            .font(.system(.caption, design: .rounded).bold())
+                    }
+                    .foregroundStyle(.white.opacity(0.7))
+                    Text("\(max(timeRemaining, 0))")
+                        .font(.system(size: 32, weight: .black, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(timeRemaining <= 5 ? settings.theme.hazard.color : .white)
+                        .contentTransition(.numericText())
+                        .animation(.spring(duration: 0.3), value: timeRemaining)
                 }
             } else {
                 Text("Level \(id)")
@@ -525,10 +548,16 @@ struct GameContainerView: View {
 
     // MARK: Etkileşimli öğretici koçu
 
-    /// 1. bölümde temel mekaniği adım adım oynatarak öğret
+    /// 1. bölümde temel mekaniği adım adım oynatarak öğret;
+    /// ilk süreli bölümde oyunu dondurup geri sayımı tanıt
     private func startCoachIfNeeded() {
         guard case .level(let id) = playMode else { return }
-        if id == 1, tutorial.shouldShow(.launch) { coach = .tapToLaunch }
+        if id == 1, tutorial.shouldShow(.launch) {
+            coach = .tapToLaunch
+        } else if LevelLibrary.isTimed(id), tutorial.shouldShow(.timed) {
+            scene?.coachFrozen = true
+            coach = .timedIntro
+        }
     }
 
     /// Oyuncu gerçekten fırlatıp yeni halkaya geçince koç bir adım ilerler
@@ -557,14 +586,25 @@ struct GameContainerView: View {
     private func dismissCoachIntro() {
         AudioEngine.shared.playTap()
         scene?.coachFrozen = false
-        if coach == .hazardIntro { coach = .hazardTiming }
-        else if coach == .movingIntro { coach = .movingTiming }
+        switch coach {
+        case .hazardIntro: coach = .hazardTiming
+        case .movingIntro: coach = .movingTiming
+        case .timedIntro:
+            coach = nil
+            tutorial.markShown(.timed)
+        default: break
+        }
     }
 
-    /// Oyunu donduran tanıtım kartı (kırmızı şerit / hareketli halka ilk kez)
+    /// Oyunu donduran tanıtım kartı (kırmızı şerit / hareketli halka / süreli bölüm ilk kez)
     private func coachIntroOverlay(_ step: CoachStep) -> some View {
-        let hint: TutorialHint = step == .hazardIntro ? .hazard : .moving
-        let color = step == .hazardIntro ? settings.theme.hazard.color : settings.theme.accent.color
+        let hint: TutorialHint
+        let color: Color
+        switch step {
+        case .hazardIntro: hint = .hazard; color = settings.theme.hazard.color
+        case .timedIntro:  hint = .timed;  color = settings.theme.lumen.color
+        default:           hint = .moving; color = settings.theme.accent.color
+        }
         return ZStack {
             Color.black.opacity(0.72).ignoresSafeArea()
             VStack(spacing: 18) {
@@ -663,6 +703,7 @@ struct GameContainerView: View {
         lumenCount = 0
         endlessScore = 0
         bonusRemaining = 0
+        timeRemaining = -1
         speedIndex = 0
         speedPenalty = 0
         speedStart = Date()

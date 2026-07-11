@@ -33,6 +33,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
     case hazard     // kırmızı tehlike yayı
     case moving     // hareketli halka
     case gate       // bitiş kapısı
+    case timed      // süreli bölüm
 
     var id: String { rawValue }
 
@@ -43,6 +44,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .hazard: return "Watch out!"
         case .moving: return "Moving rings"
         case .gate:   return "The gate"
+        case .timed:  return "Beat the clock!"
         }
     }
     var bodyKey: String {
@@ -51,6 +53,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .hazard: return "Red arcs hurt. Time your tap so the orb isn't touching them."
         case .moving: return "Some rings drift back and forth. Wait for the right moment."
         case .gate:   return "Reach the dashed turquoise gate to finish the level."
+        case .timed:  return "This level is timed! Reach the gate before the countdown hits zero."
         }
     }
     var systemImage: String {
@@ -59,6 +62,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .hazard: return "exclamationmark.triangle.fill"
         case .moving: return "arrow.left.and.right"
         case .gate:   return "flag.checkered"
+        case .timed:  return "timer"
         }
     }
 }

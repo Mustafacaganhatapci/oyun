@@ -38,11 +38,11 @@ final class AdsManager: ObservableObject {
     /// ve reklam kapandığında `completion` çalışır.
     func levelCompleted(level: Int, isPremium: Bool, completion: @escaping () -> Void) -> Bool {
         #if DEBUG
-        let premiumBlocks = false   // DEBUG: premium olsa bile test reklam akışı görünür
+        // DEBUG: test için HER bölüm sonunda reklam akışı — premium ve
+        // ilk-10 muafiyeti yok sayılır. Yayın (Release) kuralları etkilemez.
+        return show(completion: completion)
         #else
-        let premiumBlocks = isPremium
-        #endif
-        guard !premiumBlocks, level > LevelLibrary.adFreeLevels else {
+        guard !isPremium, level > LevelLibrary.adFreeLevels else {
             completion()
             return false
         }
@@ -53,16 +53,16 @@ final class AdsManager: ObservableObject {
         }
         completionsSinceAd = 0
         return show(completion: completion)
+        #endif
     }
 
     /// Sonsuz mod oyunu bittiğinde çağrılır.
     func endlessEnded(isPremium: Bool, endlessUnlocked: Bool, completion: @escaping () -> Void) -> Bool {
         #if DEBUG
-        let premiumBlocks = false   // DEBUG: premium olsa bile test reklam akışı görünür
+        // DEBUG: her sonsuz mod sonunda test reklamı
+        return show(completion: completion)
         #else
-        let premiumBlocks = isPremium
-        #endif
-        guard !premiumBlocks, endlessUnlocked else {
+        guard !isPremium, endlessUnlocked else {
             completion()
             return false
         }
@@ -73,6 +73,7 @@ final class AdsManager: ObservableObject {
         }
         endlessRunsSinceAd = 0
         return show(completion: completion)
+        #endif
     }
 
     private func show(completion: @escaping () -> Void) -> Bool {
@@ -118,31 +119,31 @@ final class NoOpProvider: InterstitialProvider {
     func show(completion: @escaping () -> Void) -> Bool { false }
 }
 
-// MARK: - AdMob entegrasyonu
+// MARK: - AdMob entegrasyonu (SDK 12.x API'si)
 // Etkinleştirmek için:
 //  1. Xcode > File > Add Package Dependencies…
-//     https://github.com/googleads/swift-package-manager-google-mobile-ads (11.x)
-//  2. Info.plist'e GADApplicationIdentifier ekleyin (AdMob uygulama kimliğiniz).
-//  3. Aşağıdaki testAdUnitID'yi kendi geçiş reklamı biriminizle değiştirin.
-//  4. App Tracking Transparency gerekiyorsa NSUserTrackingUsageDescription ekleyin
-//     (veya kişiselleştirilmemiş reklam kullanın).
+//     https://github.com/googleads/swift-package-manager-google-mobile-ads
+//  2. Info.plist'te GADApplicationIdentifier zaten test kimliğiyle ayarlı;
+//     yayında kendi AdMob uygulama kimliğinizle değiştirin.
+//  3. Aşağıdaki adUnitID Google'ın resmi test birimi; yayında kendi
+//     geçiş reklamı birim kimliğinizle değiştirin.
 #if canImport(GoogleMobileAds)
 import GoogleMobileAds
 import UIKit
 
-final class AdMobProvider: NSObject, InterstitialProvider, GADFullScreenContentDelegate {
+final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDelegate {
     // Google'ın resmi TEST kimliği — yayına çıkmadan önce değiştirin!
     private let adUnitID = "ca-app-pub-3940256099942544/4411468910"
-    private var interstitial: GADInterstitialAd?
+    private var interstitial: InterstitialAd?
     private var completion: (() -> Void)?
     private var startedSDK = false
 
     func preload() {
         if !startedSDK {
             startedSDK = true
-            GADMobileAds.sharedInstance().start(completionHandler: nil)
+            MobileAds.shared.start()
         }
-        GADInterstitialAd.load(withAdUnitID: adUnitID, request: GADRequest()) { [weak self] ad, _ in
+        InterstitialAd.load(with: adUnitID, request: Request()) { [weak self] ad, _ in
             self?.interstitial = ad
             ad?.fullScreenContentDelegate = self
         }
@@ -154,17 +155,17 @@ final class AdMobProvider: NSObject, InterstitialProvider, GADFullScreenContentD
                 .compactMap({ ($0 as? UIWindowScene)?.keyWindow?.rootViewController })
                 .first else { return false }
         self.completion = completion
-        interstitial.present(fromRootViewController: root)
+        interstitial.present(from: root)
         self.interstitial = nil
         return true
     }
 
-    func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
         completion?()
         completion = nil
     }
 
-    func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+    func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         completion?()
         completion = nil
     }
