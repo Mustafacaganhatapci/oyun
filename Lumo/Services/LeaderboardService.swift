@@ -38,17 +38,21 @@ final class LeaderboardService: ObservableObject {
 
     private var didConfigure = false
 
+    /// Uygulama başlangıcında (LumoApp.init) çağrılır — Firebase'in
+    /// istediği gibi ilk kare çizilmeden önce yapılandırır.
+    static func bootstrapFirebase() {
+        #if canImport(FirebaseCore)
+        // GoogleService-Info.plist yoksa Firebase'i başlatma (çökmeyi önler)
+        guard Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil else { return }
+        FirebaseBridge.configure()
+        #endif
+    }
+
     func configureIfPossible() {
         guard !didConfigure else { return }
         didConfigure = true
         #if canImport(FirebaseCore)
-        // GoogleService-Info.plist yoksa Firebase'i başlatma (çökmeyi önler)
-        guard Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil else {
-            isAvailable = false
-            return
-        }
-        FirebaseBridge.configure()
-        isAvailable = true
+        isAvailable = FirebaseBridge.isConfigured
         #else
         isAvailable = false
         #endif
@@ -90,6 +94,8 @@ import FirebaseFirestore
 import FirebaseAuth
 
 enum FirebaseBridge {
+    static var isConfigured: Bool { FirebaseApp.app() != nil }
+
     static func configure() {
         if FirebaseApp.app() == nil {
             FirebaseApp.configure()
@@ -142,6 +148,7 @@ enum FirebaseBridge {
 #else
 // FirebaseCore var ama Firestore/Auth yoksa köprü boş çalışır
 enum FirebaseBridge {
+    static var isConfigured: Bool { false }
     static func configure() {}
     static func submit(mode: LeaderboardMode, value: Double, username: String, playerID: String) async {}
     static func fetchTop(mode: LeaderboardMode, myPlayerID: String) async -> [LeaderboardEntry] { [] }

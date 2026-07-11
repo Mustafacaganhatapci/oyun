@@ -12,6 +12,12 @@ struct LumoApp: App {
     @StateObject private var tutorial = TutorialStore()
     @Environment(\.scenePhase) private var scenePhase
 
+    init() {
+        // Firebase, ilk kare çizilmeden önce yapılandırılmalı
+        // (I-COR000003 uyarısının çözümü)
+        LeaderboardService.bootstrapFirebase()
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView()
