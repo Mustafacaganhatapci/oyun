@@ -6,7 +6,9 @@ import SwiftUI
 final class TutorialStore: ObservableObject {
     @Published private(set) var shown: Set<String> = []
 
-    private let key = "lumo.tutorial.shown"
+    // v2: öğretici tamamen yenilendi (etkileşimli koç) — eski "gösterildi"
+    // kayıtları geçersiz; anahtar değişince herkes yeni akışı bir kez görür
+    private let key = "lumo.tutorial.shown.v2"
 
     init() {
         shown = Set(UserDefaults.standard.stringArray(forKey: key) ?? [])
