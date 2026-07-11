@@ -105,13 +105,14 @@ struct AdPlaceholderView: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.92).ignoresSafeArea()
-            VStack(spacing: 20) {
+            Color(red: 0.09, green: 0.09, blue: 0.12).ignoresSafeArea()
+
+            VStack(spacing: 18) {
                 Spacer()
                 Image(systemName: "megaphone.fill")
                     .font(.system(size: 54))
-                    .foregroundStyle(.white.opacity(0.7))
-                Text("Ad")
+                    .foregroundStyle(.yellow.opacity(0.85))
+                Text("Test Ad")
                     .font(.system(.largeTitle, design: .rounded).bold())
                     .foregroundStyle(.white)
                 Text("In the real version an interstitial ad is shown here.\nPremium removes all ads.")
@@ -119,12 +120,7 @@ struct AdPlaceholderView: View {
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.white.opacity(0.6))
                 Spacer()
-                if secondsLeft > 0 {
-                    Text("\(secondsLeft)")
-                        .font(.system(.title, design: .rounded).bold())
-                        .foregroundStyle(.white.opacity(0.5))
-                        .padding(.bottom, 40)
-                } else {
+                if secondsLeft <= 0 {
                     Button(action: onClose) {
                         Label("Close", systemImage: "xmark")
                             .font(.system(.headline, design: .rounded))
@@ -134,13 +130,48 @@ struct AdPlaceholderView: View {
                             .background(Capsule().fill(.white))
                     }
                     .padding(.bottom, 40)
+                } else {
+                    Color.clear.frame(height: 46).padding(.bottom, 40)
                 }
+            }
+
+            // Sağ üst: gerçek reklamlardaki gibi geri sayım / X
+            VStack {
+                HStack {
+                    // Sol üst "TEST" rozeti — bunun bir test ekranı olduğu hep belli
+                    Text(verbatim: "TEST")
+                        .font(.system(.caption, design: .rounded).bold())
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Capsule().fill(.yellow))
+                    Spacer()
+                    ZStack {
+                        Circle().fill(.white.opacity(0.15)).frame(width: 36, height: 36)
+                        if secondsLeft > 0 {
+                            Text("\(secondsLeft)")
+                                .font(.system(.subheadline, design: .rounded).bold())
+                                .foregroundStyle(.white.opacity(0.8))
+                                .contentTransition(.numericText())
+                        } else {
+                            Button(action: onClose) {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 15, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 36, height: 36)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 58)
+                Spacer()
             }
         }
         .task {
             for _ in 0..<3 {
                 try? await Task.sleep(for: .seconds(1))
-                secondsLeft -= 1
+                withAnimation { secondsLeft -= 1 }
             }
         }
     }
