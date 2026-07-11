@@ -67,7 +67,39 @@ enum LevelLibrary {
     static let count = 120
     static let adFreeLevels = 10        // ilk 10 bölümde asla reklam yok
 
-    static func isBonus(_ id: Int) -> Bool { id % 6 == 0 }
+    static func isBonus(_ id: Int) -> Bool { id > 0 && id % 6 == 0 }
+
+    /// İlk açılışta oynatılan "nasıl oynanır" antrenman bölümü (id 0).
+    /// Haritada görünmez, ilerlemeye yazılmaz.
+    static let tutorialID = 0
+
+    static var tutorialLevel: Level {
+        // Geniş, yavaş, 4 halkalı el yapımı sahne: fırlat → yıldız topla →
+        // kırmızı yaydan kaç → kapıya ulaş
+        var rings: [RingSpec] = []
+        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.12), radius: 0.10, orbitSpeed: 1.6, direction: 1))
+        rings.append(RingSpec(center: CGPoint(x: 0.32, y: 0.38), radius: 0.10, orbitSpeed: 1.7, direction: -1))
+
+        var hazardRing = RingSpec(center: CGPoint(x: 0.62, y: 0.60), radius: 0.10, orbitSpeed: 1.8, direction: 1)
+        hazardRing.hazardArcs = [0...(.pi * 0.5)]        // dar, yavaş dönen kırmızı yay
+        hazardRing.hazardRotationSpeed = 0.5
+        rings.append(hazardRing)
+
+        var gate = RingSpec(center: CGPoint(x: 0.42, y: 0.85), radius: 0.10, orbitSpeed: 1.6, direction: -1)
+        gate.isGate = true
+        rings.append(gate)
+
+        // Yıldızlar tam uçuş hattının üzerinde — oynarken kendiliğinden toplanır
+        func between(_ a: CGPoint, _ b: CGPoint) -> CGPoint {
+            CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
+        }
+        let lumens = [
+            LumenSpec(position: between(rings[0].center, rings[1].center)),
+            LumenSpec(position: between(rings[1].center, rings[2].center)),
+            LumenSpec(position: between(rings[2].center, rings[3].center))
+        ]
+        return Level(id: tutorialID, kind: .normal, rings: rings, lumens: lumens)
+    }
 
     /// Speed Run: ilk 10 normal bölüm (bonuslar atlanır)
     static var speedrunLevels: [Int] {
@@ -92,7 +124,8 @@ enum LevelLibrary {
     }
 
     static func level(_ id: Int) -> Level {
-        isBonus(id) ? bonusLevel(id) : normalLevel(id)
+        if id == tutorialID { return tutorialLevel }
+        return isBonus(id) ? bonusLevel(id) : normalLevel(id)
     }
 
     // MARK: Normal bölüm üretimi

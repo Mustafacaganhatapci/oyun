@@ -4,6 +4,7 @@ struct RootView: View {
     @EnvironmentObject private var app: AppModel
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var ads: AdsManager
+    @EnvironmentObject private var tutorial: TutorialStore
 
     @State private var splashDone = false
 
@@ -54,6 +55,10 @@ struct RootView: View {
             if !splashDone {
                 SplashView {
                     withAnimation(.easeOut(duration: 0.5)) { splashDone = true }
+                    // İlk açılış: doğrudan "nasıl oynanır" antrenman bölümüne
+                    if tutorial.shouldShow(.launch) {
+                        app.route = .game(LevelLibrary.tutorialID)
+                    }
                 }
                 .transition(.opacity)
                 .zIndex(200)

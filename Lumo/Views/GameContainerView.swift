@@ -22,7 +22,8 @@ struct GameContainerView: View {
     /// Etkileşimli öğretici koçu: oynatarak öğretir — oyuncu adımı
     /// gerçekten yapmadan (dokunup fırlatmadan) bir sonrakine geçmez.
     private enum CoachStep: Equatable {
-        case tapToLaunch, tapAgain, reachGate           // 1. bölüm akışı
+        case tapToLaunch, tapAgain, reachGate           // dokun-fırla akışı
+        case collectStar                                // öğretici bölüm: yıldız toplama
         case hazardIntro, hazardTiming, hazardCleared   // kırmızı şerit: dondur → anlat → yaptır
         case movingIntro, movingTiming                  // hareketli halka
         case timedIntro                                 // süreli bölüm tanıtımı
@@ -63,6 +64,12 @@ struct GameContainerView: View {
 
     private var isBonusLevel: Bool {
         if case .level(let id) = playMode { return LevelLibrary.isBonus(id) }
+        return false
+    }
+
+    /// İlk açılışta oynanan "nasıl oynanır" antrenman bölümü mü?
+    private var isTutorialLevel: Bool {
+        if case .level(let id) = playMode { return id == LevelLibrary.tutorialID }
         return false
     }
 
@@ -165,16 +172,26 @@ struct GameContainerView: View {
             timeRemaining = remaining
 
         case .win(let stars):
-            if coach == .tapToLaunch || coach == .tapAgain || coach == .reachGate {
+            if coach == .tapToLaunch || coach == .tapAgain || coach == .reachGate || coach == .collectStar {
                 tutorial.markShown(.launch)
                 tutorial.markShown(.gate)
+            }
+            if coach == .hazardTiming || coach == .hazardCleared {
+                tutorial.markShown(.hazard)
             }
             coach = nil
             AudioEngine.shared.playWin()
             Haptics.shared.win()
             switch playMode {
             case .level(let id):
-                progress.complete(level: id, stars: stars)
+                if id == LevelLibrary.tutorialID {
+                    // Antrenman bölümü: ilerlemeye yazılmaz, tüm temel dersler tamamlandı
+                    tutorial.markShown(.launch)
+                    tutorial.markShown(.gate)
+                    tutorial.markShown(.hazard)
+                } else {
+                    progress.complete(level: id, stars: stars)
+                }
                 overlay = .won(stars: stars)
             case .speedrun:
                 if speedIndex < LevelLibrary.speedrunLevels.count - 1 {
@@ -244,7 +261,11 @@ struct GameContainerView: View {
     private var centerHUD: some View {
         switch playMode {
         case .level(let id):
-            if isBonusLevel {
+            if isTutorialLevel {
+                Text("How to play")
+                    .font(.system(.headline, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.9))
+            } else if isBonusLevel {
                 VStack(spacing: 0) {
                     Text("Bonus!")
                         .font(.system(.caption, design: .rounded).bold())
@@ -299,7 +320,22 @@ struct GameContainerView: View {
 
     @ViewBuilder
     private var trailingHUD: some View {
-        if isBonusLevel {
+        if isTutorialLevel {
+            Button {
+                AudioEngine.shared.playTap()
+                tutorial.markShown(.launch)
+                tutorial.markShown(.gate)
+                tutorial.markShown(.hazard)
+                app.route = .game(1)
+            } label: {
+                Text("Skip")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.75))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Capsule().fill(.white.opacity(0.12)))
+            }
+        } else if isBonusLevel {
             HStack(spacing: 4) {
                 Image(systemName: "sparkle")
                     .font(.caption)
@@ -392,7 +428,8 @@ struct GameContainerView: View {
         ZStack {
             overlayScrim
             VStack(spacing: 18) {
-                Text(isBonusLevel ? "Bonus Complete!" : "Level Complete!")
+                Text(isTutorialLevel ? "You're ready!"
+                     : isBonusLevel ? "Bonus Complete!" : "Level Complete!")
                     .font(.system(.largeTitle, design: .rounded).bold())
                     .foregroundStyle(.white)
 
@@ -410,7 +447,13 @@ struct GameContainerView: View {
                     .padding(.vertical, 8)
 
                 if case .level(let id) = playMode {
-                    if id < LevelLibrary.count {
+                    if id == LevelLibrary.tutorialID {
+                        // Antrenman bitti → doğrudan 1. bölüme (reklamsız geçiş)
+                        Button { app.route = .game(1) } label: {
+                            Label("Next Level", systemImage: "play.fill")
+                        }
+                        .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
+                    } else if id < LevelLibrary.count {
                         Button {
                             _ = ads.levelCompleted(level: id, isPremium: store.isPremium) {
                                 app.route = .game(id + 1)
@@ -552,7 +595,7 @@ struct GameContainerView: View {
     /// ilk süreli bölümde oyunu dondurup geri sayımı tanıt
     private func startCoachIfNeeded() {
         guard case .level(let id) = playMode else { return }
-        if id == 1, tutorial.shouldShow(.launch) {
+        if id == LevelLibrary.tutorialID || id == 1, tutorial.shouldShow(.launch) {
             coach = .tapToLaunch
         } else if LevelLibrary.isTimed(id), tutorial.shouldShow(.timed) {
             scene?.coachFrozen = true
@@ -564,7 +607,11 @@ struct GameContainerView: View {
     private func advanceCoachAfterHop() {
         switch coach {
         case .tapToLaunch:
-            coach = .tapAgain
+            // Öğretici bölümde sıradaki ders yıldız toplama;
+            // normal 1. bölümde tekrar-dokun adımı
+            coach = isTutorialLevel ? .collectStar : .tapAgain
+        case .collectStar:
+            coach = nil   // kırmızı yaylı halkaya konunca .attached tanıtımı devralır
         case .tapAgain:
             coach = .reachGate
         case .hazardTiming:
@@ -671,6 +718,7 @@ struct GameContainerView: View {
     private func bannerText(_ step: CoachStep) -> LocalizedStringKey {
         switch step {
         case .tapToLaunch:   return "Tap anywhere to launch the orb!"
+        case .collectStar:   return "Fly through the stars to collect them!"
         case .tapAgain:      return "Great! Tap again to hop to the next ring."
         case .reachGate:     return "Now reach the dashed gate to finish!"
         case .hazardTiming:  return "Wait for the red arc to move away… then tap!"
@@ -683,6 +731,7 @@ struct GameContainerView: View {
     private func bannerIcon(_ step: CoachStep) -> String {
         switch step {
         case .tapToLaunch, .tapAgain: return "hand.tap.fill"
+        case .collectStar:            return "sparkle"
         case .reachGate:              return "flag.checkered"
         case .hazardTiming:           return "exclamationmark.triangle.fill"
         case .hazardCleared:          return "checkmark.circle.fill"
@@ -693,6 +742,7 @@ struct GameContainerView: View {
 
     private func bannerColor(_ step: CoachStep) -> Color {
         switch step {
+        case .collectStar:   return settings.theme.lumen.color
         case .hazardTiming:  return settings.theme.hazard.color
         case .hazardCleared: return settings.theme.gate.color
         default:             return settings.theme.accent.color
