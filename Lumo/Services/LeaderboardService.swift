@@ -146,10 +146,14 @@ enum FirebaseBridge {
     }
 }
 #else
-// FirebaseCore var ama Firestore/Auth yoksa köprü boş çalışır
+// FirebaseCore var ama Firestore/Auth eklenmemiş: yine de uygulamayı yapılandır
+// (I-COR000003 uyarısı kalkar), ancak sıralama yazma/okuma yapılamaz —
+// isAvailable false kalır, oyun yerel en iyi skoru gösterir.
 enum FirebaseBridge {
-    static var isConfigured: Bool { false }
-    static func configure() {}
+    static var isConfigured: Bool { false }   // Firestore/Auth yoksa sıralama kapalı
+    static func configure() {
+        if FirebaseApp.app() == nil { FirebaseApp.configure() }
+    }
     static func submit(mode: LeaderboardMode, value: Double, username: String, playerID: String) async {}
     static func fetchTop(mode: LeaderboardMode, myPlayerID: String) async -> [LeaderboardEntry] { [] }
 }

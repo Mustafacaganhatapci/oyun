@@ -12,7 +12,8 @@ final class AudioEngine {
     private let sfxMixer = AVAudioMixerNode()
     private var sfxPlayers: [AVAudioPlayerNode] = []
     private var nextPlayer = 0
-    private var started = false
+    private var started = false        // startIfNeeded çağrıldı (kurulum başladı/bitti)
+    private var configured = false     // grafik kuruldu; engine.start() güvenli
 
     private let sampleRate: Double = 44_100
     private lazy var format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
@@ -59,10 +60,35 @@ final class AudioEngine {
         }
     }
 
+    /// Ses oturumunu etkinleştirir; başarısız olursa kısa süre içinde birkaç kez dener.
+    /// (Açılışta oturum bazen hemen aktifleşmez → çıkış formatı 0 Hz → engine hata verir)
+    @discardableResult
+    private func activateSession() -> Bool {
+        let session = AVAudioSession.sharedInstance()
+        try? session.setCategory(.ambient, options: [.mixWithOthers])
+        for _ in 0..<3 {
+            do {
+                try session.setActive(true)
+                if session.sampleRate > 0 { return true }
+            } catch {
+                Thread.sleep(forTimeInterval: 0.1)
+            }
+        }
+        return session.sampleRate > 0
+    }
+
     private func setupAudio() {
         // Saygılı ses: kullanıcının kendi müziğiyle karışır, sessize alma anahtarına uyar
-        try? AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
-        try? AVAudioSession.sharedInstance().setActive(true)
+        activateSession()
+
+        // Oturum kesintisi / donanım rotası değişince (kulaklık, başka uygulama,
+        // titreşim motoru vb.) engine durabilir; bu bildirimlerle yeniden başlatılır
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleInterruption(_:)),
+            name: AVAudioSession.interruptionNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleConfigChange),
+            name: .AVAudioEngineConfigurationChange, object: engine)
 
         engine.attach(musicMixer)
         engine.attach(sfxMixer)
@@ -111,15 +137,50 @@ final class AudioEngine {
         }
 
         buildBuffers()
-
-        engine.prepare()
-        try? engine.start()
-        sfxPlayers.forEach { $0.play() }
+        configured = true
+        startEngine()
 
         // Kullanıcı kendi müziğini dinliyorsa pad'i sustur
         if AVAudioSession.sharedInstance().secondaryAudioShouldBeSilencedHint {
             musicMixer.outputVolume = 0
         }
+    }
+
+    /// Engine'i başlatır; başarısız olursa oturumu tazeleyip birkaç kez dener.
+    private func startEngine() {
+        guard configured, !engine.isRunning else {
+            if engine.isRunning { sfxPlayers.forEach { if !$0.isPlaying { $0.play() } } }
+            return
+        }
+        for attempt in 0..<3 {
+            engine.prepare()
+            do {
+                try engine.start()
+                sfxPlayers.forEach { $0.play() }
+                return
+            } catch {
+                // Çıkış formatı 0 Hz ise oturum henüz hazır değil — tazeleyip yeniden dene
+                activateSession()
+                Thread.sleep(forTimeInterval: Double(attempt + 1) * 0.15)
+            }
+        }
+    }
+
+    @objc private func handleInterruption(_ note: Notification) {
+        guard let info = note.userInfo,
+              let raw = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: raw) else { return }
+        if type == .ended {
+            DispatchQueue.global(qos: .userInitiated).async { [self] in
+                activateSession()
+                startEngine()
+            }
+        }
+    }
+
+    @objc private func handleConfigChange() {
+        guard configured else { return }
+        DispatchQueue.global(qos: .userInitiated).async { [self] in startEngine() }
     }
 
     func stop() {
@@ -128,8 +189,9 @@ final class AudioEngine {
     }
 
     func resume() {
-        guard started else { return }
-        try? engine.start()
+        // Kurulum bitmeden engine.start() çağırma — yarı kurulu grafik 0 Hz hatası verir
+        guard started, configured else { return }
+        DispatchQueue.global(qos: .userInitiated).async { [self] in startEngine() }
     }
 
     // MARK: Efekt tetikleyicileri
