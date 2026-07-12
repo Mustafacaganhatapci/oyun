@@ -74,31 +74,16 @@ enum LevelLibrary {
     static let tutorialID = 0
 
     static var tutorialLevel: Level {
-        // Geniş, yavaş, 4 halkalı el yapımı sahne: fırlat → yıldız topla →
-        // kırmızı yaydan kaç → kapıya ulaş
+        // Olabildiğince yalın: 2 büyük, yavaş halka. Alttaki normal, üstteki
+        // YEŞİL hedef. Yazı yok — nişan çizgisi ve dokunuş ipucu gösterir.
         var rings: [RingSpec] = []
-        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.12), radius: 0.10, orbitSpeed: 1.6, direction: 1))
-        rings.append(RingSpec(center: CGPoint(x: 0.32, y: 0.38), radius: 0.10, orbitSpeed: 1.7, direction: -1))
+        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.22), radius: 0.115, orbitSpeed: 1.4, direction: 1))
 
-        var hazardRing = RingSpec(center: CGPoint(x: 0.62, y: 0.60), radius: 0.10, orbitSpeed: 1.8, direction: 1)
-        hazardRing.hazardArcs = [0...(.pi * 0.5)]        // dar, yavaş dönen kırmızı yay
-        hazardRing.hazardRotationSpeed = 0.5
-        rings.append(hazardRing)
-
-        var gate = RingSpec(center: CGPoint(x: 0.42, y: 0.85), radius: 0.10, orbitSpeed: 1.6, direction: -1)
+        var gate = RingSpec(center: CGPoint(x: 0.50, y: 0.64), radius: 0.115, orbitSpeed: 1.4, direction: -1)
         gate.isGate = true
         rings.append(gate)
 
-        // Yıldızlar tam uçuş hattının üzerinde — oynarken kendiliğinden toplanır
-        func between(_ a: CGPoint, _ b: CGPoint) -> CGPoint {
-            CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
-        }
-        let lumens = [
-            LumenSpec(position: between(rings[0].center, rings[1].center)),
-            LumenSpec(position: between(rings[1].center, rings[2].center)),
-            LumenSpec(position: between(rings[2].center, rings[3].center))
-        ]
-        return Level(id: tutorialID, kind: .normal, rings: rings, lumens: lumens)
+        return Level(id: tutorialID, kind: .normal, rings: rings, lumens: [])
     }
 
     /// Speed Run: ilk 10 normal bölüm (bonuslar atlanır)

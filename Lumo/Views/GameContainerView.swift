@@ -22,8 +22,6 @@ struct GameContainerView: View {
     /// Etkileşimli öğretici koçu: oynatarak öğretir — oyuncu adımı
     /// gerçekten yapmadan (dokunup fırlatmadan) bir sonrakine geçmez.
     private enum CoachStep: Equatable {
-        case tapToLaunch, tapAgain, reachGate           // dokun-fırla akışı
-        case collectStar                                // öğretici bölüm: yıldız toplama
         case hazardIntro, hazardTiming, hazardCleared   // kırmızı şerit: dondur → anlat → yaptır
         case movingIntro, movingTiming                  // hareketli halka
         case timedIntro                                 // süreli bölüm tanıtımı
@@ -191,10 +189,6 @@ struct GameContainerView: View {
             timeRemaining = remaining
 
         case .win(let stars):
-            if coach == .tapToLaunch || coach == .tapAgain || coach == .reachGate || coach == .collectStar {
-                tutorial.markShown(.launch)
-                tutorial.markShown(.gate)
-            }
             if coach == .hazardTiming || coach == .hazardCleared {
                 tutorial.markShown(.hazard)
             }
@@ -204,10 +198,9 @@ struct GameContainerView: View {
             switch playMode {
             case .level(let id):
                 if id == LevelLibrary.tutorialID {
-                    // Antrenman bölümü: ilerlemeye yazılmaz, tüm temel dersler tamamlandı
+                    // Antrenman bölümü: ilerlemeye yazılmaz; bir daha gösterilmez
                     tutorial.markShown(.launch)
                     tutorial.markShown(.gate)
-                    tutorial.markShown(.hazard)
                 } else {
                     progress.complete(level: id, stars: stars)
                 }
@@ -344,7 +337,6 @@ struct GameContainerView: View {
                 AudioEngine.shared.playTap()
                 tutorial.markShown(.launch)
                 tutorial.markShown(.gate)
-                tutorial.markShown(.hazard)
                 app.route = .game(1)
             } label: {
                 Text("Skip")
@@ -462,8 +454,10 @@ struct GameContainerView: View {
                     }
                 }
 
-                StarsView(count: stars, size: 34, color: settings.theme.lumen.color)
-                    .padding(.vertical, 8)
+                if !isTutorialLevel {   // antrenmanda yıldız yok
+                    StarsView(count: stars, size: 34, color: settings.theme.lumen.color)
+                        .padding(.vertical, 8)
+                }
 
                 if case .level(let id) = playMode {
                     if id == LevelLibrary.tutorialID {
@@ -610,13 +604,12 @@ struct GameContainerView: View {
 
     // MARK: Etkileşimli öğretici koçu
 
-    /// 1. bölümde temel mekaniği adım adım oynatarak öğret;
-    /// ilk süreli bölümde oyunu dondurup geri sayımı tanıt
+    /// İlk süreli bölümde oyunu dondurup geri sayımı tanıt.
+    /// (Temel mekanik antrenman bölümünde YAZISIZ öğretilir: nişan çizgisi +
+    /// dokunuş ipucu sahnenin kendi içindedir.)
     private func startCoachIfNeeded() {
         guard case .level(let id) = playMode else { return }
-        if id == LevelLibrary.tutorialID || id == 1, tutorial.shouldShow(.launch) {
-            coach = .tapToLaunch
-        } else if LevelLibrary.isTimed(id), tutorial.shouldShow(.timed) {
+        if LevelLibrary.isTimed(id), tutorial.shouldShow(.timed) {
             scene?.coachFrozen = true
             coach = .timedIntro
         }
@@ -625,14 +618,6 @@ struct GameContainerView: View {
     /// Oyuncu gerçekten fırlatıp yeni halkaya geçince koç bir adım ilerler
     private func advanceCoachAfterHop() {
         switch coach {
-        case .tapToLaunch:
-            // Öğretici bölümde sıradaki ders yıldız toplama;
-            // normal 1. bölümde tekrar-dokun adımı
-            coach = isTutorialLevel ? .collectStar : .tapAgain
-        case .collectStar:
-            coach = nil   // kırmızı yaylı halkaya konunca .attached tanıtımı devralır
-        case .tapAgain:
-            coach = .reachGate
         case .hazardTiming:
             coach = .hazardCleared
             tutorial.markShown(.hazard)
@@ -736,10 +721,6 @@ struct GameContainerView: View {
 
     private func bannerText(_ step: CoachStep) -> LocalizedStringKey {
         switch step {
-        case .tapToLaunch:   return "Tap anywhere to launch the orb!"
-        case .collectStar:   return "Fly through the stars to collect them!"
-        case .tapAgain:      return "Great! Tap again to hop to the next ring."
-        case .reachGate:     return "Now reach the dashed gate to finish!"
         case .hazardTiming:  return "Wait for the red arc to move away… then tap!"
         case .hazardCleared: return "Perfect! You passed the red arc."
         case .movingTiming:  return "This ring drifts — time your jump!"
@@ -749,19 +730,15 @@ struct GameContainerView: View {
 
     private func bannerIcon(_ step: CoachStep) -> String {
         switch step {
-        case .tapToLaunch, .tapAgain: return "hand.tap.fill"
-        case .collectStar:            return "sparkle"
-        case .reachGate:              return "flag.checkered"
-        case .hazardTiming:           return "exclamationmark.triangle.fill"
-        case .hazardCleared:          return "checkmark.circle.fill"
-        case .movingTiming:           return "arrow.left.and.right"
-        default:                      return "hand.tap.fill"
+        case .hazardTiming:  return "exclamationmark.triangle.fill"
+        case .hazardCleared: return "checkmark.circle.fill"
+        case .movingTiming:  return "arrow.left.and.right"
+        default:             return "hand.tap.fill"
         }
     }
 
     private func bannerColor(_ step: CoachStep) -> Color {
         switch step {
-        case .collectStar:   return settings.theme.lumen.color
         case .hazardTiming:  return settings.theme.hazard.color
         case .hazardCleared: return settings.theme.gate.color
         default:             return settings.theme.accent.color

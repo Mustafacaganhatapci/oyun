@@ -84,6 +84,11 @@ final class GameScene: SKScene {
     private var timedDeadline: TimeInterval?
     private var lastTimeTickSent = Int.max
 
+    // Antrenman bölümü görselleri: yazı yerine göstererek öğretir
+    private var isTutorial: Bool { mode == .level(LevelLibrary.tutorialID) }
+    private var aimLine: SKShapeNode?
+    private var tapHint: SKNode?
+
     // Sonsuz mod
     private var endlessScore = 0
     private var cameraNode: SKCameraNode?
@@ -120,6 +125,7 @@ final class GameScene: SKScene {
             buildRings(lvl.rings)
             buildLumens(lvl.lumens)
             respawn(animated: false)
+            if isTutorial { setupTutorialVisuals() }
         case .endless:
             let cam = SKCameraNode()
             cameraNode = cam
@@ -319,8 +325,11 @@ final class GameScene: SKScene {
         container.position = scenePoint(spec.center)
         container.zPosition = 10
 
+        // Antrenman bölümünde hedef halka bariz YEŞİL — "buraya atacaksın"
+        let gateColor = isTutorial ? UIColor.systemGreen : theme.gate.uiColor
+
         let circle = SKShapeNode(circleOfRadius: r)
-        circle.strokeColor = (spec.isGate ? theme.gate : theme.ring).uiColor
+        circle.strokeColor = spec.isGate ? gateColor : theme.ring.uiColor
         circle.lineWidth = 3
         circle.glowWidth = spec.isGate ? 10 : 6
         circle.alpha = 0.9
@@ -331,17 +340,27 @@ final class GameScene: SKScene {
             let dashed = SKShapeNode(path: CGPath(ellipseIn: CGRect(x: -r - 8, y: -r - 8,
                                                                     width: (r + 8) * 2, height: (r + 8) * 2),
                                                   transform: nil).copy(dashingWithPhase: 0, lengths: [8, 10]))
-            dashed.strokeColor = theme.gate.uiColor
+            dashed.strokeColor = gateColor
             dashed.lineWidth = 2
             dashed.alpha = 0.7
             dashed.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: 14)))
             container.addChild(dashed)
+
+            if isTutorial {
+                // Hedef yeşil halka belirgin nefes alsın — göz oraya gitsin
+                circle.run(.repeatForever(.sequence([
+                    .group([.scale(to: 1.10, duration: 0.7), .fadeAlpha(to: 1.0, duration: 0.7)]),
+                    .group([.scale(to: 0.98, duration: 0.7), .fadeAlpha(to: 0.75, duration: 0.7)])
+                ])))
+            }
         }
 
-        circle.run(.repeatForever(.sequence([
-            .scale(to: 1.03, duration: 1.6),
-            .scale(to: 0.99, duration: 1.6)
-        ])))
+        if !(spec.isGate && isTutorial) {   // öğretici kapısının kendi nabzı var
+            circle.run(.repeatForever(.sequence([
+                .scale(to: 1.03, duration: 1.6),
+                .scale(to: 0.99, duration: 1.6)
+            ])))
+        }
 
         var hazardNode: SKNode? = nil
         if !spec.hazardArcs.isEmpty {
@@ -372,6 +391,60 @@ final class GameScene: SKScene {
             hazardNodes.append(hazardNode)
         }
         return container
+    }
+
+    // MARK: Antrenman görselleri — yazı yok, göstererek öğretir
+
+    private func setupTutorialVisuals() {
+        // Nişan çizgisi: küre O AN fırlatılırsa gideceği yönü canlı gösterir.
+        // Çizgi yeşil halkayı kestiği anda dokunmak = doğru zamanlama.
+        let length = size.width * 0.5
+        let path = CGMutablePath()
+        path.move(to: .zero)
+        path.addLine(to: CGPoint(x: length, y: 0))
+        let line = SKShapeNode(path: path.copy(dashingWithPhase: 0, lengths: [10, 9]))
+        line.strokeColor = UIColor.white.withAlphaComponent(0.7)
+        line.lineWidth = 3
+        line.lineCap = .round
+        line.glowWidth = 2
+        line.zPosition = 30
+        addChild(line)
+        aimLine = line
+
+        // Dokunuş ipucu: nabız gibi genişleyen halka + el simgesi
+        let hint = SKNode()
+        hint.position = CGPoint(x: size.width / 2, y: 140)
+        hint.zPosition = 40
+
+        if let img = UIImage(systemName: "hand.tap.fill",
+                             withConfiguration: UIImage.SymbolConfiguration(pointSize: 36, weight: .semibold))?
+            .withTintColor(.white, renderingMode: .alwaysOriginal) {
+            let sprite = SKSpriteNode(texture: SKTexture(image: img))
+            sprite.run(.repeatForever(.sequence([
+                .scale(to: 0.85, duration: 0.35),
+                .scale(to: 1.0, duration: 0.55)
+            ])))
+            hint.addChild(sprite)
+        }
+        let ripple = SKShapeNode(circleOfRadius: 34)
+        ripple.strokeColor = UIColor.white.withAlphaComponent(0.8)
+        ripple.lineWidth = 2
+        ripple.fillColor = .clear
+        ripple.run(.repeatForever(.sequence([
+            .group([.scale(to: 2.0, duration: 1.1), .fadeAlpha(to: 0, duration: 1.1)]),
+            .scale(to: 1, duration: 0),
+            .fadeAlpha(to: 0.8, duration: 0)
+        ])))
+        hint.addChild(ripple)
+        addChild(hint)
+        tapHint = hint
+    }
+
+    /// İlk fırlatmadan sonra dokunuş ipucu kaybolur (görevini yaptı)
+    private func dismissTapHint() {
+        guard let hint = tapHint else { return }
+        tapHint = nil
+        hint.run(.sequence([.fadeOut(withDuration: 0.3), .removeFromParent()]))
     }
 
     private func buildLumens(_ specs: [LumenSpec]) {
@@ -423,6 +496,7 @@ final class GameScene: SKScene {
         guard !coachFrozen else { return }
         switch orbState {
         case .attached(let ring, let angle, let direction):
+            dismissTapHint()
             let c = ringCenter(ring, at: elapsed)
             let r = ringRadius(ring)
             let pos = CGPoint(x: c.x + cos(angle) * r, y: c.y + sin(angle) * r)
@@ -509,10 +583,17 @@ final class GameScene: SKScene {
             let c = ringCenter(ring, at: elapsed)
             let r = ringRadius(ring)
             orbNode.position = CGPoint(x: c.x + cos(angle) * r, y: c.y + sin(angle) * r)
+            // Antrenman: nişan çizgisi kürenin fırlatma yönünü canlı takip eder
+            if let aim = aimLine {
+                aim.isHidden = false
+                aim.position = orbNode.position
+                aim.zRotation = atan2(cos(angle) * direction, -sin(angle) * direction)
+            }
             checkHazard(ring: ring, angle: angle, time: currentTime)
             checkLumens()
 
         case .flying(let v):
+            aimLine?.isHidden = true
             flightTime += dt
             orbNode.position = CGPoint(x: orbNode.position.x + v.dx * CGFloat(dt),
                                        y: orbNode.position.y + v.dy * CGFloat(dt))
@@ -522,6 +603,7 @@ final class GameScene: SKScene {
             if flightTime > maxFlightTime { fail() }
 
         case .dead:
+            aimLine?.isHidden = true
             // Yeniden doğma zamanlaması SKAction yerine burada işlenir:
             // sahne duraklatılsa/aksiyon kaybolsa bile bu yol her zaman çalışır
             if let since = deadSince, elapsed - since >= respawnDelay {
@@ -536,7 +618,7 @@ final class GameScene: SKScene {
             }
 
         case .won:
-            break
+            aimLine?.isHidden = true
         }
 
         if case .endless = mode { updateEndlessCamera(dt: dt) }
