@@ -108,16 +108,31 @@ struct GameContainerView: View {
                 }
             }
             .animation(.easeInOut(duration: 0.25), value: coach)
-            .onAppear {
-                sceneSize = geo.size
-                if scene == nil {
-                    if case .speedrun = playMode { speedStart = Date() }
-                    scene = makeScene(size: geo.size)
-                    startCoachIfNeeded()
-                }
-            }
+            .onAppear { ensureScene(size: geo.size) }
+            .onChange(of: geo.size) { _, newSize in ensureScene(size: newSize) }
         }
         .ignoresSafeArea()
+    }
+
+    /// Sahneyi yalnızca geçerli bir boyutta oluşturur. Splash→oyun geçişi
+    /// sırasında düzen henüz oturmadan boyut 0 gelebiliyor; o an sahne
+    /// kurulursa gri kalırdı. Boyut sonradan düzelirse sahne yeniden kurulur.
+    private func ensureScene(size: CGSize) {
+        guard size.width > 1, size.height > 1 else { return }
+        if scene == nil {
+            sceneSize = size
+            if case .speedrun = playMode { speedStart = Date() }
+            scene = makeScene(size: size)
+            startCoachIfNeeded()
+        } else if abs(sceneSize.width - size.width) > 1 || abs(sceneSize.height - size.height) > 1 {
+            // Sahne hatalı/eski boyutta kurulmuşsa (ör. geçiş anı) taze kur
+            sceneSize = size
+            coach = nil
+            overlay = .none
+            scene = makeScene(size: size)
+            sceneID += 1
+            startCoachIfNeeded()
+        }
     }
 
     // MARK: Sahne kurulumu
