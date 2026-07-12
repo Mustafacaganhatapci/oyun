@@ -22,15 +22,15 @@ struct RootView: View {
             case .game(let id):
                 GameContainerView(playMode: .level(id))
                     .id("level-\(id)")
-                    .transition(.opacity)
+                    .transition(.identity)   // SpriteView opacity geçişinde gri kalıyor
             case .endless:
                 GameContainerView(playMode: .endless)
                     .id("endless")
-                    .transition(.opacity)
+                    .transition(.identity)
             case .speedrun:
                 GameContainerView(playMode: .speedrun)
                     .id("speedrun")
-                    .transition(.opacity)
+                    .transition(.identity)
             case .shop:
                 ShopView()
                     .transition(.move(edge: .bottom).combined(with: .opacity))

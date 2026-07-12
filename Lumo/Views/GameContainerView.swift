@@ -76,6 +76,10 @@ struct GameContainerView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
+                // SpriteView bir an geç çizerse arkada temanın koyu rengi görünsün
+                // (varsayılan açık gri yerine)
+                settings.theme.bgBottom.color.ignoresSafeArea()
+
                 if let scene {
                     SpriteView(scene: scene, isPaused: overlay == .paused)
                         .id(sceneID)
