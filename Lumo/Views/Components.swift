@@ -168,10 +168,22 @@ struct AdPlaceholderView: View {
                 Spacer()
             }
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            // Süre bittiyse herhangi bir dokunuş kapatır — takılma olmaz
+            if secondsLeft <= 0 { onClose() }
+        }
         .task {
             for _ in 0..<3 {
                 try? await Task.sleep(for: .seconds(1))
                 withAnimation { secondsLeft -= 1 }
+            }
+        }
+        .onAppear {
+            // Sigorta: görev herhangi bir nedenle kesilirse bile 4 sn sonra
+            // kapatma düğmesi kesin görünür
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                if secondsLeft > 0 { secondsLeft = 0 }
             }
         }
     }

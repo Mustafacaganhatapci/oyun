@@ -38,8 +38,12 @@ final class AdsManager: ObservableObject {
     /// ve reklam kapandığında `completion` çalışır.
     func levelCompleted(level: Int, isPremium: Bool, completion: @escaping () -> Void) -> Bool {
         #if DEBUG
-        // DEBUG: test için HER bölüm sonunda reklam akışı — premium ve
-        // ilk-10 muafiyeti yok sayılır. Yayın (Release) kuralları etkilemez.
+        // DEBUG: test için 2. bölümden itibaren her bölüm sonunda reklam —
+        // öğretici ve 1. bölüm deneyimi temiz kalır. Yayın kuralları ayrıdır.
+        guard level >= 2 else {
+            completion()
+            return false
+        }
         return show(completion: completion)
         #else
         guard !isPremium, level > LevelLibrary.adFreeLevels else {
@@ -150,14 +154,26 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
     }
 
     func show(completion: @escaping () -> Void) -> Bool {
-        guard let interstitial,
-              let root = UIApplication.shared.connectedScenes
-                .compactMap({ ($0 as? UIWindowScene)?.keyWindow?.rootViewController })
-                .first else { return false }
+        guard let interstitial, let root = Self.topViewController() else { return false }
         self.completion = completion
-        interstitial.present(from: root)
         self.interstitial = nil
+        // Bir sonraki runloop'ta sun: SwiftUI geçiş animasyonu ortasında
+        // sunum yapılırsa reklam boş/gri kalabiliyor
+        DispatchQueue.main.async {
+            interstitial.present(from: root)
+        }
         return true
+    }
+
+    /// En üstteki (sunum zincirinin sonundaki) view controller — reklam
+    /// buradan sunulmazsa boş gri ekran görülebilir
+    private static func topViewController() -> UIViewController? {
+        let root = UIApplication.shared.connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow?.rootViewController }
+            .first
+        var top = root
+        while let presented = top?.presentedViewController { top = presented }
+        return top
     }
 
     func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
