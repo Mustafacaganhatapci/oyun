@@ -8,7 +8,7 @@ final class TutorialStore: ObservableObject {
 
     // v2: öğretici tamamen yenilendi (etkileşimli koç) — eski "gösterildi"
     // kayıtları geçersiz; anahtar değişince herkes yeni akışı bir kez görür
-    private let key = "lumo.tutorial.shown.v2"
+    private let key = "lumo.tutorial.shown.v3"
 
     init() {
         shown = Set(UserDefaults.standard.stringArray(forKey: key) ?? [])
