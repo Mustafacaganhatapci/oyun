@@ -143,6 +143,13 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
     private var startedSDK = false
 
     func preload() {
+        // Info.plist'te GADApplicationIdentifier eksikse Google SDK'sı
+        // start() çağrısında tüm uygulamayı çökertir (NSException fırlatır).
+        // Bozuk/eski bir derleme (stale build) bu duruma düşerse reklamsız
+        // devam etmek, uygulamayı tamamen çökertmekten her zaman evladır.
+        guard Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") != nil else {
+            return
+        }
         if !startedSDK {
             startedSDK = true
             MobileAds.shared.start(completionHandler: nil)
