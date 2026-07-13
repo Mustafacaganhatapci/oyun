@@ -84,7 +84,16 @@ enum LevelLibrary {
         gate.isGate = true
         rings.append(gate)
 
-        return Level(id: tutorialID, kind: .normal, rings: rings, lumens: [])
+        // İki halkanın arasındaki koridora 3 sarı yıldız: yeşile atılan her
+        // makul atış en az birinden geçer — parıltı + ses "sarıları topla"yı
+        // kendiliğinden öğretir (yazıya gerek kalmaz)
+        let lumens = [
+            LumenSpec(position: CGPoint(x: 0.40, y: 0.45)),
+            LumenSpec(position: CGPoint(x: 0.50, y: 0.43)),
+            LumenSpec(position: CGPoint(x: 0.60, y: 0.45))
+        ]
+
+        return Level(id: tutorialID, kind: .normal, rings: rings, lumens: lumens)
     }
 
     /// Speed Run: ilk 10 normal bölüm (bonuslar atlanır)
@@ -107,6 +116,14 @@ enum LevelLibrary {
         guard !isBonus(id) else { return false }
         let n = normalIndex(id)
         return n >= 12 && n % 4 == 0
+    }
+
+    /// Öğrenme bölgesi: ilk bölümlerde (ve öğreticide/bonusta) top ekrandan
+    /// çıkarsa elenmek yerine fırlatıldığı halkaya geri döner. 11. normal
+    /// bölümden itibaren kaçırmak = elenmek.
+    static func isForgiving(_ id: Int) -> Bool {
+        if id == tutorialID || isBonus(id) { return true }
+        return normalIndex(id) < 11
     }
 
     /// "Devam et ya da düş" mekaniği: 15. normal bölümden itibaren, süreli

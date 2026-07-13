@@ -36,6 +36,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
     case moving     // hareketli halka
     case gate       // bitiş kapısı
     case timed      // süreli bölüm
+    case bounds     // ileri bölümlerde kaçırmak = elenmek
 
     var id: String { rawValue }
 
@@ -47,6 +48,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .moving: return "Moving rings"
         case .gate:   return "The gate"
         case .timed:  return "Beat the clock!"
+        case .bounds: return "Careful now!"
         }
     }
     var bodyKey: String {
@@ -56,6 +58,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .moving: return "Some rings drift back and forth. Wait for the right moment."
         case .gate:   return "Reach the dashed turquoise gate to finish the level."
         case .timed:  return "This level is timed! Reach the gate before the countdown hits zero."
+        case .bounds: return "From this level on, if the orb flies off the screen, you lose the attempt."
         }
     }
     var systemImage: String {
@@ -65,6 +68,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .moving: return "arrow.left.and.right"
         case .gate:   return "flag.checkered"
         case .timed:  return "timer"
+        case .bounds: return "xmark.octagon.fill"
         }
     }
 }

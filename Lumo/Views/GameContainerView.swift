@@ -25,10 +25,11 @@ struct GameContainerView: View {
         case hazardIntro, hazardTiming, hazardCleared   // kırmızı şerit: dondur → anlat → yaptır
         case movingIntro, movingTiming                  // hareketli halka
         case timedIntro                                 // süreli bölüm tanıtımı
+        case boundsIntro                                // "kaçırmak artık elenmek" tanıtımı
     }
     @State private var coach: CoachStep?
     private var coachIsBlocking: Bool {
-        coach == .hazardIntro || coach == .movingIntro || coach == .timedIntro
+        coach == .hazardIntro || coach == .movingIntro || coach == .timedIntro || coach == .boundsIntro
     }
 
     private enum Overlay: Equatable {
@@ -609,7 +610,11 @@ struct GameContainerView: View {
     /// dokunuş ipucu sahnenin kendi içindedir.)
     private func startCoachIfNeeded() {
         guard case .level(let id) = playMode else { return }
-        if LevelLibrary.isTimed(id), tutorial.shouldShow(.timed) {
+        if !LevelLibrary.isForgiving(id), tutorial.shouldShow(.bounds) {
+            // İlk katı bölüm: artık ekrandan çıkmak = elenmek — bir kez tanıt
+            scene?.coachFrozen = true
+            coach = .boundsIntro
+        } else if LevelLibrary.isTimed(id), tutorial.shouldShow(.timed) {
             scene?.coachFrozen = true
             coach = .timedIntro
         }
@@ -636,13 +641,26 @@ struct GameContainerView: View {
     /// Engelleyen tanıtım kartı kapatılınca oyun çözülür, yaptırma adımı başlar
     private func dismissCoachIntro() {
         AudioEngine.shared.playTap()
-        scene?.coachFrozen = false
         switch coach {
-        case .hazardIntro: coach = .hazardTiming
-        case .movingIntro: coach = .movingTiming
+        case .hazardIntro:
+            scene?.coachFrozen = false
+            coach = .hazardTiming
+        case .movingIntro:
+            scene?.coachFrozen = false
+            coach = .movingTiming
         case .timedIntro:
+            scene?.coachFrozen = false
             coach = nil
             tutorial.markShown(.timed)
+        case .boundsIntro:
+            tutorial.markShown(.bounds)
+            // Aynı bölüm süreliyse sıradaki kartı göster (dondurma sürsün)
+            if case .level(let id) = playMode, LevelLibrary.isTimed(id), tutorial.shouldShow(.timed) {
+                coach = .timedIntro
+            } else {
+                scene?.coachFrozen = false
+                coach = nil
+            }
         default: break
         }
     }
@@ -654,6 +672,7 @@ struct GameContainerView: View {
         switch step {
         case .hazardIntro: hint = .hazard; color = settings.theme.hazard.color
         case .timedIntro:  hint = .timed;  color = settings.theme.lumen.color
+        case .boundsIntro: hint = .bounds; color = settings.theme.hazard.color
         default:           hint = .moving; color = settings.theme.accent.color
         }
         return ZStack {

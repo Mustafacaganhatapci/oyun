@@ -1,3947 +1,4027 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "%lld": {
-      "shouldTranslate": false
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%lld" : {
+      "shouldTranslate" : false
     },
-    "%lld / %lld": {
-      "shouldTranslate": false
+    "%lld / %lld" : {
+      "shouldTranslate" : false
     },
-    "3–16 characters · letters, numbers, _ or -": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3–16 Zeichen · Buchstaben, Zahlen, _ oder -"
+    "3–16 characters · letters, numbers, _ or -" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3–16 Zeichen · Buchstaben, Zahlen, _ oder -"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3–16 caracteres · letras, números, _ o -"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3–16 caracteres · letras, números, _ o -"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3–16 caractères · lettres, chiffres, _ ou -"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3–16 caractères · lettres, chiffres, _ ou -"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3〜16文字・英数字・_ または -"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3〜16文字・英数字・_ または -"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3–16 karakter · harf, rakam, _ veya -"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3–16 karakter · harf, rakam, _ veya -"
           }
         }
       }
     },
-    "4 exclusive orb styles — even your own photo in the orb": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4 exklusive Orb-Stile — sogar dein eigenes Foto im Orb"
+    "4 exclusive orb styles — even your own photo in the orb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 exklusive Orb-Stile — sogar dein eigenes Foto im Orb"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4 estilos de orbe exclusivos — incluso tu propia foto en el orbe"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 estilos de orbe exclusivos — incluso tu propia foto en el orbe"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4 styles d'orbe exclusifs — même ta propre photo dans l'orbe"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 styles d'orbe exclusifs — même ta propre photo dans l'orbe"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "限定オーブスタイル4種 — 自分の写真もオーブに"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "限定オーブスタイル4種 — 自分の写真もオーブに"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4 özel küre stili — kürenin içine kendi fotoğrafını bile koy"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 özel küre stili — kürenin içine kendi fotoğrafını bile koy"
           }
         }
       }
     },
-    "4 exclusive themes: Dawn, Forest, Coral, Aurora": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4 exklusive Themes: Morgenrot, Wald, Koralle, Aurora"
+    "4 exclusive themes: Dawn, Forest, Coral, Aurora" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 exklusive Themes: Morgenrot, Wald, Koralle, Aurora"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4 temas exclusivos: Alba, Bosque, Coral, Aurora"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 temas exclusivos: Alba, Bosque, Coral, Aurora"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4 thèmes exclusifs : Aube, Forêt, Corail, Aurore"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 thèmes exclusifs : Aube, Forêt, Corail, Aurore"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "限定テーマ4種：夜明け、森、サンゴ、オーロラ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "限定テーマ4種：夜明け、森、サンゴ、オーロラ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "4 özel tema: Şafak, Orman, Mercan, Aurora"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 özel tema: Şafak, Orman, Mercan, Aurora"
           }
         }
       }
     },
-    "Ad": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Werbung"
+    "Ad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werbung"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anuncio"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anuncio"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Publicité"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publicité"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "広告"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "広告"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reklam"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reklam"
           }
         }
       }
     },
-    "Add Firebase to enable the world ranking (see README). Your local best is shown below.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Füge Firebase hinzu, um die Weltrangliste zu aktivieren (siehe README). Deine lokale Bestleistung steht unten."
+    "Add Firebase to enable the world ranking (see README). Your local best is shown below." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge Firebase hinzu, um die Weltrangliste zu aktivieren (siehe README). Deine lokale Bestleistung steht unten."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Añade Firebase para activar la clasificación mundial (ver README). Tu mejor marca local está abajo."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade Firebase para activar la clasificación mundial (ver README). Tu mejor marca local está abajo."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajoute Firebase pour activer le classement mondial (voir README). Ton meilleur score local est ci-dessous."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoute Firebase pour activer le classement mondial (voir README). Ton meilleur score local est ci-dessous."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "世界ランキングにはFirebaseを追加してください（README参照）。下にローカルベストを表示。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "世界ランキングにはFirebaseを追加してください（README参照）。下にローカルベストを表示。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dünya sıralaması için Firebase ekle (README'ye bak). Yerel en iyin aşağıda."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dünya sıralaması için Firebase ekle (README'ye bak). Yerel en iyin aşağıda."
           }
         }
       }
     },
-    "All ads removed forever": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle Werbung für immer entfernt"
+    "All ads removed forever" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Werbung für immer entfernt"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Todos los anuncios eliminados para siempre"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos los anuncios eliminados para siempre"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toutes les pubs supprimées pour toujours"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les pubs supprimées pour toujours"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "広告を永久に削除"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "広告を永久に削除"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tüm reklamlar sonsuza dek kalkar"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm reklamlar sonsuza dek kalkar"
           }
         }
       }
     },
-    "All music and sounds are synthesized in real time on your device.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle Musik und Sounds werden in Echtzeit auf deinem Gerät erzeugt."
+    "All music and sounds are synthesized in real time on your device." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Musik und Sounds werden in Echtzeit auf deinem Gerät erzeugt."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toda la música y los sonidos se sintetizan en tiempo real en tu dispositivo."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toda la música y los sonidos se sintetizan en tiempo real en tu dispositivo."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toute la musique et les sons sont synthétisés en temps réel sur ton appareil."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toute la musique et les sons sont synthétisés en temps réel sur ton appareil."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべての音楽とサウンドは端末上でリアルタイムに合成されます。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての音楽とサウンドは端末上でリアルタイムに合成されます。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tüm müzik ve sesler cihazında gerçek zamanlı sentezlenir."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm müzik ve sesler cihazında gerçek zamanlı sentezlenir."
           }
         }
       }
     },
-    "Aurora": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aurora"
+    "Aurora" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aurora"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aurora"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aurora"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aurore"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aurore"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "オーロラ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オーロラ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aurora"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aurora"
           }
         }
       }
     },
-    "Beat the clock!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schlag die Uhr!"
+    "Beat the clock!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schlag die Uhr!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Gana al reloj!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Gana al reloj!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Battez le chrono !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Battez le chrono !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "タイムアタック！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイムアタック！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Süreye karşı!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Süreye karşı!"
           }
         }
       }
     },
-    "Best Time: %@": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bestzeit: %@"
+    "Best Time: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bestzeit: %@"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mejor tiempo: %@"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mejor tiempo: %@"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Meilleur temps : %@"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meilleur temps : %@"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ベストタイム: %@"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ベストタイム: %@"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "En İyi Süre: %@"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En İyi Süre: %@"
           }
         }
       }
     },
-    "Best: %lld": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rekord: %lld"
+    "Best: %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rekord: %lld"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Récord: %lld"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Récord: %lld"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Record : %lld"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Record : %lld"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ベスト: %lld"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ベスト: %lld"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rekor: %lld"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rekor: %lld"
           }
         }
       }
     },
-    "Bonus Complete!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bonus geschafft!"
+    "Bonus Complete!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bonus geschafft!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Bonus completado!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Bonus completado!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bonus terminé !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bonus terminé !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ボーナスクリア！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ボーナスクリア！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bonus Tamamlandı!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bonus Tamamlandı!"
           }
         }
       }
     },
-    "Bonus!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bonus!"
+    "Bonus!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bonus!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Bonus!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Bonus!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bonus !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bonus !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ボーナス！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ボーナス！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bonus!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bonus!"
           }
         }
       }
     },
-    "Buy": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaufen"
+    "Buy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaufen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Comprar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Acheter"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acheter"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "購入"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Al"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al"
           }
         }
       }
     },
-    "Buy more characters with stars in the Shop.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaufe im Shop mehr Charaktere mit Sternen."
+    "Buy more characters with stars in the Shop." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaufe im Shop mehr Charaktere mit Sternen."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Compra más personajes con estrellas en la tienda."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra más personajes con estrellas en la tienda."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Achète plus de personnages avec des étoiles dans la boutique."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achète plus de personnages avec des étoiles dans la boutique."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ショップでスターを使ってキャラクターを増やそう。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ショップでスターを使ってキャラクターを増やそう。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mağazada yıldızlarınla daha çok karakter al."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mağazada yıldızlarınla daha çok karakter al."
           }
         }
       }
     },
-    "Change Photo": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto ändern"
+    "Change Photo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto ändern"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cambiar foto"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar foto"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Changer la photo"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changer la photo"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "写真を変更"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真を変更"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fotoğrafı Değiştir"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotoğrafı Değiştir"
           }
         }
       }
     },
-    "Characters": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Charaktere"
+    "Characters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charaktere"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Personajes"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personajes"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Personnages"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personnages"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "キャラクター"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャラクター"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Karakterler"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Karakterler"
           }
         }
       }
     },
-    "Choose Photo": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto auswählen"
+    "Choose Photo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto auswählen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Elegir foto"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elegir foto"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choisir une photo"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir une photo"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "写真を選ぶ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真を選ぶ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fotoğraf Seç"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotoğraf Seç"
           }
         }
       }
     },
-    "Choose a username": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wähle einen Benutzernamen"
+    "Choose a username" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle einen Benutzernamen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Elige un nombre de usuario"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige un nombre de usuario"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choisis un nom d'utilisateur"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisis un nom d'utilisateur"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ユーザー名を選んでください"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名を選んでください"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bir kullanıcı adı seç"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir kullanıcı adı seç"
           }
         }
       }
     },
-    "Close": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schließen"
+    "Close" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cerrar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fermer"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "閉じる"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "閉じる"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kapat"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapat"
           }
         }
       }
     },
-    "Code accepted — Premium unlocked!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Code akzeptiert — Premium freigeschaltet!"
+    "Code accepted — Premium unlocked!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code akzeptiert — Premium freigeschaltet!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Código aceptado — ¡Premium desbloqueado!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código aceptado — ¡Premium desbloqueado!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Code accepté — Premium débloqué !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code accepté — Premium débloqué !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "コード有効 — プレミアム解放！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コード有効 — プレミアム解放！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kod kabul edildi — Premium açıldı!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kod kabul edildi — Premium açıldı!"
           }
         }
       }
     },
-    "Comet": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Komet"
+    "Comet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Komet"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cometa"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cometa"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Comète"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comète"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "彗星"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "彗星"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kuyruklu Yıldız"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kuyruklu Yıldız"
           }
         }
       }
     },
-    "Continue — Level %lld": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weiter — Level %lld"
+    "Continue — Level %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter — Level %lld"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continuar — Nivel %lld"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar — Nivel %lld"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continuer — Niveau %lld"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuer — Niveau %lld"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "つづける — レベル%lld"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "つづける — レベル%lld"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Devam Et — Bölüm %lld"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devam Et — Bölüm %lld"
           }
         }
       }
     },
-    "Coral": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Koralle"
+    "Coral" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koralle"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Coral"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coral"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Corail"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Corail"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "サンゴ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンゴ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mercan"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mercan"
           }
         }
       }
     },
-    "Crystal": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kristall"
+    "Crystal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kristall"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cristal"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cristal"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cristal"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cristal"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "クリスタル"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "クリスタル"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kristal"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kristal"
           }
         }
       }
     },
-    "Dawn": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Morgenrot"
+    "Dawn" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgenrot"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alba"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alba"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aube"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aube"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "夜明け"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "夜明け"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Şafak"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Şafak"
           }
         }
       }
     },
-    "Diamond": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diamant"
+    "Diamond" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diamant"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diamante"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diamante"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diamant"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diamant"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ダイヤ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダイヤ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Elmas"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elmas"
           }
         }
       }
     },
-    "Direct support for an independent developer": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Direkte Unterstützung für einen unabhängigen Entwickler"
+    "Direct support for an independent developer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Direkte Unterstützung für einen unabhängigen Entwickler"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apoyo directo a un desarrollador independiente"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apoyo directo a un desarrollador independiente"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Un soutien direct à un développeur indépendant"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un soutien direct à un développeur indépendant"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "個人開発者への直接支援"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "個人開発者への直接支援"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bağımsız geliştiriciye doğrudan destek"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağımsız geliştiriciye doğrudan destek"
           }
         }
       }
     },
-    "Endless": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Endlos"
+    "Endless" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Endlos"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Infinito"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Infinito"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Infini"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Infini"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "エンドレス"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エンドレス"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sonsuz"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonsuz"
           }
         }
       }
     },
-    "Endless Mode": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Endlosmodus"
+    "Endless Mode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Endlosmodus"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modo Infinito"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo Infinito"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mode Infini"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode Infini"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "エンドレスモード"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エンドレスモード"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sonsuz Mod"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonsuz Mod"
           }
         }
       }
     },
-    "Enter Endless Mode": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zum Endlosmodus"
+    "Enter Endless Mode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Endlosmodus"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ir al modo infinito"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir al modo infinito"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Passer au mode infini"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passer au mode infini"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "エンドレスモードへ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エンドレスモードへ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sonsuz Moda Geç"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonsuz Moda Geç"
           }
         }
       }
     },
-    "Enter code": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Code eingeben"
+    "Enter code" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code eingeben"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Introduce el código"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Introduce el código"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saisir le code"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saisir le code"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "コードを入力"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コードを入力"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kodu gir"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kodu gir"
           }
         }
       }
     },
-    "Equip": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anlegen"
+    "Equip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anlegen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Equipar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Equipar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Équiper"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Équiper"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "装備"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "装備"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kuşan"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kuşan"
           }
         }
       }
     },
-    "Equipped": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Angelegt"
+    "Equipped" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angelegt"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Equipado"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Equipado"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Équipé"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Équipé"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "装備中"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "装備中"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kuşanıldı"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kuşanıldı"
           }
         }
       }
     },
-    "Flame": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flamme"
+    "Flame" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flamme"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Llama"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llama"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flamme"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flamme"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ほのお"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ほのお"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alev"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alev"
           }
         }
       }
     },
-    "Fly through the stars to collect them!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flieg durch die Sterne, um sie einzusammeln!"
+    "Fly through the stars to collect them!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flieg durch die Sterne, um sie einzusammeln!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Vuela a través de las estrellas para recogerlas!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Vuela a través de las estrellas para recogerlas!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Traversez les étoiles pour les récupérer !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traversez les étoiles pour les récupérer !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "星の中を飛んで集めよう！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "星の中を飛んで集めよう！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yıldızların içinden uçarak topla!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yıldızların içinden uçarak topla!"
           }
         }
       }
     },
-    "Forest": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wald"
+    "Forest" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wald"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bosque"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bosque"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Forêt"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forêt"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "森"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "森"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Orman"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orman"
           }
         }
       }
     },
-    "Game Over": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Game Over"
+    "Game Over" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Game Over"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fin del juego"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fin del juego"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Partie terminée"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partie terminée"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ゲームオーバー"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲームオーバー"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Oyun Bitti"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyun Bitti"
           }
         }
       }
     },
-    "Global ranking not connected": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weltrangliste nicht verbunden"
+    "Global ranking not connected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weltrangliste nicht verbunden"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Clasificación mundial no conectada"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clasificación mundial no conectada"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Classement mondial non connecté"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classement mondial non connecté"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "世界ランキング未接続"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "世界ランキング未接続"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Küresel sıralama bağlı değil"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Küresel sıralama bağlı değil"
           }
         }
       }
     },
-    "Go Premium": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Premium holen"
+    "Go Premium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium holen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hazte Premium"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hazte Premium"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Passer Premium"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passer Premium"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プレミアムにする"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレミアムにする"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Premium'a Geç"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium'a Geç"
           }
         }
       }
     },
-    "Great! Tap again to hop to the next ring.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Super! Tippe erneut, um zum nächsten Ring zu springen."
+    "Great! Tap again to hop to the next ring." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Super! Tippe erneut, um zum nächsten Ring zu springen."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Genial! Toca de nuevo para saltar al siguiente anillo."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Genial! Toca de nuevo para saltar al siguiente anillo."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Génial ! Touchez encore pour sauter à l'anneau suivant."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Génial ! Touchez encore pour sauter à l'anneau suivant."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "いいね！もう一度タップして次のリングへ。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "いいね！もう一度タップして次のリングへ。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Harika! Sonraki halkaya geçmek için tekrar dokun."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Harika! Sonraki halkaya geçmek için tekrar dokun."
           }
         }
       }
     },
-    "Haptics": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Haptik"
+    "Haptics" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haptik"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vibración"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vibración"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vibrations"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vibrations"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "振動"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "振動"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Titreşim"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titreşim"
           }
         }
       }
     },
-    "Have a code?": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hast du einen Code?"
+    "Have a code?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hast du einen Code?"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¿Tienes un código?"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Tienes un código?"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tu as un code ?"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu as un code ?"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "コードをお持ちですか？"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コードをお持ちですか？"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kodun mu var?"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kodun mu var?"
           }
         }
       }
     },
-    "How to play": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "So wird gespielt"
+    "How to play" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So wird gespielt"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cómo jugar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cómo jugar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Comment jouer"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comment jouer"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "あそびかた"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あそびかた"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nasıl oynanır"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nasıl oynanır"
           }
         }
       }
     },
-    "If you love the game, you can buy the developer a coffee ☕️": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wenn dir das Spiel gefällt, kannst du dem Entwickler einen Kaffee spendieren ☕️"
+    "If you love the game, you can buy the developer a coffee ☕️" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn dir das Spiel gefällt, kannst du dem Entwickler einen Kaffee spendieren ☕️"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si te gusta el juego, puedes invitar a un café al desarrollador ☕️"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si te gusta el juego, puedes invitar a un café al desarrollador ☕️"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si tu aimes le jeu, tu peux offrir un café au développeur ☕️"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si tu aimes le jeu, tu peux offrir un café au développeur ☕️"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "気に入ったら開発者にコーヒーをおごってください ☕️"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "気に入ったら開発者にコーヒーをおごってください ☕️"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Oyunu sevdiysen geliştiriciye bir kahve ısmarlayabilirsin ☕️"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyunu sevdiysen geliştiriciye bir kahve ısmarlayabilirsin ☕️"
           }
         }
       }
     },
-    "In the real version an interstitial ad is shown here.\nPremium removes all ads.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In der echten Version wird hier eine Werbeanzeige gezeigt.\nPremium entfernt alle Werbung."
+    "In the real version an interstitial ad is shown here.\nPremium removes all ads." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In der echten Version wird hier eine Werbeanzeige gezeigt.\nPremium entfernt alle Werbung."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "En la versión real aquí se muestra un anuncio.\nPremium elimina todos los anuncios."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En la versión real aquí se muestra un anuncio.\nPremium elimina todos los anuncios."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dans la version finale, une pub s'affiche ici.\nPremium supprime toutes les pubs."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dans la version finale, une pub s'affiche ici.\nPremium supprime toutes les pubs."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "製品版ではここに広告が表示されます。\nプレミアムで全広告が消えます。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "製品版ではここに広告が表示されます。\nプレミアムで全広告が消えます。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gerçek sürümde burada geçiş reklamı gösterilir.\nPremium ile tüm reklamlar kalkar."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerçek sürümde burada geçiş reklamı gösterilir.\nPremium ile tüm reklamlar kalkar."
           }
         }
       }
     },
-    "Invalid code": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ungültiger Code"
+    "Invalid code" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungültiger Code"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Código no válido"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código no válido"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Code invalide"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code invalide"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "無効なコード"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無効なコード"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geçersiz kod"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geçersiz kod"
           }
         }
       }
     },
-    "LUMO": {
-      "shouldTranslate": false
+    "LUMO" : {
+      "shouldTranslate" : false
     },
-    "LUMO Premium": {
-      "shouldTranslate": false
+    "LUMO Premium" : {
+      "shouldTranslate" : false
     },
-    "Level %lld": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level %lld"
+    "Level %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level %lld"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nivel %lld"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nivel %lld"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niveau %lld"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niveau %lld"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "レベル%lld"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レベル%lld"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bölüm %lld"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bölüm %lld"
           }
         }
       }
     },
-    "Level %lld/%lld": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level %lld/%lld"
+    "Level %lld/%lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level %lld/%lld"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nivel %lld/%lld"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nivel %lld/%lld"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niveau %lld/%lld"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niveau %lld/%lld"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "レベル%lld/%lld"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レベル%lld/%lld"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bölüm %lld/%lld"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bölüm %lld/%lld"
           }
         }
       }
     },
-    "Level Complete!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level geschafft!"
+    "Level Complete!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level geschafft!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Nivel completado!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Nivel completado!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niveau terminé !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niveau terminé !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "レベルクリア！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レベルクリア！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bölüm Tamamlandı!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bölüm Tamamlandı!"
           }
         }
       }
     },
-    "Levels": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Levels"
+    "Levels" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Levels"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niveles"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niveles"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niveaux"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niveaux"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "レベル一覧"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レベル一覧"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bölümler"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bölümler"
           }
         }
       }
     },
-    "Light": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Licht"
+    "Light" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Luz"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luz"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lumière"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lumière"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ひかり"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ひかり"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Işık"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Işık"
           }
         }
       }
     },
-    "Main Menu": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hauptmenü"
+    "Main Menu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hauptmenü"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Menú principal"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menú principal"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Menu principal"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menu principal"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "メインメニュー"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メインメニュー"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ana Menü"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ana Menü"
           }
         }
       }
     },
-    "Moving rings": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bewegliche Ringe"
+    "Moving rings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bewegliche Ringe"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anillos móviles"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anillos móviles"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anneaux mobiles"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anneaux mobiles"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "うごくリング"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "うごくリング"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hareketli halkalar"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hareketli halkalar"
           }
         }
       }
     },
-    "Music": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Musik"
+    "Music" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Musik"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Música"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Música"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Musique"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Musique"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "音楽"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音楽"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Müzik"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Müzik"
           }
         }
       }
     },
-    "Nebula": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nebula"
+    "Nebula" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nebula"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nebulosa"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nebulosa"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nébuleuse"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nébuleuse"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ネビュラ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ネビュラ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nebula"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nebula"
           }
         }
       }
     },
-    "New Record!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neuer Rekord!"
+    "New Record!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neuer Rekord!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Nuevo récord!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Nuevo récord!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nouveau record !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau record !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "新記録！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新記録！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yeni Rekor!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni Rekor!"
           }
         }
       }
     },
-    "Next Level": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nächstes Level"
+    "Next Level" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächstes Level"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Siguiente nivel"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiente nivel"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niveau suivant"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niveau suivant"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "次のレベル"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次のレベル"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sonraki Bölüm"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonraki Bölüm"
           }
         }
       }
     },
-    "Night": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nacht"
+    "Night" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nacht"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Noche"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noche"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nuit"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuit"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "夜"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "夜"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gece"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gece"
           }
         }
       }
     },
-    "No purchase gives a gameplay advantage. There is no pay-to-win in LUMO.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kein Kauf verschafft einen Spielvorteil. In LUMO gibt es kein Pay-to-Win."
+    "No purchase gives a gameplay advantage. There is no pay-to-win in LUMO." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Kauf verschafft einen Spielvorteil. In LUMO gibt es kein Pay-to-Win."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ninguna compra da ventaja en el juego. En LUMO no hay pay-to-win."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna compra da ventaja en el juego. En LUMO no hay pay-to-win."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aucun achat ne donne d'avantage en jeu. Pas de pay-to-win dans LUMO."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun achat ne donne d'avantage en jeu. Pas de pay-to-win dans LUMO."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "課金でゲームが有利になることはありません。LUMOにPay-to-Winはありません。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "課金でゲームが有利になることはありません。LUMOにPay-to-Winはありません。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hiçbir satın alma oyun avantajı vermez. LUMO'da pay-to-win yoktur."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiçbir satın alma oyun avantajı vermez. LUMO'da pay-to-win yoktur."
           }
         }
       }
     },
-    "No scores yet — be the first!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Noch keine Punkte — sei der Erste!"
+    "No scores yet — be the first!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Punkte — sei der Erste!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aún no hay puntuaciones — ¡sé el primero!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay puntuaciones — ¡sé el primero!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aucun score — sois le premier !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun score — sois le premier !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "まだスコアなし — 一番乗りを！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだスコアなし — 一番乗りを！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Henüz skor yok — ilk sen ol!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Henüz skor yok — ilk sen ol!"
           }
         }
       }
     },
-    "Now reach the dashed gate to finish!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erreiche jetzt das gestrichelte Tor!"
+    "Now reach the dashed gate to finish!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreiche jetzt das gestrichelte Tor!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Ahora llega a la puerta punteada para terminar!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Ahora llega a la puerta punteada para terminar!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Atteignez maintenant le portail en pointillés !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atteignez maintenant le portail en pointillés !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "点線のゲートまで行けばクリア！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点線のゲートまで行けばクリア！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Şimdi kesik çizgili kapıya ulaş — bölümü bitir!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Şimdi kesik çizgili kapıya ulaş — bölümü bitir!"
           }
         }
       }
     },
-    "Orb Style": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Orb-Stil"
+    "Orb Style" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orb-Stil"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estilo del orbe"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estilo del orbe"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Style de l'orbe"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Style de l'orbe"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "オーブのスタイル"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オーブのスタイル"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Küre Stili"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Küre Stili"
           }
         }
       }
     },
-    "Paused": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pausiert"
+    "Paused" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausiert"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pausa"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausa"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pause"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "一時停止"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一時停止"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Durduruldu"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durduruldu"
           }
         }
       }
     },
-    "Perfect! You passed the red arc.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Perfekt! Du hast den roten Bogen überwunden."
+    "Perfect! You passed the red arc." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfekt! Du hast den roten Bogen überwunden."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Perfecto! Pasaste el arco rojo."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Perfecto! Pasaste el arco rojo."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parfait ! Vous avez passé l'arc rouge."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parfait ! Vous avez passé l'arc rouge."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "パーフェクト！赤いアークを通過した。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パーフェクト！赤いアークを通過した。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mükemmel! Kırmızı yayı geçtin."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mükemmel! Kırmızı yayı geçtin."
           }
         }
       }
     },
-    "Photo": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto"
+    "Photo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Foto"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photo"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "フォト"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "フォト"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fotoğraf"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotoğraf"
           }
         }
       }
     },
-    "Pixel": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pixel"
+    "Pixel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pixel"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Píxel"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Píxel"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pixel"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pixel"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ピクセル"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ピクセル"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Piksel"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piksel"
           }
         }
       }
     },
-    "Play": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spielen"
+    "Play" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spielen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jugar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jouer"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jouer"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プレイ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレイ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Oyna"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyna"
           }
         }
       }
     },
-    "Play Again": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nochmal spielen"
+    "Play Again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nochmal spielen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jugar de nuevo"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar de nuevo"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rejouer"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rejouer"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "もう一度プレイ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もう一度プレイ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tekrar Oyna"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrar Oyna"
           }
         }
       }
     },
-    "Premium ✓": {
-      "shouldTranslate": false
+    "Premium ✓" : {
+      "shouldTranslate" : false
     },
-    "Rainbow": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Regenbogen"
+    "Rainbow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regenbogen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Arcoíris"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arcoíris"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Arc-en-ciel"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arc-en-ciel"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "レインボー"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レインボー"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gökkuşağı"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gökkuşağı"
           }
         }
       }
     },
-    "Reach the dashed turquoise gate to finish the level.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erreiche das gestrichelte türkisfarbene Tor, um das Level zu beenden."
+    "Reach the dashed turquoise gate to finish the level." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreiche das gestrichelte türkisfarbene Tor, um das Level zu beenden."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Llega a la puerta turquesa punteada para terminar el nivel."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llega a la puerta turquesa punteada para terminar el nivel."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Atteignez le portail turquoise en pointillés pour terminer le niveau."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atteignez le portail turquoise en pointillés pour terminer le niveau."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "点線のターコイズのゲートに着いたらクリア。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点線のターコイズのゲートに着いたらクリア。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bölümü bitirmek için kesik çizgili turkuaz kapıya ulaş."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bölümü bitirmek için kesik çizgili turkuaz kapıya ulaş."
           }
         }
       }
     },
-    "Red arcs hurt. Time your tap so the orb isn't touching them.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rote Bögen sind gefährlich. Tippe so, dass die Kugel sie nicht berührt."
+    "Red arcs hurt. Time your tap so the orb isn't touching them." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rote Bögen sind gefährlich. Tippe so, dass die Kugel sie nicht berührt."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los arcos rojos hacen daño. Calcula tu toque para que el orbe no los toque."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los arcos rojos hacen daño. Calcula tu toque para que el orbe no los toque."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Les arcs rouges sont dangereux. Touchez au bon moment pour que l'orbe ne les touche pas."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les arcs rouges sont dangereux. Touchez au bon moment pour que l'orbe ne les touche pas."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "赤いアークは危険。オーブが触れないようにタイミングよくタップ。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "赤いアークは危険。オーブが触れないようにタイミングよくタップ。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kırmızı yaylar zarar verir. Küre onlara değmeyecek şekilde zamanla dokun."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kırmızı yaylar zarar verir. Küre onlara değmeyecek şekilde zamanla dokun."
           }
         }
       }
     },
-    "Redeem": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einlösen"
+    "Redeem" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einlösen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Canjear"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canjear"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Utiliser"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "引き換え"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "引き換え"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kullan"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullan"
           }
         }
       }
     },
-    "Restart": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neu starten"
+    "Restart" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neu starten"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reiniciar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reiniciar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recommencer"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recommencer"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "やり直す"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "やり直す"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yeniden Başla"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeniden Başla"
           }
         }
       }
     },
-    "Restore Purchases": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Käufe wiederherstellen"
+    "Restore Purchases" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käufe wiederherstellen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restaurar compras"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar compras"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restaurer les achats"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurer les achats"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "購入を復元"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入を復元"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Satın Alımları Geri Yükle"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satın Alımları Geri Yükle"
           }
         }
       }
     },
-    "Resume": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fortsetzen"
+    "Resume" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortsetzen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continuar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reprendre"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reprendre"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "再開"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再開"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Devam Et"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devam Et"
           }
         }
       }
     },
-    "Ring": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ring"
+    "Ring" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ring"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anillo"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anillo"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anneau"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anneau"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "リング"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リング"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Halka"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halka"
           }
         }
       }
     },
-    "Save": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Speichern"
+    "Save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichern"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Guardar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enregistrer"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "保存"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaydet"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaydet"
           }
         }
       }
     },
-    "Settings": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen"
+    "Settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajustes"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Réglages"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ayarlar"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayarlar"
           }
         }
       }
     },
-    "Shop": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shop"
+    "Shop" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shop"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tienda"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tienda"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Boutique"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boutique"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ショップ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ショップ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mağaza"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mağaza"
           }
         }
       }
     },
-    "Skip": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Überspringen"
+    "Skip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überspringen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saltar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saltar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Passer"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passer"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "スキップ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スキップ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Atla"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atla"
           }
         }
       }
     },
-    "Some rings drift back and forth. Wait for the right moment.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Manche Ringe bewegen sich hin und her. Warte auf den richtigen Moment."
+    "Some rings drift back and forth. Wait for the right moment." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manche Ringe bewegen sich hin und her. Warte auf den richtigen Moment."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Algunos anillos se mueven de un lado a otro. Espera el momento justo."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algunos anillos se mueven de un lado a otro. Espera el momento justo."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Certains anneaux vont et viennent. Attendez le bon moment."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certains anneaux vont et viennent. Attendez le bon moment."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "リングの中には左右に動くものもあります。タイミングを待とう。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リングの中には左右に動くものもあります。タイミングを待とう。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bazı halkalar ileri geri hareket eder. Doğru anı bekle."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bazı halkalar ileri geri hareket eder. Doğru anı bekle."
           }
         }
       }
     },
-    "Sound Effects": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Soundeffekte"
+    "Sound Effects" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soundeffekte"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Efectos de sonido"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Efectos de sonido"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Effets sonores"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effets sonores"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "効果音"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "効果音"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ses Efektleri"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ses Efektleri"
           }
         }
       }
     },
-    "Speed Run": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Speed Run"
+    "Speed Run" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speed Run"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Speed Run"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speed Run"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Speed Run"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speed Run"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "スピードラン"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スピードラン"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Speed Run"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speed Run"
           }
         }
       }
     },
-    "Star": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stern"
+    "Star" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stern"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estrella"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estrella"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Étoile"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étoile"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "スター"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スター"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yıldız"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yıldız"
           }
         }
       }
     },
-    "Tap anywhere to launch the orb!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tippe irgendwohin – die Kugel fliegt los!"
+    "Tap anywhere to launch the orb!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe irgendwohin – die Kugel fliegt los!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Toca en cualquier parte para lanzar el orbe!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Toca en cualquier parte para lanzar el orbe!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Touchez n'importe où pour lancer l'orbe !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchez n'importe où pour lancer l'orbe !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "どこかをタップしてオーブを飛ばそう！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "どこかをタップしてオーブを飛ばそう！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ekrana dokun — küre fırlasın!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ekrana dokun — küre fırlasın!"
           }
         }
       }
     },
-    "Tap to continue": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zum Fortfahren tippen"
+    "Tap to continue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Fortfahren tippen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toca para continuar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca para continuar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Touchez pour continuer"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchez pour continuer"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "タップでつづける"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タップでつづける"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Devam etmek için dokun"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devam etmek için dokun"
           }
         }
       }
     },
-    "Test Ad": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Testanzeige"
+    "Test Ad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Testanzeige"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anuncio de prueba"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anuncio de prueba"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Annonce test"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annonce test"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "テスト広告"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テスト広告"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Test Reklamı"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Test Reklamı"
           }
         }
       }
     },
-    "Thank you for your support!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Danke für deine Unterstützung!"
+    "Thank you for your support!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Danke für deine Unterstützung!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Gracias por tu apoyo!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Gracias por tu apoyo!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Merci pour ton soutien !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merci pour ton soutien !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ご支援ありがとうございます！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ご支援ありがとうございます！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Desteğin için teşekkürler!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desteğin için teşekkürler!"
           }
         }
       }
     },
-    "Thank you! Premium is active": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Danke! Premium ist aktiv"
+    "Thank you! Premium is active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Danke! Premium ist aktiv"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Gracias! Premium está activo"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Gracias! Premium está activo"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Merci ! Premium est actif"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merci ! Premium est actif"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ありがとうございます！プレミアム有効"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ありがとうございます！プレミアム有効"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Teşekkürler! Premium aktif"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teşekkürler! Premium aktif"
           }
         }
       }
     },
-    "The first %lld levels are completely ad-free": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die ersten %lld Level sind komplett werbefrei"
+    "The first %lld levels are completely ad-free" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die ersten %lld Level sind komplett werbefrei"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los primeros %lld niveles no tienen anuncios"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los primeros %lld niveles no tienen anuncios"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Les %lld premiers niveaux sont entièrement sans pub"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les %lld premiers niveaux sont entièrement sans pub"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "最初の%lldレベルは広告なし"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最初の%lldレベルは広告なし"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İlk %lld bölüm tamamen reklamsız"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İlk %lld bölüm tamamen reklamsız"
           }
         }
       }
     },
-    "The gate": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Tor"
+    "The gate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Tor"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La puerta"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La puerta"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le portail"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le portail"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ゲート"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲート"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kapı"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapı"
           }
         }
       }
     },
-    "The orb orbits a ring. Tap anywhere to launch it toward the next ring.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Kugel umkreist einen Ring. Tippe irgendwo, um sie zum nächsten Ring zu schleudern."
+    "The orb orbits a ring. Tap anywhere to launch it toward the next ring." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Kugel umkreist einen Ring. Tippe irgendwo, um sie zum nächsten Ring zu schleudern."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El orbe gira alrededor de un anillo. Toca en cualquier parte para lanzarlo al siguiente anillo."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El orbe gira alrededor de un anillo. Toca en cualquier parte para lanzarlo al siguiente anillo."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "L'orbe tourne autour d'un anneau. Touchez n'importe où pour le lancer vers l'anneau suivant."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'orbe tourne autour d'un anneau. Touchez n'importe où pour le lancer vers l'anneau suivant."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "オーブはリングの周りを回ります。どこかをタップして次のリングへ飛ばそう。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オーブはリングの周りを回ります。どこかをタップして次のリングへ飛ばそう。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Küre bir halkanın çevresinde döner. Bir sonraki halkaya fırlatmak için herhangi bir yere dokun."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Küre bir halkanın çevresinde döner. Bir sonraki halkaya fırlatmak için herhangi bir yere dokun."
           }
         }
       }
     },
-    "Theme": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Theme"
+    "Theme" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theme"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tema"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tema"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thème"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thème"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "テーマ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テーマ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tema"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tema"
           }
         }
       }
     },
-    "This is the name shown on the world ranking.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieser Name erscheint in der Weltrangliste."
+    "This is the name shown on the world ranking." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Name erscheint in der Weltrangliste."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Este nombre aparece en la clasificación mundial."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este nombre aparece en la clasificación mundial."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ce nom apparaît dans le classement mondial."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce nom apparaît dans le classement mondial."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "この名前が世界ランキングに表示されます。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この名前が世界ランキングに表示されます。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bu ad dünya sıralamasında görünür."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu ad dünya sıralamasında görünür."
           }
         }
       }
     },
-    "This level is timed! Reach the gate before the countdown hits zero.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieses Level ist auf Zeit! Erreiche das Tor, bevor der Countdown abläuft."
+    "This level is timed! Reach the gate before the countdown hits zero." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Level ist auf Zeit! Erreiche das Tor, bevor der Countdown abläuft."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Este nivel es contrarreloj! Llega a la puerta antes de que el contador llegue a cero."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Este nivel es contrarreloj! Llega a la puerta antes de que el contador llegue a cero."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ce niveau est chronométré ! Atteignez le portail avant la fin du compte à rebours."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce niveau est chronométré ! Atteignez le portail avant la fin du compte à rebours."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "この面は時間制限あり！カウントがゼロになる前にゲートへ。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この面は時間制限あり！カウントがゼロになる前にゲートへ。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bu bölüm süreli! Geri sayım sıfırlanmadan kapıya ulaş."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu bölüm süreli! Geri sayım sıfırlanmadan kapıya ulaş."
           }
         }
       }
     },
-    "This ring drifts — time your jump!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieser Ring bewegt sich – springe im richtigen Moment!"
+    "This ring drifts — time your jump!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Ring bewegt sich – springe im richtigen Moment!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Este anillo se mueve: ¡calcula tu salto!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este anillo se mueve: ¡calcula tu salto!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cet anneau bouge – sautez au bon moment !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cet anneau bouge – sautez au bon moment !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "このリングは動く——タイミングよくジャンプ！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このリングは動く——タイミングよくジャンプ！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bu halka kayıyor — sıçramanı zamanla!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu halka kayıyor — sıçramanı zamanla!"
           }
         }
       }
     },
-    "Tip Jar": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trinkgeldglas"
+    "Tip Jar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trinkgeldglas"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bote de propinas"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bote de propinas"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pot à pourboires"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pot à pourboires"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "チップジャー"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チップジャー"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bahşiş Kavanozu"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bahşiş Kavanozu"
           }
         }
       }
     },
-    "Try Again": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nochmal versuchen"
+    "Try Again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nochmal versuchen"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reintentar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Réessayer"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réessayer"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "リトライ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リトライ"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tekrar Dene"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrar Dene"
           }
         }
       }
     },
-    "Unlock with stars ★": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mit Sternen ★"
+    "Unlock with stars ★" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Sternen ★"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Desbloquea con estrellas ★"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquea con estrellas ★"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Débloquer avec des étoiles ★"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Débloquer avec des étoiles ★"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "スターで解放 ★"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スターで解放 ★"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yıldızla aç ★"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yıldızla aç ★"
           }
         }
       }
     },
-    "Username": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Benutzername"
+    "Username" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benutzername"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nombre de usuario"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre de usuario"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nom d'utilisateur"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom d'utilisateur"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ユーザー名"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kullanıcı Adı"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanıcı Adı"
           }
         }
       }
     },
-    "Version 1.0": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Version 1.0"
+    "Version 1.0" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version 1.0"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Versión 1.0"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versión 1.0"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Version 1.0"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version 1.0"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バージョン 1.0"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バージョン 1.0"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sürüm 1.0"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sürüm 1.0"
           }
         }
       }
     },
-    "Wait for the red arc to move away… then tap!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Warte, bis der rote Bogen weg ist … dann tippe!"
+    "Wait for the red arc to move away… then tap!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warte, bis der rote Bogen weg ist … dann tippe!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Espera a que el arco rojo se aleje… ¡y toca!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espera a que el arco rojo se aleje… ¡y toca!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Attendez que l'arc rouge s'éloigne… puis touchez !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attendez que l'arc rouge s'éloigne… puis touchez !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "赤いアークが離れるのを待って…タップ！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "赤いアークが離れるのを待って…タップ！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kırmızı yay uzaklaşana kadar bekle… şimdi dokun!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kırmızı yay uzaklaşana kadar bekle… şimdi dokun!"
           }
         }
       }
     },
-    "Watch out!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Achtung!"
+    "Watch out!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achtung!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Cuidado!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Cuidado!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Attention !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attention !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "きけん！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "きけん！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dikkat!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dikkat!"
           }
         }
       }
     },
-    "World Ranking": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weltrangliste"
+    "World Ranking" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weltrangliste"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Clasificación mundial"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clasificación mundial"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Classement mondial"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classement mondial"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "世界ランキング"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "世界ランキング"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dünya Sıralaması"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dünya Sıralaması"
           }
         }
       }
     },
-    "You finished all levels! 🎉": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Du hast alle Level geschafft! 🎉"
+    "You finished all levels! 🎉" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast alle Level geschafft! 🎉"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Has terminado todos los niveles! 🎉"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Has terminado todos los niveles! 🎉"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tu as terminé tous les niveaux ! 🎉"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu as terminé tous les niveaux ! 🎉"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "全レベルクリア！🎉"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全レベルクリア！🎉"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tüm bölümleri bitirdin! 🎉"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm bölümleri bitirdin! 🎉"
           }
         }
       }
     },
-    "You're ready!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Du bist bereit!"
+    "You're ready!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du bist bereit!"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Estás listo!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Estás listo!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vous êtes prêt !"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous êtes prêt !"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "準備かんりょう！"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準備かんりょう！"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hazırsın!"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hazırsın!"
           }
         }
       }
     },
-    "Your best": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deine Bestleistung"
+    "Your best" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Bestleistung"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tu mejor marca"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu mejor marca"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ton record"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ton record"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "あなたのベスト"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたのベスト"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "En iyin"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En iyin"
           }
         }
       }
     },
-    "Your photo stays on your device only.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dein Foto bleibt nur auf deinem Gerät."
+    "Your photo stays on your device only." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Foto bleibt nur auf deinem Gerät."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tu foto se queda solo en tu dispositivo."
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu foto se queda solo en tu dispositivo."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ta photo reste uniquement sur ton appareil."
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta photo reste uniquement sur ton appareil."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "写真は端末内にのみ保存されます。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真は端末内にのみ保存されます。"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fotoğrafın yalnızca cihazında kalır."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotoğrafın yalnızca cihazında kalır."
           }
         }
       }
     },
-    "the journey of light": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "die Reise des Lichts"
+    "the journey of light" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "die Reise des Lichts"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "el viaje de la luz"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "el viaje de la luz"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "le voyage de la lumière"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "le voyage de la lumière"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ひかりの旅"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ひかりの旅"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ışığın yolculuğu"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ışığın yolculuğu"
           }
         }
       }
     },
-    "username": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "benutzername"
+    "username" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "benutzername"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "usuario"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "usuario"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "nom d'utilisateur"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nom d'utilisateur"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ユーザー名"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "kullanıcı adı"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kullanıcı adı"
           }
         }
       }
     },
-    "you": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "du"
+    "you" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "du"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "tú"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tú"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "toi"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "toi"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "あなた"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなた"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "sen"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sen"
           }
         }
       }
     },
-    "☕️": {
-      "shouldTranslate": false
+    "☕️" : {
+      "shouldTranslate" : false
     },
-    "🌟": {
-      "shouldTranslate": false
+    "🌟" : {
+      "shouldTranslate" : false
+    },
+    "Careful now!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Careful now!"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Artık dikkat!"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt aufgepasst!"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Ahora con cuidado!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prudence désormais !"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ここからは要注意！"
+          }
+        }
+      }
+    },
+    "From this level on, if the orb flies off the screen, you lose the attempt." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From this level on, if the orb flies off the screen, you lose the attempt."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu bölümden itibaren top ekrandan çıkarsa deneme yanar."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ab diesem Level verlierst du den Versuch, wenn die Kugel aus dem Bildschirm fliegt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A partir de este nivel, si el orbe sale de la pantalla, pierdes el intento."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À partir de ce niveau, si l'orbe sort de l'écran, l'essai est perdu."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このレベルからは、オーブが画面の外に出るとミスになります。"
+          }
+        }
+      }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }
