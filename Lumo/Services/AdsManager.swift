@@ -145,7 +145,7 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
     func preload() {
         if !startedSDK {
             startedSDK = true
-            MobileAds.shared.start()
+            MobileAds.shared.start(completionHandler: nil)
         }
         InterstitialAd.load(with: adUnitID, request: Request()) { [weak self] ad, _ in
             self?.interstitial = ad

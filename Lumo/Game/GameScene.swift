@@ -25,7 +25,7 @@ final class GameScene: SKScene {
     // MARK: Ayar sabitleri
     private let flightSpeedFactor: CGFloat = 1.55   // ekran genişliği / sn
     private let orbRadius: CGFloat = 9
-    private let captureGrace: TimeInterval = 0.35   // halkaya oturduktan sonra tehlike bağışıklığı
+    private let captureGrace: TimeInterval = 0.12   // konma anındaki tek karelik yanlış-ölüm koruması
     private let collectDistance: CGFloat = 26
     private let maxFlightTime: TimeInterval = 4.0
     private let respawnDelay: TimeInterval = 0.55
@@ -84,6 +84,18 @@ final class GameScene: SKScene {
     private var timedDeadline: TimeInterval?
     private var lastTimeTickSent = Int.max
 
+    // Tehlike "silahlanması": halkaya konunca kırmızıya değmek öldürür, AMA
+    // tam kırmızının üstüne düşersen önce oradan çıkman beklenir (haksız anlık
+    // ölüm olmaz). Bir kez tehlikeden temizlenince silahlanır; sonraki her temas
+    // öldürür — böylece "ilk çemberi çizerken kırmızıya değince ölmüyor" hatası biter.
+    private var hazardArmed = false
+
+    // "Devam et ya da düş": ileri bölümlerde bir halkada fazla oyalanınca ölürsün.
+    // Halka çevresindeki azalan yay kalan süreyi gösterir; her atlayışta sıfırlanır.
+    private var dwellLimit: TimeInterval?
+    private var dwellStart: TimeInterval = 0
+    private var dwellArc: SKShapeNode?
+
     // Antrenman bölümü görselleri: yazı yerine göstererek öğretir
     private var isTutorial: Bool { mode == .level(LevelLibrary.tutorialID) }
     private var aimLine: SKShapeNode?
@@ -121,6 +133,7 @@ final class GameScene: SKScene {
             let lvl = LevelLibrary.level(id)
             level = lvl
             isBonus = lvl.kind == .bonus
+            dwellLimit = lvl.dwellLimit
             if isBonus { bonusDeadline = lvl.bonusDuration }
             buildRings(lvl.rings)
             buildLumens(lvl.lumens)
@@ -591,9 +604,18 @@ final class GameScene: SKScene {
             }
             checkHazard(ring: ring, angle: angle, time: currentTime)
             checkLumens()
+            // "Devam et ya da düş" — bu halkada fazla oyalanınca süre dolar
+            if let limit = dwellLimit, !spec.isGate {
+                let frac = max(0, 1 - CGFloat((elapsed - dwellStart) / limit))
+                updateDwellArc(ring: ring, fraction: frac)
+                if frac <= 0 { fail() }
+            } else {
+                dwellArc?.isHidden = true
+            }
 
         case .flying(let v):
             aimLine?.isHidden = true
+            dwellArc?.isHidden = true
             flightTime += dt
             orbNode.position = CGPoint(x: orbNode.position.x + v.dx * CGFloat(dt),
                                        y: orbNode.position.y + v.dy * CGFloat(dt))
@@ -604,6 +626,7 @@ final class GameScene: SKScene {
 
         case .dead:
             aimLine?.isHidden = true
+            dwellArc?.isHidden = true
             // Yeniden doğma zamanlaması SKAction yerine burada işlenir:
             // sahne duraklatılsa/aksiyon kaybolsa bile bu yol her zaman çalışır
             if let since = deadSince, elapsed - since >= respawnDelay {
@@ -619,6 +642,7 @@ final class GameScene: SKScene {
 
         case .won:
             aimLine?.isHidden = true
+            dwellArc?.isHidden = true
         }
 
         if case .endless = mode { updateEndlessCamera(dt: dt) }
@@ -654,6 +678,8 @@ final class GameScene: SKScene {
             let direction: CGFloat = cross >= 0 ? 1 : -1
             orbState = .attached(ring: i, angle: angle, direction: direction)
             attachTime = lastUpdate
+            hazardArmed = false
+            dwellStart = elapsed
             combo += 1
 
             ringCircles[i].run(.sequence([.scale(to: 1.15, duration: 0.1), .scale(to: 1.0, duration: 0.25)]))
@@ -679,16 +705,25 @@ final class GameScene: SKScene {
 
     private func checkHazard(ring: Int, angle: CGFloat, time: TimeInterval) {
         let spec = ringSpecs[ring]
-        guard !spec.hazardArcs.isEmpty, time - attachTime > captureGrace else { return }
+        guard !spec.hazardArcs.isEmpty else { return }
+
+        // Küre şu an herhangi bir kırmızı yayın üstünde mi?
         let rot = CGFloat(elapsed) * spec.hazardRotationSpeed
+        var inHazard = false
         for arc in spec.hazardArcs {
             var rel = (angle - rot - arc.lowerBound).truncatingRemainder(dividingBy: 2 * .pi)
             if rel < 0 { rel += 2 * .pi }
-            if rel <= (arc.upperBound - arc.lowerBound) {
-                fail()
-                return
-            }
+            if rel <= (arc.upperBound - arc.lowerBound) { inHazard = true; break }
         }
+
+        if !hazardArmed {
+            // Henüz silahlanmadıysa: tam kırmızının üstüne düşmüş olabilirsin —
+            // oradan çıkana (ve konma karesini geçene) kadar bağışıksın.
+            if !inHazard, time - attachTime > captureGrace { hazardArmed = true }
+            return
+        }
+        // Silahlandıktan sonra kırmızıya HER değiş öldürür (ilk tur dahil)
+        if inHazard { fail() }
     }
 
     private func checkLumens() {
@@ -718,6 +753,36 @@ final class GameScene: SKScene {
         if !frame.contains(orbNode.position) { fail() }
     }
 
+    /// Aktif halkanın çevresinde kalan oyalanma süresini gösteren azalan yay.
+    /// Üstten başlar, saat yönünde tükenir; süre azaldıkça kırmızıya döner.
+    private func updateDwellArc(ring: Int, fraction: CGFloat) {
+        let arc: SKShapeNode
+        if let existing = dwellArc {
+            arc = existing
+        } else {
+            let n = SKShapeNode()
+            n.lineWidth = 4
+            n.lineCap = .round
+            n.glowWidth = 4
+            n.zPosition = 16
+            n.fillColor = .clear
+            addChild(n)
+            dwellArc = n
+            arc = n
+        }
+        arc.isHidden = false
+        arc.position = ringCenter(ring, at: elapsed)
+        let r = ringRadius(ring) + 7
+        let start = CGFloat.pi / 2
+        let end = start - max(0.0001, fraction) * 2 * .pi
+        let path = CGMutablePath()
+        path.addArc(center: .zero, radius: r, startAngle: start, endAngle: end, clockwise: true)
+        arc.path = path
+        let low = fraction < 0.34
+        arc.strokeColor = low ? theme.hazard.uiColor : theme.accent.uiColor
+        arc.alpha = low ? 0.95 : 0.7
+    }
+
     // MARK: Kazanma / kaybetme
 
     private func fail() {
@@ -740,6 +805,9 @@ final class GameScene: SKScene {
         orbNode.isHidden = false
         orbState = .attached(ring: start, angle: -.pi / 2, direction: ringSpecs[start].direction)
         attachTime = lastUpdate
+        hazardArmed = false
+        dwellStart = elapsed
+        dwellArc?.isHidden = true
         exitedLastRing = true
         // Süreli bölümde her deneme dolu süreyle başlar
         if let limit = level?.timeLimit {

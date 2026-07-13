@@ -39,6 +39,7 @@ struct Level: Identifiable, Equatable {
     let rings: [RingSpec]
     let lumens: [LumenSpec]
     var timeLimit: TimeInterval? = nil   // süreli bölüm: kapıya bu sürede ulaş (deneme başına)
+    var dwellLimit: TimeInterval? = nil  // "devam et ya da düş": bir halkada bu süreden fazla oyalanınca ölürsün
     var startRing: Int { 0 }
     var bonusDuration: TimeInterval { 25 }
 }
@@ -108,6 +109,19 @@ enum LevelLibrary {
         return n >= 12 && n % 4 == 0
     }
 
+    /// "Devam et ya da düş" mekaniği: 15. normal bölümden itibaren, süreli
+    /// olmayan normal bölümlerde her halkada oyalanma süresi vardır. Süre
+    /// ilerledikçe kısalır (~3.4s → ~2.2s). Halka çevresindeki azalan yay
+    /// oyuncuya kalan süreyi gösterir; süre biterse o deneme yanar.
+    static func dwellLimit(for id: Int) -> TimeInterval? {
+        guard !isBonus(id), !isTimed(id) else { return nil }
+        let n = normalIndex(id)
+        guard n >= 15 else { return nil }
+        let totalNormal = max(1, count - count / 6)
+        let t = Double(n - 1) / Double(max(1, totalNormal - 1))
+        return max(2.2, 3.6 - 1.4 * t)
+    }
+
     static func level(_ id: Int) -> Level {
         if id == tutorialID { return tutorialLevel }
         return isBonus(id) ? bonusLevel(id) : normalLevel(id)
@@ -151,7 +165,8 @@ enum LevelLibrary {
             timeLimit = (Double(rings.count) * (4.0 - 1.4 * t)).rounded()
         }
 
-        return Level(id: id, kind: .normal, rings: rings, lumens: lumens, timeLimit: timeLimit)
+        return Level(id: id, kind: .normal, rings: rings, lumens: lumens,
+                     timeLimit: timeLimit, dwellLimit: dwellLimit(for: id))
     }
 
     // MARK: Bonus turu üretimi — tehlike yok, bol lumen, süre sınırlı
