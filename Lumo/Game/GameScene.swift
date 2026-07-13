@@ -274,6 +274,70 @@ final class GameScene: SKScene {
             container.addChild(core)
             orbCore = core
 
+        case .bubble:
+            let core = SKShapeNode(circleOfRadius: orbRadius * 1.1)
+            core.fillColor = UIColor.white.withAlphaComponent(0.32)
+            core.strokeColor = UIColor.white.withAlphaComponent(0.8)
+            core.lineWidth = 1.5
+            core.glowWidth = 5
+            core.run(.repeatForever(.sequence([
+                .group([.scaleX(to: 1.1, y: 0.92, duration: 1.1), .fadeAlpha(to: 0.85, duration: 1.1)]),
+                .group([.scaleX(to: 0.92, y: 1.1, duration: 1.1), .fadeAlpha(to: 1.0, duration: 1.1)])
+            ])))
+            container.addChild(core)
+            orbCore = core
+
+        case .heart:
+            let core = SKShapeNode(path: Self.heartPath(radius: orbRadius * 1.3))
+            core.fillColor = .systemPink
+            core.strokeColor = .clear
+            core.run(.repeatForever(.sequence([
+                .scale(to: 1.18, duration: 0.12),
+                .scale(to: 1.0, duration: 0.16),
+                .scale(to: 1.12, duration: 0.10),
+                .scale(to: 1.0, duration: 0.18),
+                .wait(forDuration: 0.55)
+            ])))
+            container.addChild(core)
+            orbCore = core
+
+        case .firefly:
+            let body = SKShapeNode(circleOfRadius: orbRadius * 0.75)
+            body.fillColor = UIColor(red: 0.16, green: 0.12, blue: 0.08, alpha: 1)
+            body.strokeColor = .clear
+            container.addChild(body)
+            let tail = SKShapeNode(circleOfRadius: orbRadius * 0.45)
+            tail.fillColor = UIColor(red: 0.75, green: 1.0, blue: 0.4, alpha: 1)
+            tail.strokeColor = .clear
+            tail.glowWidth = 10
+            tail.position = CGPoint(x: 0, y: -orbRadius * 0.65)
+            tail.run(.repeatForever(.sequence([
+                .fadeAlpha(to: 0.15, duration: 0.5),
+                .wait(forDuration: 0.25),
+                .fadeAlpha(to: 1.0, duration: 0.35),
+                .wait(forDuration: 0.9)
+            ])))
+            container.addChild(tail)
+            orbCore = body
+
+        case .cloud:
+            let puffColor = UIColor.white.withAlphaComponent(0.95)
+            let puff1 = SKShapeNode(circleOfRadius: orbRadius * 0.85)
+            puff1.fillColor = puffColor; puff1.strokeColor = .clear
+            puff1.position = CGPoint(x: -orbRadius * 0.55, y: -orbRadius * 0.15)
+            let puff2 = SKShapeNode(circleOfRadius: orbRadius * 1.05)
+            puff2.fillColor = puffColor; puff2.strokeColor = .clear
+            puff2.position = CGPoint(x: 0, y: orbRadius * 0.1)
+            let puff3 = SKShapeNode(circleOfRadius: orbRadius * 0.8)
+            puff3.fillColor = puffColor; puff3.strokeColor = .clear
+            puff3.position = CGPoint(x: orbRadius * 0.6, y: -orbRadius * 0.1)
+            for p in [puff1, puff2, puff3] { container.addChild(p) }
+            puff2.run(.repeatForever(.sequence([
+                .moveBy(x: 0, y: 3, duration: 1.4),
+                .moveBy(x: 0, y: -3, duration: 1.4)
+            ])))
+            orbCore = puff2
+
         case .photo:
             if let photo = orbPhoto {
                 let crop = SKCropNode()
@@ -996,6 +1060,24 @@ final class GameScene: SKScene {
             let p = CGPoint(x: cos(a) * r, y: sin(a) * r)
             if i == 0 { path.move(to: p) } else { path.addLine(to: p) }
         }
+        path.closeSubpath()
+        return path
+    }
+
+    static func heartPath(radius: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        let s = radius
+        path.move(to: CGPoint(x: 0, y: -s * 0.8))
+        path.addCurve(to: CGPoint(x: -s, y: s * 0.35),
+                      control1: CGPoint(x: -s * 0.4, y: -s * 1.3),
+                      control2: CGPoint(x: -s, y: -s * 0.2))
+        path.addArc(center: CGPoint(x: -s * 0.5, y: s * 0.35), radius: s * 0.5,
+                    startAngle: .pi, endAngle: 0, clockwise: false)
+        path.addArc(center: CGPoint(x: s * 0.5, y: s * 0.35), radius: s * 0.5,
+                    startAngle: .pi, endAngle: 0, clockwise: false)
+        path.addCurve(to: CGPoint(x: 0, y: -s * 0.8),
+                      control1: CGPoint(x: s, y: -s * 0.2),
+                      control2: CGPoint(x: s * 0.4, y: -s * 1.3))
         path.closeSubpath()
         return path
     }

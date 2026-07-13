@@ -39,8 +39,8 @@ final class AdsManager: ObservableObject {
     func levelCompleted(level: Int, isPremium: Bool, completion: @escaping () -> Void) -> Bool {
         #if DEBUG
         // DEBUG: test için 2. bölümden itibaren her bölüm sonunda reklam —
-        // öğretici ve 1. bölüm deneyimi temiz kalır. Yayın kuralları ayrıdır.
-        guard level >= 2 else {
+        // öğretici ve 1. bölüm deneyimi temiz kalır. Premium'da hiçbir zaman.
+        guard !isPremium, level >= 2 else {
             completion()
             return false
         }
@@ -63,7 +63,11 @@ final class AdsManager: ObservableObject {
     /// Sonsuz mod oyunu bittiğinde çağrılır.
     func endlessEnded(isPremium: Bool, endlessUnlocked: Bool, completion: @escaping () -> Void) -> Bool {
         #if DEBUG
-        // DEBUG: her sonsuz mod sonunda test reklamı
+        // DEBUG: her sonsuz mod sonunda test reklamı — Premium'da hiçbir zaman.
+        guard !isPremium else {
+            completion()
+            return false
+        }
         return show(completion: completion)
         #else
         guard !isPremium, endlessUnlocked else {

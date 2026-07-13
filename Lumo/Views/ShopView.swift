@@ -11,7 +11,7 @@ struct ShopView: View {
     @State private var codeState: CodeState = .idle
     @FocusState private var codeFocused: Bool
 
-    private enum CodeState { case idle, success, failure }
+    private enum CodeState { case idle, success, failure, bonusGranted }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -100,6 +100,11 @@ struct ShopView: View {
                         codeState = .success
                         AudioEngine.shared.playWin()
                         Haptics.shared.win()
+                    } else if store.recordFailedPromoAttempt() {
+                        progress.grantBonusStars(StoreManager.promoFailBonusStars)
+                        codeState = .bonusGranted
+                        AudioEngine.shared.playWin()
+                        Haptics.shared.win()
                     } else {
                         codeState = .failure
                         AudioEngine.shared.playFail()
@@ -124,6 +129,11 @@ struct ShopView: View {
                 Label("Invalid code", systemImage: "xmark.circle.fill")
                     .font(.system(.caption, design: .rounded).bold())
                     .foregroundStyle(settings.theme.hazard.color)
+            case .bonusGranted:
+                Label("That code wasn't right, but here — 100 stars on the house!",
+                      systemImage: "star.circle.fill")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.lumen.color)
             case .idle:
                 EmptyView()
             }
@@ -394,6 +404,20 @@ struct CharacterPreview: View {
                 Image(systemName: "person.crop.circle").font(.system(size: 18))
                     .foregroundStyle(.white.opacity(0.8))
             }
+        case .bubble:
+            Circle().strokeBorder(.white.opacity(0.85), lineWidth: 1.5)
+                .background(Circle().fill(.white.opacity(0.25)))
+                .frame(width: 18, height: 18)
+        case .heart:
+            Image(systemName: "heart.fill").font(.system(size: 18))
+                .foregroundStyle(Color.pink).shadow(color: .pink, radius: 6)
+        case .firefly:
+            Image(systemName: "sparkle").font(.system(size: 18))
+                .foregroundStyle(Color(red: 0.75, green: 1.0, blue: 0.4))
+                .shadow(color: Color(red: 0.75, green: 1.0, blue: 0.4), radius: 6)
+        case .cloud:
+            Image(systemName: "cloud.fill").font(.system(size: 18))
+                .foregroundStyle(.white)
         }
     }
 }

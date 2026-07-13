@@ -23,6 +23,10 @@ struct OrbStyle: Identifiable, Equatable {
         case flame      // titreşen ateş küresi
         case pixel      // kare "piksel" küre
         case photo      // kürenin içinde oyuncunun kendi fotoğrafı
+        case bubble     // titreşen sabun kabarcığı
+        case heart      // kalp atışı gibi nabız atan kalp
+        case firefly    // yanıp sönen kuyruklu ateşböceği
+        case cloud      // yumuşakça sallanan küçük bulut
     }
 
     let id: String
@@ -39,12 +43,16 @@ struct OrbStyle: Identifiable, Equatable {
         OrbStyle(id: "classic", name: "Light",   unlock: .free,        kind: .classic),
         OrbStyle(id: "star",    name: "Star",    unlock: .free,        kind: .star),
         OrbStyle(id: "ring",    name: "Ring",    unlock: .stars(15),   kind: .ring),
+        OrbStyle(id: "bubble",  name: "Bubble",  unlock: .stars(20),   kind: .bubble),
         OrbStyle(id: "crystal", name: "Crystal", unlock: .stars(25),   kind: .crystal),
         OrbStyle(id: "pixel",   name: "Pixel",   unlock: .stars(40),   kind: .pixel),
+        OrbStyle(id: "heart",   name: "Heart",   unlock: .stars(45),   kind: .heart),
         OrbStyle(id: "comet",   name: "Comet",   unlock: .stars(55),   kind: .comet),
         OrbStyle(id: "diamond", name: "Diamond", unlock: .stars(75),   kind: .diamond),
+        OrbStyle(id: "firefly", name: "Firefly", unlock: .stars(90),   kind: .firefly),
         OrbStyle(id: "flame",   name: "Flame",   unlock: .stars(100),  kind: .flame),
         OrbStyle(id: "rainbow", name: "Rainbow", unlock: .stars(130),  kind: .rainbow),
+        OrbStyle(id: "cloud",   name: "Cloud",   unlock: .stars(150),  kind: .cloud),
         OrbStyle(id: "photo",   name: "Photo",   unlock: .premium,     kind: .photo)
     ]
 

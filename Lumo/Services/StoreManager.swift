@@ -18,6 +18,11 @@ final class StoreManager: ObservableObject {
     /// Bu kod gerçek satın alma yerine geçer; premium'u yerelde açar.
     static let promoCodes: Set<String> = ["axiumdynamicsisking"]
 
+    /// Kod 5'ten fazla kez yanlış girilirse (bir kereye mahsus) üzülmesin diye
+    /// teselli olarak 100 yıldız verilir — premium'la hiçbir ilgisi yoktur.
+    static let promoFailBonusThreshold = 5
+    static let promoFailBonusStars = 100
+
     @Published private(set) var isPremium: Bool
     @Published private(set) var isSupporter: Bool
     @Published private(set) var products: [Product] = []
@@ -25,6 +30,8 @@ final class StoreManager: ObservableObject {
 
     private var entitled = false        // gerçek IAP satın alması var mı
     private var promoGranted = false    // kodla açıldı mı
+    private var promoFailCount = 0
+    private var promoBonusGranted = false
     private var updatesTask: Task<Void, Never>?
 
     init() {
@@ -34,6 +41,8 @@ final class StoreManager: ObservableObject {
         promoGranted = UserDefaults.standard.bool(forKey: "lumo.store.promo")
         isPremium = entitled || promoGranted
         isSupporter = UserDefaults.standard.bool(forKey: "lumo.store.supporter")
+        promoFailCount = UserDefaults.standard.integer(forKey: "lumo.store.promoFailCount")
+        promoBonusGranted = UserDefaults.standard.bool(forKey: "lumo.store.promoBonusGranted")
 
         updatesTask = Task { [weak self] in
             for await update in Transaction.updates {
@@ -79,6 +88,18 @@ final class StoreManager: ObservableObject {
         promoGranted = true
         UserDefaults.standard.set(true, forKey: "lumo.store.promo")
         recomputePremium()
+        return true
+    }
+
+    /// Yanlış kod girildiğinde çağrılır. Eşiği aşan İLK denemede (bir kereye
+    /// mahsus) true döner — arayüz bu durumda teselli yıldızlarını verir.
+    @discardableResult
+    func recordFailedPromoAttempt() -> Bool {
+        promoFailCount += 1
+        UserDefaults.standard.set(promoFailCount, forKey: "lumo.store.promoFailCount")
+        guard promoFailCount > Self.promoFailBonusThreshold, !promoBonusGranted else { return false }
+        promoBonusGranted = true
+        UserDefaults.standard.set(true, forKey: "lumo.store.promoBonusGranted")
         return true
     }
 

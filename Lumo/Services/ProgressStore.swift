@@ -10,6 +10,7 @@ final class ProgressStore: ObservableObject {
     @Published private(set) var totalHops: Int = 0
     @Published private(set) var spentStars: Int = 0          // karakter almak için harcanan yıldız
     @Published private(set) var unlockedOrbs: Set<String> = []  // yıldızla açılan küre stilleri
+    @Published private(set) var bonusStars: Int = 0          // hediye/teselli yıldızları (ör. promo kodu)
 
     private let defaults = UserDefaults.standard
     private enum Key {
@@ -19,6 +20,7 @@ final class ProgressStore: ObservableObject {
         static let totalHops = "lumo.progress.totalHops"
         static let spentStars = "lumo.progress.spentStars"
         static let unlockedOrbs = "lumo.progress.unlockedOrbs"
+        static let bonusStars = "lumo.progress.bonusStars"
     }
 
     init() {
@@ -31,6 +33,7 @@ final class ProgressStore: ObservableObject {
         totalHops = defaults.integer(forKey: Key.totalHops)
         spentStars = defaults.integer(forKey: Key.spentStars)
         unlockedOrbs = Set(defaults.stringArray(forKey: Key.unlockedOrbs) ?? [])
+        bonusStars = defaults.integer(forKey: Key.bonusStars)
     }
 
     /// Tamamlanan en yüksek bölüm + 1 oynanabilir; 1. bölüm her zaman açık.
@@ -40,9 +43,15 @@ final class ProgressStore: ObservableObject {
     }
 
     var completedCount: Int { stars.count }
-    var totalStars: Int { stars.values.reduce(0, +) }
+    var totalStars: Int { stars.values.reduce(0, +) + bonusStars }
     /// Harcanabilir yıldız bakiyesi (toplam - harcanan)
     var availableStars: Int { max(0, totalStars - spentStars) }
+
+    /// Hediye/teselli yıldızı ekler (ör. promo kodu 5'ten fazla yanlış girilince).
+    func grantBonusStars(_ amount: Int) {
+        bonusStars += amount
+        defaults.set(bonusStars, forKey: Key.bonusStars)
+    }
     var endlessUnlocked: Bool { stars[LevelLibrary.adFreeLevels] != nil }
 
     func isUnlocked(_ level: Int) -> Bool { level <= highestUnlocked }
