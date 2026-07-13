@@ -25,6 +25,8 @@ final class AudioEngine {
     private var padTime: Double = 0
     private var chordIndex = 0
     private var musicVolume: Float = 0
+    private var padLP: Double = 0                                 // alçak geçiren süzgeç durumu (yumuşatma)
+    private let padVoiceGains: [Double] = [1.0, 0.85, 0.6, 0.4]   // üst sesler kısık = kulağa yumuşak
 
     /// A minör etrafında dönen dingin akor yürüyüşü: Am — F — C — G
     private let chords: [[Double]] = [
@@ -114,14 +116,18 @@ final class AudioEngine {
                     self.padFreqs[v] += (self.padTargets[v] - self.padFreqs[v]) * dt * 1.2
                     self.padPhases[v] += 2 * .pi * self.padFreqs[v] * dt
                     if self.padPhases[v] > 2 * .pi { self.padPhases[v] -= 2 * .pi }
-                    // Hafif detune edilmiş çift sinüs = sıcak pad dokusu
-                    sample += sin(self.padPhases[v]) * 0.5
-                    sample += sin(self.padPhases[v] * 1.005) * 0.35
+                    // Üst sesler kısılmış + detune inceltilmiş = sert değil, sıcak pad
+                    let g = self.padVoiceGains[v]
+                    sample += sin(self.padPhases[v]) * 0.5 * g
+                    sample += sin(self.padPhases[v] * 1.004) * 0.18 * g
                 }
-                // Yavaş nefes alan genlik (LFO)
-                let lfo = 0.75 + 0.25 * sin(self.padTime * 0.35)
-                // Açılışta yumuşak fade-in (tık sesi olmasın)
-                if self.musicVolume < 0.05 { self.musicVolume += 0.000004 }
+                // Tek kutuplu alçak geçiren süzgeç: keskin/tiz tepe frekanslarını yuvarlar
+                self.padLP += (sample - self.padLP) * 0.07
+                sample = self.padLP
+                // Yavaş, derin nefes alan genlik (LFO)
+                let lfo = 0.68 + 0.24 * sin(self.padTime * 0.28)
+                // Açılışta yumuşak fade-in (tık sesi olmasın) — genel ses seviyesi düşürüldü
+                if self.musicVolume < 0.032 { self.musicVolume += 0.0000035 }
                 buf[frame] = Float(sample * lfo) * self.musicVolume
             }
             return noErr
