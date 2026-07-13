@@ -45,11 +45,13 @@ struct MainMenuView: View {
 
                         // kerning son harften sonra da boşluk ekler; sola kaymayı
                         // dengelemek için sol tarafa aynı miktarda boşluk veriyoruz
-                        Text("LUMO")
-                            .font(.system(size: 54, weight: .black, design: .rounded))
+                        Text("ORBEON")
+                            .font(.system(size: 46, weight: .black, design: .rounded))
                             .foregroundStyle(.white)
-                            .kerning(14)
-                            .padding(.leading, 14)
+                            .kerning(10)
+                            .padding(.leading, 10)
+                            .minimumScaleFactor(0.6)
+                            .lineLimit(1)
                             .shadow(color: settings.theme.accent.opacity(0.8), radius: 20)
                             .padding(.top, 6)
 

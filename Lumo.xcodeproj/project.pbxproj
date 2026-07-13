@@ -271,7 +271,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = LUMO;
+				INFOPLIST_KEY_CFBundleDisplayName = Orbeon;
 				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-2696377554654488~9123400876";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -303,7 +303,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = LUMO;
+				INFOPLIST_KEY_CFBundleDisplayName = Orbeon;
 				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-2696377554654488~9123400876";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

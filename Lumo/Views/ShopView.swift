@@ -231,7 +231,7 @@ struct ShopView: View {
                 .foregroundStyle(settings.theme.lumen.color)
                 .shadow(color: settings.theme.lumen.opacity(0.8), radius: 14)
 
-            Text("LUMO Premium")
+            Text("Orbeon Premium")
                 .font(.system(.title, design: .rounded).bold())
                 .foregroundStyle(.white)
 

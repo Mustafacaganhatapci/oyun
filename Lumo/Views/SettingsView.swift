@@ -142,9 +142,10 @@ struct SettingsView: View {
 
                     // Hakkında
                     VStack(spacing: 6) {
-                        Text("LUMO")
+                        Text("ORBEON")
                             .font(.system(.headline, design: .rounded).bold())
                             .foregroundStyle(.white.opacity(0.8))
+                            .kerning(2)
                         Text("Version 1.0")
                             .font(.system(.footnote, design: .rounded))
                             .foregroundStyle(.white.opacity(0.4))
