@@ -247,7 +247,7 @@ struct ShopView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 benefit("rectangle.slash", "All ads removed forever")
-                benefit("paintpalette.fill", "6 exclusive themes, including high-contrast Neon & Carbon")
+                benefit("paintpalette.fill", "8 exclusive themes — Neon, Carbon, Royal, Sakura and more")
                 benefit("circle.hexagongrid.circle", "Your own photo inside the orb")
                 benefit("heart.fill", "Direct support for an independent developer")
             }

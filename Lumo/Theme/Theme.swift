@@ -50,8 +50,8 @@ struct Theme: Identifiable, Equatable {
         ring: ThemeColor(r: 0.302, g: 0.678, b: 0.949),
         gate: ThemeColor(r: 0.478, g: 1.0, b: 0.643),
         orb: ThemeColor(r: 0.918, g: 0.976, b: 1.0),
-        hazard: ThemeColor(r: 1.0, g: 0.427, b: 0.349),
-        lumen: ThemeColor(r: 1.0, g: 0.902, b: 0.478),
+        hazard: ThemeColor(r: 1.0, g: 0.275, b: 0.263),
+        lumen: ThemeColor(r: 1.0, g: 0.851, b: 0.400),
         accent: ThemeColor(r: 0.353, g: 0.784, b: 1.0)
     )
 
@@ -69,15 +69,17 @@ struct Theme: Identifiable, Equatable {
         accent: ThemeColor(r: 1.0, g: 0.620, b: 0.549)
     )
 
+    // Orman: halka yeşil olduğundan kapı AÇIK CAMGÖBEĞİ — sarı yıldızlarla
+    // ve yeşil halkayla karışmaz; kırmızı tehlike yeşilin tam karşıtıdır.
     static let orman = Theme(
         id: "orman", name: "Forest", isPremium: true,
         bgTop: ThemeColor(r: 0.016, g: 0.106, b: 0.086),
         bgBottom: ThemeColor(r: 0.043, g: 0.216, b: 0.153),
         ring: ThemeColor(r: 0.427, g: 0.878, b: 0.576),
-        gate: ThemeColor(r: 0.949, g: 0.933, b: 0.478),
+        gate: ThemeColor(r: 0.451, g: 0.902, b: 1.0),
         orb: ThemeColor(r: 0.949, g: 1.0, b: 0.949),
-        hazard: ThemeColor(r: 1.0, g: 0.376, b: 0.302),
-        lumen: ThemeColor(r: 1.0, g: 0.867, b: 0.400),
+        hazard: ThemeColor(r: 1.0, g: 0.290, b: 0.235),
+        lumen: ThemeColor(r: 1.0, g: 0.851, b: 0.400),
         accent: ThemeColor(r: 0.478, g: 0.918, b: 0.643)
     )
 
@@ -95,6 +97,8 @@ struct Theme: Identifiable, Equatable {
         accent: ThemeColor(r: 1.0, g: 0.549, b: 0.502)
     )
 
+    // Aurora: yıldızlar tüm temalarda olduğu gibi AMBER (öğretici "sarıları
+    // topla" der — yeşil yıldız kafa karıştırıyordu); tehlike net kırmızı.
     static let aurora = Theme(
         id: "aurora", name: "Aurora", isPremium: true,
         bgTop: ThemeColor(r: 0.043, g: 0.024, b: 0.129),
@@ -102,8 +106,8 @@ struct Theme: Identifiable, Equatable {
         ring: ThemeColor(r: 0.353, g: 0.933, b: 0.757),
         gate: ThemeColor(r: 0.788, g: 0.510, b: 1.0),
         orb: ThemeColor(r: 0.949, g: 1.0, b: 0.988),
-        hazard: ThemeColor(r: 1.0, g: 0.349, b: 0.522),
-        lumen: ThemeColor(r: 0.678, g: 1.0, b: 0.573),
+        hazard: ThemeColor(r: 1.0, g: 0.263, b: 0.310),
+        lumen: ThemeColor(r: 1.0, g: 0.851, b: 0.400),
         accent: ThemeColor(r: 0.427, g: 0.949, b: 0.800)
     )
 
@@ -135,7 +139,36 @@ struct Theme: Identifiable, Equatable {
         accent: ThemeColor(r: 0.600, g: 0.651, b: 0.749)
     )
 
-    static let all: [Theme] = [.nebula, .gece, .safak, .orman, .mercan, .aurora, .neon, .karbon]
+    // Lüks tema: gece mavisi kadife zemin, platin halka, zümrüt kapı,
+    // altın vurgu — "kraliyet" havası, ama oyun okunurluğu tam.
+    static let kraliyet = Theme(
+        id: "kraliyet", name: "Royal", isPremium: true,
+        bgTop: ThemeColor(r: 0.035, g: 0.051, b: 0.145),
+        bgBottom: ThemeColor(r: 0.082, g: 0.110, b: 0.271),
+        ring: ThemeColor(r: 0.784, g: 0.831, b: 0.949),
+        gate: ThemeColor(r: 0.318, g: 0.902, b: 0.647),
+        orb: ThemeColor(r: 1.0, g: 0.988, b: 0.949),
+        hazard: ThemeColor(r: 1.0, g: 0.251, b: 0.290),
+        lumen: ThemeColor(r: 1.0, g: 0.804, b: 0.361),
+        accent: ThemeColor(r: 0.949, g: 0.780, b: 0.416)
+    )
+
+    // Sakura: mürekkep koyuluğunda erik zemin, lavanta halka, nane kapı,
+    // kiraz çiçeği vurgusu — pembe yalnızca süslemede, tehlike net kırmızı.
+    static let sakura = Theme(
+        id: "sakura", name: "Sakura", isPremium: true,
+        bgTop: ThemeColor(r: 0.110, g: 0.051, b: 0.125),
+        bgBottom: ThemeColor(r: 0.231, g: 0.098, b: 0.204),
+        ring: ThemeColor(r: 0.722, g: 0.667, b: 1.0),
+        gate: ThemeColor(r: 0.471, g: 0.949, b: 0.737),
+        orb: ThemeColor(r: 1.0, g: 0.965, b: 0.976),
+        hazard: ThemeColor(r: 1.0, g: 0.239, b: 0.251),
+        lumen: ThemeColor(r: 1.0, g: 0.831, b: 0.400),
+        accent: ThemeColor(r: 1.0, g: 0.678, b: 0.796)
+    )
+
+    static let all: [Theme] = [.nebula, .gece, .safak, .orman, .mercan, .aurora,
+                               .neon, .karbon, .kraliyet, .sakura]
 
     static func theme(id: String) -> Theme {
         all.first { $0.id == id } ?? .nebula
