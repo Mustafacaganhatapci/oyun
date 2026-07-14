@@ -66,6 +66,8 @@ struct LevelSelectView: View {
                                       unlocked: progress.isUnlocked(id),
                                       isCurrent: id == progress.highestUnlocked && (progress.stars[id] ?? 0) == 0,
                                       isBonus: LevelLibrary.isBonus(id),
+                                      // Bonus turlar bir kere oynanır — tamamlandıysa harita üzerinden bir daha açılmaz
+                                      isBonusCompleted: LevelLibrary.isBonus(id) && progress.stars[id] != nil,
                                       isTimed: LevelLibrary.isTimed(id),
                                       theme: settings.theme) {
                                 AudioEngine.shared.playTap()
@@ -110,6 +112,7 @@ private struct LevelNode: View {
     let unlocked: Bool
     let isCurrent: Bool
     let isBonus: Bool
+    let isBonusCompleted: Bool
     let isTimed: Bool
     let theme: Theme
     let action: () -> Void
@@ -117,10 +120,11 @@ private struct LevelNode: View {
     @State private var pulse = false
 
     private var accent: Color { isBonus ? theme.lumen.color : theme.ring.color }
+    private var playable: Bool { unlocked && !isBonusCompleted }
 
     var body: some View {
         Button {
-            if unlocked { action() }
+            if playable { action() }
         } label: {
             VStack(spacing: 5) {
                 ZStack {
@@ -136,6 +140,7 @@ private struct LevelNode: View {
                     Circle()
                         .fill(unlocked ? accent.opacity(isBonus ? 0.28 : 0.18) : Color.white.opacity(0.06))
                         .frame(width: 58, height: 58)
+                        .opacity(isBonusCompleted ? 0.5 : 1)
 
                     Circle()
                         .strokeBorder(unlocked
@@ -145,8 +150,18 @@ private struct LevelNode: View {
                                       ? StrokeStyle(lineWidth: 2, dash: [5, 4])
                                       : StrokeStyle(lineWidth: 2))
                         .frame(width: 58, height: 58)
+                        .opacity(isBonusCompleted ? 0.5 : 1)
 
-                    if unlocked {
+                    if isBonusCompleted {
+                        VStack(spacing: 0) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundStyle(.white.opacity(0.5))
+                            Text("\(id)")
+                                .font(.system(.caption2, design: .rounded).bold())
+                                .foregroundStyle(.white.opacity(0.4))
+                        }
+                    } else if unlocked {
                         if isBonus {
                             VStack(spacing: 0) {
                                 Image(systemName: "sparkles")
@@ -189,6 +204,6 @@ private struct LevelNode: View {
                 }
             }
         }
-        .disabled(!unlocked)
+        .disabled(!playable)
     }
 }

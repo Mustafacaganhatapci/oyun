@@ -490,10 +490,13 @@ struct GameContainerView: View {
                         .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color, prominent: true))
                     }
 
-                    Button { restart() } label: {
-                        Label("Play Again", systemImage: "arrow.counterclockwise")
+                    // Bonus turlar bir kere oynanır — tekrar oynatma yok
+                    if !isBonusLevel {
+                        Button { restart() } label: {
+                            Label("Play Again", systemImage: "arrow.counterclockwise")
+                        }
+                        .buttonStyle(GlowButtonStyle(color: settings.theme.ring.color))
                     }
-                    .buttonStyle(GlowButtonStyle(color: settings.theme.ring.color))
                 }
 
                 Button { app.route = .menu } label: {
