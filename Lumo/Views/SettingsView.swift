@@ -265,6 +265,21 @@ private struct OrbSwatch: View {
         case .pixel:
             RoundedRectangle(cornerRadius: 2).fill(theme.gate.color)
                 .frame(width: 17, height: 17).shadow(color: theme.gate.color, radius: 6)
+        case .bubble:
+            Circle().strokeBorder(.white.opacity(0.85), lineWidth: 1.5)
+                .background(Circle().fill(.white.opacity(0.25)))
+                .frame(width: 20, height: 20)
+                .shadow(color: .white.opacity(0.6), radius: 6)
+        case .heart:
+            Image(systemName: "heart.fill").font(.system(size: 20))
+                .foregroundStyle(Color.pink).shadow(color: .pink, radius: 8)
+        case .firefly:
+            Image(systemName: "sparkle").font(.system(size: 20))
+                .foregroundStyle(Color(red: 0.75, green: 1.0, blue: 0.4))
+                .shadow(color: Color(red: 0.75, green: 1.0, blue: 0.4), radius: 8)
+        case .cloud:
+            Image(systemName: "cloud.fill").font(.system(size: 20))
+                .foregroundStyle(.white).shadow(color: .white.opacity(0.7), radius: 6)
         case .photo:
             if photoVersion >= 0, let image = OrbPhotoStore.load() {
                 Image(uiImage: image)
