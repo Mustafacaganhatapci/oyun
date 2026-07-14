@@ -75,22 +75,21 @@ enum LevelLibrary {
     static let tutorialID = 0
 
     static var tutorialLevel: Level {
-        // Olabildiğince yalın: 2 büyük, yavaş halka. Alttaki normal, üstteki
-        // YEŞİL hedef. Yazı yok — nişan çizgisi ve dokunuş ipucu gösterir.
+        // 3 büyük, yavaş halka: alt (başlangıç) → orta (normal) → üst (YEŞİL hedef).
+        // İki atlayış = "adım adım ilerle, halkaya dokunarak fırla" öğretilir.
+        // Aralara sarı yıldızlar: uçuş hattı doğal olarak içlerinden geçer.
         var rings: [RingSpec] = []
-        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.22), radius: 0.115, orbitSpeed: 1.4, direction: 1))
+        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.15), radius: 0.105, orbitSpeed: 1.3, direction: 1))
+        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.42), radius: 0.105, orbitSpeed: 1.3, direction: -1))
 
-        var gate = RingSpec(center: CGPoint(x: 0.50, y: 0.64), radius: 0.115, orbitSpeed: 1.4, direction: -1)
+        var gate = RingSpec(center: CGPoint(x: 0.50, y: 0.69), radius: 0.105, orbitSpeed: 1.3, direction: 1)
         gate.isGate = true
         rings.append(gate)
 
-        // İki halkanın arasındaki koridora 3 sarı yıldız: yeşile atılan her
-        // makul atış en az birinden geçer — parıltı + ses "sarıları topla"yı
-        // kendiliğinden öğretir (yazıya gerek kalmaz)
         let lumens = [
-            LumenSpec(position: CGPoint(x: 0.40, y: 0.45)),
-            LumenSpec(position: CGPoint(x: 0.50, y: 0.43)),
-            LumenSpec(position: CGPoint(x: 0.60, y: 0.45))
+            LumenSpec(position: CGPoint(x: 0.50, y: 0.285)),
+            LumenSpec(position: CGPoint(x: 0.50, y: 0.555)),
+            LumenSpec(position: CGPoint(x: 0.50, y: 0.42))
         ]
 
         return Level(id: tutorialID, kind: .normal, rings: rings, lumens: lumens)

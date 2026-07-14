@@ -485,9 +485,11 @@ final class GameScene: SKScene {
         addChild(line)
         aimLine = line
 
-        // Dokunuş ipucu: nabız gibi genişleyen halka + el simgesi
+        // Dokunuş ipucu: nabız gibi genişleyen halka + el simgesi.
+        // Halkaların YANINA konur (üstlerine değil) — "halkaya bas" izlenimi
+        // vermesin, "ekranın herhangi bir yerine dokun" hissi versin.
         let hint = SKNode()
-        hint.position = CGPoint(x: size.width / 2, y: 140)
+        hint.position = CGPoint(x: size.width * 0.80, y: size.height * 0.32)
         hint.zPosition = 40
 
         if let img = UIImage(systemName: "hand.tap.fill",

@@ -38,9 +38,10 @@ final class AdsManager: ObservableObject {
     /// ve reklam kapandığında `completion` çalışır.
     func levelCompleted(level: Int, isPremium: Bool, completion: @escaping () -> Void) -> Bool {
         #if DEBUG
-        // DEBUG: test için 2. bölümden itibaren her bölüm sonunda reklam —
-        // öğretici ve 1. bölüm deneyimi temiz kalır. Premium'da hiçbir zaman.
-        guard !isPremium, level >= 2 else {
+        // İlk 10 bölüm (adFreeLevels) HER ZAMAN reklamsızdır — yeni oyuncu
+        // deneyimi kutsaldır. Premium'da da hiçbir zaman reklam yok.
+        // (DEBUG'da 11+ bölümlerde her tamamlamada test reklamı gösterilir.)
+        guard !isPremium, level > LevelLibrary.adFreeLevels else {
             completion()
             return false
         }

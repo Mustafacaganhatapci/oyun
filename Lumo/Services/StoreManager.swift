@@ -27,6 +27,7 @@ final class StoreManager: ObservableObject {
     @Published private(set) var isSupporter: Bool
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchaseInProgress = false
+    @Published private(set) var productsLoaded = false   // ürün yükleme denemesi bitti mi
 
     private var entitled = false        // gerçek IAP satın alması var mı
     private var promoGranted = false    // kodla açıldı mı
@@ -65,6 +66,7 @@ final class StoreManager: ObservableObject {
         } catch {
             products = []
         }
+        productsLoaded = true
     }
 
     func refreshEntitlements() async {

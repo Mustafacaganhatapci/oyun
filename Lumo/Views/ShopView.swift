@@ -247,8 +247,8 @@ struct ShopView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 benefit("rectangle.slash", "All ads removed forever")
-                benefit("paintpalette.fill", "4 exclusive themes: Dawn, Forest, Coral, Aurora")
-                benefit("circle.hexagongrid.circle", "4 exclusive orb styles — even your own photo in the orb")
+                benefit("paintpalette.fill", "6 exclusive themes, including high-contrast Neon & Carbon")
+                benefit("circle.hexagongrid.circle", "Your own photo inside the orb")
                 benefit("heart.fill", "Direct support for an independent developer")
             }
             .padding(.vertical, 6)
@@ -271,6 +271,14 @@ struct ShopView: View {
                 }
                 .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color, prominent: true))
                 .disabled(store.purchaseInProgress)
+            } else if store.productsLoaded {
+                // Ürün mağazadan gelmedi (henüz yayında değil): sonsuz spinner
+                // yerine kullanıcıya yol göster — koddu olan kod alanını kullanır.
+                Text("Premium is coming soon to the App Store. Have a code? Enter it below.")
+                    .font(.system(.footnote, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .multilineTextAlignment(.center)
+                    .padding(.vertical, 10)
             } else {
                 ProgressView()
                     .tint(.white)

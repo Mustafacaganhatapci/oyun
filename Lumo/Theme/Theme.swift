@@ -55,16 +55,18 @@ struct Theme: Identifiable, Equatable {
         accent: ThemeColor(r: 0.353, g: 0.784, b: 1.0)
     )
 
+    // Pembe/gül tonlu tema — ama halka SOĞUK (periwinkle) olduğu için
+    // kırmızı tehlike net ayrışır, göz yormaz.
     static let safak = Theme(
         id: "safak", name: "Dawn", isPremium: true,
-        bgTop: ThemeColor(r: 0.184, g: 0.051, b: 0.216),
-        bgBottom: ThemeColor(r: 0.475, g: 0.145, b: 0.243),
-        ring: ThemeColor(r: 1.0, g: 0.596, b: 0.400),
-        gate: ThemeColor(r: 1.0, g: 0.867, b: 0.510),
+        bgTop: ThemeColor(r: 0.141, g: 0.063, b: 0.204),
+        bgBottom: ThemeColor(r: 0.396, g: 0.129, b: 0.278),
+        ring: ThemeColor(r: 0.655, g: 0.722, b: 1.0),
+        gate: ThemeColor(r: 1.0, g: 0.871, b: 0.549),
         orb: ThemeColor(r: 1.0, g: 0.965, b: 0.933),
-        hazard: ThemeColor(r: 0.855, g: 0.153, b: 0.467),
-        lumen: ThemeColor(r: 1.0, g: 0.843, b: 0.251),
-        accent: ThemeColor(r: 1.0, g: 0.588, b: 0.427)
+        hazard: ThemeColor(r: 1.0, g: 0.302, b: 0.290),
+        lumen: ThemeColor(r: 1.0, g: 0.816, b: 0.302),
+        accent: ThemeColor(r: 1.0, g: 0.620, b: 0.549)
     )
 
     static let orman = Theme(
@@ -79,16 +81,18 @@ struct Theme: Identifiable, Equatable {
         accent: ThemeColor(r: 0.478, g: 0.918, b: 0.643)
     )
 
+    // Mercan/okyanus teması — halka AQUA (soğuk), kapı amber, tehlike canlı
+    // mercan-kırmızısı: üçü de birbirinden net ayrışır.
     static let mercan = Theme(
         id: "mercan", name: "Coral", isPremium: true,
-        bgTop: ThemeColor(r: 0.024, g: 0.086, b: 0.184),
-        bgBottom: ThemeColor(r: 0.008, g: 0.278, b: 0.345),
-        ring: ThemeColor(r: 1.0, g: 0.502, b: 0.502),
-        gate: ThemeColor(r: 0.353, g: 0.949, b: 0.867),
+        bgTop: ThemeColor(r: 0.031, g: 0.086, b: 0.161),
+        bgBottom: ThemeColor(r: 0.020, g: 0.239, b: 0.302),
+        ring: ThemeColor(r: 0.302, g: 0.847, b: 0.851),
+        gate: ThemeColor(r: 1.0, g: 0.804, b: 0.451),
         orb: ThemeColor(r: 1.0, g: 0.976, b: 0.949),
-        hazard: ThemeColor(r: 0.937, g: 0.267, b: 0.600),
-        lumen: ThemeColor(r: 1.0, g: 0.788, b: 0.427),
-        accent: ThemeColor(r: 1.0, g: 0.573, b: 0.573)
+        hazard: ThemeColor(r: 1.0, g: 0.271, b: 0.302),
+        lumen: ThemeColor(r: 1.0, g: 0.851, b: 0.451),
+        accent: ThemeColor(r: 1.0, g: 0.549, b: 0.502)
     )
 
     static let aurora = Theme(
@@ -103,7 +107,35 @@ struct Theme: Identifiable, Equatable {
         accent: ThemeColor(r: 0.427, g: 0.949, b: 0.800)
     )
 
-    static let all: [Theme] = [.nebula, .gece, .safak, .orman, .mercan, .aurora]
+    // Yüksek kontrastlı premium tema — neredeyse siyah zeminde elektrik renkleri;
+    // her öğe (özellikle kırmızı tehlike) keskin ayrışır.
+    static let neon = Theme(
+        id: "neon", name: "Neon", isPremium: true,
+        bgTop: ThemeColor(r: 0.020, g: 0.020, b: 0.063),
+        bgBottom: ThemeColor(r: 0.063, g: 0.031, b: 0.122),
+        ring: ThemeColor(r: 0.200, g: 0.902, b: 1.0),
+        gate: ThemeColor(r: 0.451, g: 1.0, b: 0.549),
+        orb: ThemeColor(r: 1.0, g: 1.0, b: 1.0),
+        hazard: ThemeColor(r: 1.0, g: 0.153, b: 0.353),
+        lumen: ThemeColor(r: 1.0, g: 0.902, b: 0.251),
+        accent: ThemeColor(r: 0.851, g: 0.353, b: 1.0)
+    )
+
+    // Ultra yüksek kontrast / erişilebilirlik teması — beyaz halka, saf kırmızı
+    // tehlike, yeşil kapı (trafik ışığı netliği); kömür siyahı zemin.
+    static let karbon = Theme(
+        id: "karbon", name: "Carbon", isPremium: true,
+        bgTop: ThemeColor(r: 0.039, g: 0.039, b: 0.051),
+        bgBottom: ThemeColor(r: 0.102, g: 0.102, b: 0.122),
+        ring: ThemeColor(r: 0.949, g: 0.949, b: 1.0),
+        gate: ThemeColor(r: 0.302, g: 1.0, b: 0.502),
+        orb: ThemeColor(r: 0.549, g: 0.847, b: 1.0),
+        hazard: ThemeColor(r: 1.0, g: 0.200, b: 0.200),
+        lumen: ThemeColor(r: 1.0, g: 0.800, b: 0.200),
+        accent: ThemeColor(r: 0.600, g: 0.651, b: 0.749)
+    )
+
+    static let all: [Theme] = [.nebula, .gece, .safak, .orman, .mercan, .aurora, .neon, .karbon]
 
     static func theme(id: String) -> Theme {
         all.first { $0.id == id } ?? .nebula

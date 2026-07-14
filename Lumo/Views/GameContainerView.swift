@@ -47,6 +47,7 @@ struct GameContainerView: View {
     @State private var bonusRemaining = 0
     @State private var timeRemaining = -1      // süreli bölüm geri sayımı (-1: süresiz)
     @State private var sceneSize: CGSize = .zero
+    @State private var tutorialHops = 0        // antrenman bölümünde kaç atlayış yapıldı
 
     // Speed run durumu
     @State private var speedIndex = 0                 // speedrunLevels içindeki sıra
@@ -109,6 +110,11 @@ struct GameContainerView: View {
                         coachBanner(step)
                     }
                 }
+
+                // Antrenman bölümü: altta adım adım yönlendiren, engellemeyen yazı
+                if overlay == .none, isTutorialLevel, coach == nil {
+                    tutorialCaption
+                }
             }
             .animation(.easeInOut(duration: 0.25), value: coach)
             .onAppear { ensureScene(size: geo.size) }
@@ -163,6 +169,7 @@ struct GameContainerView: View {
             advanceCoachAfterHop()
 
         case .attached(let hasHazard, let isMoving):
+            if isTutorialLevel { tutorialHops += 1 }
             // Yeni mekanikli halkaya İLK kez konunca: oyunu dondur, öğret
             guard case .level = playMode, coach == nil else { break }
             if hasHazard, tutorial.shouldShow(.hazard) {
@@ -741,6 +748,33 @@ struct GameContainerView: View {
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
+    /// Antrenman bölümünde altta beliren, adım adım yönlendiren yazı.
+    /// Engellemez (dokunuşları oyuna geçirir); atlayış sayısına göre değişir.
+    private var tutorialCaption: some View {
+        let text: LocalizedStringKey = tutorialHops == 0
+            ? "Tap anywhere — launch the orb toward the next ring"
+            : "Collect the yellow stars and reach the green gate ✨"
+        return VStack {
+            Spacer()
+            Text(text)
+                .font(.system(.subheadline, design: .rounded).bold())
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 14)
+                .background {
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .fill(.black.opacity(0.5))
+                }
+                .padding(.horizontal, 30)
+                .padding(.bottom, 44)
+                .id(tutorialHops)   // metin değişince yumuşak geçiş
+                .transition(.opacity)
+        }
+        .allowsHitTesting(false)
+        .animation(.easeInOut(duration: 0.3), value: tutorialHops)
+    }
+
     private func bannerText(_ step: CoachStep) -> LocalizedStringKey {
         switch step {
         case .hazardTiming:  return "Wait for the red arc to move away… then tap!"
@@ -775,6 +809,7 @@ struct GameContainerView: View {
         speedIndex = 0
         speedPenalty = 0
         speedStart = Date()
+        tutorialHops = 0
         overlay = .none
         coach = nil
         scene = makeScene(size: sceneSize)
