@@ -48,6 +48,11 @@ struct GameContainerView: View {
     @State private var timeRemaining = -1      // süreli bölüm geri sayımı (-1: süresiz)
     @State private var sceneSize: CGSize = .zero
     @State private var tutorialHops = 0        // antrenman bölümünde kaç atlayış yapıldı
+    @State private var celebrationKey: String? // 3 yıldız kutlama başlığı (rastgele seçilir)
+    @State private var levelIntroVisible = false  // bölüm başındaki "Level X — Zorluk" kartı
+
+    /// 3/3 yıldız için rastgele seçilen tebrik başlıkları (yerelleştirme anahtarları)
+    private static let celebrations = ["Bravo!", "Perfect!", "Flawless!", "Spectacular!", "Legendary!"]
 
     // Speed run durumu
     @State private var speedIndex = 0                 // speedrunLevels içindeki sıra
@@ -115,6 +120,11 @@ struct GameContainerView: View {
                 if overlay == .none, isTutorialLevel, coach == nil {
                     tutorialCaption
                 }
+
+                // Bölüm başı kartı: "Level X" + zorluk etiketi, kısa süre görünüp söner
+                if levelIntroVisible, overlay == .none {
+                    levelIntro
+                }
             }
             .animation(.easeInOut(duration: 0.25), value: coach)
             .onAppear { ensureScene(size: geo.size) }
@@ -132,6 +142,7 @@ struct GameContainerView: View {
             sceneSize = size
             if case .speedrun = playMode { speedStart = Date() }
             scene = makeScene(size: size)
+            showLevelIntroIfNeeded()
             startCoachIfNeeded()
         } else if abs(sceneSize.width - size.width) > 1 || abs(sceneSize.height - size.height) > 1 {
             // Sahne hatalı/eski boyutta kurulmuşsa (ör. geçiş anı) taze kur
@@ -140,8 +151,14 @@ struct GameContainerView: View {
             overlay = .none
             scene = makeScene(size: size)
             sceneID += 1
+            showLevelIntroIfNeeded()
             startCoachIfNeeded()
         }
+    }
+
+    /// Bölüm başı kartı yalnızca normal bölüm modunda (öğretici hariç) gösterilir
+    private func showLevelIntroIfNeeded() {
+        if case .level = playMode, !isTutorialLevel { levelIntroVisible = true }
     }
 
     // MARK: Sahne kurulumu
@@ -201,6 +218,8 @@ struct GameContainerView: View {
                 tutorial.markShown(.hazard)
             }
             coach = nil
+            // 3/3 yıldız: kutlama başlığı rastgele seçilir (Bravo!, Mükemmel!, ...)
+            celebrationKey = (stars >= 3 && !isTutorialLevel) ? Self.celebrations.randomElement() : nil
             AudioEngine.shared.playWin()
             Haptics.shared.win()
             switch playMode {
@@ -447,10 +466,23 @@ struct GameContainerView: View {
         ZStack {
             overlayScrim
             VStack(spacing: 18) {
-                Text(isTutorialLevel ? "You're ready!"
-                     : isBonusLevel ? "Bonus Complete!" : "Level Complete!")
-                    .font(.system(.largeTitle, design: .rounded).bold())
-                    .foregroundStyle(.white)
+                if let celebration = celebrationKey {
+                    // 3/3 yıldız: coşkulu, altın parlaklı tebrik başlığı
+                    VStack(spacing: 6) {
+                        Text(LocalizedStringKey(celebration))
+                            .font(.system(size: 44, weight: .black, design: .rounded))
+                            .foregroundStyle(settings.theme.lumen.color)
+                            .shadow(color: settings.theme.lumen.opacity(0.9), radius: 18)
+                        Text(isBonusLevel ? "Bonus Complete!" : "Level Complete!")
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundStyle(.white.opacity(0.75))
+                    }
+                } else {
+                    Text(isTutorialLevel ? "You're ready!"
+                         : isBonusLevel ? "Bonus Complete!" : "Level Complete!")
+                        .font(.system(.largeTitle, design: .rounded).bold())
+                        .foregroundStyle(.white)
+                }
 
                 if isBonusLevel {
                     HStack(spacing: 6) {
@@ -748,6 +780,62 @@ struct GameContainerView: View {
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
+    /// Bölüm zorluk etiketi (yerelleştirme anahtarı). Öğretici/bonus için yok.
+    static func difficultyKey(for id: Int) -> String? {
+        guard id != LevelLibrary.tutorialID, !LevelLibrary.isBonus(id) else { return nil }
+        // 100 normal bölüme dengeli dağılım (zorluk eğrisiyle uyumlu)
+        switch LevelLibrary.normalIndex(id) {
+        case ..<6:  return "Easy"
+        case ..<20: return "Medium"
+        case ..<45: return "Hard"
+        case ..<75: return "Very Hard"
+        default:    return "Extreme"
+        }
+    }
+
+    private func difficultyColor(for id: Int) -> Color {
+        switch Self.difficultyKey(for: id) {
+        case "Easy":   return settings.theme.gate.color
+        case "Medium": return settings.theme.accent.color
+        case "Hard":   return settings.theme.lumen.color
+        default:       return settings.theme.hazard.color
+        }
+    }
+
+    /// Bölüm başında ~1,6 sn görünen tanıtım kartı: bölüm numarası + zorluk rozeti
+    @ViewBuilder
+    private var levelIntro: some View {
+        if case .level(let id) = playMode, !isTutorialLevel {
+            VStack(spacing: 10) {
+                Text(LevelLibrary.isBonus(id) ? "Bonus!" : "Level \(id)")
+                    .font(.system(size: 40, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
+                    .shadow(color: settings.theme.accent.opacity(0.8), radius: 16)
+                if let key = Self.difficultyKey(for: id) {
+                    Text(LocalizedStringKey(key))
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 6)
+                        .background(Capsule().fill(difficultyColor(for: id)))
+                }
+            }
+            .padding(.vertical, 26)
+            .padding(.horizontal, 40)
+            .background {
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(.black.opacity(0.45))
+            }
+            .allowsHitTesting(false)
+            .transition(.opacity)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+                    withAnimation(.easeOut(duration: 0.4)) { levelIntroVisible = false }
+                }
+            }
+        }
+    }
+
     /// Antrenman bölümünde altta beliren, adım adım yönlendiren yazı.
     /// Engellemez (dokunuşları oyuna geçirir); atlayış sayısına göre değişir.
     private var tutorialCaption: some View {
@@ -810,10 +898,12 @@ struct GameContainerView: View {
         speedPenalty = 0
         speedStart = Date()
         tutorialHops = 0
+        celebrationKey = nil
         overlay = .none
         coach = nil
         scene = makeScene(size: sceneSize)
         sceneID += 1
+        showLevelIntroIfNeeded()
         startCoachIfNeeded()
     }
 

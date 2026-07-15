@@ -916,9 +916,26 @@ final class GameScene: SKScene {
             ringCircles[gateIndex].run(.sequence([.scale(to: 1.4, duration: 0.3), .scale(to: 1.0, duration: 0.3)]))
         }
         burst(at: orbNode.position, color: theme.gate.uiColor, count: 40)
+        if stars >= 3 { celebrationCascade() }
         run(.wait(forDuration: 0.7)) { [weak self] in
             guard let self else { return }
             self.onEvent?(.win(stars: stars))
+        }
+    }
+
+    /// 3/3 yıldız kutlaması: ekrana yayılan renkli havai fişek şelalesi
+    private func celebrationCascade() {
+        let palette = [theme.lumen.uiColor, theme.gate.uiColor, theme.accent.uiColor, theme.orb.uiColor]
+        for i in 0..<12 {
+            run(.sequence([
+                .wait(forDuration: 0.06 * Double(i)),
+                .run { [weak self] in
+                    guard let self else { return }
+                    let p = CGPoint(x: .random(in: self.size.width * 0.15...self.size.width * 0.85),
+                                    y: .random(in: self.size.height * 0.30...self.size.height * 0.85))
+                    self.burst(at: p, color: palette[i % palette.count], count: 22)
+                }
+            ]))
         }
     }
 
@@ -936,6 +953,7 @@ final class GameScene: SKScene {
         default: stars = 0
         }
         burst(at: orbNode.position, color: theme.lumen.uiColor, count: 40)
+        if stars >= 3 { celebrationCascade() }
         run(.wait(forDuration: 0.5)) { [weak self] in
             self?.onEvent?(.win(stars: stars))
         }
