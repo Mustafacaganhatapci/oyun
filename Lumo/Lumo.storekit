@@ -8,33 +8,33 @@
       "internalID": "1A2B3C4D",
       "localizations": [
         {
-          "description": "Tüm reklamları kaldırır, 4 özel tema açar",
-          "displayName": "LUMO Premium",
+          "description": "Tüm reklamları kaldırır, 8 özel tema ve foto küre açar",
+          "displayName": "Orbeon Premium",
           "locale": "tr_TR"
         },
         {
-          "description": "Removes all ads, unlocks 4 exclusive themes",
-          "displayName": "LUMO Premium",
+          "description": "Removes all ads, unlocks 8 exclusive themes and the photo orb",
+          "displayName": "Orbeon Premium",
           "locale": "en_US"
         },
         {
-          "description": "Entfernt alle Werbung, schaltet 4 exklusive Themes frei",
-          "displayName": "LUMO Premium",
+          "description": "Entfernt alle Werbung, schaltet 8 exklusive Themes und die Foto-Kugel frei",
+          "displayName": "Orbeon Premium",
           "locale": "de_DE"
         },
         {
-          "description": "Supprime toutes les pubs, débloque 4 thèmes exclusifs",
-          "displayName": "LUMO Premium",
+          "description": "Supprime toutes les pubs, débloque 8 thèmes exclusifs et l'orbe photo",
+          "displayName": "Orbeon Premium",
           "locale": "fr_FR"
         },
         {
-          "description": "Elimina todos los anuncios, desbloquea 4 temas exclusivos",
-          "displayName": "LUMO Premium",
+          "description": "Elimina todos los anuncios, desbloquea 8 temas exclusivos y el orbe con foto",
+          "displayName": "Orbeon Premium",
           "locale": "es_ES"
         },
         {
-          "description": "全広告を削除、限定テーマ4種を解放",
-          "displayName": "LUMO プレミアム",
+          "description": "全広告を削除、限定テーマ8種とフォトオーブを解放",
+          "displayName": "Orbeon プレミアム",
           "locale": "ja_JP"
         }
       ],

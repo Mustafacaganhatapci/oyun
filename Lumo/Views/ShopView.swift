@@ -173,8 +173,9 @@ struct ShopView: View {
     }
 
     private func characterRow(_ style: OrbStyle) -> some View {
-        // Premium sahibi tüm karakterlere sahiptir; yoksa yıldızla açılmış olmalı
-        let owned = store.isPremium || progress.isOrbUnlocked(style)
+        // Yıldızlı karakterler premium'da bile yıldızla alınır — yıldız
+        // toplamanın anlamı korunur; premium yalnızca foto küreyi açar
+        let owned = progress.isOrbUnlocked(style)
         let equipped = settings.orbStyleID == style.id
         let cost = style.starCost ?? 0
         return HStack(spacing: 14) {
