@@ -49,32 +49,32 @@
       "localizations": [
         {
           "description": "Geliştiriciye küçük bir bahşiş",
-          "displayName": "Kahve Ismarla",
+          "displayName": "Kahve — Evde",
           "locale": "tr_TR"
         },
         {
           "description": "A small tip for the developer",
-          "displayName": "Buy a Coffee",
+          "displayName": "Coffee at Home",
           "locale": "en_US"
         },
         {
           "description": "Ein kleines Trinkgeld für den Entwickler",
-          "displayName": "Kaffee spendieren",
+          "displayName": "Kaffee zuhause",
           "locale": "de_DE"
         },
         {
           "description": "Un petit pourboire pour le développeur",
-          "displayName": "Offrir un café",
+          "displayName": "Café à la maison",
           "locale": "fr_FR"
         },
         {
           "description": "Una pequeña propina para el desarrollador",
-          "displayName": "Invitar a un café",
+          "displayName": "Café en casa",
           "locale": "es_ES"
         },
         {
           "description": "開発者へのささやかなチップ",
-          "displayName": "コーヒーをおごる",
+          "displayName": "おうちコーヒー",
           "locale": "ja_JP"
         }
       ],
@@ -88,33 +88,33 @@
       "internalID": "3C4D5E6F",
       "localizations": [
         {
-          "description": "Geliştiriciye büyük bir bahşiş",
-          "displayName": "Yıldız Ismarla",
+          "description": "Geliştiriciye büyük bir bahşiş (sandalye dahil)",
+          "displayName": "Kahve — Kafede",
           "locale": "tr_TR"
         },
         {
-          "description": "A big tip for the developer",
-          "displayName": "Buy a Star",
+          "description": "A big tip for the developer (chairs included)",
+          "displayName": "Coffee at a Café",
           "locale": "en_US"
         },
         {
-          "description": "Ein großes Trinkgeld für den Entwickler",
-          "displayName": "Stern spendieren",
+          "description": "Ein großes Trinkgeld für den Entwickler (Stühle inklusive)",
+          "displayName": "Kaffee im Café",
           "locale": "de_DE"
         },
         {
-          "description": "Un grand pourboire pour le développeur",
-          "displayName": "Offrir une étoile",
+          "description": "Un grand pourboire pour le développeur (chaises comprises)",
+          "displayName": "Café au bistrot",
           "locale": "fr_FR"
         },
         {
-          "description": "Una gran propina para el desarrollador",
-          "displayName": "Invitar a una estrella",
+          "description": "Una gran propina para el desarrollador (sillas incluidas)",
+          "displayName": "Café en cafetería",
           "locale": "es_ES"
         },
         {
-          "description": "開発者への大きなチップ",
-          "displayName": "スターをおごる",
+          "description": "開発者へのたっぷりチップ（椅子代込み）",
+          "displayName": "カフェでコーヒー",
           "locale": "ja_JP"
         }
       ],

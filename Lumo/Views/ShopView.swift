@@ -324,8 +324,12 @@ struct ShopView: View {
                         Task { await store.purchase(product) }
                     } label: {
                         VStack(spacing: 4) {
-                            Text(product.id == StoreManager.tipSmallID ? "☕️" : "🌟")
+                            Text(product.id == StoreManager.tipSmallID ? "🏠☕️" : "🥐☕️")
                                 .font(.title2)
+                            Text(product.id == StoreManager.tipSmallID
+                                 ? "Coffee at home" : "Coffee at a café")
+                                .font(.system(.caption, design: .rounded).bold())
+                                .foregroundStyle(.white.opacity(0.85))
                             Text(product.displayPrice)
                                 .font(.system(.subheadline, design: .rounded).bold())
                         }
@@ -342,6 +346,11 @@ struct ShopView: View {
                     .disabled(store.purchaseInProgress)
                 }
             }
+
+            Text("Same coffee — the café just charges for the chairs 😄")
+                .font(.system(.caption2, design: .rounded))
+                .foregroundStyle(.white.opacity(0.4))
+                .multilineTextAlignment(.center)
 
             if store.isSupporter {
                 Label("Thank you for your support!", systemImage: "heart.fill")
