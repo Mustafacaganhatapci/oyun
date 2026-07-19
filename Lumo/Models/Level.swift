@@ -86,10 +86,13 @@ enum LevelLibrary {
         gate.isGate = true
         rings.append(gate)
 
+        // 2 yıldız koridorlarda (uçuş hattında), 1 yıldız orta halkanın
+        // ÇEMBERİNDE — top dönerken üzerinden geçip toplar ("dönerken de
+        // toplanır"ı öğretir). Merkeze koyma: oraya top asla ulaşamaz!
         let lumens = [
             LumenSpec(position: CGPoint(x: 0.50, y: 0.285)),
             LumenSpec(position: CGPoint(x: 0.50, y: 0.555)),
-            LumenSpec(position: CGPoint(x: 0.50, y: 0.42))
+            LumenSpec(position: CGPoint(x: 0.605, y: 0.42))
         ]
 
         return Level(id: tutorialID, kind: .normal, rings: rings, lumens: lumens)
