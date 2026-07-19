@@ -141,8 +141,14 @@ import GoogleMobileAds
 import UIKit
 
 final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDelegate {
-    // Google'ın resmi TEST kimliği — yayına çıkmadan önce değiştirin!
+    // DEBUG: Google'ın resmi TEST birimi — geliştirme build'inde GERÇEK reklam
+    // gösterilmez; kendi reklamına tıklamak AdMob hesabını kapattırabilir.
+    // RELEASE: gerçek geçiş reklamı birimi (App Store/TestFlight build'leri).
+    #if DEBUG
     private let adUnitID = "ca-app-pub-3940256099942544/4411468910"
+    #else
+    private let adUnitID = "ca-app-pub-2696377554654488/4128883047"
+    #endif
     private var interstitial: InterstitialAd?
     private var completion: (() -> Void)?
     private var startedSDK = false
