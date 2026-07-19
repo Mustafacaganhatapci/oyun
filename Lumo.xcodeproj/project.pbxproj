@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		A1B2C3D4E5F6000000000040 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000041 /* GoogleMobileAds */; };
+		A1B2C3D4E5F6000000000043 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000044 /* FirebaseAuth */; };
+		A1B2C3D4E5F6000000000045 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000046 /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +47,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1B2C3D4E5F6000000000040 /* GoogleMobileAds in Frameworks */,
+				A1B2C3D4E5F6000000000043 /* FirebaseAuth in Frameworks */,
+				A1B2C3D4E5F6000000000045 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +92,8 @@
 			name = Lumo;
 			packageProductDependencies = (
 				A1B2C3D4E5F6000000000041 /* GoogleMobileAds */,
+				A1B2C3D4E5F6000000000044 /* FirebaseAuth */,
+				A1B2C3D4E5F6000000000046 /* FirebaseFirestore */,
 			);
 			productName = Lumo;
 			productReference = A1B2C3D4E5F6000000000002 /* Lumo.app */;
@@ -124,6 +130,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A1B2C3D4E5F6000000000042 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				A1B2C3D4E5F6000000000047 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A1B2C3D4E5F6000000000004 /* Products */;
@@ -356,6 +363,14 @@
 				minimumVersion = 12.0.0;
 			};
 		};
+		A1B2C3D4E5F6000000000047 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -363,6 +378,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A1B2C3D4E5F6000000000042 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
+		};
+		A1B2C3D4E5F6000000000044 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D4E5F6000000000047 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		A1B2C3D4E5F6000000000046 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D4E5F6000000000047 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

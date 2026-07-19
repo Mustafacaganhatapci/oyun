@@ -6,6 +6,7 @@ struct SettingsView: View {
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
     @EnvironmentObject private var progress: ProgressStore
+    @EnvironmentObject private var tutorial: TutorialStore
 
     @State private var photoItem: PhotosPickerItem?
 
@@ -139,6 +140,21 @@ struct SettingsView: View {
                                 .padding(.horizontal, 24)
                         }
                     }
+
+                    // Öğreticiyi baştan izlemek isteyenler için
+                    Button {
+                        AudioEngine.shared.playTap()
+                        tutorial.reset()
+                        app.route = .game(LevelLibrary.tutorialID)
+                    } label: {
+                        Label("Show tutorial again", systemImage: "graduationcap.fill")
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundStyle(.white.opacity(0.85))
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 10)
+                            .background(Capsule().fill(.white.opacity(0.10)))
+                    }
+                    .padding(.top, 6)
 
                     // Hakkında
                     VStack(spacing: 6) {
