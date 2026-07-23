@@ -21,8 +21,11 @@ struct RootView: View {
                 LevelSelectView()
                     .transition(.move(edge: .trailing).combined(with: .opacity))
             case .game(let id):
+                // Sabit kimlik: bölüm değişince görünüm YIKILMAZ — siyah kaplama
+                // sürekli ekranda kalır ve yeni sahnenin beyaz ilk karesini anında
+                // örter. Sahne içeride yenilenir (transition YOK, top yapışmaz).
                 GameContainerView(playMode: .level(id))
-                    .id("level-\(id)")
+                    .id("game")
                     .transition(.identity)
             case .endless:
                 GameContainerView(playMode: .endless)

@@ -139,8 +139,28 @@ struct GameContainerView: View {
             .animation(.easeInOut(duration: 0.25), value: coach)
             .onAppear { ensureScene(size: geo.size) }
             .onChange(of: geo.size) { _, newSize in ensureScene(size: newSize) }
+            // Bölüm değişti (görünüm sabit kaldı, kaplama hep mount'ta):
+            // sahneyi yenile — siyah kaplama beyaz ilk kareyi örter.
+            .onChange(of: playMode) { _, _ in rebuildForLevelChange() }
         }
         .ignoresSafeArea()
+    }
+
+    /// "Next Level" ile bölüm değişince (görünüm sabit kimlikli olduğu için
+    /// yıkılmaz) sahneyi yeniden kurar. installScene siyah kaplamayı önce
+    /// açar; yeni SpriteView'in beyaz ilk karesi görünmez.
+    private func rebuildForLevelChange() {
+        lumenCount = 0
+        bonusRemaining = 0
+        timeRemaining = -1
+        tutorialHops = 0
+        celebrationKey = nil
+        overlay = .none
+        coach = nil
+        guard sceneSize.width > 1, sceneSize.height > 1 else { return }
+        installScene(makeScene(size: sceneSize))
+        showLevelIntroIfNeeded()
+        startCoachIfNeeded()
     }
 
     /// Sahneyi yalnızca geçerli bir boyutta oluşturur. Splash→oyun geçişi
