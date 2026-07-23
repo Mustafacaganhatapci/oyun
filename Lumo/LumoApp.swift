@@ -1,7 +1,21 @@
 import SwiftUI
+import UIKit
+
+/// Firebase'in kendi hata mesajının önerdiği kanonik başlatma noktası.
+/// Bir UIApplicationDelegate sağlamak, hem FirebaseApp.configure()'ı doğru
+/// anda çağırır (I-COR000003 giderilir) hem de GoogleUtilities'in
+/// "App Delegate does not conform to UIApplicationDelegate" uyarısını kaldırır.
+final class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        LeaderboardService.bootstrapFirebase()
+        return true
+    }
+}
 
 @main
 struct LumoApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var app = AppModel()
     @StateObject private var progress = ProgressStore()
     @StateObject private var settings = SettingsStore()
@@ -11,12 +25,6 @@ struct LumoApp: App {
     @StateObject private var leaderboard = LeaderboardService()
     @StateObject private var tutorial = TutorialStore()
     @Environment(\.scenePhase) private var scenePhase
-
-    init() {
-        // Firebase, ilk kare çizilmeden önce yapılandırılmalı
-        // (I-COR000003 uyarısının çözümü)
-        LeaderboardService.bootstrapFirebase()
-    }
 
     var body: some Scene {
         WindowGroup {

@@ -41,6 +41,7 @@ struct GameContainerView: View {
 
     @State private var scene: GameScene?
     @State private var sceneID = 0          // her yeni sahnede artar; SpriteView'i yenilemeye zorlar
+    @State private var sceneCover = true    // yeni sahne kurulurken siyah kaplama (beyaz kareyi örter)
     @State private var overlay: Overlay = .none
     @State private var lumenCount = 0
     @State private var endlessScore = 0
@@ -90,6 +91,15 @@ struct GameContainerView: View {
                         .id(sceneID)
                         .ignoresSafeArea()
                 }
+
+                // Yeni sahne kurulurken (SpriteView yeniden yaratılırken Metal
+                // katmanı bir kare BEYAZ oluyordu) kısa bir siyah kaplama:
+                // sahne hazır olunca yumuşakça açılır. Dokunuşları engellemez,
+                // oynanışa dokunmaz — yalnızca beyaz kareyi örter.
+                Color.black
+                    .ignoresSafeArea()
+                    .opacity(sceneCover ? 1 : 0)
+                    .allowsHitTesting(false)
 
                 hud
 
@@ -141,7 +151,7 @@ struct GameContainerView: View {
         if scene == nil {
             sceneSize = size
             if case .speedrun = playMode { speedStart = Date() }
-            scene = makeScene(size: size)
+            installScene(makeScene(size: size))
             showLevelIntroIfNeeded()
             startCoachIfNeeded()
         } else if abs(sceneSize.width - size.width) > 1 || abs(sceneSize.height - size.height) > 1 {
@@ -149,10 +159,20 @@ struct GameContainerView: View {
             sceneSize = size
             coach = nil
             overlay = .none
-            scene = makeScene(size: size)
-            sceneID += 1
+            installScene(makeScene(size: size))
             showLevelIntroIfNeeded()
             startCoachIfNeeded()
+        }
+    }
+
+    /// Yeni sahneyi kurar ve beyaz-kareyi örtmek için kısa siyah kaplamayı
+    /// tetikler (sahne hazır olunca yumuşakça açılır).
+    private func installScene(_ newScene: GameScene) {
+        scene = newScene
+        sceneID += 1
+        sceneCover = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.04) {
+            withAnimation(.easeOut(duration: 0.22)) { sceneCover = false }
         }
     }
 
@@ -236,8 +256,7 @@ struct GameContainerView: View {
                 if speedIndex < LevelLibrary.speedrunLevels.count - 1 {
                     speedIndex += 1
                     lumenCount = 0
-                    scene = makeScene(size: sceneSize)
-                    sceneID += 1
+                    installScene(makeScene(size: sceneSize))
                 } else {
                     let total = Date().timeIntervalSince(speedStart) + speedPenalty
                     let isRecord = progress.recordSpeedrun(time: total)
@@ -901,8 +920,7 @@ struct GameContainerView: View {
         celebrationKey = nil
         overlay = .none
         coach = nil
-        scene = makeScene(size: sceneSize)
-        sceneID += 1
+        installScene(makeScene(size: sceneSize))
         showLevelIntroIfNeeded()
         startCoachIfNeeded()
     }
