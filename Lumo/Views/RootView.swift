@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct RootView: View {
     @EnvironmentObject private var app: AppModel
@@ -66,5 +67,34 @@ struct RootView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: app.route)
         .animation(.easeInOut(duration: 0.25), value: ads.showingPlaceholder)
+        // Pencere/kök görünüm arka planını siyaha sabitler: bölüm geçişinde
+        // SpriteKit sahnesi yeniden kurulurken bir karelik BEYAZ parlama olmasın
+        .background(WindowBackgroundFixer())
+    }
+}
+
+/// UIWindow'un ve kök view controller'ının arka planını koyu renge sabitler.
+/// SwiftUI + SpriteKit birlikte kullanıldığında, sahne yeniden kurulurken
+/// pencerenin varsayılan beyaz arka planı bir kare boyunca görünebiliyor.
+private struct WindowBackgroundFixer: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = false
+        applyWhenAttached(view, tries: 0)
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+
+    private func applyWhenAttached(_ view: UIView, tries: Int) {
+        DispatchQueue.main.async {
+            if let window = view.window {
+                window.backgroundColor = .black
+                window.rootViewController?.view.backgroundColor = .black
+            } else if tries < 10 {
+                applyWhenAttached(view, tries: tries + 1)
+            }
+        }
     }
 }
