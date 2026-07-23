@@ -21,9 +21,11 @@ struct RootView: View {
                 LevelSelectView()
                     .transition(.move(edge: .trailing).combined(with: .opacity))
             case .game(let id):
+                // Sabit kimlik: bölüm değişince görünüm YIKILMAZ, yalnızca sahne
+                // içeride yumuşak geçişle değişir (beyaz parlamanın kökü buydu).
                 GameContainerView(playMode: .level(id))
-                    .id("level-\(id)")
-                    .transition(.identity)   // SpriteView opacity geçişinde gri kalıyor
+                    .id("game")
+                    .transition(.identity)
             case .endless:
                 GameContainerView(playMode: .endless)
                     .id("endless")

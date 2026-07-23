@@ -86,8 +86,13 @@ struct GameContainerView: View {
                 settings.theme.bgBottom.color.ignoresSafeArea()
 
                 if let scene {
-                    SpriteView(scene: scene, isPaused: overlay == .paused)
-                        .id(sceneID)
+                    // transition ile sahne değişimi: SpriteView YIKILMADAN yeni
+                    // sahneye siyah üzerinden yumuşak geçer — beyaz parlama olmaz.
+                    // (Eskiden .id(sceneID) her seferinde MTKView'i yeniden
+                    //  yaratıyordu; ilk kare beyaz kalıyordu.)
+                    SpriteView(scene: scene,
+                               transition: .fade(with: UIColor.black, duration: 0.28),
+                               isPaused: overlay == .paused)
                         .ignoresSafeArea()
                 }
 
@@ -129,8 +134,26 @@ struct GameContainerView: View {
             .animation(.easeInOut(duration: 0.25), value: coach)
             .onAppear { ensureScene(size: geo.size) }
             .onChange(of: geo.size) { _, newSize in ensureScene(size: newSize) }
+            // Bölüm değişti (görünüm sabit kaldı): sahneyi yumuşak geçişle yenile
+            .onChange(of: playMode) { _, _ in prepareForNewLevel() }
         }
         .ignoresSafeArea()
+    }
+
+    /// "Next Level" ile bölüm değişince çağrılır — görünüm yıkılmadığı için
+    /// yalnızca sahne yeniden kurulur (SpriteView bunu siyah geçişle sunar).
+    private func prepareForNewLevel() {
+        lumenCount = 0
+        bonusRemaining = 0
+        timeRemaining = -1
+        tutorialHops = 0
+        celebrationKey = nil
+        overlay = .none
+        coach = nil
+        guard sceneSize.width > 1, sceneSize.height > 1 else { return }
+        scene = makeScene(size: sceneSize)
+        showLevelIntroIfNeeded()
+        startCoachIfNeeded()
     }
 
     /// Sahneyi yalnızca geçerli bir boyutta oluşturur. Splash→oyun geçişi
