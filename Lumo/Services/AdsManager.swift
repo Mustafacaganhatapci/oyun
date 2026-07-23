@@ -139,6 +139,7 @@ final class NoOpProvider: InterstitialProvider {
 #if canImport(GoogleMobileAds)
 import GoogleMobileAds
 import UIKit
+import os.log
 
 final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDelegate {
     // DEBUG: Google'ın resmi TEST birimi — geliştirme build'inde GERÇEK reklam
@@ -165,7 +166,12 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
             startedSDK = true
             MobileAds.shared.start(completionHandler: nil)
         }
-        InterstitialAd.load(with: adUnitID, request: Request()) { [weak self] ad, _ in
+        InterstitialAd.load(with: adUnitID, request: Request()) { [weak self] ad, error in
+            if let error {
+                // Console.app'te "Orbeon" sürecine filtrelenip görülebilir —
+                // reklam gelmeme sebebini (doldurulamadı/ağ/geçersiz istek) gösterir
+                os_log(.error, "AdMob yükleme hatası: %{public}@", error.localizedDescription)
+            }
             self?.interstitial = ad
             ad?.fullScreenContentDelegate = self
         }
