@@ -19,21 +19,24 @@ final class AudioEngine {
     private lazy var format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
 
     // MARK: Pad durumu (yalnızca render iş parçacığında okunur/yazılır sayılan basit alanlar)
-    private var padPhases = [Double](repeating: 0, count: 4)
-    private var padFreqs: [Double] = [110, 220, 261.63, 329.63]
-    private var padTargets: [Double] = [110, 220, 261.63, 329.63]
+    // 3 ses, orta register (boomy bas YOK = "uğultu" hissi yok), üstler kısık.
+    private var padPhases = [Double](repeating: 0, count: 3)
+    private var padFreqs: [Double] = [220, 261.63, 329.63]
+    private var padTargets: [Double] = [220, 261.63, 329.63]
     private var padTime: Double = 0
     private var chordIndex = 0
     private var musicVolume: Float = 0
-    private var padLP: Double = 0                                 // alçak geçiren süzgeç durumu (yumuşatma)
-    private let padVoiceGains: [Double] = [1.0, 0.85, 0.6, 0.4]   // üst sesler kısık = kulağa yumuşak
+    private var padLP: Double = 0                            // alçak geçiren süzgeç durumu (yumuşatma)
+    private let padVoiceGains: [Double] = [1.0, 0.8, 0.55]  // üst sesler kısık = kulağa yumuşak
 
-    /// A minör etrafında dönen dingin akor yürüyüşü: Am — F — C — G
+    /// A minör etrafında dingin akor yürüyüşü: Am — F — C — G.
+    /// Sub-bas notaları çıkarıldı; hepsi orta register (220–392 Hz) — sürekli
+    /// alçak drone/uğultu yerine hafif, havadar bir doku.
     private let chords: [[Double]] = [
-        [110.00, 220.00, 261.63, 329.63],  // A2 A3 C4 E4
-        [87.31, 174.61, 261.63, 349.23],   // F2 F3 C4 F4
-        [130.81, 196.00, 261.63, 329.63],  // C3 G3 C4 E4
-        [98.00, 196.00, 246.94, 392.00]    // G2 G3 B3 G4
+        [220.00, 261.63, 329.63],  // Am: A3 C4 E4
+        [220.00, 261.63, 349.23],  // F:  A3 C4 F4
+        [261.63, 329.63, 392.00],  // C:  C4 E4 G4
+        [246.94, 293.66, 392.00]   // G:  B3 D4 G4
     ]
 
     /// A minör pentatonik, iki oktav — kombo perdeleri
@@ -111,7 +114,7 @@ final class AudioEngine {
                     self.padTargets = self.chords[targetChord]
                 }
                 var sample: Double = 0
-                for v in 0..<4 {
+                for v in 0..<3 {
                     // Portamento: frekans hedefe doğru yumuşakça kayar
                     self.padFreqs[v] += (self.padTargets[v] - self.padFreqs[v]) * dt * 1.2
                     self.padPhases[v] += 2 * .pi * self.padFreqs[v] * dt
@@ -119,15 +122,16 @@ final class AudioEngine {
                     // Üst sesler kısılmış + detune inceltilmiş = sert değil, sıcak pad
                     let g = self.padVoiceGains[v]
                     sample += sin(self.padPhases[v]) * 0.5 * g
-                    sample += sin(self.padPhases[v] * 1.004) * 0.18 * g
+                    sample += sin(self.padPhases[v] * 1.004) * 0.16 * g
                 }
                 // Tek kutuplu alçak geçiren süzgeç: keskin/tiz tepe frekanslarını yuvarlar
-                self.padLP += (sample - self.padLP) * 0.07
+                self.padLP += (sample - self.padLP) * 0.06
                 sample = self.padLP
-                // Yavaş, derin nefes alan genlik (LFO)
-                let lfo = 0.68 + 0.24 * sin(self.padTime * 0.28)
-                // Açılışta yumuşak fade-in (tık sesi olmasın) — genel ses seviyesi düşürüldü
-                if self.musicVolume < 0.032 { self.musicVolume += 0.0000035 }
+                // DERİN, yavaş nefes: genlik neredeyse sessizliğe iner ve yükselir —
+                // sürekli "uğultu" değil, hafif dalgalar halinde bir ambiyans.
+                let lfo = max(0, 0.40 + 0.42 * sin(self.padTime * 0.34))
+                // Açılışta yumuşak fade-in (tık sesi olmasın); genel seviye daha kısık
+                if self.musicVolume < 0.026 { self.musicVolume += 0.0000030 }
                 buf[frame] = Float(sample * lfo) * self.musicVolume
             }
             return noErr
