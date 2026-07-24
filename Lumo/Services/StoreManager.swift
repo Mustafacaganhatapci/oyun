@@ -1,5 +1,6 @@
 import Foundation
 import StoreKit
+import os.log
 
 /// StoreKit 2 tabanlı satın alma yöneticisi.
 /// Ürünler:
@@ -63,8 +64,13 @@ final class StoreManager: ObservableObject {
             let loaded = try await Product.products(for: Self.allIDs)
             // Sabit sırada göster: premium, küçük bahşiş, büyük bahşiş
             products = Self.allIDs.compactMap { id in loaded.first { $0.id == id } }
+            // Console.app'te "Orbeon" ile filtrele: kaç ürün geldi görebilirsin.
+            // 0 ise ürünler App Store Connect'te hazır değil / sözleşme aktif değil.
+            os_log(.info, "StoreKit: %d ürün yüklendi (%{public}@)",
+                   products.count, products.map { $0.id }.joined(separator: ", "))
         } catch {
             products = []
+            os_log(.error, "StoreKit ürün yükleme hatası: %{public}@", error.localizedDescription)
         }
         productsLoaded = true
     }
@@ -123,7 +129,7 @@ final class StoreManager: ObservableObject {
                 break
             }
         } catch {
-            // Satın alma hatası: sessizce yut, arayüz mevcut durumda kalır
+            os_log(.error, "StoreKit satın alma hatası: %{public}@", error.localizedDescription)
         }
     }
 
