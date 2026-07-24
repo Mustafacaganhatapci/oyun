@@ -971,7 +971,10 @@ private struct GameSKView: UIViewRepresentable {
     func makeCoordinator() -> Coordinator { Coordinator() }
 
     func makeUIView(context: Context) -> SKView {
-        let view = SKView()
+        // ÖNEMLİ: SKView'i sahne boyutuyla başlat. Sıfır çerçeveli bir view'e
+        // sunulursa resizeFill sahneyi sıfıra küçültür, didMove halkaları/topu
+        // sıfır boyutta kurar ve "eksik/görünmez" olurlar.
+        let view = SKView(frame: CGRect(origin: .zero, size: scene.size))
         view.ignoresSiblingOrder = true
         view.backgroundColor = .black          // hiçbir anda beyaz görünmez
         view.isPaused = isPaused
@@ -981,11 +984,16 @@ private struct GameSKView: UIViewRepresentable {
     }
 
     func updateUIView(_ view: SKView, context: Context) {
+        // Sahne yalnızca gerçekten değiştiyse (yeni bölüm) yeniden sunulur;
+        // view geçerli bir boyuta sahipse fade ile, değilse (henüz düzen
+        // oturmadıysa) doğrudan — böylece halkalar/top her zaman doğru boyutta.
         if context.coordinator.presentedScene !== scene {
             context.coordinator.presentedScene = scene
-            // Yeni bölüm/sahne: siyah üzerinden yumuşak fade. Yalnızca gerçek
-            // sahne değişiminde çağrıldığı için top yapışması olmaz.
-            view.presentScene(scene, transition: .fade(with: UIColor.black, duration: 0.28))
+            if view.bounds.width > 1, view.bounds.height > 1 {
+                view.presentScene(scene, transition: .fade(with: UIColor.black, duration: 0.28))
+            } else {
+                view.presentScene(scene)
+            }
         }
         view.isPaused = isPaused
     }
