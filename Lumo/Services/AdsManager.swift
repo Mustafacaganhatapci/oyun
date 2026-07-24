@@ -21,6 +21,12 @@ final class AdsManager: ObservableObject {
     /// SwiftUI bu yayına abone olur; true iken yer tutucu reklam tam ekran gösterilir (yalnızca DEBUG stub).
     @Published var showingPlaceholder = false
 
+    /// Reklam kapandıktan sonra ara sıra (her 3 reklamda bir) nazik bir
+    /// "Premium ile reklamları kaldır" hatırlatması gösterilir.
+    @Published var showPremiumNudge = false
+    private static let nudgeEveryNAds = 3
+    private var adsShownCount = 0
+
     private var completionsSinceAd = 0
     private var endlessRunsSinceAd = 0
     private var provider: InterstitialProvider
@@ -88,6 +94,7 @@ final class AdsManager: ObservableObject {
     private func show(completion: @escaping () -> Void) -> Bool {
         let shown = provider.show { [weak self] in
             self?.provider.preload()
+            self?.adDismissed()
             completion()
         }
         if !shown {
@@ -104,10 +111,22 @@ final class AdsManager: ObservableObject {
         return shown
     }
 
+    /// Reklam kapandığında çağrılır: sayaç artar, her 3 reklamda bir
+    /// "Premium ol" hatırlatmasını tetikler.
+    private func adDismissed() {
+        adsShownCount += 1
+        if adsShownCount % Self.nudgeEveryNAds == 0 {
+            showPremiumNudge = true
+        }
+    }
+
+    func dismissPremiumNudge() { showPremiumNudge = false }
+
     // Yer tutucu kapatma (yalnızca DEBUG stub akışı)
     private var placeholderCompletion: (() -> Void)?
     func dismissPlaceholder() {
         showingPlaceholder = false
+        adDismissed()
         placeholderCompletion?()
         placeholderCompletion = nil
     }

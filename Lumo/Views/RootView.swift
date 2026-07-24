@@ -55,6 +55,16 @@ struct RootView: View {
                     .zIndex(100)
             }
 
+            // Reklamdan sonra ara sıra nazik "Premium ol" hatırlatması
+            if ads.showPremiumNudge {
+                PremiumNudgeView(
+                    onGoPremium: { ads.dismissPremiumNudge(); app.route = .shop },
+                    onClose: { ads.dismissPremiumNudge() }
+                )
+                .transition(.opacity)
+                .zIndex(150)
+            }
+
             // Açılış imzası — yalnızca uygulama başlarken bir kez
             if !splashDone {
                 SplashView {
@@ -70,9 +80,62 @@ struct RootView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: app.route)
         .animation(.easeInOut(duration: 0.25), value: ads.showingPlaceholder)
+        .animation(.easeInOut(duration: 0.3), value: ads.showPremiumNudge)
         // Pencere/kök görünüm arka planını siyaha sabitler: bölüm geçişinde
         // SpriteKit sahnesi yeniden kurulurken bir karelik BEYAZ parlama olmasın
         .background(WindowBackgroundFixer())
+    }
+}
+
+/// Reklamdan sonra ara sıra çıkan nazik "Premium ol" hatırlatması.
+private struct PremiumNudgeView: View {
+    @EnvironmentObject private var settings: SettingsStore
+    let onGoPremium: () -> Void
+    let onClose: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.6).ignoresSafeArea()
+                .onTapGesture(perform: onClose)
+
+            VStack(spacing: 16) {
+                Image(systemName: "crown.fill")
+                    .font(.system(size: 44))
+                    .foregroundStyle(settings.theme.lumen.color)
+                    .shadow(color: settings.theme.lumen.opacity(0.8), radius: 16)
+
+                Text("Enjoying the game?")
+                    .font(.system(.title2, design: .rounded).bold())
+                    .foregroundStyle(.white)
+
+                Text("Go Premium to remove all ads forever, unlock 8 exclusive themes and put your own photo in the orb.")
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 12)
+
+                Button(action: onGoPremium) {
+                    Label("See Premium", systemImage: "crown.fill")
+                }
+                .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color, prominent: true))
+                .padding(.top, 4)
+
+                Button(action: onClose) {
+                    Text("Not now")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(.white.opacity(0.6))
+                }
+                .padding(.top, 2)
+            }
+            .padding(28)
+            .background {
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(.black.opacity(0.85))
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .strokeBorder(settings.theme.lumen.opacity(0.5), lineWidth: 1.5)
+            }
+            .padding(.horizontal, 40)
+        }
     }
 }
 
