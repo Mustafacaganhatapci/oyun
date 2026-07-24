@@ -5219,6 +5219,129 @@
           }
         }
       }
+    },
+    "Love the game?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Love the game?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyuna bayıldın mı?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liebst du das Spiel?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Te encanta el juego?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu adores le jeu ?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲームが気に入った？"
+          }
+        }
+      }
+    },
+    "Ads keep Orbeon free. If you're enjoying it, you can buy the developer a coffee ☕️" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ads keep Orbeon free. If you're enjoying it, you can buy the developer a coffee ☕️"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reklamlar Orbeon'u ücretsiz tutuyor. Beğendiysen geliştiriciye bir kahve ısmarlayabilirsin ☕️"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werbung hält Orbeon kostenlos. Wenn es dir gefällt, spendier dem Entwickler einen Kaffee ☕️"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los anuncios mantienen Orbeon gratis. Si te gusta, invita un café al desarrollador ☕️"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les pubs gardent Orbeon gratuit. Si tu l'aimes, offre un café au développeur ☕️"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "広告のおかげでOrbeonは無料です。気に入ったら開発者にコーヒーをどうぞ ☕️"
+          }
+        }
+      }
+    },
+    "Support the developer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support the developer"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geliştiriciye Destek Ol"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entwickler unterstützen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apoya al desarrollador"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soutenir le développeur"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開発者を応援する"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

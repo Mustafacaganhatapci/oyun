@@ -22,10 +22,12 @@ final class AdsManager: ObservableObject {
     @Published var showingPlaceholder = false
 
     /// Reklam kapandıktan sonra ara sıra (her 3 reklamda bir) nazik bir
-    /// "Premium ile reklamları kaldır" hatırlatması gösterilir.
-    @Published var showPremiumNudge = false
+    /// hatırlatma çıkar; sırayla biri Premium, biri "Destek Ol" (bahşiş).
+    enum Nudge { case premium, support }
+    @Published var nudge: Nudge?
     private static let nudgeEveryNAds = 3
     private var adsShownCount = 0
+    private var nudgeShowsSupport = false   // her seferinde değişir (sıra ile)
 
     private var completionsSinceAd = 0
     private var endlessRunsSinceAd = 0
@@ -112,15 +114,16 @@ final class AdsManager: ObservableObject {
     }
 
     /// Reklam kapandığında çağrılır: sayaç artar, her 3 reklamda bir
-    /// "Premium ol" hatırlatmasını tetikler.
+    /// hatırlatmayı tetikler (Premium ↔ Destek Ol sırayla).
     private func adDismissed() {
         adsShownCount += 1
         if adsShownCount % Self.nudgeEveryNAds == 0 {
-            showPremiumNudge = true
+            nudge = nudgeShowsSupport ? .support : .premium
+            nudgeShowsSupport.toggle()
         }
     }
 
-    func dismissPremiumNudge() { showPremiumNudge = false }
+    func dismissNudge() { nudge = nil }
 
     // Yer tutucu kapatma (yalnızca DEBUG stub akışı)
     private var placeholderCompletion: (() -> Void)?

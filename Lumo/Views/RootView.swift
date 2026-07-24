@@ -55,11 +55,12 @@ struct RootView: View {
                     .zIndex(100)
             }
 
-            // Reklamdan sonra ara sıra nazik "Premium ol" hatırlatması
-            if ads.showPremiumNudge {
-                PremiumNudgeView(
-                    onGoPremium: { ads.dismissPremiumNudge(); app.route = .shop },
-                    onClose: { ads.dismissPremiumNudge() }
+            // Reklamdan sonra ara sıra nazik hatırlatma (sırayla Premium / Destek)
+            if let kind = ads.nudge {
+                NudgeView(
+                    kind: kind,
+                    onAction: { ads.dismissNudge(); app.route = .shop },
+                    onClose: { ads.dismissNudge() }
                 )
                 .transition(.opacity)
                 .zIndex(150)
@@ -80,18 +81,34 @@ struct RootView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: app.route)
         .animation(.easeInOut(duration: 0.25), value: ads.showingPlaceholder)
-        .animation(.easeInOut(duration: 0.3), value: ads.showPremiumNudge)
+        .animation(.easeInOut(duration: 0.3), value: ads.nudge)
         // Pencere/kök görünüm arka planını siyaha sabitler: bölüm geçişinde
         // SpriteKit sahnesi yeniden kurulurken bir karelik BEYAZ parlama olmasın
         .background(WindowBackgroundFixer())
     }
 }
 
-/// Reklamdan sonra ara sıra çıkan nazik "Premium ol" hatırlatması.
-private struct PremiumNudgeView: View {
+/// Reklamdan sonra ara sıra çıkan nazik hatırlatma: Premium ya da Destek Ol.
+private struct NudgeView: View {
     @EnvironmentObject private var settings: SettingsStore
-    let onGoPremium: () -> Void
+    let kind: AdsManager.Nudge
+    let onAction: () -> Void
     let onClose: () -> Void
+
+    private var icon: String { kind == .premium ? "crown.fill" : "cup.and.saucer.fill" }
+    private var accent: Color { settings.theme.lumen.color }
+    private var title: LocalizedStringKey {
+        kind == .premium ? "Enjoying the game?" : "Love the game?"
+    }
+    private var body_: LocalizedStringKey {
+        kind == .premium
+            ? "Go Premium to remove all ads forever, unlock 8 exclusive themes and put your own photo in the orb."
+            : "Ads keep Orbeon free. If you're enjoying it, you can buy the developer a coffee ☕️"
+    }
+    private var actionTitle: LocalizedStringKey {
+        kind == .premium ? "See Premium" : "Support the developer"
+    }
+    private var actionIcon: String { kind == .premium ? "crown.fill" : "heart.fill" }
 
     var body: some View {
         ZStack {
@@ -99,25 +116,25 @@ private struct PremiumNudgeView: View {
                 .onTapGesture(perform: onClose)
 
             VStack(spacing: 16) {
-                Image(systemName: "crown.fill")
+                Image(systemName: icon)
                     .font(.system(size: 44))
-                    .foregroundStyle(settings.theme.lumen.color)
-                    .shadow(color: settings.theme.lumen.opacity(0.8), radius: 16)
+                    .foregroundStyle(accent)
+                    .shadow(color: accent.opacity(0.8), radius: 16)
 
-                Text("Enjoying the game?")
+                Text(title)
                     .font(.system(.title2, design: .rounded).bold())
                     .foregroundStyle(.white)
 
-                Text("Go Premium to remove all ads forever, unlock 8 exclusive themes and put your own photo in the orb.")
+                Text(body_)
                     .font(.system(.subheadline, design: .rounded))
                     .foregroundStyle(.white.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 12)
 
-                Button(action: onGoPremium) {
-                    Label("See Premium", systemImage: "crown.fill")
+                Button(action: onAction) {
+                    Label(actionTitle, systemImage: actionIcon)
                 }
-                .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color, prominent: true))
+                .buttonStyle(GlowButtonStyle(color: accent, prominent: true))
                 .padding(.top, 4)
 
                 Button(action: onClose) {
@@ -132,7 +149,7 @@ private struct PremiumNudgeView: View {
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
                     .fill(.black.opacity(0.85))
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .strokeBorder(settings.theme.lumen.opacity(0.5), lineWidth: 1.5)
+                    .strokeBorder(accent.opacity(0.5), lineWidth: 1.5)
             }
             .padding(.horizontal, 40)
         }
