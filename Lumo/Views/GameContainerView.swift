@@ -87,8 +87,11 @@ struct GameContainerView: View {
                 settings.theme.bgBottom.color.ignoresSafeArea()
 
                 if let scene {
-                    SpriteView(scene: scene, isPaused: overlay == .paused)
-                        .id(sceneID)
+                    // Kendi yönettiğimiz TEK SKView: hiç yeniden yaratılmaz
+                    // (Metal katmanının beyaz ilk karesi = yok). Sahne değişimi
+                    // presentScene ile fade geçişli; HUD güncellemesinde sahne
+                    // aynı kaldığından yeniden sunulmaz (top yapışmaz).
+                    GameSKView(scene: scene, isPaused: overlay == .paused)
                         .ignoresSafeArea()
                 }
 
@@ -950,5 +953,44 @@ struct GameContainerView: View {
         let seconds = Int(t) % 60
         let hundredths = Int((t - floor(t)) * 100)
         return String(format: "%d:%02d.%02d", minutes, seconds, hundredths)
+    }
+}
+
+/// Kendi yönettiğimiz tek SKView. SwiftUI'nin SpriteView'i her sahne
+/// değişiminde Metal katmanını (SKView/MTKView) yeniden yaratıyor ve ilk kare
+/// BEYAZ oluyordu. Burada SKView bir kez oluşturulur, hiç yıkılmaz; sahneler
+/// içine presentScene ile sunulur — beyaz kare imkânsız.
+///
+/// Sahne YALNIZCA gerçekten değiştiğinde (kimlik kontrolü) yeniden sunulur;
+/// HUD güncellemesinde (yıldız/süre) updateUIView çağrılsa da sahne aynı
+/// kaldığından yeniden sunulmaz — top başlangıca dönüp "yapışmaz".
+private struct GameSKView: UIViewRepresentable {
+    let scene: GameScene
+    let isPaused: Bool
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    func makeUIView(context: Context) -> SKView {
+        let view = SKView()
+        view.ignoresSiblingOrder = true
+        view.backgroundColor = .black          // hiçbir anda beyaz görünmez
+        view.isPaused = isPaused
+        view.presentScene(scene)
+        context.coordinator.presentedScene = scene
+        return view
+    }
+
+    func updateUIView(_ view: SKView, context: Context) {
+        if context.coordinator.presentedScene !== scene {
+            context.coordinator.presentedScene = scene
+            // Yeni bölüm/sahne: siyah üzerinden yumuşak fade. Yalnızca gerçek
+            // sahne değişiminde çağrıldığı için top yapışması olmaz.
+            view.presentScene(scene, transition: .fade(with: UIColor.black, duration: 0.28))
+        }
+        view.isPaused = isPaused
+    }
+
+    final class Coordinator {
+        weak var presentedScene: GameScene?
     }
 }
