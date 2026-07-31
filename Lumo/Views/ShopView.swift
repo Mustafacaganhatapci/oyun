@@ -10,8 +10,13 @@ struct ShopView: View {
     @State private var codeInput = ""
     @State private var codeState: CodeState = .idle
     @FocusState private var codeFocused: Bool
+    @State private var shimmer = false
+    @State private var crownPulse = false
 
     private enum CodeState { case idle, success, failure, bonusGranted }
+
+    /// Premium kartının kaydırma çıpası
+    private let premiumAnchor = "premium"
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,37 +41,58 @@ struct ShopView: View {
             .padding(.horizontal, 20)
             .padding(.top, 12)
 
-            ScrollView {
-                VStack(spacing: 20) {
-                    charactersSection
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: 20) {
+                        charactersSection
 
-                    premiumCard
+                        premiumCard
+                            .id(premiumAnchor)
 
-                    if !store.isPremium {
-                        redeemSection
+                        if !store.isPremium {
+                            redeemSection
+                        }
+
+                        // Dürüstlük ilkesi — açıkça söylüyoruz
+                        Label("No purchase gives a gameplay advantage. There is no pay-to-win in LUMO.",
+                              systemImage: "checkmark.shield.fill")
+                            .font(.system(.footnote, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.55))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 30)
+
+                        tipSection
+
+                        Button {
+                            Task { await store.restore() }
+                        } label: {
+                            Text("Restore Purchases")
+                                .font(.system(.subheadline, design: .rounded))
+                                .foregroundStyle(.white.opacity(0.6))
+                                .underline()
+                        }
+                        .padding(.bottom, 40)
                     }
-
-                    // Dürüstlük ilkesi — açıkça söylüyoruz
-                    Label("No purchase gives a gameplay advantage. There is no pay-to-win in LUMO.",
-                          systemImage: "checkmark.shield.fill")
-                        .font(.system(.footnote, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.55))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 30)
-
-                    tipSection
-
-                    Button {
-                        Task { await store.restore() }
-                    } label: {
-                        Text("Restore Purchases")
-                            .font(.system(.subheadline, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.6))
-                            .underline()
-                    }
-                    .padding(.bottom, 40)
+                    .padding(.top, 20)
                 }
-                .padding(.top, 20)
+                .onAppear {
+                    // Premium zaten alınmışsa yukarıda kalsın; değilse teklifi
+                    // görsün diye kart yumuşakça ekrana kaydırılır.
+                    guard !store.isPremium else { return }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        withAnimation(.easeInOut(duration: 0.7)) {
+                            proxy.scrollTo(premiumAnchor, anchor: .center)
+                        }
+                    }
+                }
+            }
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 2.4).repeatForever(autoreverses: false)) {
+                shimmer = true
+            }
+            withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) {
+                crownPulse = true
             }
         }
     }
@@ -237,14 +263,31 @@ struct ShopView: View {
 
     private var premiumCard: some View {
         VStack(spacing: 14) {
-            Image(systemName: "crown.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(settings.theme.lumen.color)
-                .shadow(color: settings.theme.lumen.opacity(0.8), radius: 14)
+            ZStack {
+                // Tacın arkasındaki yumuşak ışık havuzu
+                Circle()
+                    .fill(RadialGradient(colors: [settings.theme.lumen.opacity(0.45), .clear],
+                                         center: .center, startRadius: 2, endRadius: 52))
+                    .frame(width: 104, height: 104)
+                    .scaleEffect(crownPulse ? 1.12 : 0.92)
+
+                Image(systemName: "crown.fill")
+                    .font(.system(size: 42))
+                    .foregroundStyle(
+                        LinearGradient(colors: [.white, settings.theme.lumen.color],
+                                       startPoint: .top, endPoint: .bottom)
+                    )
+                    .shadow(color: settings.theme.lumen.opacity(0.9), radius: crownPulse ? 18 : 10)
+                    .scaleEffect(crownPulse ? 1.05 : 1.0)
+            }
+            .frame(height: 76)
 
             Text("Orbeon Premium")
                 .font(.system(.title, design: .rounded).bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(
+                    LinearGradient(colors: [.white, settings.theme.lumen.opacity(0.75)],
+                                   startPoint: .leading, endPoint: .trailing)
+                )
 
             VStack(alignment: .leading, spacing: 10) {
                 benefit("rectangle.slash", "All ads removed forever")
@@ -288,23 +331,54 @@ struct ShopView: View {
         }
         .padding(24)
         .background {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(settings.theme.lumen.opacity(0.10))
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .strokeBorder(settings.theme.lumen.opacity(0.5), lineWidth: 1.5)
+            let shape = RoundedRectangle(cornerRadius: 28, style: .continuous)
+
+            // Derinlik veren çift katmanlı zemin
+            shape.fill(
+                LinearGradient(colors: [settings.theme.lumen.opacity(0.18),
+                                        settings.theme.lumen.opacity(0.06)],
+                               startPoint: .top, endPoint: .bottom)
+            )
+
+            // Kart yüzeyinde yavaşça süzülen ışık
+            shape.fill(
+                LinearGradient(colors: [.clear, .white.opacity(0.14), .clear],
+                               startPoint: .topLeading, endPoint: .bottomTrailing)
+            )
+            .mask(shape)
+            .offset(x: shimmer ? 220 : -220)
+            .allowsHitTesting(false)
+
+            shape.strokeBorder(
+                LinearGradient(colors: [settings.theme.lumen.opacity(0.85),
+                                        settings.theme.accent.opacity(0.35),
+                                        settings.theme.lumen.opacity(0.7)],
+                               startPoint: .topLeading, endPoint: .bottomTrailing),
+                lineWidth: 1.5
+            )
         }
+        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .shadow(color: settings.theme.lumen.opacity(0.22), radius: 18, y: 6)
         .padding(.horizontal, 20)
     }
 
     private func benefit(_ icon: String, _ text: LocalizedStringKey) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(settings.theme.accent.color)
-                .frame(width: 24)
+            // İkonu yuvarlak bir rozetin içine alarak listeye ritim veriyoruz
+            ZStack {
+                Circle()
+                    .fill(settings.theme.accent.opacity(0.16))
+                Circle()
+                    .strokeBorder(settings.theme.accent.opacity(0.35), lineWidth: 1)
+                Image(systemName: icon)
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(settings.theme.accent.color)
+            }
+            .frame(width: 30, height: 30)
+
             Text(text)
                 .font(.system(.subheadline, design: .rounded))
-                .foregroundStyle(.white.opacity(0.85))
+                .foregroundStyle(.white.opacity(0.9))
             Spacer(minLength: 0)
         }
     }
@@ -334,12 +408,19 @@ struct ShopView: View {
                                 .font(.system(.subheadline, design: .rounded).bold())
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, 14)
                         .background {
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(.white.opacity(0.08))
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .strokeBorder(.white.opacity(0.2), lineWidth: 1)
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .fill(
+                                    LinearGradient(colors: [.white.opacity(0.13), .white.opacity(0.05)],
+                                                   startPoint: .top, endPoint: .bottom)
+                                )
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .strokeBorder(
+                                    LinearGradient(colors: [.white.opacity(0.32), .white.opacity(0.12)],
+                                                   startPoint: .top, endPoint: .bottom),
+                                    lineWidth: 1
+                                )
                         }
                         .foregroundStyle(.white)
                     }

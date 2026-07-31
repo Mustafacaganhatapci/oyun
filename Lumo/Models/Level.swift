@@ -339,39 +339,39 @@ enum LevelLibrary {
                               gapRange: 0.26...0.32,
                               hazardChance: 0, hazardSpan: 0...0, hazardsRotate: false,
                               movingChance: 0, movingAmplitude: 0)
-        case 3...5:   // tehlikeler hemen başlar
+        case 3...5:   // tehlikeler hemen başlar — artık dönen yaylarla
             return Difficulty(ringCount: 6,
-                              radiusRange: 0.08...0.10, speedRange: 2.2...2.8,
+                              radiusRange: 0.078...0.098, speedRange: 2.5...3.1,
                               gapRange: 0.25...0.33,
-                              hazardChance: 0.4, hazardSpan: (.pi * 0.20)...(.pi * 0.35), hazardsRotate: false,
-                              movingChance: 0, movingAmplitude: 0)
+                              hazardChance: 0.52, hazardSpan: (.pi * 0.22)...(.pi * 0.38), hazardsRotate: true,
+                              movingChance: 0.15, movingAmplitude: 0.07)
         case 6...10:
-            return Difficulty(ringCount: 6,
-                              radiusRange: 0.075...0.095, speedRange: 2.5...3.1,
+            return Difficulty(ringCount: 7,
+                              radiusRange: 0.072...0.092, speedRange: 2.8...3.4,
                               gapRange: 0.24...0.34,
-                              hazardChance: 0.55, hazardSpan: (.pi * 0.24)...(.pi * 0.42), hazardsRotate: true,
-                              movingChance: 0.25, movingAmplitude: 0.08)
+                              hazardChance: 0.62, hazardSpan: (.pi * 0.26)...(.pi * 0.46), hazardsRotate: true,
+                              movingChance: 0.35, movingAmplitude: 0.09)
         case 11...18:
             return Difficulty(ringCount: 7,
-                              radiusRange: 0.07...0.09, speedRange: 2.8...3.5,
+                              radiusRange: 0.067...0.087, speedRange: 3.1...3.8,
                               gapRange: 0.23...0.34,
-                              hazardChance: 0.62, hazardSpan: (.pi * 0.28)...(.pi * 0.48), hazardsRotate: true,
-                              movingChance: 0.4, movingAmplitude: 0.10)
-        case 19...28:
-            return Difficulty(ringCount: 7,
-                              radiusRange: 0.065...0.085, speedRange: 3.0...3.9,
-                              gapRange: 0.22...0.35,
-                              hazardChance: 0.72, hazardSpan: (.pi * 0.30)...(.pi * 0.52), hazardsRotate: true,
+                              hazardChance: 0.7, hazardSpan: (.pi * 0.30)...(.pi * 0.52), hazardsRotate: true,
                               movingChance: 0.5, movingAmplitude: 0.11)
+        case 19...28:
+            return Difficulty(ringCount: 8,
+                              radiusRange: 0.062...0.082, speedRange: 3.3...4.2,
+                              gapRange: 0.22...0.35,
+                              hazardChance: 0.8, hazardSpan: (.pi * 0.32)...(.pi * 0.56), hazardsRotate: true,
+                              movingChance: 0.62, movingAmplitude: 0.12)
         default:      // 29+ — ustalık; halka sayısı, hız ve tehlikeler sona doğru sertleşir
-            let ringCount = 8 + Int(max(0, t - 0.28) * 5.6)   // 8 → 12 arası
-            return Difficulty(ringCount: min(max(ringCount, 8), 12),
-                              radiusRange: (0.05 - 0.008 * t)...(0.08 - 0.014 * t),
-                              speedRange: (3.2 + 0.9 * t)...(4.0 + 1.6 * t),
+            let ringCount = 9 + Int(max(0, t - 0.28) * 6.4)   // 9 → 13 arası
+            return Difficulty(ringCount: min(max(ringCount, 9), 13),
+                              radiusRange: (0.048 - 0.008 * t)...(0.078 - 0.014 * t),
+                              speedRange: (3.5 + 1.0 * t)...(4.3 + 1.8 * t),
                               gapRange: 0.20...0.33,
-                              hazardChance: min(0.8 + 0.15 * t, 0.95),
-                              hazardSpan: (.pi * 0.32)...(.pi * (0.6 + 0.2 * t)), hazardsRotate: true,
-                              movingChance: min(0.6 + 0.3 * t, 0.9), movingAmplitude: 0.12 + 0.03 * t)
+                              hazardChance: min(0.85 + 0.13 * t, 0.97),
+                              hazardSpan: (.pi * 0.34)...(.pi * (0.64 + 0.22 * t)), hazardsRotate: true,
+                              movingChance: min(0.7 + 0.28 * t, 0.92), movingAmplitude: 0.13 + 0.03 * t)
         }
     }
 }
