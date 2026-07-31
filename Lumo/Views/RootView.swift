@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 import UIKit
 
 struct RootView: View {
@@ -55,6 +56,15 @@ struct RootView: View {
                     .zIndex(100)
             }
 
+            if ads.showingRewardedPlaceholder {
+                RewardedPlaceholderView(
+                    onReward: { ads.dismissRewardedPlaceholder(granted: true) },
+                    onSkip: { ads.dismissRewardedPlaceholder(granted: false) }
+                )
+                .transition(.opacity)
+                .zIndex(120)
+            }
+
             // Reklamdan sonra ara sıra nazik hatırlatma (sırayla Premium / Destek)
             if let kind = ads.nudge {
                 NudgeView(
@@ -81,6 +91,7 @@ struct RootView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: app.route)
         .animation(.easeInOut(duration: 0.25), value: ads.showingPlaceholder)
+        .animation(.easeInOut(duration: 0.25), value: ads.showingRewardedPlaceholder)
         .animation(.easeInOut(duration: 0.3), value: ads.nudge)
         // Pencere/kök görünüm arka planını siyaha sabitler: bölüm geçişinde
         // SpriteKit sahnesi yeniden kurulurken bir karelik BEYAZ parlama olmasın
@@ -89,8 +100,11 @@ struct RootView: View {
 }
 
 /// Reklamdan sonra ara sıra çıkan nazik hatırlatma: Premium ya da Destek Ol.
+/// Ürün mağazadan geldiyse satın alma buradan doğrudan yapılır — reklamı yeni
+/// izlemiş oyuncuyu ayrıca mağazaya yollamak teklifi soğutuyordu.
 private struct NudgeView: View {
     @EnvironmentObject private var settings: SettingsStore
+    @EnvironmentObject private var store: StoreManager
     let kind: AdsManager.Nudge
     let onAction: () -> Void
     let onClose: () -> Void
@@ -105,10 +119,12 @@ private struct NudgeView: View {
             ? "Go Premium to remove all ads forever, unlock 8 exclusive themes and put your own photo in the orb."
             : "Ads keep Orbeon free. If you're enjoying it, you can buy the developer a coffee ☕️"
     }
-    private var actionTitle: LocalizedStringKey {
-        kind == .premium ? "See Premium" : "Support the developer"
+
+    /// Teklifi buradan bitirebileceğimiz ürün (premium kartında premium,
+    /// destek kartında en küçük bahşiş). Yoksa mağazaya yönlendiririz.
+    private var directProduct: Product? {
+        kind == .premium ? store.premiumProduct : store.tipProducts.first
     }
-    private var actionIcon: String { kind == .premium ? "crown.fill" : "heart.fill" }
 
     var body: some View {
         ZStack {
@@ -131,11 +147,40 @@ private struct NudgeView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 12)
 
-                Button(action: onAction) {
-                    Label(actionTitle, systemImage: actionIcon)
+                if let product = directProduct {
+                    // Tek dokunuşta satın alma — App Store sayfası buradan açılır
+                    Button {
+                        Task {
+                            await store.purchase(product)
+                            if kind == .premium, store.isPremium { onClose() }
+                        }
+                    } label: {
+                        HStack {
+                            Label(kind == .premium ? "Go Premium" : "Buy a coffee",
+                                  systemImage: kind == .premium ? "crown.fill" : "heart.fill")
+                            Spacer()
+                            Text(product.displayPrice).bold()
+                        }
+                        .padding(.horizontal, 8)
+                    }
+                    .buttonStyle(GlowButtonStyle(color: accent, prominent: true))
+                    .disabled(store.purchaseInProgress)
+                    .padding(.top, 4)
+
+                    Button(action: onAction) {
+                        Text("See all options")
+                            .font(.system(.footnote, design: .rounded).bold())
+                            .foregroundStyle(.white.opacity(0.55))
+                            .underline()
+                    }
+                } else {
+                    Button(action: onAction) {
+                        Label(kind == .premium ? "See Premium" : "Support the developer",
+                              systemImage: kind == .premium ? "crown.fill" : "heart.fill")
+                    }
+                    .buttonStyle(GlowButtonStyle(color: accent, prominent: true))
+                    .padding(.top, 4)
                 }
-                .buttonStyle(GlowButtonStyle(color: accent, prominent: true))
-                .padding(.top, 4)
 
                 Button(action: onClose) {
                     Text("Not now")
@@ -152,6 +197,46 @@ private struct NudgeView: View {
                     .strokeBorder(accent.opacity(0.5), lineWidth: 1.5)
             }
             .padding(.horizontal, 40)
+        }
+    }
+}
+
+/// Ödüllü reklam yer tutucusu (yalnızca DEBUG — SDK yokken akışı denemek için).
+/// Ödülü vermek ile yarıda bırakmak ayrı ayrı denenebilsin diye iki çıkış var.
+private struct RewardedPlaceholderView: View {
+    @EnvironmentObject private var settings: SettingsStore
+    let onReward: () -> Void
+    let onSkip: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.92).ignoresSafeArea()
+
+            VStack(spacing: 18) {
+                Image(systemName: "play.rectangle.fill")
+                    .font(.system(size: 52))
+                    .foregroundStyle(settings.theme.lumen.color)
+
+                Text("Rewarded ad (test)")
+                    .font(.system(.title3, design: .rounded).bold())
+                    .foregroundStyle(.white)
+
+                Text("The real ad plays here in release builds.")
+                    .font(.system(.footnote, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.6))
+
+                Button(action: onReward) {
+                    Label("Finish & get reward", systemImage: "checkmark.circle.fill")
+                }
+                .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color, prominent: true))
+
+                Button(action: onSkip) {
+                    Text("Close early (no reward)")
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.55))
+                }
+            }
+            .padding(32)
         }
     }
 }

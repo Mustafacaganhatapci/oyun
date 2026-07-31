@@ -6,12 +6,14 @@ struct ShopView: View {
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
     @EnvironmentObject private var progress: ProgressStore
+    @EnvironmentObject private var ads: AdsManager
 
     @State private var codeInput = ""
     @State private var codeState: CodeState = .idle
     @FocusState private var codeFocused: Bool
     @State private var shimmer = false
     @State private var crownPulse = false
+    @State private var starsJustEarned = false
 
     private enum CodeState { case idle, success, failure, bonusGranted }
 
@@ -44,6 +46,10 @@ struct ShopView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(spacing: 20) {
+                        if !store.isPremium {
+                            freeStarsCard
+                        }
+
                         charactersSection
 
                         premiumCard
@@ -163,6 +169,56 @@ struct ShopView: View {
             case .idle:
                 EmptyView()
             }
+        }
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(.white.opacity(0.05))
+        }
+        .padding(.horizontal, 20)
+    }
+
+    // MARK: Ödüllü reklamla bedava yıldız
+
+    private var freeStarsCard: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle().fill(settings.theme.lumen.opacity(0.16))
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundStyle(settings.theme.lumen.color)
+                }
+                .frame(width: 42, height: 42)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Free stars")
+                        .font(.system(.headline, design: .rounded).bold())
+                        .foregroundStyle(.white)
+                    Text("Watch a short ad for \(StoreManager.rewardedStarGrant) stars")
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.55))
+                }
+
+                Spacer(minLength: 0)
+            }
+
+            Button {
+                AudioEngine.shared.playTap()
+                ads.showRewarded { earned in
+                    guard earned else { return }
+                    progress.grantBonusStars(StoreManager.rewardedStarGrant)
+                    AudioEngine.shared.playWin()
+                    Haptics.shared.win()
+                    starsJustEarned = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) { starsJustEarned = false }
+                }
+            } label: {
+                Label(starsJustEarned ? "Nice! Stars added" : "Watch & earn",
+                      systemImage: starsJustEarned ? "checkmark.circle.fill" : "star.fill")
+            }
+            .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color))
+            .disabled(starsJustEarned)
         }
         .padding(20)
         .background {

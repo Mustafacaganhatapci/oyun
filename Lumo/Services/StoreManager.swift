@@ -24,6 +24,9 @@ final class StoreManager: ObservableObject {
     static let promoFailBonusThreshold = 5
     static let promoFailBonusStars = 100
 
+    /// Ödüllü reklam sonunda verilen yıldız
+    static let rewardedStarGrant = 25
+
     @Published private(set) var isPremium: Bool
     @Published private(set) var isSupporter: Bool
     @Published private(set) var products: [Product] = []

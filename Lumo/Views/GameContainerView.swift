@@ -18,6 +18,7 @@ struct GameContainerView: View {
     @EnvironmentObject private var player: PlayerStore
     @EnvironmentObject private var leaderboard: LeaderboardService
     @EnvironmentObject private var tutorial: TutorialStore
+    @EnvironmentObject private var missions: MissionStore
 
     /// Etkileşimli öğretici koçu: oynatarak öğretir — oyuncu adımı
     /// gerçekten yapmadan (dokunup fırlatmadan) bir sonrakine geçmez.
@@ -44,6 +45,7 @@ struct GameContainerView: View {
     @State private var sceneCover = true    // yeni sahne kurulurken siyah kaplama (beyaz kareyi örter)
     @State private var overlay: Overlay = .none
     @State private var lumenCount = 0
+    @State private var deathsThisLevel = 0
     @State private var endlessScore = 0
     @State private var bonusRemaining = 0
     @State private var timeRemaining = -1      // süreli bölüm geri sayımı (-1: süresiz)
@@ -154,6 +156,7 @@ struct GameContainerView: View {
     /// açar; yeni SpriteView'in beyaz ilk karesi görünmez.
     private func rebuildForLevelChange() {
         lumenCount = 0
+        deathsThisLevel = 0
         bonusRemaining = 0
         timeRemaining = -1
         tutorialHops = 0
@@ -226,6 +229,7 @@ struct GameContainerView: View {
             AudioEngine.shared.playHop(combo: max(combo, 1))
             Haptics.shared.hop()
             progress.recordHop()
+            missions.recordHops(1)
             advanceCoachAfterHop()
 
         case .attached(let hasHazard, let isMoving):
@@ -248,6 +252,7 @@ struct GameContainerView: View {
         case .fail:
             AudioEngine.shared.playFail()
             Haptics.shared.fail()
+            deathsThisLevel += 1
             if case .speedrun = playMode { speedPenalty += 2 }
 
         case .bonusTick(let remaining):
@@ -273,6 +278,8 @@ struct GameContainerView: View {
                     tutorial.markShown(.gate)
                 } else {
                     progress.complete(level: id, stars: stars)
+                    missions.recordLevelCleared(deathless: deathsThisLevel == 0, starsEarned: stars)
+                    missions.recordLumens(lumenCount)
                 }
                 overlay = .won(stars: stars)
             case .speedrun:
@@ -933,6 +940,7 @@ struct GameContainerView: View {
 
     private func restart() {
         lumenCount = 0
+        deathsThisLevel = 0
         endlessScore = 0
         bonusRemaining = 0
         timeRemaining = -1

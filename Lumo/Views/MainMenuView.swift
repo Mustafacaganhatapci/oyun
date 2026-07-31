@@ -6,8 +6,12 @@ struct MainMenuView: View {
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: StoreManager
     @EnvironmentObject private var player: PlayerStore
+    @EnvironmentObject private var daily: DailyRewardStore
+    @EnvironmentObject private var missions: MissionStore
 
     @State private var orbPulse = false
+    @State private var showMissions = false
+    @State private var claimedFlash: Int?
 
     var body: some View {
         ZStack {
@@ -74,6 +78,10 @@ struct MainMenuView: View {
 
                         Spacer(minLength: 24)
 
+                        dailyStrip
+                            .padding(.horizontal, 28)
+                            .padding(.bottom, 14)
+
                         actions
                             .padding(.horizontal, 28)
                             .padding(.bottom, 28)
@@ -104,6 +112,136 @@ struct MainMenuView: View {
         }
         .animation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true), value: orbPulse)
         .onAppear { orbPulse = true }
+    }
+
+    /// Günlük ödül + görevler — menüde tek satır, panel açılır kapanır
+    private var dailyStrip: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 10) {
+                Button {
+                    AudioEngine.shared.playTap()
+                    if let reward = daily.claim() {
+                        progress.grantBonusStars(reward)
+                        AudioEngine.shared.playWin()
+                        Haptics.shared.win()
+                        claimedFlash = reward
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { claimedFlash = nil }
+                    }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: daily.claimedToday ? "checkmark.seal.fill" : "gift.fill")
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(daily.claimedToday ? "Claimed today" : "Daily +\(daily.todayReward)")
+                                .font(.system(.subheadline, design: .rounded).bold())
+                            if daily.streak > 0 {
+                                Text("\(daily.streak) day streak")
+                                    .font(.system(size: 10, design: .rounded))
+                                    .opacity(0.7)
+                            }
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 14).padding(.vertical, 10)
+                    .foregroundStyle(daily.claimedToday ? .white.opacity(0.5) : .black)
+                    .background {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(daily.claimedToday
+                                  ? Color.white.opacity(0.08)
+                                  : settings.theme.lumen.color)
+                    }
+                }
+                .disabled(daily.claimedToday)
+
+                Button {
+                    AudioEngine.shared.playTap()
+                    withAnimation(.easeInOut(duration: 0.25)) { showMissions.toggle() }
+                } label: {
+                    ZStack(alignment: .topTrailing) {
+                        Image(systemName: "checklist")
+                            .font(.system(size: 17, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.9))
+                            .frame(width: 46, height: 44)
+                            .background {
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .fill(.white.opacity(0.1))
+                            }
+                        if missions.unclaimedCount > 0 {
+                            Circle()
+                                .fill(settings.theme.hazard.color)
+                                .frame(width: 10, height: 10)
+                                .offset(x: 3, y: -3)
+                        }
+                    }
+                }
+            }
+
+            if let reward = claimedFlash {
+                Label("+\(reward) stars", systemImage: "star.fill")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.lumen.color)
+            }
+
+            if showMissions {
+                VStack(spacing: 8) {
+                    ForEach(missions.missions) { mission in
+                        missionRow(mission)
+                    }
+                }
+                .padding(14)
+                .background {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(.white.opacity(0.06))
+                }
+            }
+        }
+    }
+
+    private func missionRow(_ mission: MissionStore.Mission) -> some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(mission.title)
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.9))
+
+                // İlerleme çubuğu
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(.white.opacity(0.12))
+                        Capsule()
+                            .fill(mission.isComplete ? settings.theme.gate.color : settings.theme.accent.color)
+                            .frame(width: geo.size.width * mission.fraction)
+                    }
+                }
+                .frame(height: 5)
+
+                Text("\(min(mission.progress, mission.target)) / \(mission.target)")
+                    .font(.system(size: 10, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+
+            if mission.claimed {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(settings.theme.gate.color)
+            } else if mission.isComplete {
+                Button {
+                    if let reward = missions.claim(mission.id) {
+                        progress.grantBonusStars(reward)
+                        AudioEngine.shared.playWin()
+                        Haptics.shared.win()
+                    }
+                } label: {
+                    Text("+\(mission.reward)")
+                        .font(.system(.caption, design: .rounded).bold())
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 12).padding(.vertical, 6)
+                        .background(Capsule().fill(settings.theme.lumen.color))
+                }
+            } else {
+                Text("+\(mission.reward)")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.35))
+            }
+        }
     }
 
     private var actions: some View {

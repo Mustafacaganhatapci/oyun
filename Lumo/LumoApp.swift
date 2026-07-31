@@ -24,6 +24,8 @@ struct LumoApp: App {
     @StateObject private var player = PlayerStore()
     @StateObject private var leaderboard = LeaderboardService()
     @StateObject private var tutorial = TutorialStore()
+    @StateObject private var daily = DailyRewardStore()
+    @StateObject private var missions = MissionStore()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
@@ -37,6 +39,8 @@ struct LumoApp: App {
                 .environmentObject(player)
                 .environmentObject(leaderboard)
                 .environmentObject(tutorial)
+                .environmentObject(daily)
+                .environmentObject(missions)
                 .preferredColorScheme(.dark)
                 .persistentSystemOverlays(.hidden)
                 .onAppear {
@@ -45,7 +49,11 @@ struct LumoApp: App {
                 }
                 .onChange(of: scenePhase) { _, phase in
                     switch phase {
-                    case .active: AudioEngine.shared.resume()
+                    case .active:
+                        AudioEngine.shared.resume()
+                        // Uygulama açıkken gece yarısı geçilmiş olabilir
+                        daily.refresh()
+                        missions.reloadForToday()
                     case .background, .inactive: AudioEngine.shared.stop()
                     @unknown default: break
                     }

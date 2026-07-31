@@ -32,14 +32,49 @@ final class AdsManager: ObservableObject {
     private var completionsSinceAd = 0
     private var endlessRunsSinceAd = 0
     private var provider: InterstitialProvider
+    private var rewardedProvider: RewardedProvider
+
+    /// Ödüllü reklam hazır mı (buton pasifleştirmek için)
+    @Published private(set) var rewardedReady = false
+
+    /// Ödüllü reklam yer tutucusu (yalnızca DEBUG stub akışı)
+    @Published var showingRewardedPlaceholder = false
 
     init() {
         #if canImport(GoogleMobileAds)
         provider = AdMobProvider()
+        rewardedProvider = AdMobRewardedProvider()
         #else
         provider = NoOpProvider()
+        rewardedProvider = NoOpRewardedProvider()
         #endif
         provider.preload()
+        rewardedProvider.preload { [weak self] ready in
+            self?.rewardedReady = ready
+        }
+    }
+
+    /// Ödüllü reklam gösterir. Kullanıcı ödülü hak ettiyse `granted: true`.
+    /// Reklam yoksa DEBUG'da yer tutucu, RELEASE'te granted:false döner.
+    func showRewarded(granted: @escaping (Bool) -> Void) {
+        let shown = rewardedProvider.show { [weak self] earned in
+            self?.rewardedProvider.preload { ready in self?.rewardedReady = ready }
+            granted(earned)
+        }
+        guard !shown else { return }
+        #if DEBUG
+        showingRewardedPlaceholder = true
+        rewardedPlaceholderCompletion = granted
+        #else
+        granted(false)
+        #endif
+    }
+
+    private var rewardedPlaceholderCompletion: ((Bool) -> Void)?
+    func dismissRewardedPlaceholder(granted: Bool) {
+        showingRewardedPlaceholder = false
+        rewardedPlaceholderCompletion?(granted)
+        rewardedPlaceholderCompletion = nil
     }
 
     /// Bölüm tamamlandığında çağrılır. Reklam gösterilecekse true döner
@@ -150,6 +185,19 @@ final class NoOpProvider: InterstitialProvider {
     func show(completion: @escaping () -> Void) -> Bool { false }
 }
 
+@MainActor
+protocol RewardedProvider {
+    func preload(ready: @escaping (Bool) -> Void)
+    /// Ödüllü reklamı gösterir; gösterilemiyorsa false döner.
+    /// Kapanınca completion(ödül kazanıldı mı) çağrılır.
+    func show(completion: @escaping (Bool) -> Void) -> Bool
+}
+
+final class NoOpRewardedProvider: RewardedProvider {
+    func preload(ready: @escaping (Bool) -> Void) { ready(false) }
+    func show(completion: @escaping (Bool) -> Void) -> Bool { false }
+}
+
 // MARK: - AdMob entegrasyonu (SDK 12.x API'si)
 // Etkinleştirmek için:
 //  1. Xcode > File > Add Package Dependencies…
@@ -213,7 +261,7 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
 
     /// En üstteki (sunum zincirinin sonundaki) view controller — reklam
     /// buradan sunulmazsa boş gri ekran görülebilir
-    private static func topViewController() -> UIViewController? {
+    static func topViewController() -> UIViewController? {
         let root = UIApplication.shared.connectedScenes
             .compactMap { ($0 as? UIWindowScene)?.keyWindow?.rootViewController }
             .first
@@ -229,6 +277,62 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
 
     func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         completion?()
+        completion = nil
+    }
+}
+
+/// Ödüllü reklam — oyuncunun kendi isteğiyle izlediği tek reklam türü.
+/// Ödül yalnızca reklam sonuna kadar izlenirse verilir.
+final class AdMobRewardedProvider: NSObject, RewardedProvider, FullScreenContentDelegate {
+    #if DEBUG
+    private let adUnitID = "ca-app-pub-3940256099942544/1712485313"   // Google resmi test birimi
+    #else
+    private let adUnitID = "ca-app-pub-2696377554654488/9815801374"
+    #endif
+    private var rewarded: RewardedAd?
+    private var completion: ((Bool) -> Void)?
+    private var earned = false
+    private var startedSDK = false
+
+    func preload(ready: @escaping (Bool) -> Void) {
+        guard Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") != nil else {
+            ready(false)
+            return
+        }
+        if !startedSDK {
+            startedSDK = true
+            MobileAds.shared.start(completionHandler: nil)
+        }
+        RewardedAd.load(with: adUnitID, request: Request()) { [weak self] ad, error in
+            if let error {
+                os_log(.error, "AdMob ödüllü yükleme hatası: %{public}@", error.localizedDescription)
+            }
+            self?.rewarded = ad
+            ad?.fullScreenContentDelegate = self
+            ready(ad != nil)
+        }
+    }
+
+    func show(completion: @escaping (Bool) -> Void) -> Bool {
+        guard let rewarded, let root = AdMobProvider.topViewController() else { return false }
+        self.completion = completion
+        self.earned = false
+        self.rewarded = nil
+        DispatchQueue.main.async {
+            rewarded.present(from: root) { [weak self] in
+                self?.earned = true
+            }
+        }
+        return true
+    }
+
+    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
+        completion?(earned)
+        completion = nil
+    }
+
+    func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+        completion?(false)
         completion = nil
     }
 }
