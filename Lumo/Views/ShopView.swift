@@ -250,6 +250,17 @@ struct ShopView: View {
             }
             .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color))
             .disabled(starsJustEarned)
+
+            if let notice = ads.rewardNotice {
+                Label(notice == .unavailable
+                      ? "No ad available right now — try again in a bit"
+                      : "Ad closed early — no stars this time",
+                      systemImage: "info.circle.fill")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .multilineTextAlignment(.center)
+                    .onTapGesture { ads.dismissRewardNotice() }
+            }
         }
         .padding(20)
         .background {

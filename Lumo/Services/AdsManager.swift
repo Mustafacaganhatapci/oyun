@@ -54,11 +54,18 @@ final class AdsManager: ObservableObject {
         }
     }
 
+    /// Ödüllü reklam sonucu — düğmenin sessizce hiçbir şey yapmaması yerine
+    /// oyuncuya ne olduğu söylenir.
+    enum RewardNotice: Equatable { case unavailable, notEarned }
+    @Published var rewardNotice: RewardNotice?
+
     /// Ödüllü reklam gösterir. Kullanıcı ödülü hak ettiyse `granted: true`.
-    /// Reklam yoksa DEBUG'da yer tutucu, RELEASE'te granted:false döner.
+    /// Reklam yüklenememişse hiç istem çıkmaz; durum `rewardNotice` ile bildirilir.
     func showRewarded(granted: @escaping (Bool) -> Void) {
+        rewardNotice = nil
         let shown = rewardedProvider.show { [weak self] earned in
             self?.rewardedProvider.preload { ready in self?.rewardedReady = ready }
+            if !earned { self?.rewardNotice = .notEarned }
             granted(earned)
         }
         guard !shown else { return }
@@ -66,9 +73,14 @@ final class AdsManager: ObservableObject {
         showingRewardedPlaceholder = true
         rewardedPlaceholderCompletion = granted
         #else
+        // Elde reklam yok: yeni bir tane iste ve oyuncuya durumu bildir
+        rewardedProvider.preload { [weak self] ready in self?.rewardedReady = ready }
+        rewardNotice = .unavailable
         granted(false)
         #endif
     }
+
+    func dismissRewardNotice() { rewardNotice = nil }
 
     private var rewardedPlaceholderCompletion: ((Bool) -> Void)?
     func dismissRewardedPlaceholder(granted: Bool) {
@@ -287,7 +299,10 @@ final class AdMobRewardedProvider: NSObject, RewardedProvider, FullScreenContent
     #if DEBUG
     private let adUnitID = "ca-app-pub-3940256099942544/1712485313"   // Google resmi test birimi
     #else
-    private let adUnitID = "ca-app-pub-2696377554654488/9815801374"
+    // TODO: AdMob > Uygulamalar > Orbeon > Reklam birimleri'nden ÖDÜLLÜ bir
+    // birim oluşturup kimliğini buraya yapıştır. Boş kaldığı sürece ödüllü
+    // reklam istenmez; "İzle ve kazan" düğmesi kullanıcıya durumu bildirir.
+    private let adUnitID = ""
     #endif
     private var rewarded: RewardedAd?
     private var completion: ((Bool) -> Void)?
@@ -295,7 +310,8 @@ final class AdMobRewardedProvider: NSObject, RewardedProvider, FullScreenContent
     private var startedSDK = false
 
     func preload(ready: @escaping (Bool) -> Void) {
-        guard Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") != nil else {
+        guard !adUnitID.isEmpty,
+              Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") != nil else {
             ready(false)
             return
         }

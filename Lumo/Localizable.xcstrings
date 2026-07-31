@@ -258,6 +258,41 @@
         }
       }
     },
+    "Ad closed early — no stars this time": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Werbung zu früh geschlossen — diesmal keine Sterne"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anuncio cerrado antes de tiempo: esta vez no hay estrellas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pub fermée trop tôt — pas d'étoiles cette fois"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "広告を途中で閉じました — 今回はスターなし"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reklam yarıda kapatıldı — bu sefer yıldız yok"
+          }
+        }
+      }
+    },
     "Add Firebase to enable the world ranking (see README). Your local best is shown below.": {
       "extractionState": "manual",
       "localizations": {
@@ -3427,6 +3462,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gece"
+          }
+        }
+      }
+    },
+    "No ad available right now — try again in a bit": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gerade keine Werbung verfügbar — versuch es gleich nochmal"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay anuncios disponibles ahora: inténtalo en un rato"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune pub disponible pour l'instant — réessaie dans un moment"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今は表示できる広告がありません — 少し後でもう一度"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şu an gösterilecek reklam yok — birazdan tekrar dene"
           }
         }
       }
