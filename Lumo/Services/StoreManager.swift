@@ -11,7 +11,7 @@ import os.log
 @MainActor
 final class StoreManager: ObservableObject {
     static let premiumID = "lumo.premium"
-    static let tipSmallID = "lumo.tip.small"
+    static let tipSmallID = "lumo.tip.small2"
     static let tipBigID = "lumo.tip.big"
     static let allIDs = [premiumID, tipSmallID, tipBigID]
 
