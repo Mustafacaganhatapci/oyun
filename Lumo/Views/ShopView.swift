@@ -69,6 +69,10 @@ struct ShopView: View {
 
                         tipSection
 
+                        if let status = store.statusMessage {
+                            statusBanner(status)
+                        }
+
                         Button {
                             Task { await store.restore() }
                         } label: {
@@ -176,6 +180,33 @@ struct ShopView: View {
                 .fill(.white.opacity(0.05))
         }
         .padding(.horizontal, 20)
+    }
+
+    // MARK: Satın alma sonucu bildirimi
+
+    @ViewBuilder
+    private func statusBanner(_ status: StoreManager.StatusMessage) -> some View {
+        let (text, icon, color): (LocalizedStringKey, String, Color) = {
+            switch status {
+            case .success:
+                return ("Purchase complete — thank you!", "checkmark.circle.fill", settings.theme.gate.color)
+            case .restored:
+                return ("Purchases restored", "checkmark.circle.fill", settings.theme.gate.color)
+            case .nothingToRestore:
+                return ("No previous purchases found on this Apple Account", "info.circle.fill", .white.opacity(0.7))
+            case .pending:
+                return ("Waiting for approval — you'll get it once it's approved", "clock.fill", settings.theme.lumen.color)
+            case .failed:
+                return ("Purchase didn't go through. Nothing was charged.", "exclamationmark.triangle.fill", settings.theme.hazard.color)
+            }
+        }()
+
+        Label(text, systemImage: icon)
+            .font(.system(.footnote, design: .rounded).bold())
+            .foregroundStyle(color)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 30)
+            .onTapGesture { store.statusMessage = nil }
     }
 
     // MARK: Ödüllü reklamla bedava yıldız

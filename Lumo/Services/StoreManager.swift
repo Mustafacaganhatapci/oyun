@@ -33,6 +33,10 @@ final class StoreManager: ObservableObject {
     @Published private(set) var purchaseInProgress = false
     @Published private(set) var productsLoaded = false   // ürün yükleme denemesi bitti mi
 
+    /// Satın alma sonucu — sessizce başarısız olmak yerine arayüzde gösterilir.
+    enum StatusMessage: Equatable { case success, pending, failed, restored, nothingToRestore }
+    @Published var statusMessage: StatusMessage?
+
     private var entitled = false        // gerçek IAP satın alması var mı
     private var promoGranted = false    // kodla açıldı mı
     private var promoFailCount = 0
@@ -56,6 +60,7 @@ final class StoreManager: ObservableObject {
         }
         Task {
             await loadProducts()
+            await finishPendingTransactions()
             await refreshEntitlements()
         }
     }
@@ -117,28 +122,60 @@ final class StoreManager: ObservableObject {
     func purchase(_ product: Product) async {
         guard !purchaseInProgress else { return }
         purchaseInProgress = true
+        statusMessage = nil
         defer { purchaseInProgress = false }
         do {
             let result = try await product.purchase()
             switch result {
             case .success(let verification):
-                if case .verified(let transaction) = verification {
+                switch verification {
+                case .verified(let transaction):
                     apply(transaction)
                     await transaction.finish()
+                    statusMessage = .success
+                case .unverified(let transaction, let error):
+                    // İmza doğrulanamadı. İşlemi bitirmezsek kuyrukta kalır ve
+                    // App Store aynı ürünü tekrar tekrar sormaya devam eder.
+                    os_log(.error, "StoreKit doğrulanamayan işlem: %{public}@",
+                           error.localizedDescription)
+                    await transaction.finish()
+                    statusMessage = .failed
                 }
-            case .userCancelled, .pending:
+            case .userCancelled:
                 break
+            case .pending:
+                // "Satın Alma İzni" (Ask to Buy) — onay bekleniyor
+                statusMessage = .pending
             @unknown default:
                 break
             }
         } catch {
             os_log(.error, "StoreKit satın alma hatası: %{public}@", error.localizedDescription)
+            statusMessage = .failed
+        }
+    }
+
+    /// Uygulama açılışında yarım kalmış işlemleri kapatır. Bitirilmemiş bir
+    /// işlem kuyrukta durduğu sürece App Store aynı satın almayı yeniden sorar
+    /// ve tüketilebilir ürünler bir daha satın alınamaz.
+    private func finishPendingTransactions() async {
+        for await result in Transaction.unfinished {
+            switch result {
+            case .verified(let transaction):
+                apply(transaction)
+                await transaction.finish()
+            case .unverified(let transaction, _):
+                await transaction.finish()
+            }
         }
     }
 
     func restore() async {
+        statusMessage = nil
         try? await AppStore.sync()
+        await finishPendingTransactions()
         await refreshEntitlements()
+        statusMessage = isPremium ? .restored : .nothingToRestore
     }
 
     private func handle(_ update: VerificationResult<Transaction>) async {

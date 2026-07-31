@@ -51,7 +51,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../Lumo/Lumo.storekit">
+         identifier = "../../../Lumo/Lumo.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
