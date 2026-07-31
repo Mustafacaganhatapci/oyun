@@ -840,6 +840,16 @@ final class GameScene: SKScene {
         ringCircles[lastRing].run(.sequence([.scale(to: 1.12, duration: 0.12), .scale(to: 1.0, duration: 0.25)]))
     }
 
+    /// Sonsuz modda ödüllü reklam izlendikten sonra çağrılır: skor korunur,
+    /// küre son tutunduğu halkaya güvenli bir açıdan geri oturur.
+    func reviveEndless() {
+        guard case .endless = mode else { return }
+        endlessOverSent = false
+        deadSince = nil
+        orbNode.isHidden = false
+        softReturn()
+    }
+
     /// Aktif halkanın çevresinde kalan oyalanma süresini gösteren azalan yay.
     /// Üstten başlar, saat yönünde tükenir; süre azaldıkça kırmızıya döner.
     private func updateDwellArc(ring: Int, fraction: CGFloat) {

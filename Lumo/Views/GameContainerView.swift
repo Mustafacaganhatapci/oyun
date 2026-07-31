@@ -46,6 +46,7 @@ struct GameContainerView: View {
     @State private var overlay: Overlay = .none
     @State private var lumenCount = 0
     @State private var deathsThisLevel = 0
+    @State private var revivedThisRun = false
     @State private var endlessScore = 0
     @State private var bonusRemaining = 0
     @State private var timeRemaining = -1      // süreli bölüm geri sayımı (-1: süresiz)
@@ -619,6 +620,24 @@ struct GameContainerView: View {
                         .foregroundStyle(.white.opacity(0.6))
                 }
 
+                // Koşu başına bir kez: reklam izleyip skoru koruyarak devam et
+                if !revivedThisRun, !store.isPremium {
+                    Button {
+                        AudioEngine.shared.playTap()
+                        ads.showRewarded { earned in
+                            guard earned else { return }
+                            revivedThisRun = true
+                            overlay = .none
+                            scene?.reviveEndless()
+                            Haptics.shared.win()
+                        }
+                    } label: {
+                        Label("Continue — watch an ad", systemImage: "play.rectangle.fill")
+                    }
+                    .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color, prominent: true))
+                    .padding(.top, 10)
+                }
+
                 Button {
                     _ = ads.endlessEnded(isPremium: store.isPremium,
                                          endlessUnlocked: progress.endlessUnlocked) {
@@ -627,8 +646,9 @@ struct GameContainerView: View {
                 } label: {
                     Label("Try Again", systemImage: "arrow.counterclockwise")
                 }
-                .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
-                .padding(.top, 10)
+                .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color,
+                                             prominent: revivedThisRun || store.isPremium))
+                .padding(.top, revivedThisRun || store.isPremium ? 10 : 0)
 
                 Button { app.route = player.hasUsername ? .ranking : .username } label: {
                     Label("World Ranking", systemImage: "globe")
@@ -941,6 +961,7 @@ struct GameContainerView: View {
     private func restart() {
         lumenCount = 0
         deathsThisLevel = 0
+        revivedThisRun = false
         endlessScore = 0
         bonusRemaining = 0
         timeRemaining = -1
