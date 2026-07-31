@@ -24,6 +24,8 @@
 	<string>ca-app-pub-2696377554654488~9123400876</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Orbeon stays free thanks to ads. Allowing this lets us show ads that fit you better — it never affects gameplay, and there is no pay-to-win.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

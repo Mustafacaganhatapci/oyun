@@ -26,6 +26,7 @@ struct LumoApp: App {
     @StateObject private var tutorial = TutorialStore()
     @StateObject private var daily = DailyRewardStore()
     @StateObject private var missions = MissionStore()
+    @StateObject private var consent = ConsentManager()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
@@ -46,6 +47,8 @@ struct LumoApp: App {
                 .onAppear {
                     AudioEngine.shared.startIfNeeded()
                     leaderboard.configureIfPossible()
+                    // GDPR onayı + ATT izni; reklamlar bunlardan sonra anlamlı
+                    consent.requestIfNeeded(isPremium: store.isPremium)
                 }
                 .onChange(of: scenePhase) { _, phase in
                     switch phase {

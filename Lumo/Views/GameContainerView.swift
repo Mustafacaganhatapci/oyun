@@ -281,6 +281,10 @@ struct GameContainerView: View {
                     progress.complete(level: id, stars: stars)
                     missions.recordLevelCleared(deathless: deathsThisLevel == 0, starsEarned: stars)
                     missions.recordLumens(lumenCount)
+                    // Oyuncunun en iyi hissettiği an: kusursuz bir bölüm
+                    if stars >= 3 {
+                        ReviewPrompt.requestAfterGreatRun(completedLevels: progress.completedCount)
+                    }
                 }
                 overlay = .won(stars: stars)
             case .speedrun:

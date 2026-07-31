@@ -1,7 +1,9 @@
 import Foundation
 import SwiftUI
 
-/// Oyuncu ilerlemesi — UserDefaults'ta saklanır, buluta bağımlılık yoktur.
+/// Oyuncu ilerlemesi. Kaynak her zaman cihazdaki UserDefaults'tur; iCloud
+/// anahtar-değer deposu yalnızca yedektir. iCloud kapalıysa ya da yetenek
+/// projede etkin değilse yazmalar sessizce yok sayılır ve oyun aynen çalışır.
 @MainActor
 final class ProgressStore: ObservableObject {
     @Published private(set) var stars: [Int: Int] = [:]      // bölüm -> 0...3 yıldız
@@ -23,6 +25,8 @@ final class ProgressStore: ObservableObject {
         static let bonusStars = "lumo.progress.bonusStars"
     }
 
+    private let cloud = NSUbiquitousKeyValueStore.default
+
     init() {
         if let data = defaults.data(forKey: Key.stars),
            let decoded = try? JSONDecoder().decode([Int: Int].self, from: data) {
@@ -34,6 +38,72 @@ final class ProgressStore: ObservableObject {
         spentStars = defaults.integer(forKey: Key.spentStars)
         unlockedOrbs = Set(defaults.stringArray(forKey: Key.unlockedOrbs) ?? [])
         bonusStars = defaults.integer(forKey: Key.bonusStars)
+
+        // Yeni cihazda/silme sonrası buluttaki ilerlemeyi geri getir
+        NotificationCenter.default.addObserver(
+            forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: cloud, queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in self?.mergeFromCloud() }
+        }
+        cloud.synchronize()
+        mergeFromCloud()
+    }
+
+    // MARK: iCloud yedekleme
+    //
+    // Cihaz kaybı/değişimi ilerlemeyi silmesin diye anahtar-değer deposuna
+    // yedeklenir. Çakışmada DAİMA daha ileri olan kazanır: bölüm başına en
+    // yüksek yıldız, en iyi skorlar ve açılmış her karakter korunur — hiçbir
+    // birleştirme oyuncunun elindekini geri almaz.
+
+    private func mergeFromCloud() {
+        if let data = cloud.data(forKey: Key.stars),
+           let remote = try? JSONDecoder().decode([Int: Int].self, from: data) {
+            for (level, value) in remote {
+                stars[level] = max(stars[level] ?? 0, value)
+            }
+        }
+        endlessBest = max(endlessBest, Int(cloud.longLong(forKey: Key.endlessBest)))
+        totalHops = max(totalHops, Int(cloud.longLong(forKey: Key.totalHops)))
+        bonusStars = max(bonusStars, Int(cloud.longLong(forKey: Key.bonusStars)))
+        // Harcanan yıldız da en yükseği kazanır; yoksa bulut bakiyesi
+        // sıfırlanıp aynı karakter iki kez satın alınabilirdi
+        spentStars = max(spentStars, Int(cloud.longLong(forKey: Key.spentStars)))
+        unlockedOrbs.formUnion(cloud.stringArray(forKey: Key.unlockedOrbs) ?? [])
+
+        let remoteSpeed = cloud.double(forKey: Key.speedrunBest)
+        if remoteSpeed > 0, speedrunBest == 0 || remoteSpeed < speedrunBest {
+            speedrunBest = remoteSpeed
+        }
+
+        persistLocally()
+        pushToCloud()
+    }
+
+    private func pushToCloud() {
+        if let data = try? JSONEncoder().encode(stars) {
+            cloud.set(data, forKey: Key.stars)
+        }
+        cloud.set(Int64(endlessBest), forKey: Key.endlessBest)
+        cloud.set(Int64(totalHops), forKey: Key.totalHops)
+        cloud.set(Int64(spentStars), forKey: Key.spentStars)
+        cloud.set(Int64(bonusStars), forKey: Key.bonusStars)
+        cloud.set(speedrunBest, forKey: Key.speedrunBest)
+        cloud.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
+        cloud.synchronize()
+    }
+
+    private func persistLocally() {
+        if let data = try? JSONEncoder().encode(stars) {
+            defaults.set(data, forKey: Key.stars)
+        }
+        defaults.set(endlessBest, forKey: Key.endlessBest)
+        defaults.set(speedrunBest, forKey: Key.speedrunBest)
+        defaults.set(totalHops, forKey: Key.totalHops)
+        defaults.set(spentStars, forKey: Key.spentStars)
+        defaults.set(bonusStars, forKey: Key.bonusStars)
+        defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
     }
 
     /// Tamamlanan en yüksek bölüm + 1 oynanabilir; 1. bölüm her zaman açık.
@@ -51,6 +121,7 @@ final class ProgressStore: ObservableObject {
     func grantBonusStars(_ amount: Int) {
         bonusStars += amount
         defaults.set(bonusStars, forKey: Key.bonusStars)
+        pushToCloud()
     }
     var endlessUnlocked: Bool { stars[LevelLibrary.adFreeLevels] != nil }
 
@@ -79,6 +150,7 @@ final class ProgressStore: ObservableObject {
         unlockedOrbs.insert(style.id)
         defaults.set(spentStars, forKey: Key.spentStars)
         defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
+        pushToCloud()
         return true
     }
 
@@ -91,12 +163,15 @@ final class ProgressStore: ObservableObject {
     func recordHop() {
         totalHops += 1
         defaults.set(totalHops, forKey: Key.totalHops)
+        // Her sıçrayışta buluta yazmak gereksiz trafik; ara ara yeter
+        if totalHops % 25 == 0 { pushToCloud() }
     }
 
     func recordEndless(score: Int) {
         if score > endlessBest {
             endlessBest = score
             defaults.set(endlessBest, forKey: Key.endlessBest)
+            pushToCloud()
         }
     }
 
@@ -106,6 +181,7 @@ final class ProgressStore: ObservableObject {
         if speedrunBest == 0 || time < speedrunBest {
             speedrunBest = time
             defaults.set(speedrunBest, forKey: Key.speedrunBest)
+            pushToCloud()
             return true
         }
         return false
@@ -115,5 +191,6 @@ final class ProgressStore: ObservableObject {
         if let data = try? JSONEncoder().encode(stars) {
             defaults.set(data, forKey: Key.stars)
         }
+        pushToCloud()
     }
 }
