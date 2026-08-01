@@ -2824,12 +2824,6 @@
         }
       }
     },
-    "LUMO": {
-      "shouldTranslate": false
-    },
-    "LUMO Premium": {
-      "shouldTranslate": false
-    },
     "Legendary!": {
       "extractionState": "manual",
       "localizations": {
@@ -3536,37 +3530,37 @@
         }
       }
     },
-    "No purchase gives a gameplay advantage. There is no pay-to-win in LUMO.": {
+    "No purchase gives a gameplay advantage. There is no pay-to-win in Orbeon.": {
       "extractionState": "manual",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kein Kauf verschafft einen Spielvorteil. In LUMO gibt es kein Pay-to-Win."
+            "value": "Kein Kauf verschafft einen Spielvorteil. In Orbeon gibt es kein Pay-to-Win."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ninguna compra da ventaja en el juego. En LUMO no hay pay-to-win."
+            "value": "Ninguna compra da ventaja en el juego. En Orbeon no hay pay-to-win."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aucun achat ne donne d'avantage en jeu. Pas de pay-to-win dans LUMO."
+            "value": "Aucun achat ne donne d'avantage en jeu. Pas de pay-to-win dans Orbeon."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "課金でゲームが有利になることはありません。LUMOにPay-to-Winはありません。"
+            "value": "課金でゲームが有利になることはありません。OrbeonにPay-to-Winはありません。"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hiçbir satın alma oyun avantajı vermez. LUMO'da pay-to-win yoktur."
+            "value": "Hiçbir satın alma oyun avantajı vermez. Orbeon'da pay-to-win yoktur."
           }
         }
       }

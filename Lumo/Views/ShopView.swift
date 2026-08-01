@@ -60,7 +60,7 @@ struct ShopView: View {
                         }
 
                         // Dürüstlük ilkesi — açıkça söylüyoruz
-                        Label("No purchase gives a gameplay advantage. There is no pay-to-win in LUMO.",
+                        Label("No purchase gives a gameplay advantage. There is no pay-to-win in Orbeon.",
                               systemImage: "checkmark.shield.fill")
                             .font(.system(.footnote, design: .rounded))
                             .foregroundStyle(.white.opacity(0.55))

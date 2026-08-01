@@ -6,7 +6,7 @@ import UIKit
 enum OrbUnlock: Equatable {
     case free               // baştan açık
     case stars(Int)         // toplanan yıldızlarla satın alınır
-    case premium            // LUMO Premium (IAP) ile açılır
+    case premium            // Orbeon Premium (IAP) ile açılır
 }
 
 /// Kürenin (oyuncu "karakterinin") görsel stili.

@@ -1,6 +1,6 @@
 import AVFoundation
 
-/// LUMO'nun tüm sesi koddan üretilir — hiç ses dosyası yoktur.
+/// Orbeon'un tüm sesi koddan üretilir — hiç ses dosyası yoktur.
 /// Müzik: yavaşça akor değiştiren, portamentolu ambient pad (AVAudioSourceNode).
 /// Efektler: pentatonik dizide tınlayan sentetik "pluck" notaları; her başarılı
 /// atlayışta kombo ile perde yükselir — oyuncu farkında olmadan melodi çalar.
