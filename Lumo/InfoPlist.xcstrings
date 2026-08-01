@@ -1,0 +1,48 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSUserTrackingUsageDescription" : {
+      "comment" : "İzleme izni istemi. Apple, gerekçenin somut olmasını ister: verinin ne için kullanıldığını söyle, karşılığında bir şey vaat etme.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orbeon bleibt dank Werbung kostenlos. Mit deiner Erlaubnis passen wir die Werbung besser an dich an. Auf das Spiel hat das keinen Einfluss."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orbeon stays free thanks to ads. Allowing this lets us show ads that fit you better. It never affects gameplay."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orbeon es gratis gracias a los anuncios. Si lo permites, podremos mostrarte anuncios más adecuados para ti. No afecta al juego."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orbeon reste gratuit grâce à la pub. En acceptant, tu verras des pubs mieux adaptées à toi. Cela n'a aucun effet sur le jeu."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orbeonは広告のおかげで無料で遊べます。許可すると、よりあなたに合った広告を表示できます。ゲーム内容には影響しません。"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orbeon reklamlar sayesinde ücretsiz. İzin verirsen sana daha uygun reklamlar gösterebiliriz. Oynanışa hiçbir etkisi yoktur."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

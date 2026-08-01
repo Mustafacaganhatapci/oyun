@@ -25,7 +25,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>Orbeon stays free thanks to ads. Allowing this lets us show ads that fit you better — it never affects gameplay, and there is no pay-to-win.</string>
+	<string>Orbeon stays free thanks to ads. Allowing this lets us show ads that fit you better. It never affects gameplay.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
