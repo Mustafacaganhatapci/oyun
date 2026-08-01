@@ -299,10 +299,7 @@ final class AdMobRewardedProvider: NSObject, RewardedProvider, FullScreenContent
     #if DEBUG
     private let adUnitID = "ca-app-pub-3940256099942544/1712485313"   // Google resmi test birimi
     #else
-    // TODO: AdMob > Uygulamalar > Orbeon > Reklam birimleri'nden ÖDÜLLÜ bir
-    // birim oluşturup kimliğini buraya yapıştır. Boş kaldığı sürece ödüllü
-    // reklam istenmez; "İzle ve kazan" düğmesi kullanıcıya durumu bildirir.
-    private let adUnitID = ""
+    private let adUnitID = "ca-app-pub-2696377554654488/9121540024"
     #endif
     private var rewarded: RewardedAd?
     private var completion: ((Bool) -> Void)?
