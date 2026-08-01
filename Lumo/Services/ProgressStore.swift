@@ -70,7 +70,7 @@ final class ProgressStore: ObservableObject {
         // Harcanan yıldız da en yükseği kazanır; yoksa bulut bakiyesi
         // sıfırlanıp aynı karakter iki kez satın alınabilirdi
         spentStars = max(spentStars, Int(cloud.longLong(forKey: Key.spentStars)))
-        unlockedOrbs.formUnion(cloud.stringArray(forKey: Key.unlockedOrbs) ?? [])
+        unlockedOrbs.formUnion(cloud.array(forKey: Key.unlockedOrbs) as? [String] ?? [])
 
         let remoteSpeed = cloud.double(forKey: Key.speedrunBest)
         if remoteSpeed > 0, speedrunBest == 0 || remoteSpeed < speedrunBest {
