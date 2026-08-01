@@ -1,0 +1,815 @@
+package com.caganhatapci.orbeon.ui
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.caganhatapci.orbeon.LocalActivity
+import com.caganhatapci.orbeon.LocalAppState
+import com.caganhatapci.orbeon.R
+import com.caganhatapci.orbeon.model.LevelLibrary
+import com.caganhatapci.orbeon.model.OrbStyle
+import com.caganhatapci.orbeon.services.AdsManager
+import com.caganhatapci.orbeon.services.BillingManager
+import com.caganhatapci.orbeon.services.LeaderboardService
+import com.caganhatapci.orbeon.store.MissionStore
+import com.caganhatapci.orbeon.theme.Theme
+
+@Composable
+private fun ScreenHeader(title: String, onBack: () -> Unit, trailing: @Composable () -> Unit = {}) {
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BackButton(onBack)
+        Text(title, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) { trailing() }
+    }
+}
+
+// MARK: Ana menü
+
+@Composable
+fun MainMenuScreen(
+    onPlay: () -> Unit, onLevels: () -> Unit, onEndless: () -> Unit,
+    onSpeedrun: () -> Unit, onShop: () -> Unit, onSettings: () -> Unit, onRanking: () -> Unit
+) {
+    val app = LocalAppState.current
+    val theme = Theme.byId(app.settings.themeId)
+    var showMissions by remember { mutableStateOf(false) }
+    var claimedFlash by remember { mutableStateOf<Int?>(null) }
+
+    ThemeBackground(theme) {
+        Column(
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                Box(
+                    Modifier.size(44.dp)
+                        .background(Color.White.copy(alpha = 0.1f), CircleShape)
+                        .clickable { app.audio.playTap(); onRanking() },
+                    contentAlignment = Alignment.Center
+                ) { Text("🏆", fontSize = 18.sp) }
+            }
+
+            Text("ORBEON", color = Color.White, fontSize = 44.sp, fontWeight = FontWeight.Black,
+                modifier = Modifier.padding(top = 20.dp))
+            Text(stringResource(R.string.tagline), color = Color.White.copy(alpha = 0.55f), fontSize = 13.sp)
+
+            if (app.progress.totalStars > 0) {
+                Text(
+                    "★ ${app.progress.totalStars} / ${LevelLibrary.COUNT * 3}",
+                    color = theme.lumen, fontSize = 15.sp, fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 12.dp)
+                )
+            }
+
+            // Günlük ödül + görevler
+            Row(
+                Modifier.fillMaxWidth().padding(top = 26.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    Modifier.weight(1f)
+                        .background(
+                            if (app.daily.claimedToday) Color.White.copy(alpha = 0.08f) else theme.lumen,
+                            RoundedCornerShape(14.dp)
+                        )
+                        .clickable(enabled = !app.daily.claimedToday) {
+                            app.audio.playTap()
+                            app.daily.claim()?.let { reward ->
+                                app.progress.grantBonusStars(reward)
+                                app.audio.playWin(); app.haptics.win()
+                                claimedFlash = reward
+                            }
+                        }
+                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                ) {
+                    Column {
+                        Text(
+                            if (app.daily.claimedToday) stringResource(R.string.claimed_today)
+                            else stringResource(R.string.daily_plus, app.daily.todayReward),
+                            color = if (app.daily.claimedToday) Color.White.copy(alpha = 0.5f) else Color.Black,
+                            fontSize = 14.sp, fontWeight = FontWeight.Bold
+                        )
+                        if (app.daily.streak > 0) {
+                            Text(
+                                stringResource(R.string.day_streak, app.daily.streak),
+                                color = if (app.daily.claimedToday) Color.White.copy(alpha = 0.4f)
+                                        else Color.Black.copy(alpha = 0.7f),
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+                }
+
+                Box(
+                    Modifier.size(46.dp)
+                        .background(Color.White.copy(alpha = 0.1f), RoundedCornerShape(14.dp))
+                        .clickable { app.audio.playTap(); showMissions = !showMissions },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("☑", color = Color.White, fontSize = 18.sp)
+                    if (app.missions.unclaimedCount > 0) {
+                        Box(
+                            Modifier.size(10.dp).background(theme.hazard, CircleShape)
+                                .align(Alignment.TopEnd)
+                        )
+                    }
+                }
+            }
+
+            claimedFlash?.let {
+                Text(
+                    stringResource(R.string.plus_stars, it),
+                    color = theme.lumen, fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 6.dp)
+                )
+            }
+
+            if (showMissions) {
+                Card(Modifier.padding(top = 10.dp), corner = 18) {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        app.missions.missions.forEach { MissionRow(it, theme) }
+                    }
+                }
+            }
+
+            Column(
+                Modifier.fillMaxWidth().padding(top = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                GlowButton(
+                    if (app.progress.completedCount == 0) stringResource(R.string.play)
+                    else stringResource(R.string.continue_level, app.progress.highestUnlocked),
+                    theme.accent, icon = Icons.Filled.PlayArrow, prominent = true
+                ) { app.audio.playTap(); onPlay() }
+
+                GlowButton(stringResource(R.string.levels), theme.ring) { app.audio.playTap(); onLevels() }
+
+                GlowButton(
+                    stringResource(R.string.endless_mode), theme.gate,
+                    enabled = app.progress.endlessUnlocked
+                ) { app.audio.playTap(); onEndless() }
+
+                GlowButton(
+                    stringResource(R.string.speed_run), theme.hazard,
+                    enabled = app.progress.endlessUnlocked
+                ) { app.audio.playTap(); onSpeedrun() }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Box(Modifier.weight(1f)) {
+                        GlowButton(
+                            if (app.billing.isPremium) stringResource(R.string.premium_active_short)
+                            else stringResource(R.string.shop),
+                            theme.lumen
+                        ) { app.audio.playTap(); onShop() }
+                    }
+                    Box(Modifier.weight(1f)) {
+                        GlowButton(stringResource(R.string.settings), Color.White.copy(alpha = 0.7f)) {
+                            app.audio.playTap(); onSettings()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MissionRow(mission: MissionStore.Mission, theme: Theme) {
+    val app = LocalAppState.current
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(stringResource(mission.titleRes), color = Color.White.copy(alpha = 0.9f),
+                fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Box(
+                Modifier.fillMaxWidth().height(5.dp).padding(top = 4.dp)
+                    .background(Color.White.copy(alpha = 0.12f), RoundedCornerShape(3.dp))
+            ) {
+                Box(
+                    Modifier.fillMaxWidth(mission.fraction).height(5.dp)
+                        .background(
+                            if (mission.isComplete) theme.gate else theme.accent,
+                            RoundedCornerShape(3.dp)
+                        )
+                )
+            }
+            Text(
+                "${mission.progress.coerceAtMost(mission.target)} / ${mission.target}",
+                color = Color.White.copy(alpha = 0.5f), fontSize = 10.sp
+            )
+        }
+        when {
+            mission.claimed -> Icon(Icons.Filled.CheckCircle, null, tint = theme.gate,
+                modifier = Modifier.size(20.dp).padding(start = 8.dp))
+            mission.isComplete -> Text(
+                "+${mission.reward}",
+                color = Color.Black, fontSize = 12.sp, fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 8.dp)
+                    .background(theme.lumen, RoundedCornerShape(20.dp))
+                    .clickable {
+                        app.missions.claim(mission.id)?.let {
+                            app.progress.grantBonusStars(it)
+                            app.audio.playWin(); app.haptics.win()
+                        }
+                    }
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            )
+            else -> Text("+${mission.reward}", color = Color.White.copy(alpha = 0.35f),
+                fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
+        }
+    }
+}
+
+// MARK: Bölüm seçimi
+
+@Composable
+fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
+    val app = LocalAppState.current
+    val theme = Theme.byId(app.settings.themeId)
+
+    ThemeBackground(theme) {
+        Column(Modifier.fillMaxSize()) {
+            ScreenHeader(stringResource(R.string.levels), onBack)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(5),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items((1..LevelLibrary.COUNT).toList()) { id ->
+                    val unlocked = app.progress.isUnlocked(id)
+                    val stars = app.progress.stars[id] ?: 0
+                    val isBonus = LevelLibrary.isBonus(id)
+                    Box(
+                        Modifier
+                            .height(58.dp)
+                            .background(
+                                if (isBonus) theme.lumen.copy(alpha = 0.16f) else Color.White.copy(alpha = 0.07f),
+                                RoundedCornerShape(14.dp)
+                            )
+                            .border(
+                                1.dp,
+                                if (unlocked) theme.ring.copy(alpha = 0.5f) else Color.Transparent,
+                                RoundedCornerShape(14.dp)
+                            )
+                            .clickable(enabled = unlocked) { app.audio.playTap(); onPick(id) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (unlocked) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("$id", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                                if (stars > 0) {
+                                    Text("★".repeat(stars), color = theme.lumen, fontSize = 9.sp)
+                                }
+                            }
+                        } else {
+                            Icon(Icons.Filled.Lock, null, tint = Color.White.copy(alpha = 0.3f),
+                                modifier = Modifier.size(16.dp))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: Mağaza
+
+@Composable
+fun ShopScreen(onBack: () -> Unit) {
+    val app = LocalAppState.current
+    val activity = LocalActivity.current
+    val theme = Theme.byId(app.settings.themeId)
+    val scroll = rememberScrollState()
+    var codeInput by remember { mutableStateOf("") }
+    var codeState by remember { mutableStateOf(0) }   // 0 boş, 1 başarılı, 2 hatalı, 3 teselli
+    var starsJustEarned by remember { mutableStateOf(false) }
+
+    // Premium zaten alınmışsa yukarıda kal; değilse teklifi görsün diye kaydır
+    LaunchedEffect(Unit) {
+        if (!app.billing.isPremium) {
+            kotlinx.coroutines.delay(350)
+            scroll.animateScrollTo(520)
+        }
+    }
+
+    ThemeBackground(theme) {
+        Column(Modifier.fillMaxSize()) {
+            ScreenHeader(stringResource(R.string.shop), onBack) {
+                Text("★ ${app.progress.availableStars}", color = theme.lumen,
+                    fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            }
+
+            Column(
+                Modifier.verticalScroll(scroll).padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                // Ödüllü reklamla bedava yıldız
+                if (!app.billing.isPremium) {
+                    Card {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Text(stringResource(R.string.free_stars), color = Color.White,
+                                fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                stringResource(R.string.watch_ad_for_stars, BillingManager.REWARDED_STAR_GRANT),
+                                color = Color.White.copy(alpha = 0.55f), fontSize = 12.sp
+                            )
+                            GlowButton(
+                                if (starsJustEarned) stringResource(R.string.stars_added)
+                                else stringResource(R.string.watch_and_earn),
+                                theme.lumen, enabled = !starsJustEarned
+                            ) {
+                                app.audio.playTap()
+                                app.ads.showRewarded(activity) { earned ->
+                                    if (earned) {
+                                        app.progress.grantBonusStars(BillingManager.REWARDED_STAR_GRANT)
+                                        app.audio.playWin(); app.haptics.win()
+                                        starsJustEarned = true
+                                    }
+                                }
+                            }
+                            app.ads.rewardNotice?.let { notice ->
+                                Text(
+                                    stringResource(
+                                        if (notice == AdsManager.RewardNotice.UNAVAILABLE)
+                                            R.string.no_ad_available else R.string.ad_closed_early
+                                    ),
+                                    color = Color.White.copy(alpha = 0.6f), fontSize = 11.sp,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth().clickable { app.ads.dismissRewardNotice() }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Yıldızla alınan karakterler
+                Card {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(stringResource(R.string.characters), color = Color.White.copy(alpha = 0.9f),
+                            fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        OrbStyle.starPurchasable.forEach { style ->
+                            CharacterRow(style, theme)
+                        }
+                    }
+                }
+
+                // Premium kartı
+                Box(
+                    Modifier.fillMaxWidth()
+                        .background(theme.lumen.copy(alpha = 0.12f), RoundedCornerShape(28.dp))
+                        .border(1.5.dp, theme.lumen.copy(alpha = 0.6f), RoundedCornerShape(28.dp))
+                        .padding(24.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text("👑", fontSize = 40.sp)
+                        Text(stringResource(R.string.orbeon_premium), color = Color.White,
+                            fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                        listOf(
+                            R.string.benefit_no_ads,
+                            R.string.benefit_themes,
+                            R.string.benefit_photo,
+                            R.string.benefit_support
+                        ).forEach {
+                            Text("•  ${stringResource(it)}", color = Color.White.copy(alpha = 0.9f),
+                                fontSize = 14.sp, modifier = Modifier.fillMaxWidth())
+                        }
+
+                        val premium = app.billing.premiumProduct
+                        when {
+                            app.billing.isPremium -> Text(
+                                stringResource(R.string.premium_active), color = theme.gate,
+                                fontSize = 16.sp, fontWeight = FontWeight.Bold
+                            )
+                            premium != null -> GlowButton(
+                                stringResource(R.string.go_premium), theme.lumen, prominent = true,
+                                trailing = premium.oneTimePurchaseOfferDetails?.formattedPrice ?: "",
+                                enabled = !app.billing.purchaseInProgress
+                            ) { app.billing.purchase(activity, premium) }
+                            app.billing.productsLoaded -> Text(
+                                stringResource(R.string.premium_coming_soon),
+                                color = Color.White.copy(alpha = 0.6f), fontSize = 13.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            else -> Text("…", color = Color.White.copy(alpha = 0.6f))
+                        }
+                    }
+                }
+
+                // Tanıdık kodu
+                if (!app.billing.isPremium) {
+                    Card {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Text(stringResource(R.string.have_a_code), color = Color.White.copy(alpha = 0.85f),
+                                fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    Modifier.weight(1f)
+                                        .background(Color.White.copy(alpha = 0.08f), RoundedCornerShape(12.dp))
+                                        .padding(horizontal = 14.dp, vertical = 12.dp)
+                                ) {
+                                    BasicTextField(
+                                        value = codeInput,
+                                        onValueChange = { codeInput = it; codeState = 0 },
+                                        singleLine = true,
+                                        textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
+                                        cursorBrush = SolidColor(theme.accent),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    if (codeInput.isEmpty()) {
+                                        Text(stringResource(R.string.enter_code),
+                                            color = Color.White.copy(alpha = 0.35f), fontSize = 14.sp)
+                                    }
+                                }
+                                Text(
+                                    stringResource(R.string.redeem),
+                                    color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .background(theme.accent, RoundedCornerShape(20.dp))
+                                        .clickable(enabled = codeInput.isNotEmpty()) {
+                                            codeState = when {
+                                                app.billing.redeem(codeInput) -> {
+                                                    app.audio.playWin(); app.haptics.win(); 1
+                                                }
+                                                app.billing.recordFailedPromoAttempt() -> {
+                                                    app.progress.grantBonusStars(BillingManager.PROMO_FAIL_BONUS_STARS)
+                                                    app.audio.playWin(); 3
+                                                }
+                                                else -> { app.audio.playFail(); 2 }
+                                            }
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                                )
+                            }
+                            when (codeState) {
+                                1 -> Text(stringResource(R.string.code_accepted), color = theme.gate, fontSize = 12.sp)
+                                2 -> Text(stringResource(R.string.invalid_code), color = theme.hazard, fontSize = 12.sp)
+                                3 -> Text(stringResource(R.string.code_bonus), color = theme.lumen, fontSize = 12.sp)
+                            }
+                        }
+                    }
+                }
+
+                Text(
+                    stringResource(R.string.no_pay_to_win),
+                    color = Color.White.copy(alpha = 0.55f), fontSize = 12.sp,
+                    textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
+                )
+
+                // Bahşiş kavanozu
+                Card {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(stringResource(R.string.tip_jar), color = Color.White.copy(alpha = 0.9f),
+                            fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.tip_jar_body), color = Color.White.copy(alpha = 0.5f),
+                            fontSize = 12.sp, textAlign = TextAlign.Center)
+                        app.billing.tipProducts.forEach { product ->
+                            GlowButton(
+                                if (product.productId == BillingManager.TIP_SMALL_ID)
+                                    stringResource(R.string.coffee_home) else stringResource(R.string.coffee_cafe),
+                                theme.accent,
+                                trailing = product.oneTimePurchaseOfferDetails?.formattedPrice ?: "",
+                                enabled = !app.billing.purchaseInProgress
+                            ) { app.billing.purchase(activity, product) }
+                        }
+                        if (app.billing.isSupporter) {
+                            Text(stringResource(R.string.thanks_support), color = theme.hazard, fontSize = 12.sp)
+                        }
+                    }
+                }
+
+                app.billing.statusMessage?.let { status ->
+                    Text(
+                        stringResource(
+                            when (status) {
+                                BillingManager.Status.SUCCESS -> R.string.purchase_complete
+                                BillingManager.Status.RESTORED -> R.string.purchases_restored
+                                BillingManager.Status.NOTHING_TO_RESTORE -> R.string.nothing_to_restore
+                                BillingManager.Status.PENDING -> R.string.purchase_pending
+                                BillingManager.Status.FAILED -> R.string.purchase_failed
+                            }
+                        ),
+                        color = when (status) {
+                            BillingManager.Status.FAILED -> theme.hazard
+                            BillingManager.Status.SUCCESS, BillingManager.Status.RESTORED -> theme.gate
+                            else -> Color.White.copy(alpha = 0.7f)
+                        },
+                        fontSize = 12.sp, textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().clickable { app.billing.statusMessage = null }
+                    )
+                }
+
+                Text(
+                    stringResource(R.string.restore_purchases),
+                    color = Color.White.copy(alpha = 0.6f), fontSize = 13.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 40.dp)
+                        .clickable { app.billing.restore() }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CharacterRow(style: OrbStyle, theme: Theme) {
+    val app = LocalAppState.current
+    val owned = app.progress.isOrbUnlocked(style)
+    val equipped = app.settings.orbStyleId == style.id
+    val cost = style.starCost ?: 0
+
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier.size(42.dp).background(Color.White.copy(alpha = 0.06f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) { Box(Modifier.size(14.dp).background(theme.orb, CircleShape)) }
+
+        Column(Modifier.weight(1f).padding(start = 12.dp)) {
+            Text(stringResource(style.nameRes), color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            if (!owned) Text("★ $cost", color = theme.lumen, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        }
+
+        when {
+            equipped -> Text(stringResource(R.string.equipped), color = theme.gate,
+                fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            owned -> Text(
+                stringResource(R.string.equip), color = Color.Black, fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                modifier = Modifier.background(theme.accent, RoundedCornerShape(20.dp))
+                    .clickable { app.audio.playTap(); app.settings.orbStyleId = style.id; app.settings.persist() }
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+            else -> {
+                val afford = app.progress.canAfford(style)
+                Text(
+                    stringResource(R.string.buy),
+                    color = if (afford) Color.Black else Color.White.copy(alpha = 0.4f),
+                    fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .background(
+                            if (afford) theme.lumen else Color.White.copy(alpha = 0.1f),
+                            RoundedCornerShape(20.dp)
+                        )
+                        .clickable(enabled = afford) {
+                            if (app.progress.purchaseOrb(style)) {
+                                app.audio.playWin()
+                                app.settings.orbStyleId = style.id
+                                app.settings.persist()
+                            } else app.audio.playFail()
+                        }
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+        }
+    }
+}
+
+// MARK: Ayarlar
+
+@Composable
+fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Unit) {
+    val app = LocalAppState.current
+    val theme = Theme.byId(app.settings.themeId)
+
+    ThemeBackground(theme) {
+        Column(Modifier.fillMaxSize()) {
+            ScreenHeader(stringResource(R.string.settings), onBack)
+            Column(
+                Modifier.verticalScroll(rememberScrollState()).padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Card {
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        ToggleRow(stringResource(R.string.sound), app.settings.soundOn) {
+                            app.settings.soundOn = it; app.audio.soundEnabled = it; app.settings.persist()
+                        }
+                        ToggleRow(stringResource(R.string.music), app.settings.musicOn) {
+                            app.settings.musicOn = it; app.audio.musicEnabled = it; app.settings.persist()
+                        }
+                        ToggleRow(stringResource(R.string.haptics), app.settings.hapticsOn) {
+                            app.settings.hapticsOn = it; app.haptics.enabled = it; app.settings.persist()
+                        }
+                    }
+                }
+
+                Card {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(stringResource(R.string.themes), color = Color.White.copy(alpha = 0.9f),
+                            fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Theme.all.forEach { t ->
+                            val locked = t.isPremium && !app.billing.isPremium
+                            Row(
+                                Modifier.fillMaxWidth()
+                                    .background(
+                                        if (app.settings.themeId == t.id) t.accent.copy(alpha = 0.2f)
+                                        else Color.Transparent,
+                                        RoundedCornerShape(12.dp)
+                                    )
+                                    .clickable {
+                                        if (locked) onShop()
+                                        else { app.settings.themeId = t.id; app.settings.persist() }
+                                    }
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(Modifier.size(20.dp).background(t.accent, CircleShape))
+                                Text(
+                                    stringResource(t.nameRes),
+                                    color = Color.White, fontSize = 14.sp,
+                                    modifier = Modifier.weight(1f).padding(start = 12.dp)
+                                )
+                                if (locked) Icon(Icons.Filled.Lock, null,
+                                    tint = Color.White.copy(alpha = 0.4f), modifier = Modifier.size(16.dp))
+                                else if (app.settings.themeId == t.id)
+                                    Icon(Icons.Filled.CheckCircle, null, tint = t.gate, modifier = Modifier.size(18.dp))
+                            }
+                        }
+                    }
+                }
+
+                GlowButton(stringResource(R.string.how_to_play), theme.ring) { onTutorial() }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ToggleRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(label, color = Color.White, fontSize = 15.sp)
+        Switch(checked = checked, onCheckedChange = onChange)
+    }
+}
+
+// MARK: Kullanıcı adı
+
+@Composable
+fun UsernameScreen(onDone: () -> Unit, onBack: () -> Unit) {
+    val app = LocalAppState.current
+    val theme = Theme.byId(app.settings.themeId)
+    var name by remember { mutableStateOf(app.player.username) }
+
+    ThemeBackground(theme) {
+        Column(Modifier.fillMaxSize()) {
+            ScreenHeader(stringResource(R.string.your_name), onBack)
+            Column(
+                Modifier.padding(28.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp)
+            ) {
+                Text(stringResource(R.string.username_body), color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
+                Box(
+                    Modifier.fillMaxWidth()
+                        .background(Color.White.copy(alpha = 0.08f), RoundedCornerShape(14.dp))
+                        .padding(16.dp)
+                ) {
+                    BasicTextField(
+                        value = name,
+                        onValueChange = { if (it.length <= 16) name = it },
+                        singleLine = true,
+                        textStyle = TextStyle(color = Color.White, fontSize = 17.sp),
+                        cursorBrush = SolidColor(theme.accent),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (name.isEmpty()) {
+                        Text(stringResource(R.string.enter_name),
+                            color = Color.White.copy(alpha = 0.35f), fontSize = 17.sp)
+                    }
+                }
+                GlowButton(
+                    stringResource(R.string.save), theme.accent, prominent = true,
+                    enabled = name.trim().isNotEmpty()
+                ) { app.player.save(name); onDone() }
+            }
+        }
+    }
+}
+
+// MARK: Dünya sıralaması
+
+@Composable
+fun RankingScreen(onBack: () -> Unit, onEditName: () -> Unit) {
+    val app = LocalAppState.current
+    val theme = Theme.byId(app.settings.themeId)
+    var mode by remember { mutableStateOf(LeaderboardService.Mode.ENDLESS) }
+
+    LaunchedEffect(mode) { app.leaderboard.load(mode) }
+
+    ThemeBackground(theme) {
+        Column(Modifier.fillMaxSize()) {
+            ScreenHeader(stringResource(R.string.world_ranking), onBack) {
+                Text("✎", color = Color.White, fontSize = 18.sp,
+                    modifier = Modifier.clickable(onClick = onEditName))
+            }
+
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                listOf(
+                    LeaderboardService.Mode.ENDLESS to R.string.endless_mode,
+                    LeaderboardService.Mode.SPEEDRUN to R.string.speed_run
+                ).forEach { (m, label) ->
+                    Box(Modifier.weight(1f)) {
+                        GlowButton(stringResource(label), theme.accent, prominent = mode == m) { mode = m }
+                    }
+                }
+            }
+
+            if (!app.leaderboard.isConfigured) {
+                Text(
+                    stringResource(R.string.ranking_unavailable),
+                    color = Color.White.copy(alpha = 0.6f), fontSize = 13.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(30.dp)
+                )
+            } else {
+                LazyColumn(
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(app.leaderboard.entries) { entry ->
+                        val index = app.leaderboard.entries.indexOf(entry) + 1
+                        val isMe = entry.playerId == app.player.playerId
+                        Row(
+                            Modifier.fillMaxWidth()
+                                .background(
+                                    if (isMe) theme.accent.copy(alpha = 0.18f) else Color.White.copy(alpha = 0.05f),
+                                    RoundedCornerShape(12.dp)
+                                )
+                                .padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("$index", color = theme.lumen, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                            Text(entry.username, color = Color.White, fontSize = 14.sp,
+                                modifier = Modifier.weight(1f).padding(start = 14.dp))
+                            Text(
+                                if (mode == LeaderboardService.Mode.ENDLESS) "${entry.value.toInt()}"
+                                else String.format("%.2f s", entry.value),
+                                color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
