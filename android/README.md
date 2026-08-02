@@ -38,8 +38,9 @@ gradle wrapper --gradle-version 8.9
 3. **İmzalama** — `app/build.gradle.kts` içine kendi `signingConfig`'ini ekle;
    Play App Signing kullanıyorsan yalnızca yükleme anahtarı yeterlidir.
 
-4. **Simge** — `res/drawable/ic_launcher_foreground.xml` basit bir yer
-   tutucudur. Android Studio → **Image Asset** ile kendi ikonunla değiştir.
+4. **Mağaza metinleri** — Play Console'a girilecek ad, açıklamalar, ürün
+   kimlikleri, veri güvenliği ve içerik derecelendirmesi cevapları
+   `store-listing.md` içinde hazır duruyor.
 
 5. **Veri güvenliği formu** — Play Console'da beyan edilecekler, iOS'taki
    App Privacy ile aynı: reklam kimliği (izleme: evet), reklam etkileşimi
