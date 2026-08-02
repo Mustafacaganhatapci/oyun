@@ -1,5 +1,10 @@
 package com.caganhatapci.orbeon.ui
 
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -55,7 +60,17 @@ import com.caganhatapci.orbeon.services.AdsManager
 import com.caganhatapci.orbeon.services.BillingManager
 import com.caganhatapci.orbeon.services.LeaderboardService
 import com.caganhatapci.orbeon.store.MissionStore
+import com.caganhatapci.orbeon.store.OrbPhotoStore
 import com.caganhatapci.orbeon.theme.Theme
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 private fun ScreenHeader(title: String, onBack: () -> Unit, trailing: @Composable () -> Unit = {}) {
@@ -83,6 +98,7 @@ fun MainMenuScreen(
     var claimedFlash by remember { mutableStateOf<Int?>(null) }
 
     ThemeBackground(theme) {
+        AnimatedBlobs(theme)
         Column(
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -96,8 +112,10 @@ fun MainMenuScreen(
                 ) { Text("🏆", fontSize = 18.sp) }
             }
 
+            MenuLogo(theme)
+
             Text("ORBEON", color = Color.White, fontSize = 44.sp, fontWeight = FontWeight.Black,
-                modifier = Modifier.padding(top = 20.dp))
+                modifier = Modifier.padding(top = 14.dp))
             Text(stringResource(R.string.tagline), color = Color.White.copy(alpha = 0.55f), fontSize = 13.sp)
 
             if (app.progress.totalStars > 0) {
@@ -575,10 +593,7 @@ private fun CharacterRow(style: OrbStyle, theme: Theme) {
     val cost = style.starCost ?: 0
 
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            Modifier.size(42.dp).background(Color.White.copy(alpha = 0.06f), CircleShape),
-            contentAlignment = Alignment.Center
-        ) { Box(Modifier.size(14.dp).background(theme.orb, CircleShape)) }
+        CharacterPreview(style.kind, theme, Modifier.size(46.dp))
 
         Column(Modifier.weight(1f).padding(start = 12.dp)) {
             Text(stringResource(style.nameRes), color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
@@ -680,6 +695,11 @@ fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Uni
                             }
                         }
                     }
+                }
+
+                // Foto küre: premium'sa fotoğraf seç + kuşan (iOS'taki photo orb)
+                if (app.billing.isPremium) {
+                    PhotoOrbCard(theme)
                 }
 
                 GlowButton(stringResource(R.string.how_to_play), theme.ring) { onTutorial() }
@@ -810,6 +830,205 @@ fun RankingScreen(onBack: () -> Unit, onEditName: () -> Unit) {
                     }
                 }
             }
+        }
+    }
+}
+
+// MARK: Menü görselleri
+
+/** Arka planda süzülen 7 renk lekesi — iOS AnimatedBackground'un karşılığı. */
+@Composable
+fun AnimatedBlobs(theme: Theme) {
+    val t = produceFrameTime()
+    Canvas(Modifier.fillMaxSize()) {
+        for (i in 0 until 7) {
+            val fi = i.toFloat()
+            val x = size.width * (0.5f + 0.42f * sin(t * 0.11f + fi * 2.1f))
+            val y = size.height * (0.5f + 0.44f * cos(t * 0.09f + fi * 1.7f))
+            val r = 90f + 78f * sin(t * 0.2f + fi)
+            val color = if (i % 2 == 0) theme.ring else theme.accent
+            drawCircle(
+                Brush.radialGradient(
+                    listOf(color.copy(alpha = 0.16f), Color.Transparent),
+                    center = Offset(x, y), radius = r.coerceAtLeast(1f)
+                ),
+                r.coerceAtLeast(1f), Offset(x, y)
+            )
+        }
+    }
+}
+
+/** Nabız atan logo küresi: parıltı + çekirdek + dış halka. */
+@Composable
+private fun MenuLogo(theme: Theme) {
+    val t = produceFrameTime()
+    Canvas(Modifier.padding(top = 20.dp).size(96.dp)) {
+        val c = Offset(size.width / 2, size.height / 2)
+        val pulse = 1f + 0.1f * sin(t * (PI / 1.1).toFloat())
+        drawCircle(
+            Brush.radialGradient(
+                listOf(theme.accent.copy(alpha = 0.5f), Color.Transparent),
+                center = c, radius = 46f * pulse
+            ), 46f * pulse, c
+        )
+        drawCircle(theme.orb, 12f, c)
+        drawCircle(theme.ring.copy(alpha = 0.8f), 39f * (1f + 0.04f * sin(t * 2f)), c,
+            style = Stroke(width = 3f))
+    }
+}
+
+/** Saniye cinsinden akan zaman — menü animasyonlarını sürer. */
+@Composable
+private fun produceFrameTime(): Float {
+    var t by remember { mutableStateOf(0f) }
+    LaunchedEffect(Unit) {
+        val start = System.nanoTime()
+        while (true) {
+            androidx.compose.runtime.withFrameNanos { now ->
+                t = (now - start) / 1_000_000_000f
+            }
+        }
+    }
+    return t
+}
+
+// MARK: Karakter önizlemesi (iOS CharacterPreview'un karşılığı)
+
+/** Mağazadaki küçük küre önizlemesi — her stil kendi minik görseliyle. */
+@Composable
+fun CharacterPreview(kind: OrbStyle.Kind, theme: Theme, modifier: Modifier = Modifier) {
+    val t = produceFrameTime()
+    Canvas(
+        modifier.background(
+            Brush.verticalGradient(listOf(theme.bgTop, theme.bgBottom)), CircleShape
+        )
+    ) {
+        val c = Offset(size.width / 2, size.height / 2)
+        drawCircle(Color.White.copy(alpha = 0.12f), size.minDimension / 2 - 1f, c,
+            style = Stroke(width = 1.5f))
+        when (kind) {
+            OrbStyle.Kind.CLASSIC -> drawCircle(theme.orb, 8f, c)
+            OrbStyle.Kind.STAR -> rotate(t * 40f, pivot = c) { drawPath(miniStar(c, 10f), theme.lumen) }
+            OrbStyle.Kind.CRYSTAL -> rotate(t * 30f, pivot = c) { drawPath(miniPoly(c, 6, 10f), theme.gate) }
+            OrbStyle.Kind.COMET -> {
+                drawLine(theme.accent.copy(alpha = 0.7f), Offset(c.x - 12f, c.y), c, strokeWidth = 4f)
+                drawCircle(Color.White, 6f, c)
+            }
+            OrbStyle.Kind.RAINBOW -> drawCircle(Color.hsv(((t * 90f) % 360f), 0.7f, 1f), 8f, c)
+            OrbStyle.Kind.RING -> drawCircle(theme.orb, 9f, c, style = Stroke(width = 3f))
+            OrbStyle.Kind.DIAMOND -> rotate(t * 35f, pivot = c) { drawPath(miniPoly(c, 4, 10f), theme.accent) }
+            OrbStyle.Kind.FLAME -> drawCircle(theme.hazard, 8f * (1f + 0.15f * sin(t * 9f)), c)
+            OrbStyle.Kind.PIXEL -> drawRect(theme.gate,
+                topLeft = Offset(c.x - 7f, c.y - 7f),
+                size = androidx.compose.ui.geometry.Size(14f, 14f))
+            OrbStyle.Kind.BUBBLE -> {
+                drawCircle(Color.White.copy(alpha = 0.25f), 9f, c)
+                drawCircle(Color.White.copy(alpha = 0.85f), 9f, c, style = Stroke(width = 1.5f))
+            }
+            OrbStyle.Kind.HEART -> drawPath(miniHeart(c, 9f), Color(0xFFFF2D55))
+            OrbStyle.Kind.FIREFLY -> {
+                drawCircle(Color(0xFF291F14), 6f, c)
+                val blink = 0.2f + 0.8f * ((sin(t * 4f) + 1f) / 2f)
+                drawCircle(Color(0xFFBFFF66).copy(alpha = blink), 4f, Offset(c.x, c.y + 7f))
+            }
+            OrbStyle.Kind.CLOUD -> {
+                val puff = Color.White.copy(alpha = 0.95f)
+                drawCircle(puff, 6f, Offset(c.x - 6f, c.y + 1f))
+                drawCircle(puff, 8f, c)
+                drawCircle(puff, 6f, Offset(c.x + 6f, c.y + 1f))
+            }
+            OrbStyle.Kind.PHOTO -> drawCircle(Color.White.copy(alpha = 0.8f), 8f, c,
+                style = Stroke(width = 2f))
+        }
+    }
+}
+
+private fun miniStar(c: Offset, radius: Float): Path {
+    val path = Path()
+    for (i in 0 until 10) {
+        val r = if (i % 2 == 0) radius else radius * 0.45f
+        val a = i * PI.toFloat() / 5 - PI.toFloat() / 2
+        val p = Offset(c.x + cos(a) * r, c.y + sin(a) * r)
+        if (i == 0) path.moveTo(p.x, p.y) else path.lineTo(p.x, p.y)
+    }
+    path.close()
+    return path
+}
+
+private fun miniPoly(c: Offset, sides: Int, radius: Float): Path {
+    val path = Path()
+    for (i in 0 until sides) {
+        val a = i * 2 * PI.toFloat() / sides - PI.toFloat() / 2
+        val p = Offset(c.x + cos(a) * radius, c.y + sin(a) * radius)
+        if (i == 0) path.moveTo(p.x, p.y) else path.lineTo(p.x, p.y)
+    }
+    path.close()
+    return path
+}
+
+private fun miniHeart(c: Offset, s: Float): Path {
+    val path = Path()
+    path.moveTo(c.x, c.y + s * 0.8f)
+    path.cubicTo(c.x - s * 0.4f, c.y + s * 1.1f, c.x - s, c.y + s * 0.2f, c.x - s * 0.9f, c.y - s * 0.25f)
+    path.cubicTo(c.x - s * 0.7f, c.y - s * 0.85f, c.x - s * 0.1f, c.y - s * 0.6f, c.x, c.y - s * 0.2f)
+    path.cubicTo(c.x + s * 0.1f, c.y - s * 0.6f, c.x + s * 0.7f, c.y - s * 0.85f, c.x + s * 0.9f, c.y - s * 0.25f)
+    path.cubicTo(c.x + s, c.y + s * 0.2f, c.x + s * 0.4f, c.y + s * 1.1f, c.x, c.y + s * 0.8f)
+    path.close()
+    return path
+}
+
+// MARK: Foto küre (premium)
+
+/** Galeriden fotoğraf seçtirip küreye yerleştirir; seçince otomatik kuşanır. */
+@Composable
+private fun PhotoOrbCard(theme: Theme) {
+    val app = LocalAppState.current
+    val activity = LocalActivity.current
+    var photo by remember { mutableStateOf<Bitmap?>(OrbPhotoStore.load(activity)) }
+
+    val picker = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null && OrbPhotoStore.save(activity, uri)) {
+            photo = OrbPhotoStore.load(activity)
+            app.settings.orbStyleId = "photo"
+            app.settings.persist()
+            app.audio.playWin()
+        }
+    }
+
+    Card {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val bmp = photo
+            if (bmp != null) {
+                androidx.compose.foundation.Image(
+                    bitmap = bmp.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.size(46.dp).background(Color.White.copy(alpha = 0.06f), CircleShape)
+                        .padding(2.dp)
+                )
+            } else {
+                CharacterPreview(OrbStyle.Kind.PHOTO, theme, Modifier.size(46.dp))
+            }
+            Text(
+                stringResource(R.string.choose_photo),
+                color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f).padding(start = 12.dp)
+            )
+            Text(
+                stringResource(if (app.settings.orbStyleId == "photo") R.string.equipped else R.string.equip),
+                color = if (app.settings.orbStyleId == "photo") theme.gate else Color.Black,
+                fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .background(
+                        if (app.settings.orbStyleId == "photo") Color.Transparent else theme.accent,
+                        RoundedCornerShape(20.dp)
+                    )
+                    .clickable {
+                        picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    }
+                    .padding(horizontal = 14.dp, vertical = 8.dp)
+            )
         }
     }
 }

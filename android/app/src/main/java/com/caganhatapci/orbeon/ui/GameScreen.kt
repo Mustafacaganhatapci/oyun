@@ -1,7 +1,7 @@
 package com.caganhatapci.orbeon.ui
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,15 +22,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.caganhatapci.orbeon.LocalActivity
@@ -39,15 +36,13 @@ import com.caganhatapci.orbeon.game.GameEngine
 import com.caganhatapci.orbeon.game.GameEvent
 import com.caganhatapci.orbeon.game.GameMode
 import com.caganhatapci.orbeon.model.LevelLibrary
+import com.caganhatapci.orbeon.model.OrbStyle
 import com.caganhatapci.orbeon.services.LeaderboardService
 import com.caganhatapci.orbeon.services.ReviewPrompt
-import com.caganhatapci.orbeon.store.MissionStore
+import com.caganhatapci.orbeon.store.OrbPhotoStore
+import com.caganhatapci.orbeon.store.TutorialStore
 import com.caganhatapci.orbeon.theme.Theme
-import androidx.compose.material3.Text
-import androidx.compose.ui.res.stringResource
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlinx.coroutines.delay
 
 sealed class PlayMode {
     data class LevelPlay(val id: Int) : PlayMode()
@@ -58,52 +53,110 @@ sealed class PlayMode {
 private sealed class Overlay {
     data object None : Overlay()
     data object Paused : Overlay()
-    data class Won(val stars: Int) : Overlay()
+    data class Won(val stars: Int, val celebrationRes: Int?) : Overlay()
     data class EndlessOver(val score: Int) : Overlay()
     data class SpeedrunDone(val time: Double, val isRecord: Boolean) : Overlay()
 }
+
+/** Etkileşimli öğretici koçu — iOS'taki CoachStep'in karşılığı. */
+private enum class Coach {
+    HAZARD_INTRO, HAZARD_TIMING, HAZARD_CLEARED,   // kırmızı şerit: dondur → anlat → yaptır
+    MOVING_INTRO, MOVING_TIMING,                    // hareketli halka
+    TIMED_INTRO,                                    // süreli bölüm tanıtımı
+    BOUNDS_INTRO;                                   // "kaçırmak artık elenmek"
+
+    val isBlocking get() = this == HAZARD_INTRO || this == MOVING_INTRO ||
+                           this == TIMED_INTRO || this == BOUNDS_INTRO
+}
+
+/** 3/3 yıldız için rastgele seçilen tebrik başlıkları */
+private val CELEBRATIONS = listOf(
+    R.string.celebrate_bravo, R.string.celebrate_perfect, R.string.celebrate_flawless,
+    R.string.celebrate_spectacular, R.string.celebrate_legendary
+)
 
 @Composable
 fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> Unit) {
     val app = LocalAppState.current
     val activity = LocalActivity.current
     val theme = Theme.byId(app.settings.themeId)
+    val orbStyle = OrbStyle.byId(app.settings.orbStyleId)
+    val orbPhoto = remember {
+        if (orbStyle.kind == OrbStyle.Kind.PHOTO) OrbPhotoStore.load(activity) else null
+    }
 
     var speedIndex by remember { mutableIntStateOf(0) }
     var speedStart by remember { mutableStateOf(System.currentTimeMillis()) }
     var speedPenalty by remember { mutableStateOf(0.0) }
+
+    // runId: aynı bölümü yeniden başlatmak motoru sıfırdan kurar (rota
+    // değeri değişmediğinde bile) — "Tekrar Dene" ve "Restart" buna dayanır
+    var runId by remember { mutableIntStateOf(0) }
 
     val currentLevelId = when (playMode) {
         is PlayMode.LevelPlay -> playMode.id
         PlayMode.Speedrun -> LevelLibrary.speedrunLevels[speedIndex]
         PlayMode.Endless -> null
     }
+    val isTutorialLevel = currentLevelId == LevelLibrary.TUTORIAL_ID
+    val isBonusLevel = currentLevelId?.let { LevelLibrary.isBonus(it) } == true
 
     var overlay by remember { mutableStateOf<Overlay>(Overlay.None) }
+    var coach by remember { mutableStateOf<Coach?>(null) }
     var lumenCount by remember { mutableIntStateOf(0) }
     var deathsThisLevel by remember { mutableIntStateOf(0) }
     var revivedThisRun by remember { mutableStateOf(false) }
     var endlessScore by remember { mutableIntStateOf(0) }
     var bonusRemaining by remember { mutableIntStateOf(0) }
     var timeRemaining by remember { mutableIntStateOf(-1) }
-    var frame by remember { mutableIntStateOf(0) }   // yeniden çizimi tetikler
+    var tutorialHops by remember { mutableIntStateOf(0) }
+    var levelIntroVisible by remember { mutableStateOf(false) }
+    var frame by remember { mutableIntStateOf(0) }
 
-    // Bölüm değişince motor sıfırdan kurulur
-    val engine = remember(currentLevelId, playMode) {
+    val engine = remember(currentLevelId, playMode, runId) {
         val mode = if (playMode == PlayMode.Endless) GameMode.Endless
                    else GameMode.LevelMode(currentLevelId ?: 1)
         GameEngine(mode)
     }
 
-    // HUD sayaçları yeni bölümle birlikte sıfırlanır. Bu sıfırlama besteleme
-    // sırasında değil yan etki olarak yapılır; Compose'da beste sırasında
-    // durum yazmak sonsuz yeniden besteye yol açabiliyor.
+    // Yeni motor = yeni deneme: sayaçlar, bölüm kartı ve koç sıfırdan
     LaunchedEffect(engine) {
         lumenCount = 0
         deathsThisLevel = 0
         bonusRemaining = 0
         timeRemaining = -1
+        tutorialHops = 0
         overlay = Overlay.None
+        coach = null
+        if (playMode == PlayMode.Endless) revivedThisRun = false
+
+        if (currentLevelId != null && !isTutorialLevel) {
+            levelIntroVisible = true
+        }
+
+        // İlk katı / ilk süreli bölüm: oyunu dondurup bir kez tanıt
+        if (playMode is PlayMode.LevelPlay) {
+            val id = playMode.id
+            if (!LevelLibrary.isForgiving(id) && app.tutorial.shouldShow(TutorialStore.Step.BOUNDS)) {
+                engine.coachFrozen = true
+                coach = Coach.BOUNDS_INTRO
+            } else if (LevelLibrary.isTimed(id) && app.tutorial.shouldShow(TutorialStore.Step.TIMED)) {
+                engine.coachFrozen = true
+                coach = Coach.TIMED_INTRO
+            }
+        }
+    }
+
+    LaunchedEffect(levelIntroVisible) {
+        if (levelIntroVisible) { delay(1600); levelIntroVisible = false }
+    }
+
+    // Koç "başardın" şeridi kısa süre görünüp kaybolur
+    LaunchedEffect(coach) {
+        if (coach == Coach.HAZARD_CLEARED) {
+            delay(1800)
+            if (coach == Coach.HAZARD_CLEARED) coach = null
+        }
     }
 
     engine.onEvent = { event ->
@@ -113,6 +166,31 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                 app.haptics.hop()
                 app.progress.recordHop()
                 app.missions.recordHops(1)
+                if (isTutorialLevel) tutorialHops++
+                // Oyuncu adımı gerçekten yapınca koç ilerler
+                when (coach) {
+                    Coach.HAZARD_TIMING -> {
+                        coach = Coach.HAZARD_CLEARED
+                        app.tutorial.markShown(TutorialStore.Step.HAZARD)
+                    }
+                    Coach.MOVING_TIMING -> {
+                        coach = null
+                        app.tutorial.markShown(TutorialStore.Step.MOVING)
+                    }
+                    else -> Unit
+                }
+            }
+            is GameEvent.Attached -> {
+                // Yeni mekanikli halkaya İLK kez konunca: dondur, öğret
+                if (playMode is PlayMode.LevelPlay && coach == null) {
+                    if (event.hasHazard && app.tutorial.shouldShow(TutorialStore.Step.HAZARD)) {
+                        engine.coachFrozen = true
+                        coach = Coach.HAZARD_INTRO
+                    } else if (event.isMoving && app.tutorial.shouldShow(TutorialStore.Step.MOVING)) {
+                        engine.coachFrozen = true
+                        coach = Coach.MOVING_INTRO
+                    }
+                }
             }
             is GameEvent.Collect -> {
                 lumenCount = event.total
@@ -142,12 +220,13 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             is GameEvent.Win -> {
                 app.audio.playWin()
                 app.haptics.win()
+                val celebration = if (event.stars >= 3 && !isTutorialLevel) CELEBRATIONS.random() else null
                 when (playMode) {
                     is PlayMode.LevelPlay -> {
                         val id = playMode.id
                         if (id == LevelLibrary.TUTORIAL_ID) {
-                            app.tutorial.markShown(com.caganhatapci.orbeon.store.TutorialStore.Step.LAUNCH)
-                            app.tutorial.markShown(com.caganhatapci.orbeon.store.TutorialStore.Step.GATE)
+                            app.tutorial.markShown(TutorialStore.Step.LAUNCH)
+                            app.tutorial.markShown(TutorialStore.Step.GATE)
                         } else {
                             app.progress.complete(id, event.stars)
                             app.missions.recordLevelCleared(deathsThisLevel == 0, event.stars)
@@ -157,12 +236,12 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                                 ReviewPrompt.requestAfterGreatRun(activity, app.progress.completedCount)
                             }
                         }
-                        overlay = Overlay.Won(event.stars)
+                        overlay = Overlay.Won(event.stars, celebration)
                     }
                     PlayMode.Speedrun -> {
                         if (speedIndex < LevelLibrary.speedrunLevels.size - 1) {
                             speedIndex++
-                            lumenCount = 0
+                            runId++   // sıradaki koşu bölümü kurulsun
                         } else {
                             val total = (System.currentTimeMillis() - speedStart) / 1000.0 + speedPenalty
                             val isRecord = app.progress.recordSpeedrun(total)
@@ -178,7 +257,6 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                     PlayMode.Endless -> Unit
                 }
             }
-            is GameEvent.Attached -> Unit
         }
     }
 
@@ -195,15 +273,26 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
         }
     }
 
+    fun restart() {
+        if (playMode == PlayMode.Speedrun) {
+            speedIndex = 0
+            speedStart = System.currentTimeMillis()
+            speedPenalty = 0.0
+        }
+        runId++
+    }
+
     ThemeBackground(theme) {
         Box(
             Modifier
                 .fillMaxSize()
                 .pointerInput(engine) {
-                    detectTapGestures { if (overlay == Overlay.None) engine.onTap() }
+                    detectTapGestures {
+                        if (overlay == Overlay.None && coach?.isBlocking != true) engine.onTap()
+                    }
                 }
         ) {
-            GameCanvas(engine, theme, frame)
+            GameCanvas(engine, theme, orbStyle, orbPhoto, frame)
             GameHud(
                 playMode = playMode,
                 levelId = currentLevelId,
@@ -215,17 +304,67 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                 onPause = { overlay = Overlay.Paused }
             )
 
+            // Etkileşimli öğretici: engelleyen kart ya da yönlendirme şeridi
+            if (overlay == Overlay.None) {
+                coach?.let { step ->
+                    if (step.isBlocking) {
+                        CoachIntroOverlay(step, theme) {
+                            app.audio.playTap()
+                            when (step) {
+                                Coach.HAZARD_INTRO -> { engine.coachFrozen = false; coach = Coach.HAZARD_TIMING }
+                                Coach.MOVING_INTRO -> { engine.coachFrozen = false; coach = Coach.MOVING_TIMING }
+                                Coach.TIMED_INTRO -> {
+                                    engine.coachFrozen = false; coach = null
+                                    app.tutorial.markShown(TutorialStore.Step.TIMED)
+                                }
+                                Coach.BOUNDS_INTRO -> {
+                                    app.tutorial.markShown(TutorialStore.Step.BOUNDS)
+                                    val id = (playMode as? PlayMode.LevelPlay)?.id
+                                    if (id != null && LevelLibrary.isTimed(id) &&
+                                        app.tutorial.shouldShow(TutorialStore.Step.TIMED)) {
+                                        coach = Coach.TIMED_INTRO   // dondurma sürsün
+                                    } else {
+                                        engine.coachFrozen = false; coach = null
+                                    }
+                                }
+                                else -> Unit
+                            }
+                        }
+                    } else {
+                        CoachBanner(step, theme)
+                    }
+                }
+
+                // Antrenman: altta adım adım yönlendiren, engellemeyen yazı
+                if (isTutorialLevel && coach == null) {
+                    TutorialCaption(tutorialHops)
+                }
+
+                // Bölüm başı kartı: numara + zorluk rozeti (~1,6 sn)
+                if (levelIntroVisible && currentLevelId != null) {
+                    LevelIntroCard(currentLevelId, theme)
+                }
+            }
+
             when (val o = overlay) {
                 Overlay.None -> Unit
                 Overlay.Paused -> PauseOverlay(theme,
                     onResume = { overlay = Overlay.None },
+                    onRestart = { restart() },
                     onMenu = onExit
                 )
-                is Overlay.Won -> WinOverlay(o.stars, currentLevelId, theme,
+                is Overlay.Won -> WinOverlay(
+                    stars = o.stars, celebrationRes = o.celebrationRes,
+                    isTutorial = isTutorialLevel, isBonus = isBonusLevel,
+                    lumenCount = lumenCount, lumenTotal = engine.lumenTotal, theme = theme,
                     onNext = {
-                        val next = (currentLevelId ?: 0) + 1
-                        app.ads.levelCompleted(activity, currentLevelId ?: 1, app.billing.isPremium) {
-                            onReplay(PlayMode.LevelPlay(next.coerceAtMost(LevelLibrary.COUNT)))
+                        if (isTutorialLevel) {
+                            onReplay(PlayMode.LevelPlay(1))   // antrenman → 1. bölüm, reklamsız
+                        } else {
+                            val next = ((currentLevelId ?: 0) + 1).coerceAtMost(LevelLibrary.COUNT)
+                            app.ads.levelCompleted(activity, currentLevelId ?: 1, app.billing.isPremium) {
+                                onReplay(PlayMode.LevelPlay(next))
+                            }
                         }
                     },
                     onMenu = {
@@ -250,118 +389,14 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                     },
                     onRetry = {
                         app.ads.endlessEnded(activity, app.billing.isPremium, app.progress.endlessUnlocked) {
-                            revivedThisRun = false
-                            onReplay(PlayMode.Endless)
+                            restart()
                         }
                     },
                     onMenu = onExit
                 )
-                is Overlay.SpeedrunDone -> SpeedrunOverlay(o.time, o.isRecord, theme, onMenu = onExit)
+                is Overlay.SpeedrunDone -> SpeedrunOverlay(o.time, o.isRecord, theme,
+                    onRetry = { restart() }, onMenu = onExit)
             }
-        }
-    }
-}
-
-/** Oyun alanının çizimi. Motor yalnızca durumu tutar; burası onu resmeder. */
-@Composable
-private fun GameCanvas(engine: GameEngine, theme: Theme, frame: Int) {
-    Canvas(Modifier.fillMaxSize()) {
-        @Suppress("UNUSED_EXPRESSION") frame   // her karede yeniden çiz
-        engine.resize(size.width, size.height)
-        if (engine.ringSpecs.isEmpty()) return@Canvas
-
-        val camShift = if (engine.mode is GameMode.Endless) size.height / 2f - engine.cameraY else 0f
-
-        translate(top = camShift) {
-            drawRings(engine, theme)
-            drawLumens(engine, theme)
-            drawOrb(engine, theme)
-            drawBursts(engine, theme)
-        }
-    }
-}
-
-private fun DrawScope.drawRings(engine: GameEngine, theme: Theme) {
-    for (i in engine.ringSpecs.indices) {
-        val spec = engine.ringSpecs[i]
-        val (cx, cy) = engine.ringCenter(i)
-        val r = engine.ringRadius(i)
-        val color = if (spec.isGate) theme.gate else theme.ring
-
-        // Halkanın kendisi
-        drawCircle(
-            color = color.copy(alpha = if (spec.isGate) 0.95f else 0.75f),
-            radius = r,
-            center = Offset(cx, cy),
-            style = Stroke(width = if (spec.isGate) 5f else 3.5f)
-        )
-        // Kapı ayrıca içeriden hafif dolgu alır: hedef olduğu anlaşılsın
-        if (spec.isGate) {
-            drawCircle(theme.gate.copy(alpha = 0.12f), r, Offset(cx, cy))
-        }
-
-        // Kırmızı tehlike yayları — temas her zaman öldürür
-        val rot = engine.elapsed.toFloat() * spec.hazardRotationSpeed
-        for (arc in spec.hazardArcs) {
-            val startDeg = Math.toDegrees((arc.start + rot).toDouble()).toFloat()
-            val sweepDeg = Math.toDegrees((arc.end - arc.start).toDouble()).toFloat()
-            drawArc(
-                color = theme.hazard,
-                startAngle = startDeg,
-                sweepAngle = sweepDeg,
-                useCenter = false,
-                topLeft = Offset(cx - r, cy - r),
-                size = Size(r * 2, r * 2),
-                style = Stroke(width = 7f)
-            )
-        }
-
-        // "Devam et ya da düş" — aktif halkada azalan süre yayı
-        val attached = engine.orbState as? GameEngine.OrbState.Attached
-        if (engine.dwellVisible && attached?.ring == i) {
-            val frac = engine.dwellFraction
-            drawArc(
-                color = if (frac < 0.3f) theme.hazard else theme.lumen.copy(alpha = 0.8f),
-                startAngle = -90f,
-                sweepAngle = 360f * frac,
-                useCenter = false,
-                topLeft = Offset(cx - r - 9f, cy - r - 9f),
-                size = Size((r + 9f) * 2, (r + 9f) * 2),
-                style = Stroke(width = 3f)
-            )
-        }
-    }
-}
-
-private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme) {
-    for (i in engine.lumens.indices) {
-        if (engine.lumenCollected[i]) continue
-        val (x, y) = engine.lumenPoint(i)
-        drawCircle(theme.lumen.copy(alpha = 0.25f), 13f, Offset(x, y))
-        drawCircle(theme.lumen, 6f, Offset(x, y))
-    }
-}
-
-private fun DrawScope.drawOrb(engine: GameEngine, theme: Theme) {
-    if (!engine.orbVisible) return
-    val c = Offset(engine.orbX, engine.orbY)
-    drawCircle(theme.accent.copy(alpha = 0.30f), 22f, c)
-    drawCircle(theme.accent.copy(alpha = 0.18f), 34f, c)
-    drawCircle(theme.orb, 9f, c)
-}
-
-private fun DrawScope.drawBursts(engine: GameEngine, theme: Theme) {
-    for (b in engine.bursts) {
-        val progress = (b.age / 0.6f).coerceIn(0f, 1f)
-        val alpha = 1f - progress
-        val spread = 12f + progress * 46f
-        for (k in 0 until b.count) {
-            val angle = (2 * PI * k / b.count).toFloat()
-            drawCircle(
-                color = theme.accent.copy(alpha = alpha * 0.8f),
-                radius = 2.5f,
-                center = Offset(b.x + cos(angle) * spread, b.y + sin(angle) * spread)
-            )
         }
     }
 }
@@ -393,28 +428,138 @@ private fun GameHud(
                         if (levelId == LevelLibrary.TUTORIAL_ID) stringResource(R.string.tutorial)
                         else stringResource(R.string.hud_level, levelId ?: 1)
                 },
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (timeRemaining >= 0) {
-                    Text(
-                        "$timeRemaining",
+                    Text("$timeRemaining",
                         color = if (timeRemaining <= 3) theme.hazard else Color.White,
                         fontSize = 18.sp, fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(end = 10.dp)
-                    )
+                        modifier = Modifier.padding(end = 10.dp))
                 }
                 if (bonusRemaining > 0) {
-                    Text(
-                        "$bonusRemaining",
-                        color = theme.lumen, fontSize = 18.sp, fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(end = 10.dp)
-                    )
+                    Text("$bonusRemaining", color = theme.lumen,
+                        fontSize = 18.sp, fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(end = 10.dp))
                 }
                 Text("★ $lumenCount", color = theme.lumen, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+// MARK: Öğretici koçu
+
+private data class CoachCard(val icon: String, val titleRes: Int, val bodyRes: Int)
+
+@Composable
+private fun CoachIntroOverlay(step: Coach, theme: Theme, onDismiss: () -> Unit) {
+    val card = when (step) {
+        Coach.HAZARD_INTRO -> CoachCard("⚠️", R.string.hint_hazard_title, R.string.hint_hazard_body)
+        Coach.MOVING_INTRO -> CoachCard("↔️", R.string.hint_moving_title, R.string.hint_moving_body)
+        Coach.TIMED_INTRO -> CoachCard("⏱", R.string.hint_timed_title, R.string.hint_timed_body)
+        else -> CoachCard("🛑", R.string.hint_bounds_title, R.string.hint_bounds_body)
+    }
+    Box(
+        Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.72f))
+            .clickable(onClick = onDismiss),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            Modifier.padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(card.icon, fontSize = 48.sp)
+            Text(stringResource(card.titleRes), color = Color.White,
+                fontSize = 27.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+            Text(stringResource(card.bodyRes), color = Color.White.copy(alpha = 0.82f),
+                fontSize = 15.sp, textAlign = TextAlign.Center)
+            Text("👆 " + stringResource(R.string.tap_to_continue),
+                color = Color.White.copy(alpha = 0.55f),
+                fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 10.dp))
+        }
+    }
+}
+
+@Composable
+private fun CoachBanner(step: Coach, theme: Theme) {
+    val (icon, textRes) = when (step) {
+        Coach.HAZARD_TIMING -> "⚠️" to R.string.coach_hazard_wait
+        Coach.HAZARD_CLEARED -> "✅" to R.string.coach_hazard_done
+        else -> "↔️" to R.string.coach_moving_time
+    }
+    Box(Modifier.fillMaxSize().padding(bottom = 48.dp), contentAlignment = Alignment.BottomCenter) {
+        Row(
+            Modifier.padding(horizontal = 28.dp)
+                .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(20.dp))
+                .padding(horizontal = 18.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(icon, fontSize = 22.sp)
+            Text(stringResource(textRes), color = Color.White,
+                fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+private fun TutorialCaption(hops: Int) {
+    Box(Modifier.fillMaxSize().padding(bottom = 44.dp), contentAlignment = Alignment.BottomCenter) {
+        Text(
+            stringResource(if (hops == 0) R.string.tut_caption_launch else R.string.tut_caption_collect),
+            color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 30.dp)
+                .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
+                .padding(horizontal = 20.dp, vertical = 14.dp)
+        )
+    }
+}
+
+// MARK: Bölüm giriş kartı
+
+/** Bölüm zorluk etiketi — iOS difficultyKey ile aynı eşikler. */
+private fun difficultyRes(id: Int): Int? {
+    if (id == LevelLibrary.TUTORIAL_ID || LevelLibrary.isBonus(id)) return null
+    return when {
+        LevelLibrary.normalIndex(id) < 6 -> R.string.difficulty_easy
+        LevelLibrary.normalIndex(id) < 20 -> R.string.difficulty_medium
+        LevelLibrary.normalIndex(id) < 45 -> R.string.difficulty_hard
+        LevelLibrary.normalIndex(id) < 75 -> R.string.difficulty_very_hard
+        else -> R.string.difficulty_extreme
+    }
+}
+
+@Composable
+private fun LevelIntroCard(id: Int, theme: Theme) {
+    val diffRes = difficultyRes(id)
+    val diffColor = when (diffRes) {
+        R.string.difficulty_easy -> theme.gate
+        R.string.difficulty_medium -> theme.accent
+        R.string.difficulty_hard -> theme.lumen
+        else -> theme.hazard
+    }
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(
+            Modifier.background(Color.Black.copy(alpha = 0.45f), RoundedCornerShape(28.dp))
+                .padding(horizontal = 40.dp, vertical = 26.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                if (LevelLibrary.isBonus(id)) stringResource(R.string.bonus_title)
+                else stringResource(R.string.hud_level, id),
+                color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.Black
+            )
+            if (diffRes != null) {
+                Text(stringResource(diffRes), color = Color.Black,
+                    fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                    modifier = Modifier.background(diffColor, RoundedCornerShape(20.dp))
+                        .padding(horizontal = 16.dp, vertical = 6.dp))
             }
         }
     }
@@ -437,28 +582,80 @@ private fun OverlayScrim(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun PauseOverlay(theme: Theme, onResume: () -> Unit, onMenu: () -> Unit) {
+private fun PauseOverlay(theme: Theme, onResume: () -> Unit, onRestart: () -> Unit, onMenu: () -> Unit) {
+    val app = LocalAppState.current
     OverlayScrim {
-        Text(stringResource(R.string.paused), color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.paused), color = Color.White,
+            fontSize = 30.sp, fontWeight = FontWeight.Bold)
+
+        // Hızlı ayarlar: ses ve titreşim, oyundan çıkmadan
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            QuickToggle(if (app.settings.soundOn) "🔊" else "🔇") {
+                app.settings.soundOn = !app.settings.soundOn
+                app.audio.soundEnabled = app.settings.soundOn
+                app.settings.persist()
+            }
+            QuickToggle(if (app.settings.hapticsOn) "📳" else "📴") {
+                app.settings.hapticsOn = !app.settings.hapticsOn
+                app.haptics.enabled = app.settings.hapticsOn
+                app.settings.persist()
+            }
+        }
+
         GlowButton(stringResource(R.string.resume), theme.accent, prominent = true, onClick = onResume)
+        GlowButton(stringResource(R.string.restart), theme.ring, onClick = onRestart)
         GlowButton(stringResource(R.string.main_menu), Color.White.copy(alpha = 0.7f), onClick = onMenu)
     }
 }
 
 @Composable
-private fun WinOverlay(stars: Int, levelId: Int?, theme: Theme, onNext: () -> Unit, onMenu: () -> Unit) {
+private fun QuickToggle(label: String, onClick: () -> Unit) {
+    Box(
+        Modifier.background(Color.White.copy(alpha = 0.12f), RoundedCornerShape(27.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 18.dp, vertical = 14.dp),
+        contentAlignment = Alignment.Center
+    ) { Text(label, fontSize = 18.sp) }
+}
+
+@Composable
+private fun WinOverlay(
+    stars: Int, celebrationRes: Int?, isTutorial: Boolean, isBonus: Boolean,
+    lumenCount: Int, lumenTotal: Int, theme: Theme,
+    onNext: () -> Unit, onMenu: () -> Unit
+) {
     OverlayScrim {
-        Text(
-            if (stars >= 3) stringResource(R.string.perfect) else stringResource(R.string.level_complete),
-            color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold
-        )
-        Text(
-            "★".repeat(stars) + "☆".repeat(3 - stars),
-            color = theme.lumen, fontSize = 34.sp
-        )
-        if (levelId != null && levelId < LevelLibrary.COUNT) {
-            GlowButton(stringResource(R.string.next_level), theme.accent, prominent = true, onClick = onNext)
+        if (celebrationRes != null) {
+            // 3/3 yıldız: coşkulu, altın parlaklı tebrik başlığı
+            Text(stringResource(celebrationRes), color = theme.lumen,
+                fontSize = 40.sp, fontWeight = FontWeight.Black)
+            Text(
+                stringResource(if (isBonus) R.string.bonus_complete else R.string.level_complete_ex),
+                color = Color.White.copy(alpha = 0.75f), fontSize = 14.sp, fontWeight = FontWeight.Bold
+            )
+        } else {
+            Text(
+                stringResource(
+                    when {
+                        isTutorial -> R.string.youre_ready
+                        isBonus -> R.string.bonus_complete
+                        else -> R.string.level_complete_ex
+                    }
+                ),
+                color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold
+            )
         }
+
+        if (isBonus) {
+            Text("✨ $lumenCount/$lumenTotal", color = Color.White.copy(alpha = 0.85f),
+                fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        }
+
+        if (!isTutorial) {   // antrenmanda yıldız yok
+            Text("★".repeat(stars) + "☆".repeat(3 - stars), color = theme.lumen, fontSize = 34.sp)
+        }
+
+        GlowButton(stringResource(R.string.next_level), theme.accent, prominent = true, onClick = onNext)
         GlowButton(stringResource(R.string.main_menu), Color.White.copy(alpha = 0.7f), onClick = onMenu)
     }
 }
@@ -469,26 +666,37 @@ private fun EndlessOverlay(
     onRevive: () -> Unit, onRetry: () -> Unit, onMenu: () -> Unit
 ) {
     OverlayScrim {
-        Text(stringResource(R.string.game_over), color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.game_over), color = Color.White,
+            fontSize = 30.sp, fontWeight = FontWeight.Bold)
         Text("$score", color = theme.lumen, fontSize = 46.sp, fontWeight = FontWeight.Bold)
-        Text(stringResource(R.string.best_score, best), color = Color.White.copy(alpha = 0.6f), fontSize = 15.sp)
+        Text(stringResource(R.string.best_score, best),
+            color = Color.White.copy(alpha = 0.6f), fontSize = 15.sp)
         // Koşu başına bir kez: reklam izleyip skoru koruyarak devam et
         if (canRevive) {
-            GlowButton(stringResource(R.string.continue_watch_ad), theme.lumen, prominent = true, onClick = onRevive)
+            GlowButton(stringResource(R.string.continue_watch_ad), theme.lumen,
+                prominent = true, onClick = onRevive)
         }
-        GlowButton(stringResource(R.string.try_again), theme.accent, prominent = !canRevive, onClick = onRetry)
+        GlowButton(stringResource(R.string.try_again), theme.accent,
+            prominent = !canRevive, onClick = onRetry)
         GlowButton(stringResource(R.string.main_menu), Color.White.copy(alpha = 0.7f), onClick = onMenu)
     }
 }
 
 @Composable
-private fun SpeedrunOverlay(time: Double, isRecord: Boolean, theme: Theme, onMenu: () -> Unit) {
+private fun SpeedrunOverlay(
+    time: Double, isRecord: Boolean, theme: Theme,
+    onRetry: () -> Unit, onMenu: () -> Unit
+) {
     OverlayScrim {
-        Text(stringResource(R.string.speed_run), color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold)
-        Text(String.format("%.2f s", time), color = theme.lumen, fontSize = 40.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.speed_run), color = Color.White,
+            fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Text(String.format("%.2f s", time), color = theme.lumen,
+            fontSize = 40.sp, fontWeight = FontWeight.Bold)
         if (isRecord) {
-            Text(stringResource(R.string.new_record), color = theme.gate, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.new_record), color = theme.gate,
+                fontSize = 17.sp, fontWeight = FontWeight.Bold)
         }
-        GlowButton(stringResource(R.string.main_menu), Color.White.copy(alpha = 0.7f), prominent = true, onClick = onMenu)
+        GlowButton(stringResource(R.string.try_again), theme.accent, prominent = true, onClick = onRetry)
+        GlowButton(stringResource(R.string.main_menu), Color.White.copy(alpha = 0.7f), onClick = onMenu)
     }
 }

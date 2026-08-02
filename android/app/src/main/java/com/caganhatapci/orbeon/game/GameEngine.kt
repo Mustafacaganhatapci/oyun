@@ -129,12 +129,26 @@ class GameEngine(
     /** Patlama efektleri — çizim katmanı bunları okur */
     val bursts = mutableListOf<Burst>()
 
+    enum class FxColor { ACCENT, LUMEN, HAZARD, GATE, ORB }
+
     data class Burst(
         val x: Float, val y: Float,
-        val colorArgb: Int,
+        val color: FxColor,
         val count: Int,
-        var age: Float = 0f
+        var age: Float = 0f   // negatif başlarsa gecikmeli patlar (kutlama şelalesi)
     )
+
+    /** Kürenin izi: son konumlar yaş bilgisiyle tutulur, tuval soldurarak çizer */
+    data class TrailPoint(val x: Float, val y: Float, var age: Float = 0f)
+    val trail = ArrayDeque<TrailPoint>()
+
+    /** Ölümde kısa ekran sarsıntısı — tuval bu değeri offset olarak kullanır */
+    var shakeTime = 0f
+        private set
+
+    /** Öğretici dokunuş ipucu: ilk fırlatmaya kadar görünür */
+    var tapHintVisible = false
+        private set
 
     val isTutorial: Boolean
         get() = mode is GameMode.LevelMode && mode.id == LevelLibrary.TUTORIAL_ID
@@ -165,6 +179,7 @@ class GameEngine(
                 dwellLimit = lvl.dwellLimit
                 forgivingBounds = LevelLibrary.isForgiving(mode.id)
                 if (isBonus) bonusDeadline = lvl.bonusDuration
+                if (isTutorial) tapHintVisible = true
                 ringSpecs = lvl.rings
                 lumens = lvl.lumens.map { it.position }
                 lumenCollected = BooleanArray(lumens.size)
@@ -216,6 +231,7 @@ class GameEngine(
                 val ty = cos(s.angle) * s.direction
                 val speed = flightSpeedFactor * width
                 orbState = OrbState.Flying(tx * speed, ty * speed)
+                tapHintVisible = false
                 lastRing = s.ring
                 exitedLastRing = false
                 flightTime = 0.0
@@ -239,12 +255,26 @@ class GameEngine(
         val dt = min(deltaSeconds, 1.0 / 30.0)
         elapsed += dt
 
-        // Patlama efektlerini yaşlandır
+        // Patlama efektlerini yaşlandır (negatif yaş = henüz patlamadı)
         val it = bursts.iterator()
         while (it.hasNext()) {
             val b = it.next()
             b.age += dt.toFloat()
             if (b.age > 0.6f) it.remove()
+        }
+
+        if (shakeTime > 0f) shakeTime = max(0f, shakeTime - dt.toFloat())
+
+        // İz: küre görünürken her karede nokta bırak, hepsini soldur
+        if (orbVisible && orbState !is OrbState.Dead) {
+            trail.addLast(TrailPoint(orbX, orbY))
+            if (trail.size > 26) trail.removeFirst()
+        }
+        val ti = trail.iterator()
+        while (ti.hasNext()) {
+            val t = ti.next()
+            t.age += dt.toFloat()
+            if (t.age > 0.5f) ti.remove()
         }
 
         // Bonus geri sayımı (ölüyken de akar)
@@ -350,7 +380,7 @@ class GameEngine(
             orbState = OrbState.Attached(i, angle, direction)
             dwellStart = elapsed
             combo++
-            burst(orbX, orbY, 10)
+            burst(orbX, orbY, 10, FxColor.ACCENT)
 
             if (ringSpecs[i].isGate) {
                 win()
@@ -394,7 +424,7 @@ class GameEngine(
             val dy = ly - orbY
             if (sqrt(dx * dx + dy * dy) < collectDistance) {
                 lumenCollected[i] = true
-                burst(lx, ly, 16)
+                burst(lx, ly, 16, FxColor.LUMEN)
                 onEvent?.invoke(GameEvent.Collect(lumenCollected.count { it }))
                 if (isBonus && lumenCollected.all { it }) finishBonus()
             }
@@ -459,8 +489,9 @@ class GameEngine(
         orbState = OrbState.Dead
         deadSince = elapsed
         combo = 0
-        burst(orbX, orbY, 26)
+        burst(orbX, orbY, 26, FxColor.HAZARD)
         orbVisible = false
+        shakeTime = 0.16f
         onEvent?.invoke(GameEvent.Fail)
     }
 
@@ -488,7 +519,8 @@ class GameEngine(
         finished = true
         orbState = OrbState.Won
         val stars = lumenCollected.count { it }
-        burst(orbX, orbY, 40)
+        burst(orbX, orbY, 40, FxColor.GATE)
+        if (stars >= 3) celebrationCascade()
         onEvent?.invoke(GameEvent.Win(stars))
     }
 
@@ -504,7 +536,8 @@ class GameEngine(
             collected >= (lumenTotal * 0.33).toInt() -> 1
             else -> 0
         }
-        burst(orbX, orbY, 40)
+        burst(orbX, orbY, 40, FxColor.LUMEN)
+        if (stars >= 3) celebrationCascade()
         onEvent?.invoke(GameEvent.Win(stars))
     }
 
@@ -560,8 +593,19 @@ class GameEngine(
         }
     }
 
-    private fun burst(x: Float, y: Float, count: Int) {
-        if (bursts.size > 24) return   // efekt yığılmasın
-        bursts.add(Burst(x, y, 0, count))
+    private fun burst(x: Float, y: Float, count: Int, color: FxColor, delay: Float = 0f) {
+        if (bursts.size > 40) return   // efekt yığılmasın
+        bursts.add(Burst(x, y, color, count, age = -delay))
+    }
+
+    /** 3/3 yıldız kutlaması: ekrana yayılan renkli havai fişek şelalesi */
+    private fun celebrationCascade() {
+        val palette = listOf(FxColor.LUMEN, FxColor.GATE, FxColor.ACCENT, FxColor.ORB)
+        val rng = java.util.Random()
+        for (i in 0 until 12) {
+            val x = width * (0.15f + rng.nextFloat() * 0.70f)
+            val y = height * (0.30f + rng.nextFloat() * 0.55f)
+            burst(x, y, 22, palette[i % palette.size], delay = 0.06f * i)
+        }
     }
 }
