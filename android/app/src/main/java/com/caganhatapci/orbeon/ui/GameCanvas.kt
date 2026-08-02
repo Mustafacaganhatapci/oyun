@@ -45,62 +45,63 @@ fun GameCanvas(engine: GameEngine, theme: Theme, orbStyle: OrbStyle, orbPhoto: B
 
     Canvas(Modifier.fillMaxSize()) {
         @Suppress("UNUSED_EXPRESSION") frame   // her karede yeniden çiz
-        engine.resize(size.width, size.height)
+        engine.resize(size.width, size.height, density)
         if (engine.ringSpecs.isEmpty()) return@Canvas
 
         val t = engine.elapsed.toFloat()
+        val den = density
 
         // Ölümde kısa yatay sarsıntı (iOS'taki shake)
         val shake = if (engine.shakeTime > 0f)
-            sin(engine.shakeTime * 90f) * 8f * (engine.shakeTime / 0.16f)
+            sin(engine.shakeTime * 90f) * 8f * den * (engine.shakeTime / 0.16f)
         else 0f
 
         val camShift = if (engine.mode is GameMode.Endless) size.height / 2f - engine.cameraY else 0f
 
-        drawStars(theme, t, camShift)
+        drawStars(theme, t, camShift, den)
 
         translate(left = shake, top = camShift) {
-            drawTrail(engine, theme, orbStyle)
-            drawRings(engine, theme, t)
-            drawLumens(engine, theme, t)
-            drawAimLine(engine, theme)
-            drawOrb(engine, theme, orbStyle, photoImage, t)
-            drawBursts(engine, theme)
+            drawTrail(engine, theme, orbStyle, den)
+            drawRings(engine, theme, t, den)
+            drawLumens(engine, theme, t, den)
+            drawAimLine(engine, theme, den)
+            drawOrb(engine, theme, orbStyle, photoImage, t, den)
+            drawBursts(engine, theme, den)
         }
 
-        if (engine.tapHintVisible) drawTapHint(theme, t)
+        if (engine.tapHintVisible) drawTapHint(theme, t, den)
     }
 }
 
 /** Yavaşça yukarı süzülen soluk yıldız alanı (iOS'taki stars emitter'ı). */
-private fun DrawScope.drawStars(theme: Theme, t: Float, camShift: Float) {
+private fun DrawScope.drawStars(theme: Theme, t: Float, camShift: Float, den: Float) {
     for (i in 0 until 42) {
         // Deterministik dağılım: her yıldızın kendi konumu, hızı ve parıltısı
         val seed = i * 2654435761L
         val fx = ((seed shr 8) and 0xFFFF).toFloat() / 0xFFFF
         val fy = ((seed shr 24) and 0xFFFF).toFloat() / 0xFFFF
-        val speed = 4f + fx * 6f
+        val speed = (4f + fx * 6f) * den
         val x = fx * size.width
         val y = (fy * size.height - t * speed + camShift * 0.3f).mod(size.height)
         val twinkle = 0.18f + 0.14f * sin(t * 0.8f + i)
-        val r = 1.2f + fy * 2.2f
+        val r = (1.2f + fy * 2.2f) * den
         drawCircle(theme.ring.copy(alpha = twinkle), r, Offset(x, y))
     }
 }
 
-private fun DrawScope.drawTrail(engine: GameEngine, theme: Theme, orbStyle: OrbStyle) {
+private fun DrawScope.drawTrail(engine: GameEngine, theme: Theme, orbStyle: OrbStyle, den: Float) {
     val comet = orbStyle.kind == OrbStyle.Kind.COMET
     val life = if (comet) 0.9f else 0.45f
     for (p in engine.trail) {
         val a = (1f - p.age / life).coerceIn(0f, 1f)
         if (a <= 0f) continue
-        val r = (if (comet) 7f else 5f) * a
+        val r = (if (comet) 7f else 5f) * a * den
         drawCircle(theme.accent.copy(alpha = a * 0.45f), r * 2.2f, Offset(p.x, p.y))
         drawCircle(theme.accent.copy(alpha = a * 0.8f), r, Offset(p.x, p.y))
     }
 }
 
-private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float) {
+private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den: Float) {
     val isTutorial = engine.isTutorial
     for (i in engine.ringSpecs.indices) {
         val spec = engine.ringSpecs[i]
@@ -121,17 +122,17 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float) {
 
         // Dış parıltı + çizginin kendisi
         drawCircle(color.copy(alpha = 0.22f), r, c,
-            style = Stroke(width = if (spec.isGate) 16f else 11f))
-        drawCircle(color.copy(alpha = 0.9f), r, c, style = Stroke(width = 3.5f))
+            style = Stroke(width = (if (spec.isGate) 16f else 11f) * den))
+        drawCircle(color.copy(alpha = 0.9f), r, c, style = Stroke(width = 3.5f * den))
 
         if (spec.isGate) {
             drawCircle(gateColor.copy(alpha = 0.10f), r, c)
             // Yavaşça dönen kesikli dış çember (14 sn'de tam tur)
             rotate(degrees = t * (360f / 14f), pivot = c) {
                 drawCircle(
-                    gateColor.copy(alpha = 0.7f), r + 12f, c,
-                    style = Stroke(width = 2f,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 10f)))
+                    gateColor.copy(alpha = 0.7f), r + 12f * den, c,
+                    style = Stroke(width = 2f * den,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f * den, 10f * den)))
                 )
             }
         }
@@ -144,28 +145,28 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float) {
             val box = Rect(cx - r, cy - r, cx + r, cy + r)
             drawArc(theme.hazard.copy(alpha = 0.30f), startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
-                style = Stroke(width = 15f, cap = StrokeCap.Round))
+                style = Stroke(width = 15f * den, cap = StrokeCap.Round))
             drawArc(theme.hazard, startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
-                style = Stroke(width = 7f, cap = StrokeCap.Round))
+                style = Stroke(width = 7f * den, cap = StrokeCap.Round))
         }
 
         // "Devam et ya da düş" — aktif halkada azalan süre yayı
         val attached = engine.orbState as? GameEngine.OrbState.Attached
         if (engine.dwellVisible && attached?.ring == i) {
             val frac = engine.dwellFraction
-            val rr = r + 9f
+            val rr = r + 9f * den
             drawArc(
                 if (frac < 0.3f) theme.hazard else theme.lumen.copy(alpha = 0.8f),
                 -90f, 360f * frac, false,
                 topLeft = Offset(cx - rr, cy - rr), size = Size(rr * 2, rr * 2),
-                style = Stroke(width = 3f, cap = StrokeCap.Round)
+                style = Stroke(width = 3f * den, cap = StrokeCap.Round)
             )
         }
     }
 }
 
-private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme, t: Float) {
+private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme, t: Float, den: Float) {
     for (i in engine.lumens.indices) {
         if (engine.lumenCollected[i]) continue
         val (x, y) = engine.lumenPoint(i)
@@ -174,13 +175,13 @@ private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme, t: Float) {
         val s = 1.07f + 0.18f * phase
         val a = 0.87f + 0.13f * phase
         val c = Offset(x, y)
-        drawCircle(theme.lumen.copy(alpha = 0.30f * a), 15f * s, c)
-        drawCircle(theme.lumen.copy(alpha = a), 7f * s, c)
+        drawCircle(theme.lumen.copy(alpha = 0.30f * a), 15f * s * den, c)
+        drawCircle(theme.lumen.copy(alpha = a), 7f * s * den, c)
     }
 }
 
 /** Antrenman: küre O AN fırlatılırsa gideceği yönü gösteren kesikli çizgi. */
-private fun DrawScope.drawAimLine(engine: GameEngine, theme: Theme) {
+private fun DrawScope.drawAimLine(engine: GameEngine, theme: Theme, den: Float) {
     if (!engine.isTutorial) return
     val s = engine.orbState as? GameEngine.OrbState.Attached ?: return
     val tx = -sin(s.angle) * s.direction
@@ -190,33 +191,33 @@ private fun DrawScope.drawAimLine(engine: GameEngine, theme: Theme) {
         Color.White.copy(alpha = 0.7f),
         start = Offset(engine.orbX, engine.orbY),
         end = Offset(engine.orbX + tx * len, engine.orbY + ty * len),
-        strokeWidth = 3f,
+        strokeWidth = 3f * den,
         cap = StrokeCap.Round,
-        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 9f))
+        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f * den, 9f * den))
     )
 }
 
 /** Dokunuş ipucu: nabız gibi genişleyen halka + el simgesi (ilk fırlatmaya dek). */
-private fun DrawScope.drawTapHint(theme: Theme, t: Float) {
+private fun DrawScope.drawTapHint(theme: Theme, t: Float, den: Float) {
     val c = Offset(size.width * 0.80f, size.height * 0.68f)
     val cycle = (t % 1.1f) / 1.1f
-    drawCircle(Color.White.copy(alpha = 0.8f * (1f - cycle)), 34f * (1f + cycle), c,
-        style = Stroke(width = 2f))
+    drawCircle(Color.White.copy(alpha = 0.8f * (1f - cycle)), 34f * den * (1f + cycle), c,
+        style = Stroke(width = 2f * den))
     val handPulse = 1f - 0.12f * ((sin(t * 7f) + 1f) / 2f)
     scale(handPulse, pivot = c) {
-        drawCircle(Color.White, 12f, c)
-        drawCircle(Color.White, 5f, Offset(c.x, c.y - 18f))
+        drawCircle(Color.White, 12f * den, c)
+        drawCircle(Color.White, 5f * den, Offset(c.x, c.y - 18f * den))
     }
 }
 
 // MARK: Küre — seçilen stile göre çizilir (iOS setupOrb'un karşılığı)
 
 private fun DrawScope.drawOrb(
-    engine: GameEngine, theme: Theme, style: OrbStyle, photo: ImageBitmap?, t: Float
+    engine: GameEngine, theme: Theme, style: OrbStyle, photo: ImageBitmap?, t: Float, den: Float
 ) {
     if (!engine.orbVisible) return
     val c = Offset(engine.orbX, engine.orbY)
-    val r = 9f   // orbRadius
+    val r = engine.orbRadiusPx   // 9 punto × yoğunluk
 
     // Ortak parıltı havuzu
     drawCircle(Brush.radialGradient(
@@ -233,7 +234,7 @@ private fun DrawScope.drawOrb(
         OrbStyle.Kind.CRYSTAL -> rotate(t * (360f / 6f), pivot = c) {
             val p = polygonPath(c, 6, r * 1.35f)
             drawPath(p, theme.gate.copy(alpha = 0.85f))
-            drawPath(p, Color.White, style = Stroke(width = 1.5f))
+            drawPath(p, Color.White, style = Stroke(width = 1.5f * den))
         }
 
         OrbStyle.Kind.COMET -> drawCircle(Color.White, r * 0.85f, c)
@@ -243,12 +244,12 @@ private fun DrawScope.drawOrb(
             drawCircle(Color.hsv(hue, 0.7f, 1f), r, c)
         }
 
-        OrbStyle.Kind.RING -> drawCircle(theme.orb, r * 1.15f, c, style = Stroke(width = 3.5f))
+        OrbStyle.Kind.RING -> drawCircle(theme.orb, r * 1.15f, c, style = Stroke(width = 3.5f * den))
 
         OrbStyle.Kind.DIAMOND -> rotate(t * (360f / 4.5f), pivot = c) {
             val p = polygonPath(c, 4, r * 1.4f)
             drawPath(p, theme.accent)
-            drawPath(p, Color.White, style = Stroke(width = 1.5f))
+            drawPath(p, Color.White, style = Stroke(width = 1.5f * den))
         }
 
         OrbStyle.Kind.FLAME -> {
@@ -260,7 +261,7 @@ private fun DrawScope.drawOrb(
             val s = r * 1.7f
             drawRect(theme.gate, topLeft = Offset(c.x - s / 2, c.y - s / 2), size = Size(s, s))
             drawRect(Color.White, topLeft = Offset(c.x - s / 2, c.y - s / 2), size = Size(s, s),
-                style = Stroke(width = 1f))
+                style = Stroke(width = 1f * den))
         }
 
         OrbStyle.Kind.BUBBLE -> {
@@ -269,7 +270,7 @@ private fun DrawScope.drawOrb(
             val h = 1f - 0.09f * sin(t * (PI / 1.1).toFloat())
             withTransform({ scale(w, h, pivot = c) }) {
                 drawCircle(Color.White.copy(alpha = 0.32f), r * 1.1f, c)
-                drawCircle(Color.White.copy(alpha = 0.8f), r * 1.1f, c, style = Stroke(width = 1.5f))
+                drawCircle(Color.White.copy(alpha = 0.8f), r * 1.1f, c, style = Stroke(width = 1.5f * den))
             }
         }
 
@@ -303,7 +304,7 @@ private fun DrawScope.drawOrb(
 
         OrbStyle.Kind.CLOUD -> {
             val puff = Color.White.copy(alpha = 0.95f)
-            val bob = 3f * sin(t * (PI / 1.4).toFloat())
+            val bob = 3f * den * sin(t * (PI / 1.4).toFloat())
             drawCircle(puff, r * 0.85f, Offset(c.x - r * 0.55f, c.y + r * 0.15f))
             drawCircle(puff, r * 1.05f, Offset(c.x, c.y - r * 0.1f + bob))
             drawCircle(puff, r * 0.8f, Offset(c.x + r * 0.6f, c.y + r * 0.1f))
@@ -327,7 +328,7 @@ private fun DrawScope.drawOrb(
                         )
                     )
                 }
-                drawCircle(theme.orb, pr, c, style = Stroke(width = 2f))
+                drawCircle(theme.orb, pr, c, style = Stroke(width = 2f * den))
             } else {
                 drawCircle(theme.orb, r, c)
             }
@@ -335,12 +336,12 @@ private fun DrawScope.drawOrb(
     }
 }
 
-private fun DrawScope.drawBursts(engine: GameEngine, theme: Theme) {
+private fun DrawScope.drawBursts(engine: GameEngine, theme: Theme, den: Float) {
     for (b in engine.bursts) {
         if (b.age < 0f) continue   // gecikmeli kutlama parçası, sırası gelmedi
         val progress = (b.age / 0.6f).coerceIn(0f, 1f)
         val alpha = 1f - progress
-        val spread = 12f + progress * 46f
+        val spread = (12f + progress * 46f) * den
         val color = when (b.color) {
             GameEngine.FxColor.ACCENT -> theme.accent
             GameEngine.FxColor.LUMEN -> theme.lumen
@@ -350,7 +351,7 @@ private fun DrawScope.drawBursts(engine: GameEngine, theme: Theme) {
         }
         for (k in 0 until b.count) {
             val angle = (2 * PI * k / b.count).toFloat()
-            drawCircle(color.copy(alpha = alpha * 0.8f), 2.5f,
+            drawCircle(color.copy(alpha = alpha * 0.8f), 2.5f * den,
                 Offset(b.x + cos(angle) * spread, b.y + sin(angle) * spread))
         }
     }

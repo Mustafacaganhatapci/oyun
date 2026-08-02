@@ -45,12 +45,16 @@ class GameEngine(
     val mode: GameMode,
     var onEvent: ((GameEvent) -> Unit)? = null
 ) {
-    // MARK: Ayar sabitleri — iOS ile aynı
+    // MARK: Ayar sabitleri — iOS ile aynı (puntolar yoğunlukla ölçeklenir)
     private val flightSpeedFactor = 1.55f   // ekran genişliği / sn
-    private val orbRadiusPx = 9f
-    private val collectDistance = 26f
     private val maxFlightTime = 4.0
     private val respawnDelay = 0.55
+
+    /** Ekran yoğunluğu — iOS "punto" değerlerini gerçek piksele çevirir */
+    var density = 1f
+        private set
+    val orbRadiusPx get() = 9f * density
+    private val collectDistance get() = 26f * density
 
     sealed class OrbState {
         data class Attached(val ring: Int, val angle: Float, val direction: Float) : OrbState()
@@ -163,10 +167,11 @@ class GameEngine(
 
     // MARK: Kurulum
 
-    fun resize(w: Float, h: Float) {
+    fun resize(w: Float, h: Float, screenDensity: Float = 1f) {
         val first = width == 0f
         width = w
         height = h
+        density = screenDensity
         if (first) start()
     }
 
@@ -198,7 +203,8 @@ class GameEngine(
     // MARK: Koordinat yardımcıları
 
     private fun scenePoint(p: Pt): Pair<Float, Float> =
-        Pair(p.x * playWidth + playLeft, p.y * playHeight + playBottom)
+        Pair(p.x * playWidth + playLeft,
+             height - (p.y * playHeight + playBottom))
 
     fun ringCenter(i: Int, t: Double = elapsed): Pair<Float, Float> {
         val spec = ringSpecs[i]
@@ -434,14 +440,15 @@ class GameEngine(
     private fun checkBounds() {
         val minY: Float
         val maxY: Float
+        val m = 60f * density
         if (mode is GameMode.Endless) {
-            minY = cameraY - height / 2f - 80f
-            maxY = cameraY + height / 2f + 80f
+            minY = cameraY - height / 2f - m - 20f
+            maxY = cameraY + height / 2f + m + 20f
         } else {
-            minY = -60f
-            maxY = height + 60f
+            minY = -m
+            maxY = height + m
         }
-        if (orbX < -60f || orbX > width + 60f || orbY < minY || orbY > maxY) missedShot()
+        if (orbX < -m || orbX > width + m || orbY < minY || orbY > maxY) missedShot()
     }
 
     /**
@@ -587,8 +594,8 @@ class GameEngine(
     }
 
     private fun updateEndlessCamera(dt: Double) {
-        val targetY = max(orbY + height * 0.18f, height / 2f)
-        if (targetY > cameraY) {
+        val targetY = min(orbY - height * 0.18f, height / 2f)
+        if (targetY < cameraY) {
             cameraY += (targetY - cameraY) * min(1f, (dt * 4).toFloat())
         }
     }
