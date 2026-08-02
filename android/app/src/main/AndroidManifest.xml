@@ -31,10 +31,11 @@
             </intent-filter>
         </activity>
 
-        <!-- AdMob uygulama kimliği — iOS'takiyle aynı hesap -->
+        <!-- AdMob uygulama kimliği; derleme türüne göre build.gradle.kts'ten gelir.
+             iOS ve Android AdMob'da AYRI uygulamalardır, kimlikleri farklıdır. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2696377554654488~9123400876" />
+            android:value="${admobAppId}" />
 
     </application>
 </manifest>

@@ -22,8 +22,15 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
+            // Google'ın resmi TEST uygulama kimliği: geliştirmede gerçek
+            // reklam istenmez, kendi reklamına tıklayıp hesabı kapattırma riski olmaz
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
         }
         release {
+            // TODO: AdMob > Uygulamalar > Uygulama ekle > ANDROID ile Orbeon'u
+            // kaydet ve buraya o uygulamanın kimliğini yaz. Aşağıdaki iOS
+            // kimliğidir; Android'de UMP ve reklamlar onunla çalışmaz.
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-2696377554654488~9123400876"
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

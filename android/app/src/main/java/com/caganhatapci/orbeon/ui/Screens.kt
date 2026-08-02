@@ -890,9 +890,13 @@ private fun MenuLogo(theme: Theme, t: Float) {
 fun rememberFrameTime(): Float {
     var t by remember { mutableStateOf(0f) }
     LaunchedEffect(Unit) {
-        val start = System.nanoTime()
+        var start = 0L
         while (true) {
             androidx.compose.runtime.withFrameNanos { now ->
+                // Başlangıcı İLK KAREDEN al. withFrameNanos'ın zaman tabanı
+                // System.nanoTime ile aynı olmak zorunda değil; ikisini
+                // karıştırmak ilk karelerde negatif süre üretiyordu.
+                if (start == 0L) start = now
                 t = (now - start) / 1_000_000_000f
             }
         }
@@ -924,7 +928,7 @@ fun CharacterPreview(kind: OrbStyle.Kind, theme: Theme, t: Float, modifier: Modi
                 drawLine(theme.accent.copy(alpha = 0.7f), Offset(c.x - 12f, c.y), c, strokeWidth = 4f)
                 drawCircle(Color.White, 6f, c)
             }
-            OrbStyle.Kind.RAINBOW -> drawCircle(Color.hsv(((t * 90f) % 360f), 0.7f, 1f), 8f, c)
+            OrbStyle.Kind.RAINBOW -> drawCircle(Color.hsv((t * 90f).mod(360f), 0.7f, 1f), 8f, c)
             OrbStyle.Kind.RING -> drawCircle(theme.orb, 9f, c, style = Stroke(width = 3f))
             OrbStyle.Kind.DIAMOND -> rotate(t * 35f, pivot = c) { drawPath(miniPoly(c, 4, 10f), theme.accent) }
             OrbStyle.Kind.FLAME -> drawCircle(theme.hazard, 8f * (1f + 0.15f * sin(t * 9f)), c)

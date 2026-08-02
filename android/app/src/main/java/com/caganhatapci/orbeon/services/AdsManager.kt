@@ -37,6 +37,11 @@ class AdsManager(private val context: Context) {
 
         // DEBUG'da Google'ın resmi TEST birimleri kullanılır: geliştirme
         // sırasında kendi reklamına tıklamak AdMob hesabını kapattırabilir.
+        //
+        // TODO: Aşağıdaki RELEASE birimleri iOS uygulamasına aittir. AdMob'da
+        // Android uygulamasını oluşturduktan sonra ona ait geçiş ve ödüllü
+        // birimleri üret ve buradaki kimlikleri onlarla değiştir; iOS birimleri
+        // Android'de reklam döndürmez.
         private val INTERSTITIAL_UNIT = if (BuildConfig.DEBUG)
             "ca-app-pub-3940256099942544/1033173712"
         else

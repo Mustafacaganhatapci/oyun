@@ -241,7 +241,7 @@ private fun DrawScope.drawOrb(
         OrbStyle.Kind.COMET -> drawCircle(Color.White, r * 0.85f, c)
 
         OrbStyle.Kind.RAINBOW -> {
-            val hue = ((t % 4f) / 4f) * 360f
+            val hue = (t.mod(4f) / 4f) * 360f
             drawCircle(Color.hsv(hue, 0.7f, 1f), r, c)
         }
 
