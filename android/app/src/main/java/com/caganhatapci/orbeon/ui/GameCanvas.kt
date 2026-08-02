@@ -45,6 +45,7 @@ fun GameCanvas(engine: GameEngine, theme: Theme, orbStyle: OrbStyle, orbPhoto: B
 
     Canvas(Modifier.fillMaxSize()) {
         @Suppress("UNUSED_EXPRESSION") frame   // her karede yeniden çiz
+        if (size.minDimension < 4f) return@Canvas
         engine.resize(size.width, size.height, density)
         if (engine.ringSpecs.isEmpty()) return@Canvas
 

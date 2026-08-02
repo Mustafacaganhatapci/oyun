@@ -97,8 +97,10 @@ fun MainMenuScreen(
     var showMissions by remember { mutableStateOf(false) }
     var claimedFlash by remember { mutableStateOf<Int?>(null) }
 
+    val frameTime = rememberFrameTime()
+
     ThemeBackground(theme) {
-        AnimatedBlobs(theme)
+        AnimatedBlobs(theme, frameTime)
         Column(
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -112,7 +114,7 @@ fun MainMenuScreen(
                 ) { Text("🏆", fontSize = 18.sp) }
             }
 
-            MenuLogo(theme)
+            MenuLogo(theme, frameTime)
 
             Text("ORBEON", color = Color.White, fontSize = 44.sp, fontWeight = FontWeight.Black,
                 modifier = Modifier.padding(top = 14.dp))
@@ -349,6 +351,7 @@ fun ShopScreen(onBack: () -> Unit) {
     var codeInput by remember { mutableStateOf("") }
     var codeState by remember { mutableStateOf(0) }   // 0 boş, 1 başarılı, 2 hatalı, 3 teselli
     var starsJustEarned by remember { mutableStateOf(false) }
+    val frameTime = rememberFrameTime()
 
     // Premium zaten alınmışsa yukarıda kal; değilse teklifi görsün diye kaydır
     LaunchedEffect(Unit) {
@@ -414,7 +417,7 @@ fun ShopScreen(onBack: () -> Unit) {
                         Text(stringResource(R.string.characters), color = Color.White.copy(alpha = 0.9f),
                             fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         OrbStyle.starPurchasable.forEach { style ->
-                            CharacterRow(style, theme)
+                            CharacterRow(style, theme, frameTime)
                         }
                     }
                 }
@@ -586,14 +589,14 @@ fun ShopScreen(onBack: () -> Unit) {
 }
 
 @Composable
-private fun CharacterRow(style: OrbStyle, theme: Theme) {
+private fun CharacterRow(style: OrbStyle, theme: Theme, t: Float) {
     val app = LocalAppState.current
     val owned = app.progress.isOrbUnlocked(style)
     val equipped = app.settings.orbStyleId == style.id
     val cost = style.starCost ?: 0
 
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        CharacterPreview(style.kind, theme, Modifier.size(46.dp))
+        CharacterPreview(style.kind, theme, t, Modifier.size(46.dp))
 
         Column(Modifier.weight(1f).padding(start = 12.dp)) {
             Text(stringResource(style.nameRes), color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
@@ -640,6 +643,7 @@ private fun CharacterRow(style: OrbStyle, theme: Theme) {
 fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Unit) {
     val app = LocalAppState.current
     val theme = Theme.byId(app.settings.themeId)
+    val frameTime = rememberFrameTime()
 
     ThemeBackground(theme) {
         Column(Modifier.fillMaxSize()) {
@@ -699,7 +703,7 @@ fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Uni
 
                 // Foto küre: premium'sa fotoğraf seç + kuşan (iOS'taki photo orb)
                 if (app.billing.isPremium) {
-                    PhotoOrbCard(theme)
+                    PhotoOrbCard(theme, frameTime)
                 }
 
                 GlowButton(stringResource(R.string.how_to_play), theme.ring) { onTutorial() }
@@ -838,8 +842,7 @@ fun RankingScreen(onBack: () -> Unit, onEditName: () -> Unit) {
 
 /** Arka planda süzülen 7 renk lekesi — iOS AnimatedBackground'un karşılığı. */
 @Composable
-fun AnimatedBlobs(theme: Theme) {
-    val t = produceFrameTime()
+fun AnimatedBlobs(theme: Theme, t: Float) {
     Canvas(Modifier.fillMaxSize()) {
         for (i in 0 until 7) {
             val fi = i.toFloat()
@@ -860,8 +863,7 @@ fun AnimatedBlobs(theme: Theme) {
 
 /** Nabız atan logo küresi: parıltı + çekirdek + dış halka. */
 @Composable
-private fun MenuLogo(theme: Theme) {
-    val t = produceFrameTime()
+private fun MenuLogo(theme: Theme, t: Float) {
     Canvas(Modifier.padding(top = 20.dp).size(96.dp)) {
         val c = Offset(size.width / 2, size.height / 2)
         val pulse = 1f + 0.1f * sin(t * (PI / 1.1).toFloat())
@@ -877,9 +879,15 @@ private fun MenuLogo(theme: Theme) {
     }
 }
 
-/** Saniye cinsinden akan zaman — menü animasyonlarını sürer. */
+/**
+ * Saniye cinsinden akan zaman — animasyonları sürer.
+ *
+ * Ekran başına BİR kez çağrılır ve değeri alt bileşenlere parametre olarak
+ * geçilir. Her önizleme kendi döngüsünü kurarsa (mağazada 12 karakter var)
+ * her karede onlarca ayrı yeniden besteleme oluşur ve arayüz kilitlenir.
+ */
 @Composable
-private fun produceFrameTime(): Float {
+fun rememberFrameTime(): Float {
     var t by remember { mutableStateOf(0f) }
     LaunchedEffect(Unit) {
         val start = System.nanoTime()
@@ -896,13 +904,15 @@ private fun produceFrameTime(): Float {
 
 /** Mağazadaki küçük küre önizlemesi — her stil kendi minik görseliyle. */
 @Composable
-fun CharacterPreview(kind: OrbStyle.Kind, theme: Theme, modifier: Modifier = Modifier) {
-    val t = produceFrameTime()
+fun CharacterPreview(kind: OrbStyle.Kind, theme: Theme, t: Float, modifier: Modifier = Modifier) {
     Canvas(
         modifier.background(
             Brush.verticalGradient(listOf(theme.bgTop, theme.bgBottom)), CircleShape
         )
     ) {
+        // Ölçüm sırasında bir kare boyut 0 gelebilir; negatif yarıçapla çizim
+        // yapmak yerine o kareyi atlıyoruz
+        if (size.minDimension < 4f) return@Canvas
         val c = Offset(size.width / 2, size.height / 2)
         drawCircle(Color.White.copy(alpha = 0.12f), size.minDimension / 2 - 1f, c,
             style = Stroke(width = 1.5f))
@@ -981,7 +991,7 @@ private fun miniHeart(c: Offset, s: Float): Path {
 
 /** Galeriden fotoğraf seçtirip küreye yerleştirir; seçince otomatik kuşanır. */
 @Composable
-private fun PhotoOrbCard(theme: Theme) {
+private fun PhotoOrbCard(theme: Theme, t: Float) {
     val app = LocalAppState.current
     val activity = LocalActivity.current
     var photo by remember { mutableStateOf<Bitmap?>(OrbPhotoStore.load(activity)) }
@@ -1008,7 +1018,7 @@ private fun PhotoOrbCard(theme: Theme) {
                         .padding(2.dp)
                 )
             } else {
-                CharacterPreview(OrbStyle.Kind.PHOTO, theme, Modifier.size(46.dp))
+                CharacterPreview(OrbStyle.Kind.PHOTO, theme, t, Modifier.size(46.dp))
             }
             Text(
                 stringResource(R.string.choose_photo),
