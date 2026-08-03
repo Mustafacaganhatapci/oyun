@@ -42,15 +42,18 @@ class AdsManager(private val context: Context) {
         // Android uygulamasını oluşturduktan sonra ona ait geçiş ve ödüllü
         // birimleri üret ve buradaki kimlikleri onlarla değiştir; iOS birimleri
         // Android'de reklam döndürmez.
+        // RELEASE birimleri AdMob'daki ANDROID uygulamasına aittir; iOS
+        // birimleri Android'de reklam döndürmez. Boş bir birim için istek
+        // yapılmaz — düğme kullanıcıya durumu bildirir.
         private val INTERSTITIAL_UNIT = if (BuildConfig.DEBUG)
             "ca-app-pub-3940256099942544/1033173712"
         else
-            "ca-app-pub-2696377554654488/4128883047"
+            "ca-app-pub-2696377554654488/2256783191"
 
         private val REWARDED_UNIT = if (BuildConfig.DEBUG)
             "ca-app-pub-3940256099942544/5224354917"
         else
-            "ca-app-pub-2696377554654488/9121540024"
+            "ca-app-pub-2696377554654488/5880901650"
     }
 
     enum class Nudge { PREMIUM, SUPPORT }
@@ -83,6 +86,7 @@ class AdsManager(private val context: Context) {
     }
 
     private fun preloadInterstitial() {
+        if (INTERSTITIAL_UNIT.isEmpty()) return
         InterstitialAd.load(context, INTERSTITIAL_UNIT, AdRequest.Builder().build(),
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) { interstitial = ad }
@@ -96,6 +100,7 @@ class AdsManager(private val context: Context) {
     }
 
     private fun preloadRewarded() {
+        if (REWARDED_UNIT.isEmpty()) { rewardedReady = false; return }
         RewardedAd.load(context, REWARDED_UNIT, AdRequest.Builder().build(),
             object : RewardedAdLoadCallback() {
                 override fun onAdLoaded(ad: RewardedAd) { rewarded = ad; rewardedReady = true }

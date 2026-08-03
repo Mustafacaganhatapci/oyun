@@ -48,14 +48,17 @@ gradle wrapper --gradle-version 8.9
 
 ## AdMob
 
-**AdMob'da iOS ve Android ayrı uygulamalardır ve kimlikleri farklıdır.** Şu an
-release yapılandırması iOS kimliklerini taşıyor; yayına çıkmadan önce AdMob →
-Uygulamalar → **Uygulama ekle → Android** ile Orbeon'u kaydet ve şunları
-değiştir:
+**AdMob'da iOS ve Android ayrı uygulamalardır ve kimlikleri farklıdır.**
+Android tarafı kayıtlı ve bağlı:
 
-- Uygulama kimliği → `app/build.gradle.kts` içindeki `release` bloğunda
-  `manifestPlaceholders["admobAppId"]`
-- Geçiş ve ödüllü birimler → `services/AdsManager.kt`
+| Ne | Kimlik | Nerede |
+|---|---|---|
+| Uygulama | `...~9317548394` | `app/build.gradle.kts` → `release` |
+| Geçiş reklamı | `.../2256783191` | `services/AdsManager.kt` |
+| Ödüllü reklam | `.../5880901650` | `services/AdsManager.kt` |
+
+Bir birim boş bırakılırsa istek yapılmaz; oyun reklamsız çalışmaya devam
+eder ve ödüllü düğme "şu an reklam yok" der.
 
 Hata ayıklama derlemelerinde **Google'ın resmi test kimlikleri** kullanılır;
 kendi reklamına tıklamak hesabı kapattırabileceği için bu ayrım kasıtlıdır.
