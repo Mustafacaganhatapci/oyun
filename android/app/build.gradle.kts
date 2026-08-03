@@ -2,8 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
-    // google-services.json eklendikten sonra bu satırın başındaki // kaldırılır
-    // id("com.google.gms.google-services")
+    id("com.google.gms.google-services")
 }
 
 android {

@@ -20,12 +20,9 @@ gradle wrapper --gradle-version 8.9
 
 ## Yayına çıkmadan önce yapılacaklar
 
-1. **Firebase** — Firebase konsolundan Android uygulaması ekle
-   (paket adı `com.caganhatapci.orbeon`), `google-services.json` dosyasını
-   `android/app/` içine koy ve `app/build.gradle.kts` içindeki
-   `com.google.gms.google-services` eklentisinin başındaki `//` işaretini kaldır.
-   Dosya eklenmezse sıralama sessizce kapalı kalır, oyun normal çalışır.
-   iOS ile **aynı** Firebase projesini kullan: tablo ortak olur.
+1. ~~**Firebase**~~ — bağlandı. `app/google-services.json` iOS ile **aynı**
+   projeyi (`lumo-890fb`) gösterir, dolayısıyla dünya sıralaması iki platformda
+   ortaktır. Firestore kuralları ve koleksiyon adları da ortak.
 
 2. **Play Console ürünleri** — Uygulama içi ürünler şu kimliklerle oluşturulur:
 

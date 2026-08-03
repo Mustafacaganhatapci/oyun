@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1062323753593",
+    "project_id": "lumo-890fb",
+    "storage_bucket": "lumo-890fb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062323753593:android:7226853286f53d3bc83aa8",
+        "android_client_info": {
+          "package_name": "com.caganhatapci.orbeon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg6SkggTmcXcK9ysFtUZ637gw4pyx0u6M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
