@@ -121,16 +121,63 @@ Available in English, Turkish, German, French, Spanish and Japanese.
 
 ## Uygulama içi ürünler
 
-Play Console → Para kazanma → Uygulama içi ürünler → Tek seferlik ürünler
+**Play Console → Para kazanma → Ürünler → Uygulama içi ürünler → Ürün oluştur**
 
-| Ürün kimliği | Ad | Tür | Not |
-|---|---|---|---|
-| `orbeon.premium` | Orbeon Premium | Tek seferlik | Tüketilmez — reklamları kaldırır, temaları açar |
-| `orbeon.tip.small` | Kahve — Evde | Tek seferlik | **Tüketilebilir** (tekrar alınabilmeli) |
-| `orbeon.tip.big` | Kahve — Kafede | Tek seferlik | **Tüketilebilir** |
+> **Ön koşul:** Ürün oluşturabilmek için önce en az bir test kanalına
+> (Dahili test yeterli) imzalı bir AAB yüklemiş olman gerekir. Yüklemeden
+> önce bu ekran kilitli gelir.
+
+> **iOS'tan önemli fark:** Play Console'da "tüketilebilir mi" diye bir
+> seçenek **yoktur**. Bunu uygulama belirler: `BillingManager` bahşişleri
+> `consumeAsync` ile tüketir, premium'u `acknowledgePurchase` ile onaylar.
+> Yani konsolda üçü de sıradan "tek seferlik ürün" olarak oluşturulur;
+> bahşişlerin tekrar alınabilmesi koddan gelir.
 
 Kimlikler `services/BillingManager.kt` içindekilerle **birebir** aynı olmalı,
 yoksa ürünler uygulamada görünmez.
+
+| Ürün kimliği | Önerilen fiyat |
+|---|---|
+| `orbeon.premium` | 1,99 USD |
+| `orbeon.tip.small` | 0,99 USD |
+| `orbeon.tip.big` | 4,99 USD |
+
+Play Console'da ad en fazla 55, açıklama en fazla 200 karakterdir; aşağıdaki
+metinlerin hepsi sınırın altındadır (App Store Connect'te sınır 30/45 olduğu
+için orada bazı açıklamalar kısaltılmıştı — burada tam hâlleri kullanılır).
+
+### `orbeon.premium`
+
+| Dil | Ad | Açıklama |
+|---|---|---|
+| Türkçe | Orbeon Premium | Tüm reklamları sonsuza dek kaldırır, 8 özel tema ve foto küreyi açar. Oynanışa hiçbir etkisi yoktur. |
+| English | Orbeon Premium | Removes all ads forever and unlocks 8 exclusive themes plus the photo orb. It never affects gameplay. |
+| Deutsch | Orbeon Premium | Entfernt alle Werbung dauerhaft, schaltet 8 exklusive Themes und die Foto-Kugel frei. Ohne Einfluss aufs Spiel. |
+| Français | Orbeon Premium | Supprime toutes les pubs à jamais et débloque 8 thèmes exclusifs et l'orbe photo. Sans effet sur le jeu. |
+| Español | Orbeon Premium | Elimina todos los anuncios para siempre y desbloquea 8 temas exclusivos y el orbe con foto. No afecta al juego. |
+| 日本語 | Orbeon プレミアム | 広告を永久に削除し、限定テーマ8種とフォトオーブを解放します。ゲーム内容には影響しません。 |
+
+### `orbeon.tip.small`
+
+| Dil | Ad | Açıklama |
+|---|---|---|
+| Türkçe | Kahve — Evde | Geliştiriciye küçük bir bahşiş |
+| English | Coffee at home | A small tip for the developer |
+| Deutsch | Kaffee zuhause | Ein kleines Trinkgeld für den Entwickler |
+| Français | Café à la maison | Un petit pourboire pour le développeur |
+| Español | Café en casa | Una pequeña propina para el desarrollador |
+| 日本語 | おうちコーヒー | 開発者へのささやかなチップ |
+
+### `orbeon.tip.big`
+
+| Dil | Ad | Açıklama |
+|---|---|---|
+| Türkçe | Kahve — Kafede | Geliştiriciye büyük bir bahşiş (sandalye dahil) |
+| English | Coffee at a café | A big tip for the developer (chairs included) |
+| Deutsch | Kaffee im Café | Ein großes Trinkgeld für den Entwickler (Stühle inklusive) |
+| Français | Café au bistrot | Un grand pourboire pour le développeur (chaises comprises) |
+| Español | Café en cafetería | Una gran propina para el desarrollador (sillas incluidas) |
+| 日本語 | カフェでコーヒー | 開発者へのたっぷりチップ（椅子代込み） |
 
 ---
 
