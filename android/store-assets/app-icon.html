@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:512px; height:512px; overflow:hidden; }
+  .stage {
+    position:relative; width:512px; height:512px;
+    background: linear-gradient(160deg, #12093a 0%, #1f0b44 52%, #2d0c4c 100%);
+  }
+  /* ambient bloom so the flat gradient does not read as dead space */
+  .bloom {
+    position:absolute; left:76px; top:-40px; width:420px; height:420px;
+    background: radial-gradient(circle, rgba(163,140,255,0.28) 0%, rgba(163,140,255,0) 66%);
+  }
+  .bloom-b {
+    position:absolute; left:96px; bottom:-110px; width:320px; height:320px;
+    background: radial-gradient(circle, rgba(255,211,90,0.16) 0%, rgba(255,211,90,0) 66%);
+  }
+
+  .ring { position:absolute; border-radius:50%; }
+  /* outer soft halo of the orbit ring */
+  .ring-outer {
+    width:300px; height:300px; left:106px; top:116px;
+    border:25px solid rgba(124,104,255,0.55);
+  }
+  /* crisp inner stroke */
+  .ring-inner {
+    width:300px; height:300px; left:106px; top:116px;
+    border:13.9px solid #A38CFF;
+  }
+
+  .dot { position:absolute; border-radius:50%; }
+
+  /* trail: three fading dots left behind on the orbit */
+  .t1 { width:33px; height:33px; left:167px; top:146px; background:rgba(163,140,255,0.25); }
+  .t2 { width:37px; height:37px; left:196px; top:123px; background:rgba(163,140,255,0.45); }
+  .t3 { width:40px; height:40px; left:230px; top:108px; background:rgba(201,187,255,0.70); }
+
+  /* the orb, riding the ring */
+  .orb-glow {
+    width:122px; height:122px; left:230px; top:59px;
+    background: radial-gradient(circle, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.10) 45%, rgba(255,255,255,0) 70%);
+  }
+  .orb-core {
+    width:69px; height:69px; left:256px; top:86px; background:#ffffff;
+    box-shadow: 0 0 26px 8px rgba(255,255,255,0.55), 0 0 70px 22px rgba(163,140,255,0.75);
+  }
+
+  /* collected lumen */
+  .lumen-glow {
+    width:89px; height:89px; left:211px; top:355px;
+    background: radial-gradient(circle, rgba(255,211,90,0.45) 0%, rgba(255,211,90,0) 68%);
+  }
+  .lumen-core {
+    width:45px; height:45px; left:233px; top:377px; background:#FFD35A;
+    box-shadow: 0 0 22px 6px rgba(255,211,90,0.75);
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="bloom"></div>
+  <div class="bloom-b"></div>
+
+  <div class="ring ring-outer"></div>
+  <div class="ring ring-inner"></div>
+
+  <div class="dot t1"></div>
+  <div class="dot t2"></div>
+  <div class="dot t3"></div>
+
+  <div class="dot lumen-glow"></div>
+  <div class="dot lumen-core"></div>
+
+  <div class="dot orb-glow"></div>
+  <div class="dot orb-core"></div>
+</div>
+</body>
+</html>

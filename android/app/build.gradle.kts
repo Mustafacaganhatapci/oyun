@@ -1,9 +1,20 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.gms.google-services")
 }
+
+// Yükleme anahtarı depoya girmez. `keystore.properties` yoksa (temiz bir
+// klonda, CI'da) release yine derlenir — sadece imzasız çıkar, Play'e
+// yüklenemez. Dosya varsa release otomatik imzalanır.
+val keystoreProps = Properties().apply {
+    val f = rootProject.file("keystore.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val hasKeystore = keystoreProps.getProperty("storeFile") != null
 
 android {
     namespace = "com.caganhatapci.orbeon"
@@ -18,6 +29,17 @@ android {
         resourceConfigurations += listOf("en", "tr", "de", "fr", "es", "ja")
     }
 
+    signingConfigs {
+        if (hasKeystore) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -28,6 +50,7 @@ android {
         release {
             // AdMob'daki ANDROID uygulamasının kimliği (iOS'unkinden farklıdır)
             manifestPlaceholders["admobAppId"] = "ca-app-pub-2696377554654488~9317548394"
+            if (hasKeystore) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

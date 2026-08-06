@@ -6,3 +6,8 @@ build/
 captures/
 .externalNativeBuild/
 .cxx/
+
+# Yükleme anahtarı ve parolaları asla depoya girmez
+keystore.properties
+*.jks
+*.keystore

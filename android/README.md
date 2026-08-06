@@ -18,6 +18,10 @@ gradle wrapper --gradle-version 8.9
 ./gradlew assembleDebug
 ```
 
+Derleme durumu: `assembleDebug` ve R8 küçültmesi açık `bundleRelease`
+(AGP 8.6 / Gradle 8.14 / JDK 21, compileSdk 35) temiz bir ortamda
+hatasız tamamlanıyor.
+
 ## Yayına çıkmadan önce yapılacaklar
 
 1. ~~**Firebase**~~ — bağlandı. `app/google-services.json` iOS ile **aynı**
@@ -32,8 +36,39 @@ gradle wrapper --gradle-version 8.9
    | Küçük bahşiş | `orbeon.tip.small` | Tek seferlik (tüketilebilir) |
    | Büyük bahşiş | `orbeon.tip.big` | Tek seferlik (tüketilebilir) |
 
-3. **İmzalama** — `app/build.gradle.kts` içine kendi `signingConfig`'ini ekle;
-   Play App Signing kullanıyorsan yalnızca yükleme anahtarı yeterlidir.
+3. **İmzalama** — bağlantısı kuruldu, geriye anahtarı üretmek kaldı.
+   `app/build.gradle.kts` release'i `android/keystore.properties` dosyasını
+   okur; dosya yoksa release yine derlenir ama **imzasız** çıkar ve Play
+   kabul etmez. Anahtar kendi makinende üretilmeli — bu depoya asla girmez
+   (`.gitignore`'da).
+
+   ```bash
+   cd android
+   keytool -genkeypair -v \
+     -keystore upload-keystore.jks \
+     -alias orbeon-upload \
+     -keyalg RSA -keysize 2048 -validity 10000
+   ```
+
+   Sonra `android/keystore.properties` dosyasını oluştur:
+
+   ```properties
+   storeFile=upload-keystore.jks
+   storePassword=<keytool'a verdiğin parola>
+   keyAlias=orbeon-upload
+   keyPassword=<aynı parola>
+   ```
+
+   > `upload-keystore.jks` ve parolayı yedekle. Play App Signing açıksa
+   > kaybedersen Google'dan yükleme anahtarı sıfırlaması isteyebilirsin,
+   > ama bu birkaç gün sürer.
+
+   Play'e yüklenecek paketi üret:
+
+   ```bash
+   ./gradlew bundleRelease
+   # çıktı: app/build/outputs/bundle/release/app-release.aab
+   ```
 
 4. **Mağaza metinleri** — Play Console'a girilecek ad, açıklamalar, ürün
    kimlikleri, veri güvenliği ve içerik derecelendirmesi cevapları
