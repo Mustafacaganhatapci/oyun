@@ -92,17 +92,21 @@ enum LevelLibrary {
 
     static func isBonus(_ id: Int) -> Bool { id > 0 && id % 6 == 0 }
 
-    /// Yeni bölüm türü: kapı tüm lumenler toplanana kadar açılmaz, ölünce
-    /// bölüm baştan başlar. 121'den itibaren üçte bir sıklıkla gelir.
+    /// Yeni bölüm türleri kampanyanın ikinci yarısında başlar. 60...120
+    /// arasında yedide bir serpiştirilir (çeşitlilik), 120'den sonra üçte bire
+    /// çıkar (yeni bölümlerin kimliği bu türler).
+    static let kindsFrom = 60
+
+    /// Kapı tüm lumenler toplanana kadar açılmaz, ölünce bölüm baştan başlar.
     static func isCollect(_ id: Int) -> Bool {
-        guard id > legacyCount, !isBonus(id) else { return false }
-        return id % 3 == 1
+        guard id >= kindsFrom, !isBonus(id) else { return false }
+        return id > legacyCount ? (id % 3 == 1) : (id % 7 == 4)
     }
 
     /// "Büyük yıldız" bölümleri: 3 küçük lumen yerine 4 eden tek bir iri lumen.
     static func hasGrandStar(_ id: Int) -> Bool {
-        guard id > legacyCount, !isBonus(id) else { return false }
-        return id % 3 == 2
+        guard id >= kindsFrom, !isBonus(id) else { return false }
+        return id > legacyCount ? (id % 3 == 2) : (id % 7 == 1)
     }
 
     /// Zorluk eğrisinin 0...1 konumu. 100. normal bölümden sonra 1'de durur.

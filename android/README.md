@@ -111,8 +111,14 @@ artırmak eski bölümlerin düzenini kaydırmaz — kayıtlı ilerleme geçerli
 | Normal | her yerde | Kapıya ulaş, yol üstündeki 3 lümeni topla |
 | Bonus | her 6. bölüm | Tehlike ve kapı yok; süre dolana kadar lümen topla |
 | Süreli | 12. normal bölümden itibaren her 4'te bir | Kapıya süre dolmadan ulaş |
-| Topla-bitir | 121'den itibaren, `id % 3 == 1` | Kapı tüm lümenler toplanmadan açılmaz; ölünce bölüm sıfırdan, lümenler geri gelir |
-| Büyük yıldız | 121'den itibaren, `id % 3 == 2` | 3 küçük lümen yerine 4 eden tek bir iri yıldız |
+| Topla-bitir | 60-120 `id % 7 == 4`, 121+ `id % 3 == 1` | Kapı tüm lümenler toplanmadan açılmaz; ölünce bölüm sıfırdan, lümenler geri gelir |
+| Büyük yıldız | 60-120 `id % 7 == 1`, 121+ `id % 3 == 2` | 3 küçük lümen yerine 4 eden tek bir iri yıldız |
+
+Yeni türler `KINDS_FROM = 60`'tan itibaren serpiştirilir (yedide bir), 120'den
+sonra üçte bire çıkar. Bu, 60-120 arasındaki bölümlerin **lümen düzenini ve
+kapı kuralını değiştirir**; halka düzenleri aynı kalır. Azami yıldız toplamı
+360'tan 467'ye çıkar, dolayısıyla eski kayıtlarda "büyük yıldız" bölümleri
+3/4 görünür — oyuncu tekrar oynayıp 4'e tamamlayabilir.
 
 Oyalanma süresi (`dwellLimit`) dolduğunda küre **ölmez, kendiliğinden
 fırlar**. Yayın son üçte biri kırmızıya döner: bu, otomatik fırlatmanın

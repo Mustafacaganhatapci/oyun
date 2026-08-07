@@ -60,7 +60,7 @@ Orbeon tek parmakla oynanan bir zamanlama oyunu. Küre halkanın çevresinde dö
 Sakin bir başlangıçtan ustalık isteyen sonlara uzanan bir eğri. Yol boyunca dönen kırmızı tehlike yayları, ileri geri süzülen halkalar, süreli bölümler ve "oyalanma yok" turları açılır. Her yeni mekanik oyunun içinde, oynatarak öğretilir — duvar duvar yazı okumazsın.
 
 ◆ KAPI HER ZAMAN AÇIK DEĞİL
-Son bölümlerde iki yeni kural devreye girer. Topla-bitir turlarında yeşil kapı, haritadaki her ışığı toplayana kadar kilitli durur; üstüne konsan bile açılmaz, dönmeye devam eder — ve bir kere yanarsan tur sıfırdan, bütün ışıklar geri gelerek başlar. Bazı bölümlerde ise tek bir dev yıldız vardır: dört yıldız eder, ama uğruna hattından sapman gerekir.
+Kampanyanın ikinci yarısında iki yeni kural devreye girer. Topla-bitir turlarında yeşil kapı, haritadaki her ışığı toplayana kadar kilitli durur; üstüne konsan bile açılmaz, dönmeye devam eder — ve bir kere yanarsan tur sıfırdan, bütün ışıklar geri gelerek başlar. Bazı bölümlerde ise tek bir dev yıldız vardır: dört yıldız eder, ama uğruna hattından sapman gerekir.
 
 ◆ SONSUZ MOD
 Yukarı tırmandıkça hızlanan, sonu olmayan bir tırmanış. Nereye kadar?
@@ -97,7 +97,7 @@ Orbeon is a one-thumb timing game. The orb circles a ring; tap at the right mome
 A curve that starts calm and ends demanding. Along the way you unlock rotating red hazard arcs, rings that drift back and forth, timed levels and rounds where lingering kills you. Every new mechanic is taught inside the game, by playing — no walls of text.
 
 ◆ THE GATE IS NOT ALWAYS OPEN
-Two new rules arrive in the late levels. In collect rounds the green gate stays locked until you have swept up every light on the map — land on it and you simply keep orbiting — and one mistake restarts the whole round with all the lights back. Other levels hide a single giant star worth four, but you have to leave your line to reach it.
+Two new rules arrive in the second half of the campaign. In collect rounds the green gate stays locked until you have swept up every light on the map — land on it and you simply keep orbiting — and one mistake restarts the whole round with all the lights back. Other levels hide a single giant star worth four, but you have to leave your line to reach it.
 
 ◆ ENDLESS MODE
 A climb with no ceiling that speeds up the higher you get. How far can you carry the light?

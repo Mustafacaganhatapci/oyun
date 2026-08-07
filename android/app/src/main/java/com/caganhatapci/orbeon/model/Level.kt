@@ -130,16 +130,23 @@ object LevelLibrary {
 
     fun isBonus(id: Int): Boolean = id > 0 && id % 6 == 0
 
+    /**
+     * Yeni bölüm türleri kampanyanın ikinci yarısında başlar. 60...120
+     * arasında yedide bir serpiştirilir (çeşitlilik), 120'den sonra üçte bire
+     * çıkar (yeni bölümlerin kimliği bu türler).
+     */
+    const val KINDS_FROM = 60
+
     /** Kapı tüm lumenler toplanana kadar açılmaz; ölünce bölüm baştan. */
     fun isCollect(id: Int): Boolean {
-        if (id <= LEGACY_COUNT || isBonus(id)) return false
-        return id % 3 == 1
+        if (id < KINDS_FROM || isBonus(id)) return false
+        return if (id > LEGACY_COUNT) id % 3 == 1 else id % 7 == 4
     }
 
     /** "Büyük yıldız": 3 küçük lumen yerine 4 eden tek bir iri lumen. */
     fun hasGrandStar(id: Int): Boolean {
-        if (id <= LEGACY_COUNT || isBonus(id)) return false
-        return id % 3 == 2
+        if (id < KINDS_FROM || isBonus(id)) return false
+        return if (id > LEGACY_COUNT) id % 3 == 2 else id % 7 == 1
     }
 
     /** Zorluk eğrisinin 0...1 konumu; 100. normal bölümden sonra 1'de durur. */
