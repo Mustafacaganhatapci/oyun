@@ -399,6 +399,9 @@ enum LevelLibrary {
     static func difficulty(for id: Int) -> Difficulty {
         let n = normalIndex(id)              // 1...(normal bölüm sayısı)
         let t = curveT(n)                    // 0...1, 100. normal bölümde doyar
+        // 100. normal bölümden SONRAKİ ikinci yükseliş. n <= 100 iken sıfırdır,
+        // yani 1...120 arası bölümlere hiç dokunmaz.
+        let t2 = min(max(CGFloat(n - curveNormalCount) / 25, 0), 1)
         switch n {
         case 1...2:   // öğretici — ama uyutmayan
             return Difficulty(ringCount: 5,
@@ -432,13 +435,14 @@ enum LevelLibrary {
                               movingChance: 0.62, movingAmplitude: 0.12)
         default:      // 29+ — ustalık; halka sayısı, hız ve tehlikeler sona doğru sertleşir
             let ringCount = 9 + Int(max(0, t - 0.28) * 6.4)   // 9 → 13 arası
-            return Difficulty(ringCount: min(max(ringCount, 9), 13),
-                              radiusRange: (0.048 - 0.008 * t)...(0.078 - 0.014 * t),
-                              speedRange: (3.5 + 1.0 * t)...(4.3 + 1.8 * t),
+            return Difficulty(ringCount: min(max(ringCount, 9), 13) + Int((t2 * 2).rounded()),
+                              radiusRange: (0.048 - 0.008 * t - 0.005 * t2)...(0.078 - 0.014 * t - 0.008 * t2),
+                              speedRange: (3.5 + 1.0 * t + 0.5 * t2)...(4.3 + 1.8 * t + 0.9 * t2),
                               gapRange: 0.20...0.33,
                               hazardChance: min(0.85 + 0.13 * t, 0.97),
-                              hazardSpan: (.pi * 0.34)...(.pi * (0.64 + 0.22 * t)), hazardsRotate: true,
-                              movingChance: min(0.7 + 0.28 * t, 0.92), movingAmplitude: 0.13 + 0.03 * t)
+                              hazardSpan: (.pi * 0.34)...(.pi * (0.64 + 0.22 * t + 0.12 * t2)), hazardsRotate: true,
+                              movingChance: min(min(0.7 + 0.28 * t, 0.92) + 0.05 * t2, 0.97),
+                              movingAmplitude: 0.13 + 0.03 * t + 0.02 * t2)
         }
     }
 }

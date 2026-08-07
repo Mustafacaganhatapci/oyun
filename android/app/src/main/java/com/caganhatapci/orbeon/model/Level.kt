@@ -419,37 +419,42 @@ object LevelLibrary {
     fun difficulty(id: Int): Difficulty {
         val n = normalIndex(id)
         val t = curveT(n)   // 0...1, 100. normal bölümde doyar
+        // 100. normal bölümden SONRAKİ ikinci yükseliş. n <= 100 iken sıfırdır,
+        // yani 1...120 arası bölümlere hiç dokunmaz.
+        val t2 = ((n - CURVE_NORMAL_COUNT).toFloat() / 25f).coerceIn(0f, 1f)
         return when {
             n <= 2 -> Difficulty(   // öğretici — ama uyutmayan
                 5, 0.088f, 0.105f, 1.9f, 2.3f, 0.26f, 0.32f,
                 0f, 0f, 0f, false, 0f, 0f
             )
             n <= 5 -> Difficulty(   // tehlikeler hemen başlar, dönerek
-                6, 0.08f, 0.10f, 2.3f, 2.9f, 0.25f, 0.33f,
-                0.52f, (PI * 0.20).toFloat(), (PI * 0.36).toFloat(), true, 0.15f, 0.07f
+                6, 0.078f, 0.098f, 2.5f, 3.1f, 0.25f, 0.33f,
+                0.52f, (PI * 0.22).toFloat(), (PI * 0.38).toFloat(), true, 0.15f, 0.07f
             )
             n <= 10 -> Difficulty(
-                7, 0.075f, 0.095f, 2.8f, 3.4f, 0.24f, 0.34f,
-                0.62f, (PI * 0.26).toFloat(), (PI * 0.44).toFloat(), true, 0.3f, 0.09f
+                7, 0.072f, 0.092f, 2.8f, 3.4f, 0.24f, 0.34f,
+                0.62f, (PI * 0.26).toFloat(), (PI * 0.46).toFloat(), true, 0.35f, 0.09f
             )
             n <= 18 -> Difficulty(
-                7, 0.07f, 0.09f, 3.1f, 3.8f, 0.23f, 0.34f,
-                0.70f, (PI * 0.30).toFloat(), (PI * 0.50).toFloat(), true, 0.5f, 0.11f
+                7, 0.067f, 0.087f, 3.1f, 3.8f, 0.23f, 0.34f,
+                0.70f, (PI * 0.30).toFloat(), (PI * 0.52).toFloat(), true, 0.5f, 0.11f
             )
             n <= 28 -> Difficulty(
-                8, 0.065f, 0.085f, 3.3f, 4.2f, 0.22f, 0.35f,
-                0.80f, (PI * 0.32).toFloat(), (PI * 0.55).toFloat(), true, 0.62f, 0.12f
+                8, 0.062f, 0.082f, 3.3f, 4.2f, 0.22f, 0.35f,
+                0.80f, (PI * 0.32).toFloat(), (PI * 0.56).toFloat(), true, 0.62f, 0.12f
             )
             else -> {               // ustalık — sona doğru sertleşir
-                val ringCount = (9 + (max(0f, t - 0.28f) * 5.8f).toInt()).coerceIn(9, 13)
+                val ringCount = (9 + (max(0f, t - 0.28f) * 6.4f).toInt()).coerceIn(9, 13) +
+                    Math.round(t2 * 2f)
                 Difficulty(
                     ringCount,
-                    0.048f - 0.008f * t, 0.078f - 0.014f * t,
-                    3.5f + 1.0f * t, 4.3f + 1.7f * t,
+                    0.048f - 0.008f * t - 0.005f * t2, 0.078f - 0.014f * t - 0.008f * t2,
+                    3.5f + 1.0f * t + 0.5f * t2, 4.3f + 1.8f * t + 0.9f * t2,
                     0.20f, 0.33f,
-                    min(0.86f + 0.11f * t, 0.97f),
-                    (PI * 0.34).toFloat(), (PI * (0.62 + 0.22 * t)).toFloat(), true,
-                    min(0.7f + 0.25f * t, 0.92f), 0.13f + 0.03f * t
+                    min(0.85f + 0.13f * t, 0.97f),
+                    (PI * 0.34).toFloat(), (PI * (0.64 + 0.22 * t + 0.12 * t2)).toFloat(), true,
+                    min(min(0.7f + 0.28f * t, 0.92f) + 0.05f * t2, 0.97f),
+                    0.13f + 0.03f * t + 0.02f * t2
                 )
             }
         }
