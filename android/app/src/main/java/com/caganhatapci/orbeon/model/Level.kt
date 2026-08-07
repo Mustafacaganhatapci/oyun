@@ -35,9 +35,20 @@ data class RingSpec(
     val isGate: Boolean = false
 )
 
-data class LumenSpec(val position: Pt)
+data class LumenSpec(
+    val position: Pt,
+    /** Kaç yıldız değerinde. Normal lumen 1; "büyük yıldız" 4 eder. */
+    val value: Int = 1
+) {
+    val isGrand: Boolean get() = value > 1
+}
 
-enum class LevelKind { NORMAL, BONUS }
+enum class LevelKind {
+    NORMAL,
+    BONUS,
+    /** Kapı tüm lumenler toplanana kadar kilitli; ölünce bölüm baştan başlar. */
+    COLLECT
+}
 
 data class Level(
     val id: Int,
@@ -45,10 +56,19 @@ data class Level(
     val rings: List<RingSpec>,
     val lumens: List<LumenSpec>,
     val timeLimit: Double? = null,    // süreli bölüm: kapıya bu sürede ulaş
-    val dwellLimit: Double? = null    // bir halkada bu süreden fazla oyalanınca ölürsün
+    val dwellLimit: Double? = null    // bu süre dolunca küre kendiliğinden fırlar
 ) {
     val startRing: Int get() = 0
     val bonusDuration: Double get() = 25.0
+
+    /** Bu bölümden alınabilecek azami yıldız (lumen değerlerinin toplamı). */
+    val maxStars: Int get() = lumens.sumOf { it.value }
+
+    /** Kapı yalnızca her şey toplandığında açılır mı? */
+    val gateNeedsAllLumens: Boolean get() = kind == LevelKind.COLLECT
+
+    /** Ölünce son halkaya değil, bölümün başına dönülür; lumenler geri gelir. */
+    val restartsOnDeath: Boolean get() = kind == LevelKind.COLLECT
 }
 
 /**
@@ -95,11 +115,42 @@ data class Difficulty(
 )
 
 object LevelLibrary {
-    const val COUNT = 120
+    const val COUNT = 150
     const val AD_FREE_LEVELS = 10        // ilk 10 bölümde asla reklam yok
     const val TUTORIAL_ID = 0
 
+    /**
+     * Kampanya 120'den 150'ye çıkarıldığında 1...120'nin AYNEN aynı kalması
+     * gerekiyordu: kayıtlı ilerleme bu bölümlerin düzenine göre kazanılmış.
+     * Zorluk eğrisi bölüm sayısına bölünerek hesaplandığı için payda burada
+     * eski değere (120 bölümde 100 normal bölüm) sabitlenir.
+     */
+    const val LEGACY_COUNT = 120
+    private const val CURVE_NORMAL_COUNT = LEGACY_COUNT - LEGACY_COUNT / 6   // 100
+
     fun isBonus(id: Int): Boolean = id > 0 && id % 6 == 0
+
+    /** Kapı tüm lumenler toplanana kadar açılmaz; ölünce bölüm baştan. */
+    fun isCollect(id: Int): Boolean {
+        if (id <= LEGACY_COUNT || isBonus(id)) return false
+        return id % 3 == 1
+    }
+
+    /** "Büyük yıldız": 3 küçük lumen yerine 4 eden tek bir iri lumen. */
+    fun hasGrandStar(id: Int): Boolean {
+        if (id <= LEGACY_COUNT || isBonus(id)) return false
+        return id % 3 == 2
+    }
+
+    /** Zorluk eğrisinin 0...1 konumu; 100. normal bölümden sonra 1'de durur. */
+    private fun curveT(n: Int): Float =
+        ((n - 1).toFloat() / max(1, CURVE_NORMAL_COUNT - 1).toFloat()).coerceIn(0f, 1f)
+
+    /** Bölümün azami yıldızı — bölüm seçme ekranı bunu üretmeden bilmek ister. */
+    fun maxStars(id: Int): Int = if (!isBonus(id) && hasGrandStar(id)) 4 else 3
+
+    /** Kampanyadan toplanabilecek toplam yıldız (ana menüdeki "x / y") */
+    val totalStarsAvailable: Int by lazy { (1..COUNT).sumOf { maxStars(it) } }
 
     /** İlk açılışta oynatılan "nasıl oynanır" antrenman bölümü. */
     val tutorialLevel: Level
@@ -150,9 +201,7 @@ object LevelLibrary {
         if (isBonus(id) || isTimed(id)) return null
         val n = normalIndex(id)
         if (n < 15) return null
-        val totalNormal = max(1, COUNT - COUNT / 6)
-        val t = (n - 1).toDouble() / max(1, totalNormal - 1).toDouble()
-        return max(2.2, 3.6 - 1.4 * t)
+        return max(2.2, 3.6 - 1.4 * curveT(n).toDouble())
     }
 
     fun level(id: Int): Level {
@@ -186,15 +235,38 @@ object LevelLibrary {
             lumens.add(LumenSpec(Pt(rng.rand(0.3f, 0.7f), rng.rand(0.3f, 0.7f))))
         }
 
+        // "Büyük yıldız" bölümü: 3 küçük lumen yerine 4 eden tek bir iri lumen.
+        // Zincirin ortasındaki halka çiftinin arasına, uçuş hattının biraz
+        // dışına konur — bedavaya gelmesin, sapmayı hak etsin.
+        if (hasGrandStar(id)) {
+            val mid = max(0, (rings.size - 1) / 2)
+            val a = rings[mid].center
+            val b = rings[mid + 1].center
+            val off = rng.rand(0.06f, 0.10f) * (if (rng.rand(0f, 1f) < 0.5f) 1f else -1f)
+            val px = ((a.x + b.x) / 2f - (b.y - a.y) * off * 2f).coerceIn(0.08f, 0.92f)
+            val py = ((a.y + b.y) / 2f + (b.x - a.x) * off * 2f).coerceIn(0.06f, 0.94f)
+            lumens.clear()
+            lumens.add(LumenSpec(Pt(px, py), value = 4))
+        }
+
         // Süreli bölüm: halka başına tanınan süre ilerledikçe kısalır
         var timeLimit: Double? = null
         if (isTimed(id)) {
-            val totalNormal = max(1, COUNT - COUNT / 6)
-            val t = (normalIndex(id) - 1).toDouble() / max(1, totalNormal - 1).toDouble()
+            val t = curveT(normalIndex(id)).toDouble()
             timeLimit = Math.round(rings.size * (4.0 - 1.4 * t)).toDouble()
         }
 
-        return Level(id, LevelKind.NORMAL, rings, lumens, timeLimit, dwellLimit(id))
+        // Topla-bitir bölümlerinde süre baskısı yok: asıl meydan okuma kapıyı
+        // açmak için haritayı süpürmek. İkisi üst üste binerse ceza olur.
+        val collect = isCollect(id)
+        return Level(
+            id,
+            if (collect) LevelKind.COLLECT else LevelKind.NORMAL,
+            rings,
+            lumens,
+            if (collect) null else timeLimit,
+            if (collect) null else dwellLimit(id)
+        )
     }
 
     // MARK: Bonus turu — tehlike yok, bol lumen, süre sınırlı
@@ -346,8 +418,7 @@ object LevelLibrary {
 
     fun difficulty(id: Int): Difficulty {
         val n = normalIndex(id)
-        val totalNormal = max(1, COUNT - COUNT / 6)
-        val t = (n - 1).toFloat() / max(1, totalNormal - 1).toFloat()
+        val t = curveT(n)   // 0...1, 100. normal bölümde doyar
         return when {
             n <= 2 -> Difficulty(   // öğretici — ama uyutmayan
                 5, 0.088f, 0.105f, 1.9f, 2.3f, 0.26f, 0.32f,

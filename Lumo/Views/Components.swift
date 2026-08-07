@@ -28,12 +28,14 @@ struct GlowButtonStyle: ButtonStyle {
 
 struct StarsView: View {
     let count: Int
+    /// Bölümün azami yıldızı — "büyük yıldız" bölümlerinde 4, diğerlerinde 3
+    var total: Int = 3
     var size: CGFloat = 28
     var color: Color = Color(red: 1.0, green: 0.83, blue: 0.35)
 
     var body: some View {
         HStack(spacing: size * 0.25) {
-            ForEach(0..<3, id: \.self) { i in
+            ForEach(0..<max(1, total), id: \.self) { i in
                 Image(systemName: i < count ? "star.fill" : "star")
                     .font(.system(size: size))
                     .foregroundStyle(i < count ? color : Color.white.opacity(0.25))

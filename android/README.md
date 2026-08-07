@@ -100,6 +100,24 @@ GDPR onay formu (UMP) reklamlardan **önce** çalışır; onay bitmeden reklam
 istenmez. Android'de ATT karşılığı bir istem yoktur — reklam kimliği sistem
 ayarlarından yönetilir.
 
+## Bölüm türleri
+
+150 bölüm var; 1...120 ilk sürümdekiyle **birebir aynı** üretilir. Zorluk
+eğrisinin paydası `LEGACY_COUNT`'a sabitlendiği için bölüm sayısını
+artırmak eski bölümlerin düzenini kaydırmaz — kayıtlı ilerleme geçerli kalır.
+
+| Tür | Nerede | Kural |
+|---|---|---|
+| Normal | her yerde | Kapıya ulaş, yol üstündeki 3 lümeni topla |
+| Bonus | her 6. bölüm | Tehlike ve kapı yok; süre dolana kadar lümen topla |
+| Süreli | 12. normal bölümden itibaren her 4'te bir | Kapıya süre dolmadan ulaş |
+| Topla-bitir | 121'den itibaren, `id % 3 == 1` | Kapı tüm lümenler toplanmadan açılmaz; ölünce bölüm sıfırdan, lümenler geri gelir |
+| Büyük yıldız | 121'den itibaren, `id % 3 == 2` | 3 küçük lümen yerine 4 eden tek bir iri yıldız |
+
+Oyalanma süresi (`dwellLimit`) dolduğunda küre **ölmez, kendiliğinden
+fırlar**. Yayın son üçte biri kırmızıya döner: bu, otomatik fırlatmanın
+geldiğini haber veren uyarıdır, ceza değil.
+
 ## Yapı
 
 ```

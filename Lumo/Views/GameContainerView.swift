@@ -82,6 +82,13 @@ struct GameContainerView: View {
         return false
     }
 
+    /// Bu bölümden alınabilecek azami yıldız. "Büyük yıldız" bölümlerinde 4,
+    /// diğerlerinde 3 — kutlama ve yıldız göstergeleri buna bakar.
+    private var maxStarsForCurrentLevel: Int {
+        if case .level(let id) = playMode { return LevelLibrary.maxStars(for: id) }
+        return 3
+    }
+
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -250,6 +257,10 @@ struct GameContainerView: View {
             AudioEngine.shared.playCollect()
             Haptics.shared.collect()
 
+        case .gateUnlocked:
+            AudioEngine.shared.playWin()
+            Haptics.shared.win()
+
         case .fail:
             AudioEngine.shared.playFail()
             Haptics.shared.fail()
@@ -268,7 +279,8 @@ struct GameContainerView: View {
             }
             coach = nil
             // 3/3 yıldız: kutlama başlığı rastgele seçilir (Bravo!, Mükemmel!, ...)
-            celebrationKey = (stars >= 3 && !isTutorialLevel) ? Self.celebrations.randomElement() : nil
+            celebrationKey = (stars >= maxStarsForCurrentLevel && !isTutorialLevel)
+                ? Self.celebrations.randomElement() : nil
             AudioEngine.shared.playWin()
             Haptics.shared.win()
             switch playMode {
@@ -282,7 +294,7 @@ struct GameContainerView: View {
                     missions.recordLevelCleared(deathless: deathsThisLevel == 0, starsEarned: stars)
                     missions.recordLumens(lumenCount)
                     // Oyuncunun en iyi hissettiği an: kusursuz bir bölüm
-                    if stars >= 3 {
+                    if stars >= maxStarsForCurrentLevel {
                         ReviewPrompt.requestAfterGreatRun(completedLevels: progress.completedCount)
                     }
                 }
@@ -439,7 +451,7 @@ struct GameContainerView: View {
             .frame(width: 56)
         } else if currentLevelID != nil {
             HStack(spacing: 4) {
-                ForEach(0..<3, id: \.self) { i in
+                ForEach(0..<maxStarsForCurrentLevel, id: \.self) { i in
                     Circle()
                         .fill(i < lumenCount ? settings.theme.lumen.color : Color.white.opacity(0.2))
                         .frame(width: 10, height: 10)
@@ -549,7 +561,8 @@ struct GameContainerView: View {
                 }
 
                 if !isTutorialLevel {   // antrenmanda yıldız yok
-                    StarsView(count: stars, size: 34, color: settings.theme.lumen.color)
+                    StarsView(count: stars, total: maxStarsForCurrentLevel,
+                              size: 34, color: settings.theme.lumen.color)
                         .padding(.vertical, 8)
                 }
 

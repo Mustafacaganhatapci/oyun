@@ -22,7 +22,7 @@ Halkadan halkaya sıçra, ışığı topla. Tek dokunuşla oynanan yörünge oyu
 
 **English** (72)
 ```
-Hop ring to ring and chase the light. A one-tap orbit game with 120 levels.
+Hop ring to ring and chase the light. A one-tap orbit game with 150 levels.
 ```
 
 **Deutsch** (76)
@@ -56,8 +56,11 @@ Işık bir yörüngede döner. Ekrana dokun, bir sonraki halkaya fırla. Hepsi b
 
 Orbeon tek parmakla oynanan bir zamanlama oyunu. Küre halkanın çevresinde döner; doğru anda dokunursan teğet çizip bir sonraki halkaya tutunur. Yanlış anda dokunursan boşluğa savrulursun.
 
-◆ 120 EL YAPIMI BÖLÜM
+◆ 150 EL YAPIMI BÖLÜM
 Sakin bir başlangıçtan ustalık isteyen sonlara uzanan bir eğri. Yol boyunca dönen kırmızı tehlike yayları, ileri geri süzülen halkalar, süreli bölümler ve "oyalanma yok" turları açılır. Her yeni mekanik oyunun içinde, oynatarak öğretilir — duvar duvar yazı okumazsın.
+
+◆ KAPI HER ZAMAN AÇIK DEĞİL
+Son bölümlerde iki yeni kural devreye girer. Topla-bitir turlarında yeşil kapı, haritadaki her ışığı toplayana kadar kilitli durur; üstüne konsan bile açılmaz, dönmeye devam eder — ve bir kere yanarsan tur sıfırdan, bütün ışıklar geri gelerek başlar. Bazı bölümlerde ise tek bir dev yıldız vardır: dört yıldız eder, ama uğruna hattından sapman gerekir.
 
 ◆ SONSUZ MOD
 Yukarı tırmandıkça hızlanan, sonu olmayan bir tırmanış. Nereye kadar?
@@ -90,8 +93,11 @@ The light travels on an orbit. Tap the screen and launch to the next ring. That 
 
 Orbeon is a one-thumb timing game. The orb circles a ring; tap at the right moment and it flies off on a tangent and catches the next one. Tap at the wrong moment and it sails into the dark.
 
-◆ 120 HANDMADE LEVELS
+◆ 150 HANDMADE LEVELS
 A curve that starts calm and ends demanding. Along the way you unlock rotating red hazard arcs, rings that drift back and forth, timed levels and rounds where lingering kills you. Every new mechanic is taught inside the game, by playing — no walls of text.
+
+◆ THE GATE IS NOT ALWAYS OPEN
+Two new rules arrive in the late levels. In collect rounds the green gate stays locked until you have swept up every light on the map — land on it and you simply keep orbiting — and one mistake restarts the whole round with all the lights back. Other levels hide a single giant star worth four, but you have to leave your line to reach it.
 
 ◆ ENDLESS MODE
 A climb with no ceiling that speeds up the higher you get. How far can you carry the light?
@@ -213,10 +219,10 @@ Beklenen sonuç: **3+ / Herkes**.
 
 **Türkçe**
 ```
-Orbeon'un ilk Android sürümü. 120 bölüm, sonsuz mod, hız koşusu, günlük ödüller ve görevler, 14 karakter, 10 tema ve dünya sıralaması. İyi eğlenceler!
+Orbeon'un ilk Android sürümü. 150 bölüm, sonsuz mod, hız koşusu, günlük ödüller ve görevler, 14 karakter, 10 tema ve dünya sıralaması. İyi eğlenceler!
 ```
 
 **English**
 ```
-Orbeon's first Android release. 120 levels, endless mode, speed run, daily rewards and missions, 14 characters, 10 themes and world rankings. Have fun!
+Orbeon's first Android release. 150 levels, endless mode, speed run, daily rewards and missions, 14 characters, 10 themes and world rankings. Have fun!
 ```

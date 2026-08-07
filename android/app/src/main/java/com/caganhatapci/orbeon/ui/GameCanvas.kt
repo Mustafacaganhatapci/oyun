@@ -121,17 +121,22 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
         val gateColor = if (isTutorial) Color(0xFF34C759) else theme.gate
         val color = if (spec.isGate) gateColor else theme.ring
 
+        // Topla-bitir bölümünde kapı, her şey toplanana kadar sönük durur —
+        // "buraya gelmek yetmiyor" bilgisi renkten okunsun
+        val locked = spec.isGate && engine.gateLocked
+        val dim = if (locked) 0.39f else 1f
+
         // Dış parıltı + çizginin kendisi
-        drawCircle(color.copy(alpha = 0.22f), r, c,
+        drawCircle(color.copy(alpha = 0.22f * dim), r, c,
             style = Stroke(width = (if (spec.isGate) 16f else 11f) * den))
-        drawCircle(color.copy(alpha = 0.9f), r, c, style = Stroke(width = 3.5f * den))
+        drawCircle(color.copy(alpha = 0.9f * dim), r, c, style = Stroke(width = 3.5f * den))
 
         if (spec.isGate) {
-            drawCircle(gateColor.copy(alpha = 0.10f), r, c)
-            // Yavaşça dönen kesikli dış çember (14 sn'de tam tur)
-            rotate(degrees = t * (360f / 14f), pivot = c) {
+            drawCircle(gateColor.copy(alpha = 0.10f * dim), r, c)
+            // Yavaşça dönen kesikli dış çember (kilitliyken 26 sn, açıkken 14)
+            rotate(degrees = t * (360f / if (locked) 26f else 14f), pivot = c) {
                 drawCircle(
-                    gateColor.copy(alpha = 0.7f), r + 12f * den, c,
+                    gateColor.copy(alpha = 0.7f * dim), r + 12f * den, c,
                     style = Stroke(width = 2f * den,
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f * den, 10f * den)))
                 )
@@ -176,8 +181,23 @@ private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme, t: Float, den
         val s = 1.07f + 0.18f * phase
         val a = 0.87f + 0.13f * phase
         val c = Offset(x, y)
-        drawCircle(theme.lumen.copy(alpha = 0.30f * a), 15f * s * den, c)
-        drawCircle(theme.lumen.copy(alpha = a), 7f * s * den, c)
+        if (engine.lumenValues.getOrElse(i) { 1 } > 1) {
+            // Büyük yıldız 4 eder; bunu tek bakışta anlatması için hem iri
+            // hem de daire yerine dönen beş köşeli yıldız olarak çizilir
+            val grandPhase = sin(t * (PI / 0.55).toFloat() + i * 1.3f)
+            val gs = 1.07f + 0.18f * grandPhase
+            val ga = 0.87f + 0.13f * grandPhase
+            drawCircle(theme.lumen.copy(alpha = 0.26f * ga), 30f * gs * den, c)
+            rotate(degrees = (t * 60f).mod(360f), pivot = c) {
+                drawPath(
+                    starPath(c, 17f * gs * den, 7.4f * gs * den),
+                    theme.lumen.copy(alpha = ga)
+                )
+            }
+        } else {
+            drawCircle(theme.lumen.copy(alpha = 0.30f * a), 15f * s * den, c)
+            drawCircle(theme.lumen.copy(alpha = a), 7f * s * den, c)
+        }
     }
 }
 
@@ -360,11 +380,13 @@ private fun DrawScope.drawBursts(engine: GameEngine, theme: Theme, den: Float) {
 
 // MARK: Yollar (iOS starPath/heartPath/polygonPath karşılıkları)
 
-private fun starPath(c: Offset, radius: Float): Path {
+private fun starPath(c: Offset, radius: Float): Path = starPath(c, radius, radius * 0.45f)
+
+private fun starPath(c: Offset, outer: Float, inner: Float): Path {
     val path = Path()
     val points = 5
     for (i in 0 until points * 2) {
-        val r = if (i % 2 == 0) radius else radius * 0.45f
+        val r = if (i % 2 == 0) outer else inner
         val a = i * PI.toFloat() / points - PI.toFloat() / 2
         val p = Offset(c.x + cos(a) * r, c.y + sin(a) * r)
         if (i == 0) path.moveTo(p.x, p.y) else path.lineTo(p.x, p.y)

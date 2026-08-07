@@ -5,6 +5,7 @@ enum GameEvent {
     case hop(combo: Int)
     case attached(hasHazard: Bool, isMoving: Bool)   // öğretici koçu bu bilgiyle tetiklenir
     case collect(total: Int)
+    case gateUnlocked                  // topla-bitir: son lumen toplandı, kapı açıldı
     case fail
     case win(stars: Int)
     case bonusTick(remaining: Int)
@@ -55,6 +56,11 @@ final class GameScene: SKScene {
     private var hazardNodes: [SKNode?] = []
     private var lumenNodes: [SKShapeNode] = []
     private var lumenCollected: [Bool] = []
+    private var lumenValues: [Int] = []          // her lumenin yıldız değeri (normal 1, büyük 4)
+    private var lumenSpecs: [LumenSpec] = []     // topla-bitir bölümünde yeniden kurmak için
+    private var gateNeedsAllLumens = false
+    private var restartsOnDeath = false
+    private weak var gateDashed: SKShapeNode?
 
     private var orbState: OrbState = .dead
     private var orbNode: SKNode!
@@ -131,6 +137,9 @@ final class GameScene: SKScene {
             isBonus = lvl.kind == .bonus
             dwellLimit = lvl.dwellLimit
             forgivingBounds = LevelLibrary.isForgiving(id)
+            gateNeedsAllLumens = lvl.gateNeedsAllLumens
+            restartsOnDeath = lvl.restartsOnDeath
+            lumenSpecs = lvl.lumens
             if isBonus { bonusDeadline = lvl.bonusDuration }
             buildRings(lvl.rings)
             buildLumens(lvl.lumens)
@@ -402,11 +411,15 @@ final class GameScene: SKScene {
         // Antrenman bölümünde hedef halka bariz YEŞİL — "buraya atacaksın"
         let gateColor = isTutorial ? UIColor.systemGreen : theme.gate.uiColor
 
+        // Topla-bitir bölümünde kapı, her şey toplanana kadar sönük durur —
+        // "buraya gelmek yetmiyor" bilgisi renkten okunsun
+        let locked = spec.isGate && gateNeedsAllLumens
+
         let circle = SKShapeNode(circleOfRadius: r)
         circle.strokeColor = spec.isGate ? gateColor : theme.ring.uiColor
         circle.lineWidth = 3
         circle.glowWidth = spec.isGate ? 10 : 6
-        circle.alpha = 0.9
+        circle.alpha = locked ? 0.35 : 0.9
         circle.fillColor = .clear
         container.addChild(circle)
 
@@ -416,9 +429,10 @@ final class GameScene: SKScene {
                                                   transform: nil).copy(dashingWithPhase: 0, lengths: [8, 10]))
             dashed.strokeColor = gateColor
             dashed.lineWidth = 2
-            dashed.alpha = 0.7
-            dashed.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: 14)))
+            dashed.alpha = locked ? 0.25 : 0.7
+            dashed.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: locked ? 26 : 14)))
             container.addChild(dashed)
+            if locked { gateDashed = dashed }
 
             if isTutorial {
                 // Hedef yeşil halka belirgin nefes alsın — göz oraya gitsin
@@ -525,21 +539,47 @@ final class GameScene: SKScene {
 
     private func buildLumens(_ specs: [LumenSpec]) {
         lumenTotal = specs.count
+        lumenValues = specs.map { $0.value }
         for spec in specs {
-            let node = SKShapeNode(circleOfRadius: 7)
+            // Büyük yıldız 4 eder; bunu tek bakışta anlatması için hem iri
+            // hem de daire yerine beş köşeli yıldız olarak çizilir.
+            let node: SKShapeNode
+            if spec.isGrand {
+                node = SKShapeNode(path: Self.starPath(outer: 17, inner: 7.4))
+                node.glowWidth = 14
+            } else {
+                node = SKShapeNode(circleOfRadius: 7)
+                node.glowWidth = 8
+            }
             node.fillColor = theme.lumen.uiColor
             node.strokeColor = .clear
-            node.glowWidth = 8
             node.position = scenePoint(spec.position)
             node.zPosition = 15
+            let beat = spec.isGrand ? 0.55 : 0.8
             node.run(.repeatForever(.sequence([
-                .group([.scale(to: 1.25, duration: 0.8), .fadeAlpha(to: 1.0, duration: 0.8)]),
-                .group([.scale(to: 0.9, duration: 0.8), .fadeAlpha(to: 0.75, duration: 0.8)])
+                .group([.scale(to: 1.25, duration: beat), .fadeAlpha(to: 1.0, duration: beat)]),
+                .group([.scale(to: 0.9, duration: beat), .fadeAlpha(to: 0.75, duration: beat)])
             ])))
+            if spec.isGrand {
+                node.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: 6)))
+            }
             addChild(node)
             lumenNodes.append(node)
             lumenCollected.append(false)
         }
+    }
+
+    /// Beş köşeli yıldız yolu — büyük lumen için
+    private static func starPath(outer: CGFloat, inner: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        for i in 0..<10 {
+            let r = i % 2 == 0 ? outer : inner
+            let a = -CGFloat.pi / 2 + CGFloat(i) * .pi / 5
+            let p = CGPoint(x: cos(a) * r, y: sin(a) * r)
+            if i == 0 { path.move(to: p) } else { path.addLine(to: p) }
+        }
+        path.closeSubpath()
+        return path
     }
 
     // MARK: Koordinatlar
@@ -566,6 +606,24 @@ final class GameScene: SKScene {
         ringSpecs[i].radius * size.width
     }
 
+    // MARK: Fırlatma
+
+    /// Küreyi halkadan teğet yönünde fırlatır. Hem dokunuşla hem de oyalanma
+    /// süresi dolduğunda (otomatik fırlatma) buradan geçilir.
+    private func launch(from ring: Int, angle: CGFloat, direction: CGFloat) {
+        let c = ringCenter(ring, at: elapsed)
+        let r = ringRadius(ring)
+        let pos = CGPoint(x: c.x + cos(angle) * r, y: c.y + sin(angle) * r)
+        let tangent = CGVector(dx: -sin(angle) * direction, dy: cos(angle) * direction)
+        let speed = flightSpeedFactor * size.width
+        orbNode.position = pos
+        orbState = .flying(velocity: CGVector(dx: tangent.dx * speed, dy: tangent.dy * speed))
+        lastRing = ring
+        exitedLastRing = false
+        flightTime = 0
+        ringCircles[ring].run(.sequence([.scale(to: 0.92, duration: 0.08), .scale(to: 1.0, duration: 0.18)]))
+    }
+
     // MARK: Girdi — tek dokunuş, tüm ekran
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -573,23 +631,13 @@ final class GameScene: SKScene {
         switch orbState {
         case .attached(let ring, let angle, let direction):
             dismissTapHint()
-            let c = ringCenter(ring, at: elapsed)
-            let r = ringRadius(ring)
-            let pos = CGPoint(x: c.x + cos(angle) * r, y: c.y + sin(angle) * r)
-            let tangent = CGVector(dx: -sin(angle) * direction, dy: cos(angle) * direction)
-            let speed = flightSpeedFactor * size.width
-            orbNode.position = pos
-            orbState = .flying(velocity: CGVector(dx: tangent.dx * speed, dy: tangent.dy * speed))
-            lastRing = ring
-            exitedLastRing = false
-            flightTime = 0
-            ringCircles[ring].run(.sequence([.scale(to: 0.92, duration: 0.08), .scale(to: 1.0, duration: 0.18)]))
+            launch(from: ring, angle: angle, direction: direction)
 
         case .dead:
             // Güvenlik ağı: yeniden doğma herhangi bir nedenle gecikirse
             // dokunuş anında canlandırır — oyun asla "takılı" kalmaz
             if let since = deadSince, elapsed - since > 0.9, mode != .endless {
-                respawn(animated: true)
+                restartsOnDeath ? restartLevel() : respawn(animated: true)
             }
 
         case .flying, .won:
@@ -665,10 +713,17 @@ final class GameScene: SKScene {
             checkHazard(ring: ring, angle: angle)
             checkLumens()
             // "Devam et ya da düş" — bu halkada fazla oyalanınca süre dolar
+            // Süre dolunca ceza yok: küre kendiliğinden fırlar. Yayın son
+            // üçte biri kırmızıya döndüğünde oyuncu bunun geldiğini görür ve
+            // isterse daha iyi bir açıda kendi fırlatır.
             if let limit = dwellLimit, !spec.isGate {
                 let frac = max(0, 1 - CGFloat((elapsed - dwellStart) / limit))
                 updateDwellArc(ring: ring, fraction: frac)
-                if frac <= 0 { fail() }
+                if frac <= 0 {
+                    dwellArc?.isHidden = true
+                    dismissTapHint()
+                    launch(from: ring, angle: angle, direction: direction)
+                }
             } else {
                 dwellArc?.isHidden = true
             }
@@ -696,7 +751,7 @@ final class GameScene: SKScene {
                         onEvent?(.endlessGameOver(score: endlessScore))
                     }
                 } else if !finished {
-                    respawn(animated: true)
+                    restartsOnDeath ? restartLevel() : respawn(animated: true)
                 }
             }
 
@@ -748,7 +803,7 @@ final class GameScene: SKScene {
             ringCircles[i].run(.sequence([.scale(to: 1.15, duration: 0.1), .scale(to: 1.0, duration: 0.25)]))
             burst(at: orbNode.position, color: theme.accent.uiColor, count: 10)
 
-            if ringSpecs[i].isGate {
+            if ringSpecs[i].isGate, gateOpen {
                 win()
             } else {
                 onEvent?(.hop(combo: combo))
@@ -789,17 +844,78 @@ final class GameScene: SKScene {
             let n = lumenNodes[i]
             let dx = n.position.x - orbNode.position.x
             let dy = n.position.y - orbNode.position.y
-            if sqrt(dx * dx + dy * dy) < collectDistance {
+            // Büyük yıldız daha iri çizildiği için toplama yarıçapı da geniş
+            let reach = lumenValues[i] > 1 ? collectDistance * 1.3 : collectDistance
+            if sqrt(dx * dx + dy * dy) < reach {
                 lumenCollected[i] = true
-                burst(at: n.position, color: theme.lumen.uiColor, count: 16)
+                burst(at: n.position, color: theme.lumen.uiColor, count: lumenValues[i] > 1 ? 26 : 16)
                 n.run(.sequence([.group([.scale(to: 1.8, duration: 0.18), .fadeOut(withDuration: 0.18)]),
                                  .removeFromParent()]))
-                onEvent?(.collect(total: lumenCollected.filter { $0 }.count))
+                onEvent?(.collect(total: collectedStars))
                 if isBonus, lumenCollected.allSatisfy({ $0 }) {
                     finishBonus()   // hepsi toplandıysa erken bitir
                 }
+                // Topla-bitir: son lumen kapıyı açar. Küre zaten kapının
+                // üstünde dönüyorsa bölüm o anda biter; değilse kapı yanıp
+                // söner ve oyuncu oraya dönebilir.
+                if gateNeedsAllLumens, gateOpen {
+                    if case .attached(let ring, _, _) = orbState, ringSpecs[ring].isGate {
+                        win()
+                    } else {
+                        flashGateUnlocked()
+                    }
+                }
             }
         }
+    }
+
+    /// Son lumen toplandı: sönük duran kapı canlanır ve bir kez atar.
+    private func flashGateUnlocked() {
+        guard let gateIndex = ringSpecs.firstIndex(where: { $0.isGate }) else { return }
+        let circle = ringCircles[gateIndex]
+        circle.removeAllActions()
+        circle.run(.group([
+            .fadeAlpha(to: 0.95, duration: 0.2),
+            .sequence([.scale(to: 1.3, duration: 0.22), .scale(to: 1.0, duration: 0.28)])
+        ]))
+        circle.run(.repeatForever(.sequence([
+            .group([.scale(to: 1.10, duration: 0.7), .fadeAlpha(to: 1.0, duration: 0.7)]),
+            .group([.scale(to: 0.98, duration: 0.7), .fadeAlpha(to: 0.8, duration: 0.7)])
+        ])))
+        gateDashed?.run(.fadeAlpha(to: 0.75, duration: 0.25))
+        burst(at: ringCenter(gateIndex, at: elapsed), color: theme.gate.uiColor, count: 22)
+        onEvent?(.gateUnlocked)
+    }
+
+    /// Topla-bitir bölümünde ölüm: bölüm sıfırdan kurulur, toplanan bütün
+    /// lumenler geri gelir. Yarım kalmış bir turu kurtarmak yok — baştan.
+    private func restartLevel() {
+        deadSince = nil
+        combo = 0
+        finished = false
+        orbNode.isHidden = false
+
+        for node in lumenNodes { node.removeFromParent() }
+        lumenNodes.removeAll()
+        lumenCollected.removeAll()
+        lumenValues.removeAll()
+        buildLumens(lumenSpecs)
+
+        // Kapı yeniden kilitlenir
+        if let gateIndex = ringSpecs.firstIndex(where: { $0.isGate }) {
+            let circle = ringCircles[gateIndex]
+            circle.removeAllActions()
+            circle.setScale(1.0)
+            circle.alpha = 0.35
+            circle.run(.repeatForever(.sequence([
+                .scale(to: 1.03, duration: 1.6),
+                .scale(to: 0.99, duration: 1.6)
+            ])))
+            gateDashed?.run(.fadeAlpha(to: 0.25, duration: 0.2))
+        }
+
+        onEvent?(.collect(total: 0))
+        respawn(animated: true)
     }
 
     private func checkBounds() {
@@ -917,16 +1033,26 @@ final class GameScene: SKScene {
         }
     }
 
+    /// Toplanan lumenlerin yıldız değeri toplamı (büyük yıldız 4 eder)
+    private var collectedStars: Int {
+        lumenCollected.indices.reduce(0) { $0 + (lumenCollected[$1] ? lumenValues[$1] : 0) }
+    }
+
+    /// Topla-bitir bölümünde kapı, her lumen toplanana kadar kapalıdır.
+    private var gateOpen: Bool {
+        !gateNeedsAllLumens || lumenCollected.allSatisfy { $0 }
+    }
+
     private func win() {
         guard !finished else { return }
         finished = true
         orbState = .won
-        let stars = lumenCollected.filter { $0 }.count
+        let stars = collectedStars
         if let gateIndex = ringSpecs.firstIndex(where: { $0.isGate }) {
             ringCircles[gateIndex].run(.sequence([.scale(to: 1.4, duration: 0.3), .scale(to: 1.0, duration: 0.3)]))
         }
         burst(at: orbNode.position, color: theme.gate.uiColor, count: 40)
-        if stars >= 3 { celebrationCascade() }
+        if stars >= (level?.maxStars ?? 3) { celebrationCascade() }
         run(.wait(forDuration: 0.7)) { [weak self] in
             guard let self else { return }
             self.onEvent?(.win(stars: stars))

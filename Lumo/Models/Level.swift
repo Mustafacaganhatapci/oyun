@@ -26,11 +26,16 @@ struct RingSpec: Equatable {
 
 struct LumenSpec: Equatable {
     var position: CGPoint
+    /// Kaç yıldız değerinde. Normal lumen 1; "büyük yıldız" 4 eder ve
+    /// ekranda belirgin şekilde daha iri çizilir.
+    var value: Int = 1
+    var isGrand: Bool { value > 1 }
 }
 
 enum LevelKind: Equatable {
     case normal
     case bonus     // süreli lumen toplama turu — tehlike yok, kapı yok
+    case collect   // kapı, tüm lumenler toplanana kadar kilitli; ölünce bölüm baştan
 }
 
 struct Level: Identifiable, Equatable {
@@ -39,9 +44,18 @@ struct Level: Identifiable, Equatable {
     let rings: [RingSpec]
     let lumens: [LumenSpec]
     var timeLimit: TimeInterval? = nil   // süreli bölüm: kapıya bu sürede ulaş (deneme başına)
-    var dwellLimit: TimeInterval? = nil  // "devam et ya da düş": bir halkada bu süreden fazla oyalanınca ölürsün
+    var dwellLimit: TimeInterval? = nil  // "devam et ya da düş": bir halkada bu süre dolunca küre kendiliğinden fırlar
     var startRing: Int { 0 }
     var bonusDuration: TimeInterval { 25 }
+
+    /// Bu bölümden alınabilecek azami yıldız (lumen değerlerinin toplamı).
+    var maxStars: Int { lumens.reduce(0) { $0 + $1.value } }
+
+    /// Kapı yalnızca her şey toplandığında açılır mı?
+    var gateNeedsAllLumens: Bool { kind == .collect }
+
+    /// Ölünce son halkaya değil, bölümün başına dönülür ve lumenler geri gelir.
+    var restartsOnDeath: Bool { kind == .collect }
 }
 
 // MARK: - Deterministik RNG (bölümler her cihazda birebir aynı olsun diye)
@@ -65,10 +79,46 @@ struct SplitMix64: RandomNumberGenerator {
 // 48 düğüm: her 6. bölüm bonus turu (6, 12, 18, ...), aralarda 40 normal bölüm.
 
 enum LevelLibrary {
-    static let count = 120
+    static let count = 150
     static let adFreeLevels = 10        // ilk 10 bölümde asla reklam yok
 
+    /// Kampanya 120'den 150'ye çıkarıldığında 1...120'nin AYNEN aynı kalması
+    /// gerekiyordu: kayıtlı ilerleme bu bölümlerin düzenine göre kazanılmış.
+    /// Zorluk eğrisi bölüm sayısına bölünerek hesaplandığı için, payda burada
+    /// eski değere (120 bölümde 100 normal bölüm) sabitlenir. Yeni bölümler
+    /// eğrinin sonunda, en yüksek zorlukta oturur.
+    static let legacyCount = 120
+    private static let curveNormalCount = legacyCount - legacyCount / 6   // 100
+
     static func isBonus(_ id: Int) -> Bool { id > 0 && id % 6 == 0 }
+
+    /// Yeni bölüm türü: kapı tüm lumenler toplanana kadar açılmaz, ölünce
+    /// bölüm baştan başlar. 121'den itibaren üçte bir sıklıkla gelir.
+    static func isCollect(_ id: Int) -> Bool {
+        guard id > legacyCount, !isBonus(id) else { return false }
+        return id % 3 == 1
+    }
+
+    /// "Büyük yıldız" bölümleri: 3 küçük lumen yerine 4 eden tek bir iri lumen.
+    static func hasGrandStar(_ id: Int) -> Bool {
+        guard id > legacyCount, !isBonus(id) else { return false }
+        return id % 3 == 2
+    }
+
+    /// Zorluk eğrisinin 0...1 konumu. 100. normal bölümden sonra 1'de durur.
+    private static func curveT(_ n: Int) -> CGFloat {
+        let t = CGFloat(n - 1) / CGFloat(max(1, curveNormalCount - 1))
+        return min(max(t, 0), 1)
+    }
+
+    /// Bölümün azami yıldızı — bölüm seçme ekranı bunu üretmeden bilmek ister.
+    static func maxStars(for id: Int) -> Int {
+        if isBonus(id) { return 3 }
+        return hasGrandStar(id) ? 4 : 3
+    }
+
+    /// Kampanyadan toplanabilecek toplam yıldız (ana menüdeki "x / y")
+    static let totalStarsAvailable: Int = (1...count).reduce(0) { $0 + maxStars(for: $1) }
 
     /// İlk açılışta oynatılan "nasıl oynanır" antrenman bölümü (id 0).
     /// Haritada görünmez, ilerlemeye yazılmaz.
@@ -136,9 +186,7 @@ enum LevelLibrary {
         guard !isBonus(id), !isTimed(id) else { return nil }
         let n = normalIndex(id)
         guard n >= 15 else { return nil }
-        let totalNormal = max(1, count - count / 6)
-        let t = Double(n - 1) / Double(max(1, totalNormal - 1))
-        return max(2.2, 3.6 - 1.4 * t)
+        return max(2.2, 3.6 - 1.4 * Double(curveT(n)))
     }
 
     static func level(_ id: Int) -> Level {
@@ -176,16 +224,36 @@ enum LevelLibrary {
             lumens.append(LumenSpec(position: CGPoint(x: rng.cg(in: 0.3...0.7), y: rng.cg(in: 0.3...0.7))))
         }
 
+        // "Büyük yıldız" bölümü: 3 küçük lumen yerine 4 eden tek bir iri lumen.
+        // Zincirin ortasındaki halka çiftinin arasına, uçuş hattının biraz
+        // dışına konur — bedavaya gelmesin, sapmayı hak etsin.
+        if hasGrandStar(id) {
+            let mid = max(0, (rings.count - 1) / 2)
+            let a = rings[mid].center, b = rings[mid + 1].center
+            let off = rng.cg(in: 0.06...0.10) * (rng.cg(in: 0...1) < 0.5 ? 1 : -1)
+            var p = CGPoint(x: (a.x + b.x) / 2 - (b.y - a.y) * off * 2,
+                            y: (a.y + b.y) / 2 + (b.x - a.x) * off * 2)
+            p.x = min(max(p.x, 0.08), 0.92)
+            p.y = min(max(p.y, 0.06), 0.94)
+            lumens = [LumenSpec(position: p, value: 4)]
+        }
+
         // Süreli bölüm: halka başına tanınan süre ilerledikçe kısalır (~4s → ~2.6s)
         var timeLimit: TimeInterval? = nil
         if isTimed(id) {
-            let totalNormal = max(1, count - count / 6)
-            let t = Double(normalIndex(id) - 1) / Double(max(1, totalNormal - 1))
+            let t = Double(curveT(normalIndex(id)))
             timeLimit = (Double(rings.count) * (4.0 - 1.4 * t)).rounded()
         }
 
-        return Level(id: id, kind: .normal, rings: rings, lumens: lumens,
-                     timeLimit: timeLimit, dwellLimit: dwellLimit(for: id))
+        // Topla-bitir bölümlerinde süre baskısı yok: asıl meydan okuma kapıyı
+        // açmak için haritayı süpürmek. İkisi üst üste binerse ceza olur.
+        let collect = isCollect(id)
+        return Level(id: id,
+                     kind: collect ? .collect : .normal,
+                     rings: rings,
+                     lumens: lumens,
+                     timeLimit: collect ? nil : timeLimit,
+                     dwellLimit: collect ? nil : dwellLimit(for: id))
     }
 
     // MARK: Bonus turu üretimi — tehlike yok, bol lumen, süre sınırlı
@@ -330,8 +398,7 @@ enum LevelLibrary {
 
     static func difficulty(for id: Int) -> Difficulty {
         let n = normalIndex(id)              // 1...(normal bölüm sayısı)
-        let totalNormal = max(1, count - count / 6)
-        let t = CGFloat(n - 1) / CGFloat(max(1, totalNormal - 1))   // 0...1
+        let t = curveT(n)                    // 0...1, 100. normal bölümde doyar
         switch n {
         case 1...2:   // öğretici — ama uyutmayan
             return Difficulty(ringCount: 5,

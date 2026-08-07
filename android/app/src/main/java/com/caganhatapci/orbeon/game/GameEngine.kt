@@ -5,6 +5,7 @@ import com.caganhatapci.orbeon.model.Axis
 import com.caganhatapci.orbeon.model.Level
 import com.caganhatapci.orbeon.model.LevelKind
 import com.caganhatapci.orbeon.model.LevelLibrary
+import com.caganhatapci.orbeon.model.LumenSpec
 import com.caganhatapci.orbeon.model.Pt
 import com.caganhatapci.orbeon.model.RingSpec
 import com.caganhatapci.orbeon.model.SplitMix64
@@ -21,6 +22,8 @@ sealed class GameEvent {
     data class Hop(val combo: Int) : GameEvent()
     data class Attached(val hasHazard: Boolean, val isMoving: Boolean) : GameEvent()
     data class Collect(val total: Int) : GameEvent()
+    /** Topla-bitir: son lumen toplandı, kapı açıldı */
+    data object GateUnlocked : GameEvent()
     data object Fail : GameEvent()
     data class Win(val stars: Int) : GameEvent()
     data class BonusTick(val remaining: Int) : GameEvent()
@@ -80,6 +83,9 @@ class GameEngine(
         private set
     var lumenCollected: BooleanArray = BooleanArray(0)
         private set
+    /** Her lumenin yıldız değeri — normal 1, "büyük yıldız" 4 */
+    var lumenValues: IntArray = IntArray(0)
+        private set
 
     var orbState: OrbState = OrbState.Dead
         private set
@@ -113,6 +119,13 @@ class GameEngine(
 
     // Bağışlayıcı sınırlar
     private var forgivingBounds = false
+
+    // Topla-bitir bölümü
+    private var gateNeedsAllLumens = false
+    private var restartsOnDeath = false
+    private var lumenSpecs: List<LumenSpec> = emptyList()
+    /** Kilitli kapı sönük çizilsin diye tuvalin okuduğu bayrak */
+    val gateLocked: Boolean get() = gateNeedsAllLumens && !gateOpen
 
     // "Devam et ya da düş"
     private var dwellLimit: Double? = null
@@ -183,17 +196,22 @@ class GameEngine(
                 isBonus = lvl.kind == LevelKind.BONUS
                 dwellLimit = lvl.dwellLimit
                 forgivingBounds = LevelLibrary.isForgiving(mode.id)
+                gateNeedsAllLumens = lvl.gateNeedsAllLumens
+                restartsOnDeath = lvl.restartsOnDeath
+                lumenSpecs = lvl.lumens
                 if (isBonus) bonusDeadline = lvl.bonusDuration
                 if (isTutorial) tapHintVisible = true
                 ringSpecs = lvl.rings
                 lumens = lvl.lumens.map { it.position }
                 lumenCollected = BooleanArray(lumens.size)
+                lumenValues = lvl.lumens.map { it.value }.toIntArray()
                 respawn()
             }
             GameMode.Endless -> {
                 seedEndless()
                 lumens = emptyList()
                 lumenCollected = BooleanArray(0)
+                lumenValues = IntArray(0)
                 cameraY = height / 2f
                 respawn()
             }
@@ -225,28 +243,34 @@ class GameEngine(
 
     // MARK: Girdi — tek dokunuş, tüm ekran
 
+    /**
+     * Küreyi halkadan teğet yönünde fırlatır. Hem dokunuşla hem de oyalanma
+     * süresi dolduğunda (otomatik fırlatma) buradan geçilir.
+     */
+    private fun launch(ring: Int, angle: Float, direction: Float) {
+        val (cx, cy) = ringCenter(ring)
+        val r = ringRadius(ring)
+        orbX = cx + cos(angle) * r
+        orbY = cy + sin(angle) * r
+        val tx = -sin(angle) * direction
+        val ty = cos(angle) * direction
+        val speed = flightSpeedFactor * width
+        orbState = OrbState.Flying(tx * speed, ty * speed)
+        tapHintVisible = false
+        lastRing = ring
+        exitedLastRing = false
+        flightTime = 0.0
+    }
+
     fun onTap() {
         if (coachFrozen) return
         when (val s = orbState) {
-            is OrbState.Attached -> {
-                val (cx, cy) = ringCenter(s.ring)
-                val r = ringRadius(s.ring)
-                orbX = cx + cos(s.angle) * r
-                orbY = cy + sin(s.angle) * r
-                val tx = -sin(s.angle) * s.direction
-                val ty = cos(s.angle) * s.direction
-                val speed = flightSpeedFactor * width
-                orbState = OrbState.Flying(tx * speed, ty * speed)
-                tapHintVisible = false
-                lastRing = s.ring
-                exitedLastRing = false
-                flightTime = 0.0
-            }
+            is OrbState.Attached -> launch(s.ring, s.angle, s.direction)
             OrbState.Dead -> {
                 // Güvenlik ağı: yeniden doğma gecikirse dokunuş canlandırır
                 val since = deadSince
                 if (since != null && elapsed - since > 0.9 && mode !is GameMode.Endless) {
-                    respawn()
+                    if (restartsOnDeath) restartLevel() else respawn()
                 }
             }
             else -> Unit
@@ -319,11 +343,17 @@ class GameEngine(
                 orbY = cy + sin(angle) * r
                 if (hazardContains(s.ring, angle)) { fail(); return }
                 checkLumens()
+                // Süre dolunca ceza yok: küre kendiliğinden fırlar. Yayın son
+                // üçte biri kırmızıya döndüğünde oyuncu bunun geldiğini görür
+                // ve isterse daha iyi bir açıda kendi fırlatır.
                 val limit = dwellLimit
                 if (limit != null && !spec.isGate) {
                     dwellVisible = true
                     dwellFraction = max(0f, 1f - ((elapsed - dwellStart) / limit).toFloat())
-                    if (dwellFraction <= 0f) fail()
+                    if (dwellFraction <= 0f) {
+                        dwellVisible = false
+                        launch(s.ring, angle, s.direction)
+                    }
                 } else {
                     dwellVisible = false
                 }
@@ -350,7 +380,7 @@ class GameEngine(
                             onEvent?.invoke(GameEvent.EndlessGameOver(endlessScore))
                         }
                     } else if (!finished) {
-                        respawn()
+                        if (restartsOnDeath) restartLevel() else respawn()
                     }
                 }
             }
@@ -388,7 +418,7 @@ class GameEngine(
             combo++
             burst(orbX, orbY, 10, FxColor.ACCENT)
 
-            if (ringSpecs[i].isGate) {
+            if (ringSpecs[i].isGate && gateOpen) {
                 win()
             } else {
                 onEvent?.invoke(GameEvent.Hop(combo))
@@ -422,17 +452,41 @@ class GameEngine(
         return false
     }
 
+    /** Toplanan lumenlerin yıldız değeri toplamı (büyük yıldız 4 eder) */
+    val collectedStars: Int
+        get() = lumenCollected.indices.sumOf { if (lumenCollected[it]) lumenValues[it] else 0 }
+
+    /** Topla-bitir bölümünde kapı, her lumen toplanana kadar kapalıdır. */
+    private val gateOpen: Boolean
+        get() = !gateNeedsAllLumens || lumenCollected.all { it }
+
     private fun checkLumens() {
         for (i in lumens.indices) {
             if (lumenCollected[i]) continue
             val (lx, ly) = lumenPoint(i)
             val dx = lx - orbX
             val dy = ly - orbY
-            if (sqrt(dx * dx + dy * dy) < collectDistance) {
+            val reach = if (lumenValues[i] > 1) collectDistance * 1.3f else collectDistance
+            if (sqrt(dx * dx + dy * dy) < reach) {
                 lumenCollected[i] = true
-                burst(lx, ly, 16, FxColor.LUMEN)
-                onEvent?.invoke(GameEvent.Collect(lumenCollected.count { it }))
+                burst(lx, ly, if (lumenValues[i] > 1) 26 else 16, FxColor.LUMEN)
+                onEvent?.invoke(GameEvent.Collect(collectedStars))
                 if (isBonus && lumenCollected.all { it }) finishBonus()
+                // Topla-bitir: son lumen kapıyı açar. Küre zaten kapının
+                // üstünde dönüyorsa bölüm o anda biter.
+                if (gateNeedsAllLumens && gateOpen) {
+                    val s = orbState
+                    if (s is OrbState.Attached && ringSpecs[s.ring].isGate) {
+                        win()
+                    } else {
+                        val gate = ringSpecs.indexOfFirst { it.isGate }
+                        if (gate >= 0) {
+                            val (gx, gy) = ringCenter(gate)
+                            burst(gx, gy, 22, FxColor.GATE)
+                        }
+                        onEvent?.invoke(GameEvent.GateUnlocked)
+                    }
+                }
             }
         }
     }
@@ -521,13 +575,28 @@ class GameEngine(
         }
     }
 
+    /**
+     * Topla-bitir bölümünde ölüm: bölüm sıfırdan kurulur, toplanan bütün
+     * lumenler geri gelir. Yarım kalmış bir turu kurtarmak yok — baştan.
+     */
+    private fun restartLevel() {
+        deadSince = null
+        combo = 0
+        finished = false
+        orbVisible = true
+        lumenCollected = BooleanArray(lumenSpecs.size)
+        lumenValues = lumenSpecs.map { it.value }.toIntArray()
+        onEvent?.invoke(GameEvent.Collect(0))
+        respawn()
+    }
+
     private fun win() {
         if (finished) return
         finished = true
         orbState = OrbState.Won
-        val stars = lumenCollected.count { it }
+        val stars = collectedStars
         burst(orbX, orbY, 40, FxColor.GATE)
-        if (stars >= 3) celebrationCascade()
+        if (stars >= (level?.maxStars ?: 3)) celebrationCascade()
         onEvent?.invoke(GameEvent.Win(stars))
     }
 

@@ -69,7 +69,7 @@ struct MainMenuView: View {
                             HStack(spacing: 6) {
                                 Image(systemName: "star.fill")
                                     .foregroundStyle(settings.theme.lumen.color)
-                                Text("\(progress.totalStars) / \(LevelLibrary.count * 3)")
+                                Text("\(progress.totalStars) / \(LevelLibrary.totalStarsAvailable)")
                                     .font(.system(.subheadline, design: .rounded).bold())
                                     .foregroundStyle(.white.opacity(0.8))
                             }

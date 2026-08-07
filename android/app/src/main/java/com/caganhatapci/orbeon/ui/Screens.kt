@@ -122,7 +122,7 @@ fun MainMenuScreen(
 
             if (app.progress.totalStars > 0) {
                 Text(
-                    "★ ${app.progress.totalStars} / ${LevelLibrary.COUNT * 3}",
+                    "★ ${app.progress.totalStars} / ${LevelLibrary.totalStarsAvailable}",
                     color = theme.lumen, fontSize = 15.sp, fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 12.dp)
                 )
@@ -307,11 +307,17 @@ fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
                     val unlocked = app.progress.isUnlocked(id)
                     val stars = app.progress.stars[id] ?: 0
                     val isBonus = LevelLibrary.isBonus(id)
+                    val isCollect = LevelLibrary.isCollect(id)
                     Box(
                         Modifier
                             .height(58.dp)
                             .background(
-                                if (isBonus) theme.lumen.copy(alpha = 0.16f) else Color.White.copy(alpha = 0.07f),
+                                when {
+                                    isBonus -> theme.lumen.copy(alpha = 0.16f)
+                                    // Topla-bitir bölümü kapı rengiyle ayrışsın
+                                    isCollect -> theme.gate.copy(alpha = 0.16f)
+                                    else -> Color.White.copy(alpha = 0.07f)
+                                },
                                 RoundedCornerShape(14.dp)
                             )
                             .border(
@@ -326,7 +332,12 @@ fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text("$id", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                                 if (stars > 0) {
-                                    Text("★".repeat(stars), color = theme.lumen, fontSize = 9.sp)
+                                    // "Büyük yıldız" bölümlerinde 4'e kadar
+                                    val maxStars = LevelLibrary.maxStars(id)
+                                    Text(
+                                        "★".repeat(stars) + "☆".repeat((maxStars - stars).coerceAtLeast(0)),
+                                        color = theme.lumen, fontSize = 9.sp
+                                    )
                                 }
                             }
                         } else {

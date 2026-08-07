@@ -69,6 +69,8 @@ struct LevelSelectView: View {
                                       // Bonus turlar bir kere oynanır — tamamlandıysa harita üzerinden bir daha açılmaz
                                       isBonusCompleted: LevelLibrary.isBonus(id) && progress.stars[id] != nil,
                                       isTimed: LevelLibrary.isTimed(id),
+                                      isCollect: LevelLibrary.isCollect(id),
+                                      maxStars: LevelLibrary.maxStars(for: id),
                                       theme: settings.theme) {
                                 AudioEngine.shared.playTap()
                                 app.route = .game(id)
@@ -114,6 +116,8 @@ private struct LevelNode: View {
     let isBonus: Bool
     let isBonusCompleted: Bool
     let isTimed: Bool
+    let isCollect: Bool
+    let maxStars: Int
     let theme: Theme
     let action: () -> Void
 
@@ -144,7 +148,7 @@ private struct LevelNode: View {
 
                     Circle()
                         .strokeBorder(unlocked
-                                      ? (stars == 3 ? theme.lumen.color : accent.opacity(0.7))
+                                      ? (stars >= maxStars ? theme.lumen.color : accent.opacity(0.7))
                                       : Color.white.opacity(0.12),
                                       style: isBonus
                                       ? StrokeStyle(lineWidth: 2, dash: [5, 4])
@@ -191,11 +195,21 @@ private struct LevelNode: View {
                             .background(Circle().fill(.black.opacity(0.55)))
                             .offset(x: 22, y: -22)
                     }
+
+                    // Topla-bitir rozeti: kapı her şey toplanmadan açılmaz
+                    if isCollect, unlocked {
+                        Image(systemName: "circle.hexagongrid.fill")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(theme.gate.color)
+                            .padding(4)
+                            .background(Circle().fill(.black.opacity(0.55)))
+                            .offset(x: 22, y: 22)
+                    }
                 }
 
                 if unlocked {
                     HStack(spacing: 2) {
-                        ForEach(0..<3, id: \.self) { i in
+                        ForEach(0..<maxStars, id: \.self) { i in
                             Image(systemName: i < stars ? "star.fill" : "star")
                                 .font(.system(size: 8))
                                 .foregroundStyle(i < stars ? theme.lumen.color : .white.opacity(0.25))

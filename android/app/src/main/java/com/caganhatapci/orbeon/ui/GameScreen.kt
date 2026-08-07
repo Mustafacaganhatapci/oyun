@@ -100,6 +100,9 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
     }
     val isTutorialLevel = currentLevelId == LevelLibrary.TUTORIAL_ID
     val isBonusLevel = currentLevelId?.let { LevelLibrary.isBonus(it) } == true
+    // "Büyük yıldız" bölümlerinde 4, diğerlerinde 3 — kutlama ve yıldız
+    // göstergeleri sabit 3 yerine buna bakar
+    val maxStarsForLevel = currentLevelId?.let { LevelLibrary.maxStars(it) } ?: 3
 
     var overlay by remember { mutableStateOf<Overlay>(Overlay.None) }
     var coach by remember { mutableStateOf<Coach?>(null) }
@@ -197,6 +200,10 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                 app.audio.playCollect()
                 app.haptics.collect()
             }
+            GameEvent.GateUnlocked -> {
+                app.audio.playWin()
+                app.haptics.win()
+            }
             GameEvent.Fail -> {
                 app.audio.playFail()
                 app.haptics.fail()
@@ -220,7 +227,8 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             is GameEvent.Win -> {
                 app.audio.playWin()
                 app.haptics.win()
-                val celebration = if (event.stars >= 3 && !isTutorialLevel) CELEBRATIONS.random() else null
+                val celebration =
+                    if (event.stars >= maxStarsForLevel && !isTutorialLevel) CELEBRATIONS.random() else null
                 when (playMode) {
                     is PlayMode.LevelPlay -> {
                         val id = playMode.id
@@ -232,7 +240,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                             app.missions.recordLevelCleared(deathsThisLevel == 0, event.stars)
                             app.missions.recordLumens(lumenCount)
                             // Oyuncunun en iyi hissettiği an: kusursuz bir bölüm
-                            if (event.stars >= 3) {
+                            if (event.stars >= maxStarsForLevel) {
                                 ReviewPrompt.requestAfterGreatRun(activity, app.progress.completedCount)
                             }
                         }
@@ -354,7 +362,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                     onMenu = onExit
                 )
                 is Overlay.Won -> WinOverlay(
-                    stars = o.stars, celebrationRes = o.celebrationRes,
+                    stars = o.stars, maxStars = maxStarsForLevel, celebrationRes = o.celebrationRes,
                     isTutorial = isTutorialLevel, isBonus = isBonusLevel,
                     lumenCount = lumenCount, lumenTotal = engine.lumenTotal, theme = theme,
                     onNext = {
@@ -620,7 +628,7 @@ private fun QuickToggle(label: String, onClick: () -> Unit) {
 
 @Composable
 private fun WinOverlay(
-    stars: Int, celebrationRes: Int?, isTutorial: Boolean, isBonus: Boolean,
+    stars: Int, maxStars: Int, celebrationRes: Int?, isTutorial: Boolean, isBonus: Boolean,
     lumenCount: Int, lumenTotal: Int, theme: Theme,
     onNext: () -> Unit, onMenu: () -> Unit
 ) {
@@ -652,7 +660,8 @@ private fun WinOverlay(
         }
 
         if (!isTutorial) {   // antrenmanda yıldız yok
-            Text("★".repeat(stars) + "☆".repeat(3 - stars), color = theme.lumen, fontSize = 34.sp)
+            Text("★".repeat(stars) + "☆".repeat((maxStars - stars).coerceAtLeast(0)),
+                color = theme.lumen, fontSize = 34.sp)
         }
 
         GlowButton(stringResource(R.string.next_level), theme.accent, prominent = true, onClick = onNext)
