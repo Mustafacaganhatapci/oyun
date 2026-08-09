@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  /* Orbeon — App Store ekran görüntüleri, iPhone 6.9" (1320x2868).
+     Oyunun gerçek Nebula paleti ve gerçek çizim kuralları kullanılır:
+     halka moru, kapı turkuazı + dönen kesikli dış çember, kırmızı tehlike
+     yayı, altın lümen, izli beyaz küre. */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#000; font-family:"Inter","Inter Display",Helvetica,Arial,sans-serif; }
+
+  .shot {
+    position:relative; width:1320px; height:2868px; overflow:hidden;
+    background:linear-gradient(180deg,#0E0B29 0%,#170A38 52%,#210B44 100%);
+  }
+  .bloom-a { position:absolute; width:1500px; height:1500px; left:-330px; top:-420px;
+    background:radial-gradient(circle,rgba(163,139,255,0.22) 0%,rgba(163,139,255,0) 66%); }
+  .bloom-b { position:absolute; width:1200px; height:1200px; right:-320px; bottom:-380px;
+    background:radial-gradient(circle,rgba(255,211,90,0.10) 0%,rgba(255,211,90,0) 66%); }
+  .star { position:absolute; border-radius:50%; background:#fff; }
+
+  /* Üstteki pazarlama başlığı */
+  .copy { position:absolute; left:0; right:0; top:190px; text-align:center; padding:0 96px; z-index:5; }
+  .head {
+    font-size:104px; font-weight:800; letter-spacing:-2px; line-height:1.06; color:#fff;
+    text-shadow:0 0 60px rgba(163,139,255,0.55);
+  }
+  .head em { font-style:normal; color:#FFD35A; }
+  .head .teal { color:#4AF2C9; }
+  .sub {
+    margin-top:34px; font-size:44px; font-weight:500; line-height:1.35;
+    color:rgba(255,255,255,0.62);
+  }
+
+  /* Oyun içi HUD şeridi (oyundaki gerçek düzen: duraklat • bölüm • yıldızlar) */
+  .hud { position:absolute; left:0; right:0; top:70px; display:flex; align-items:center;
+         justify-content:space-between; padding:0 78px; z-index:6; }
+  .hud-btn { width:84px; height:84px; border-radius:50%; background:rgba(255,255,255,0.12);
+             display:flex; align-items:center; justify-content:center; }
+  .hud-btn span { display:block; width:8px; height:30px; background:rgba(255,255,255,0.85);
+                  box-shadow:16px 0 0 rgba(255,255,255,0.85); margin-right:16px; }
+  .hud-lvl { font-size:38px; font-weight:700; color:rgba(255,255,255,0.75); letter-spacing:3px; }
+  .pips { display:flex; gap:14px; }
+  .pip { width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.2); }
+  .pip.on { background:#FFD35A; box-shadow:0 0 18px rgba(255,211,90,0.9); }
+
+  /* Yalnızca tam ekran oyun sahnesi mutlak konumlanır; ızgara içindeki
+     küçük SVG'ler akışta kalmalı. */
+  svg.scene { position:absolute; left:0; top:0; }
+
+  /* 4. ekran: karakter ızgarası */
+  .grid { position:absolute; left:96px; right:96px; top:860px; display:grid;
+          grid-template-columns:repeat(3,1fr); gap:44px; z-index:5; }
+  .cell { height:380px; border-radius:50px; display:flex; align-items:center;
+          justify-content:center; border:2px solid rgba(255,255,255,0.10);
+          background:rgba(255,255,255,0.035); }
+  .themes { position:absolute; left:96px; right:96px; bottom:400px; display:flex;
+            gap:28px; justify-content:center; z-index:5; }
+  .sw { width:124px; height:124px; border-radius:50%; border:3px solid rgba(255,255,255,0.22); }
+  .cap { position:absolute; left:0; right:0; bottom:150px; text-align:center;
+         font-size:36px; font-weight:600; color:rgba(255,255,255,0.45); z-index:5; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ 1 — Temel oynanış ══════════ -->
+<div class="shot" id="s1">
+  <div class="bloom-a"></div><div class="bloom-b"></div>
+  <div class="star" style="width:4px;height:4px;left:180px;top:820px;opacity:.5"></div>
+  <div class="star" style="width:5px;height:5px;left:1040px;top:1180px;opacity:.6"></div>
+  <div class="star" style="width:4px;height:4px;left:320px;top:2260px;opacity:.45"></div>
+  <div class="star" style="width:5px;height:5px;left:980px;top:2520px;opacity:.5"></div>
+  <div class="star" style="width:4px;height:4px;left:660px;top:1560px;opacity:.4"></div>
+
+  <div class="hud">
+    <div class="hud-btn"><span></span></div>
+    <div class="hud-lvl">14</div>
+    <div class="pips"><div class="pip on"></div><div class="pip on"></div><div class="pip"></div></div>
+  </div>
+
+  <div class="copy">
+    <div class="head">Tek dokunuş.<br>Halkadan <em>halkaya</em>.</div>
+    <div class="sub">Küre döner, sen zamanlarsın.<br>Doğru anda bırak, teğet çizsin.</div>
+  </div>
+
+  <svg class="scene" width="1320" height="2868">
+    <defs>
+      <filter id="g1" x="-90%" y="-90%" width="280%" height="280%">
+        <feGaussianBlur stdDeviation="18"/>
+      </filter>
+      <filter id="g1s" x="-90%" y="-90%" width="280%" height="280%">
+        <feGaussianBlur stdDeviation="9"/>
+      </filter>
+    </defs>
+
+    <!-- halka zinciri: alttan yukarı, kapıya kadar -->
+    <g stroke="#7A68EE" fill="none">
+      <circle cx="900" cy="2580" r="150" stroke-width="28" opacity=".22" filter="url(#g1)"/>
+      <circle cx="900" cy="2580" r="150" stroke-width="7"  opacity=".9"/>
+      <circle cx="400" cy="2210" r="134" stroke-width="28" opacity=".22" filter="url(#g1)"/>
+      <circle cx="400" cy="2210" r="134" stroke-width="7"  opacity=".9"/>
+      <circle cx="950" cy="1830" r="140" stroke-width="28" opacity=".22" filter="url(#g1)"/>
+      <circle cx="950" cy="1830" r="140" stroke-width="7"  opacity=".9"/>
+      <circle cx="380" cy="1450" r="132" stroke-width="28" opacity=".22" filter="url(#g1)"/>
+      <circle cx="380" cy="1450" r="132" stroke-width="7"  opacity=".9"/>
+    </g>
+
+    <!-- kapı halkası: turkuaz + dönen kesikli dış çember -->
+    <g fill="none">
+      <circle cx="900" cy="1060" r="145" stroke="#4AF2C9" stroke-width="32" opacity=".26" filter="url(#g1)"/>
+      <circle cx="900" cy="1060" r="145" stroke="#4AF2C9" stroke-width="7" opacity=".95"/>
+      <circle cx="900" cy="1060" r="145" fill="#4AF2C9" opacity=".08" stroke="none"/>
+      <circle cx="900" cy="1060" r="175" stroke="#4AF2C9" stroke-width="5"
+              stroke-dasharray="20 26" opacity=".7"/>
+    </g>
+
+    <!-- uçuş izi: sönümlenen noktalar -->
+    <g fill="#A38BFF">
+      <circle cx="432" cy="2168" r="10" opacity=".22"/>
+      <circle cx="492" cy="2130" r="14" opacity=".32"/>
+      <circle cx="554" cy="2092" r="18" opacity=".45"/>
+      <circle cx="616" cy="2054" r="22" opacity=".60"/>
+      <circle cx="616" cy="2054" r="34" opacity=".30" filter="url(#g1)"/>
+    </g>
+
+    <!-- küre -->
+    <circle cx="682" cy="2014" r="82" fill="#A38BFF" opacity=".60" filter="url(#g1)"/>
+    <circle cx="682" cy="2014" r="30" fill="#fff" filter="url(#g1s)" opacity=".9"/>
+    <circle cx="682" cy="2014" r="22" fill="#fff"/>
+
+    <!-- altın lümenler -->
+    <g fill="#FFD35A">
+      <circle cx="790" cy="1930" r="38" opacity=".30" filter="url(#g1)"/>
+      <circle cx="790" cy="1930" r="18"/>
+      <circle cx="640" cy="1640" r="38" opacity=".30" filter="url(#g1)"/>
+      <circle cx="640" cy="1640" r="18"/>
+      <circle cx="1140" cy="2340" r="38" opacity=".30" filter="url(#g1)"/>
+      <circle cx="1140" cy="2340" r="18"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ══════════ 2 — Tehlike ve zamanlama ══════════ -->
+<div class="shot" id="s2">
+  <div class="bloom-a"></div><div class="bloom-b"></div>
+  <div class="star" style="width:4px;height:4px;left:220px;top:900px;opacity:.5"></div>
+  <div class="star" style="width:5px;height:5px;left:1100px;top:1400px;opacity:.55"></div>
+  <div class="star" style="width:4px;height:4px;left:400px;top:2400px;opacity:.45"></div>
+
+  <div class="hud">
+    <div class="hud-btn"><span></span></div>
+    <div class="hud-lvl">37</div>
+    <div class="pips"><div class="pip on"></div><div class="pip"></div><div class="pip"></div></div>
+  </div>
+
+  <div class="copy">
+    <div class="head">Kırmızıya<br>dokunma.</div>
+    <div class="sub">Dönen tehlike yayları, süzülen halkalar,<br>ve tükenen bir geri sayım.</div>
+  </div>
+
+  <svg class="scene" width="1320" height="2868">
+    <defs>
+      <filter id="g2" x="-90%" y="-90%" width="280%" height="280%">
+        <feGaussianBlur stdDeviation="18"/>
+      </filter>
+      <filter id="g2s" x="-90%" y="-90%" width="280%" height="280%">
+        <feGaussianBlur stdDeviation="9"/>
+      </filter>
+    </defs>
+
+    <!-- geri sayım yayı olan halka: üstten saat yönünde tükenmiş, kalanı kırmızı -->
+    <g fill="none">
+      <circle cx="400" cy="2500" r="155" stroke="#7A68EE" stroke-width="28" opacity=".22" filter="url(#g2)"/>
+      <circle cx="400" cy="2500" r="155" stroke="#7A68EE" stroke-width="7" opacity=".9"/>
+      <!-- kalan süre yayı: %28 kalmış, o yüzden kırmızı -->
+      <path d="M 400 2315 A 185 185 0 0 1 582 2532" stroke="#FF4D6A" stroke-width="13"
+            stroke-linecap="round" opacity=".95" filter="url(#g2s)"/>
+      <path d="M 400 2315 A 185 185 0 0 1 582 2532" stroke="#FF4D6A" stroke-width="10"
+            stroke-linecap="round"/>
+    </g>
+    <!-- o halkada duran küre -->
+    <circle cx="400" cy="2345" r="78" fill="#A38BFF" opacity=".55" filter="url(#g2)"/>
+    <circle cx="400" cy="2345" r="30" fill="#fff" filter="url(#g2s)" opacity=".9"/>
+    <circle cx="400" cy="2345" r="22" fill="#fff"/>
+
+    <!-- dönen kırmızı tehlike yaylı halka -->
+    <g fill="none">
+      <circle cx="950" cy="2120" r="140" stroke="#7A68EE" stroke-width="28" opacity=".22" filter="url(#g2)"/>
+      <circle cx="950" cy="2120" r="140" stroke="#7A68EE" stroke-width="7" opacity=".9"/>
+      <path d="M 1049 2021 A 140 140 0 0 1 1049 2219" stroke="#FF4D6A" stroke-width="38"
+            stroke-linecap="round" opacity=".30" filter="url(#g2)"/>
+      <path d="M 1049 2021 A 140 140 0 0 1 1049 2219" stroke="#FF4D6A" stroke-width="24"
+            stroke-linecap="round"/>
+    </g>
+
+    <!-- ikinci tehlikeli halka -->
+    <g fill="none">
+      <circle cx="420" cy="1720" r="132" stroke="#7A68EE" stroke-width="28" opacity=".22" filter="url(#g2)"/>
+      <circle cx="420" cy="1720" r="132" stroke="#7A68EE" stroke-width="7" opacity=".9"/>
+      <path d="M 327 1813 A 132 132 0 0 1 327 1627" stroke="#FF4D6A" stroke-width="38"
+            stroke-linecap="round" opacity=".30" filter="url(#g2)"/>
+      <path d="M 327 1813 A 132 132 0 0 1 327 1627" stroke="#FF4D6A" stroke-width="24"
+            stroke-linecap="round"/>
+    </g>
+
+    <!-- üstteki halka -->
+    <g fill="none">
+      <circle cx="920" cy="1330" r="138" stroke="#7A68EE" stroke-width="28" opacity=".22" filter="url(#g2)"/>
+      <circle cx="920" cy="1330" r="138" stroke="#7A68EE" stroke-width="7" opacity=".9"/>
+    </g>
+
+    <g fill="#FFD35A">
+      <circle cx="700" cy="2320" r="38" opacity=".30" filter="url(#g2)"/>
+      <circle cx="700" cy="2320" r="18"/>
+      <circle cx="680" cy="1930" r="38" opacity=".30" filter="url(#g2)"/>
+      <circle cx="680" cy="1930" r="18"/>
+      <circle cx="1120" cy="1560" r="38" opacity=".30" filter="url(#g2)"/>
+      <circle cx="1120" cy="1560" r="18"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ══════════ 3 — Kilitli kapı / topla-bitir ══════════ -->
+<div class="shot" id="s3">
+  <div class="bloom-a"></div><div class="bloom-b"></div>
+  <div class="star" style="width:4px;height:4px;left:260px;top:960px;opacity:.5"></div>
+  <div class="star" style="width:5px;height:5px;left:1060px;top:1320px;opacity:.55"></div>
+  <div class="star" style="width:4px;height:4px;left:560px;top:2520px;opacity:.45"></div>
+
+  <div class="hud">
+    <div class="hud-btn"><span></span></div>
+    <div class="hud-lvl">88</div>
+    <div class="pips"><div class="pip on"></div><div class="pip"></div><div class="pip"></div></div>
+  </div>
+
+  <div class="copy">
+    <div class="head">Kapı <span class="teal">kapalı</span>.<br>Işıkları topla.</div>
+    <div class="sub">Yeşile konman yetmez — haritayı süpür.<br>Yanarsan tur sıfırdan başlar.</div>
+  </div>
+
+  <svg class="scene" width="1320" height="2868">
+    <defs>
+      <filter id="g3" x="-90%" y="-90%" width="280%" height="280%">
+        <feGaussianBlur stdDeviation="18"/>
+      </filter>
+    </defs>
+
+    <!-- KİLİTLİ kapı: sönük turkuaz (oyunda alpha .35) -->
+    <g fill="none" opacity=".38">
+      <circle cx="880" cy="1130" r="150" stroke="#4AF2C9" stroke-width="32" opacity=".26" filter="url(#g3)"/>
+      <circle cx="880" cy="1130" r="150" stroke="#4AF2C9" stroke-width="7"/>
+      <circle cx="880" cy="1130" r="180" stroke="#4AF2C9" stroke-width="5" stroke-dasharray="20 26"/>
+    </g>
+    <!-- kilit simgesi -->
+    <g opacity=".55" fill="none" stroke="#4AF2C9" stroke-width="9">
+      <rect x="840" y="1126" width="80" height="62" rx="13" fill="#4AF2C9" opacity=".35" stroke="none"/>
+      <path d="M 856 1126 v -24 a 24 24 0 0 1 48 0 v 24"/>
+    </g>
+
+    <g stroke="#7A68EE" fill="none">
+      <circle cx="900" cy="2620" r="150" stroke-width="28" opacity=".22" filter="url(#g3)"/>
+      <circle cx="900" cy="2620" r="150" stroke-width="7" opacity=".9"/>
+      <circle cx="380" cy="2270" r="145" stroke-width="28" opacity=".22" filter="url(#g3)"/>
+      <circle cx="380" cy="2270" r="145" stroke-width="7" opacity=".9"/>
+      <circle cx="930" cy="1900" r="132" stroke-width="28" opacity=".22" filter="url(#g3)"/>
+      <circle cx="930" cy="1900" r="132" stroke-width="7" opacity=".9"/>
+      <circle cx="380" cy="1530" r="138" stroke-width="28" opacity=".22" filter="url(#g3)"/>
+      <circle cx="380" cy="1530" r="138" stroke-width="7" opacity=".9"/>
+    </g>
+
+    <g fill="#A38BFF">
+      <circle cx="452" cy="2222" r="10" opacity=".22"/>
+      <circle cx="514" cy="2182" r="14" opacity=".32"/>
+      <circle cx="576" cy="2142" r="18" opacity=".45"/>
+      <circle cx="638" cy="2102" r="22" opacity=".60"/>
+      <circle cx="638" cy="2102" r="34" opacity=".30" filter="url(#g3)"/>
+    </g>
+    <circle cx="704" cy="2060" r="82" fill="#A38BFF" opacity=".60" filter="url(#g3)"/>
+    <circle cx="704" cy="2060" r="22" fill="#fff"/>
+
+    <!-- toplanmayı bekleyen lümenler -->
+    <g fill="#FFD35A">
+      <circle cx="620" cy="1780" r="38" opacity=".30" filter="url(#g3)"/>
+      <circle cx="620" cy="1780" r="18"/>
+      <circle cx="1130" cy="2300" r="38" opacity=".30" filter="url(#g3)"/>
+      <circle cx="1130" cy="2300" r="18"/>
+      <circle cx="650" cy="1370" r="38" opacity=".30" filter="url(#g3)"/>
+      <circle cx="650" cy="1370" r="18"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ══════════ 4 — Karakterler ve temalar ══════════ -->
+<div class="shot" id="s4">
+  <div class="bloom-a"></div><div class="bloom-b"></div>
+  <div class="star" style="width:4px;height:4px;left:200px;top:760px;opacity:.5"></div>
+  <div class="star" style="width:5px;height:5px;left:1080px;top:900px;opacity:.5"></div>
+
+  <div class="copy">
+    <div class="head">14 karakter.<br><em>10 tema.</em></div>
+    <div class="sub">Topladığın yıldızlarla aç.<br>Hiçbiri oynanışa dokunmaz.</div>
+  </div>
+
+  <div class="grid">
+    <div class="cell"><svg width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="62" fill="#A38BFF" opacity=".35"/>
+      <circle cx="100" cy="100" r="34" fill="#fff"/></svg></div>
+    <div class="cell"><svg width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="62" fill="#FFD35A" opacity=".3"/>
+      <polygon points="100,48 113,86 153,86 121,110 133,148 100,124 67,148 79,110 47,86 87,86" fill="#FFD35A"/></svg></div>
+    <div class="cell"><svg width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="62" fill="#4AF2C9" opacity=".3"/>
+      <polygon points="100,50 140,100 100,150 60,100" fill="#4AF2C9"/></svg></div>
+
+    <div class="cell"><svg width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="62" fill="#FF4D6A" opacity=".28"/>
+      <path d="M100 145 C 55 112 62 74 84 68 C 94 65 100 72 100 80 C 100 72 106 65 116 68 C 138 74 145 112 100 145 Z" fill="#FF4D6A"/></svg></div>
+    <div class="cell"><svg width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="62" fill="#7A68EE" opacity=".32"/>
+      <polygon points="100,52 142,76 142,124 100,148 58,124 58,76" fill="#A38BFF"/></svg></div>
+    <div class="cell"><svg width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="62" fill="#fff" opacity=".16"/>
+      <circle cx="100" cy="100" r="40" fill="none" stroke="#fff" stroke-width="12"/></svg></div>
+
+    <div class="cell"><svg width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="122" cy="84" r="52" fill="#FFD35A" opacity=".28"/>
+      <circle cx="122" cy="84" r="26" fill="#FFD35A"/>
+      <path d="M 102 104 L 56 150" stroke="#FFD35A" stroke-width="16" stroke-linecap="round" opacity=".7"/></svg></div>
+    <div class="cell"><svg width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="62" fill="#4AF2C9" opacity=".22"/>
+      <circle cx="82" cy="96" r="30" fill="#fff" opacity=".9"/>
+      <circle cx="116" cy="104" r="24" fill="#fff" opacity=".75"/></svg></div>
+    <div class="cell" style="border-style:dashed;border-color:rgba(255,211,90,0.5)">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="46" fill="none" stroke="#FFD35A" stroke-width="7" stroke-dasharray="14 12"/>
+        <path d="M 74 112 l 20 -22 16 16 14 -16 22 24 z" fill="#FFD35A"/>
+        <circle cx="84" cy="84" r="9" fill="#FFD35A"/></svg></div>
+  </div>
+
+  <div class="themes">
+    <div class="sw" style="background:linear-gradient(140deg,#0E0B29,#7A68EE)"></div>
+    <div class="sw" style="background:linear-gradient(140deg,#050D1A,#4DADF2)"></div>
+    <div class="sw" style="background:linear-gradient(140deg,#241034,#FF9E8C)"></div>
+    <div class="sw" style="background:linear-gradient(140deg,#041B16,#6DE093)"></div>
+    <div class="sw" style="background:linear-gradient(140deg,#050505,#33E6FF)"></div>
+    <div class="sw" style="background:linear-gradient(140deg,#0B0621,#C982FF)"></div>
+  </div>
+
+  <div class="cap">Premium ile kendi fotoğrafını küreye koy</div>
+</div>
+
+</body>
+</html>
