@@ -653,6 +653,20 @@ struct GameContainerView: View {
                     }
                     .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color, prominent: true))
                     .padding(.top, 10)
+
+                    // Reklam gelmediyse ya da ödül kazanılmadıysa düğme sessizce
+                    // hiçbir şey yapmış gibi görünüyordu; sebebi burada söylenir.
+                    if let notice = ads.rewardNotice {
+                        Label(notice == .unavailable
+                              ? "No ad available right now — try again in a bit"
+                              : "Ad closed early — no extra life this time",
+                              systemImage: "info.circle.fill")
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.6))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 24)
+                            .onTapGesture { ads.dismissRewardNotice() }
+                    }
                 }
 
                 Button {

@@ -233,6 +233,8 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
     private let adUnitID = "ca-app-pub-2696377554654488/4128883047"
     #endif
     private var interstitial: InterstitialAd?
+    /// Sunulmakta olan reklam — kapanana kadar serbest bırakılmaz
+    private var presenting: InterstitialAd?
     private var completion: (() -> Void)?
     private var startedSDK = false
 
@@ -260,13 +262,17 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
     }
 
     func show(completion: @escaping () -> Void) -> Bool {
-        guard let interstitial, let root = Self.topViewController() else { return false }
+        guard let ad = interstitial, let root = Self.topViewController() else { return false }
         self.completion = completion
-        self.interstitial = nil
+        // Ödüllü reklamdakiyle aynı gerekçe: reklam kapanana kadar güçlü bir
+        // referansla tutulur, yoksa sunum sırasında serbest kalıp kapanış
+        // geri çağrısı hiç gelmeyebilir ve akış olduğu yerde takılır.
+        interstitial = nil
+        presenting = ad
         // Bir sonraki runloop'ta sun: SwiftUI geçiş animasyonu ortasında
         // sunum yapılırsa reklam boş/gri kalabiliyor
         DispatchQueue.main.async {
-            interstitial.present(from: root)
+            ad.present(from: root)
         }
         return true
     }
@@ -283,11 +289,13 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
     }
 
     func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
+        presenting = nil
         completion?()
         completion = nil
     }
 
     func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+        presenting = nil
         completion?()
         completion = nil
     }
@@ -302,6 +310,8 @@ final class AdMobRewardedProvider: NSObject, RewardedProvider, FullScreenContent
     private let adUnitID = "ca-app-pub-2696377554654488/9121540024"
     #endif
     private var rewarded: RewardedAd?
+    /// Sunulmakta olan reklam — kapanana kadar serbest bırakılmaz
+    private var presenting: RewardedAd?
     private var completion: ((Bool) -> Void)?
     private var earned = false
     private var startedSDK = false
@@ -327,12 +337,18 @@ final class AdMobRewardedProvider: NSObject, RewardedProvider, FullScreenContent
     }
 
     func show(completion: @escaping (Bool) -> Void) -> Bool {
-        guard let rewarded, let root = AdMobProvider.topViewController() else { return false }
+        guard let ad = rewarded, let root = AdMobProvider.topViewController() else { return false }
         self.completion = completion
         self.earned = false
-        self.rewarded = nil
+        // Reklam sunum boyunca BURADA canlı tutulur. Daha önce `rewarded` nil'e
+        // çekilip nesne yalnızca aşağıdaki async bloğun yakalamasına bırakılıyordu;
+        // blok çalışıp bittiğinde son güçlü referans da düşüyor ve reklam sunum
+        // sırasında serbest kalabiliyordu. Ödül geri çağrısı reklam nesnesinin
+        // üstünde durduğu için de ödül hiç verilmiyordu.
+        rewarded = nil
+        presenting = ad
         DispatchQueue.main.async {
-            rewarded.present(from: root) { [weak self] in
+            ad.present(from: root) { [weak self] in
                 self?.earned = true
             }
         }
@@ -340,11 +356,13 @@ final class AdMobRewardedProvider: NSObject, RewardedProvider, FullScreenContent
     }
 
     func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
+        presenting = nil
         completion?(earned)
         completion = nil
     }
 
     func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+        presenting = nil
         completion?(false)
         completion = nil
     }
