@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  /* Oyun ekranının kendisi — 1080x1920 (9:16), pazarlama metni yok.
+     Renkler ve çizim kuralları Nebula temasından birebir:
+     halka #7A68EE, kapı #4AF2C9 + dönen kesikli dış çember,
+     tehlike #FF4D6A, lümen #FFD35A, küre beyaz + sönümlenen iz. */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#000; font-family:"Inter","Inter Display",Helvetica,Arial,sans-serif; }
+
+  .shot {
+    position:relative; width:1080px; height:1920px; overflow:hidden;
+    background:linear-gradient(180deg,#0E0B29 0%,#170A38 54%,#210B44 100%);
+  }
+  .bloom-a { position:absolute; width:1250px; height:1250px; left:-280px; top:-320px;
+    background:radial-gradient(circle,rgba(163,139,255,0.20) 0%,rgba(163,139,255,0) 66%); }
+  .bloom-b { position:absolute; width:980px; height:980px; right:-260px; bottom:-300px;
+    background:radial-gradient(circle,rgba(255,211,90,0.09) 0%,rgba(255,211,90,0) 66%); }
+  .star { position:absolute; border-radius:50%; background:#fff; }
+
+  /* Oyun içi HUD: duraklat • bölüm • toplanan lümenler */
+  .hud { position:absolute; left:0; right:0; top:58px; display:flex; align-items:center;
+         justify-content:space-between; padding:0 62px; z-index:6; }
+  .hud-btn { width:69px; height:69px; border-radius:50%; background:rgba(255,255,255,0.12);
+             display:flex; align-items:center; justify-content:center; }
+  .hud-btn span { display:block; width:7px; height:25px; background:rgba(255,255,255,0.85);
+                  box-shadow:13px 0 0 rgba(255,255,255,0.85); margin-right:13px; }
+  .hud-lvl { font-size:31px; font-weight:700; color:rgba(255,255,255,0.75); letter-spacing:3px; }
+  .pips { display:flex; gap:12px; }
+  .pip { width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,0.2); }
+  .pip.on { background:#FFD35A; box-shadow:0 0 15px rgba(255,211,90,0.9); }
+
+  svg.scene { position:absolute; left:0; top:0; }
+</style>
+</head>
+<body>
+
+<!-- ═════ 1 — normal bölüm, küre uçuşta ═════ -->
+<div class="shot" id="g1">
+  <div class="bloom-a"></div><div class="bloom-b"></div>
+  <div class="star" style="width:4px;height:4px;left:150px;top:640px;opacity:.5"></div>
+  <div class="star" style="width:5px;height:5px;left:880px;top:930px;opacity:.55"></div>
+  <div class="star" style="width:4px;height:4px;left:270px;top:1500px;opacity:.45"></div>
+  <div class="star" style="width:4px;height:4px;left:820px;top:1720px;opacity:.5"></div>
+  <div class="star" style="width:5px;height:5px;left:560px;top:300px;opacity:.4"></div>
+
+  <div class="hud">
+    <div class="hud-btn"><span></span></div>
+    <div class="hud-lvl">14</div>
+    <div class="pips"><div class="pip on"></div><div class="pip on"></div><div class="pip"></div></div>
+  </div>
+
+  <svg class="scene" width="1080" height="1920">
+    <defs>
+      <filter id="b1" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="15"/></filter>
+      <filter id="s1" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="8"/></filter>
+    </defs>
+
+    <g stroke="#7A68EE" fill="none">
+      <circle cx="300" cy="1700" r="103" stroke-width="24" opacity=".22" filter="url(#b1)"/>
+      <circle cx="300" cy="1700" r="103" stroke-width="6" opacity=".9"/>
+      <circle cx="770" cy="1400" r="92"  stroke-width="24" opacity=".22" filter="url(#b1)"/>
+      <circle cx="770" cy="1400" r="92"  stroke-width="6" opacity=".9"/>
+      <circle cx="320" cy="1090" r="96"  stroke-width="24" opacity=".22" filter="url(#b1)"/>
+      <circle cx="320" cy="1090" r="96"  stroke-width="6" opacity=".9"/>
+      <circle cx="780" cy="790"  r="90"  stroke-width="24" opacity=".22" filter="url(#b1)"/>
+      <circle cx="780" cy="790"  r="90"  stroke-width="6" opacity=".9"/>
+    </g>
+
+    <!-- kapı: yeşil halka + yavaşça dönen kesikli dış çember -->
+    <g fill="none">
+      <circle cx="380" cy="470" r="100" stroke="#4AF2C9" stroke-width="27" opacity=".26" filter="url(#b1)"/>
+      <circle cx="380" cy="470" r="100" stroke="#4AF2C9" stroke-width="6" opacity=".95"/>
+      <circle cx="380" cy="470" r="100" fill="#4AF2C9" opacity=".08" stroke="none"/>
+      <circle cx="380" cy="470" r="122" stroke="#4AF2C9" stroke-width="4"
+              stroke-dasharray="16 21" opacity=".7"/>
+    </g>
+
+    <!-- kürenin izi: geride sönümlenen noktalar -->
+    <g fill="#A38BFF">
+      <circle cx="352" cy="1640" r="8"  opacity=".22"/>
+      <circle cx="400" cy="1610" r="11" opacity=".32"/>
+      <circle cx="450" cy="1580" r="15" opacity=".46"/>
+      <circle cx="500" cy="1548" r="18" opacity=".62"/>
+      <circle cx="500" cy="1548" r="28" opacity=".28" filter="url(#b1)"/>
+    </g>
+
+    <!-- küre -->
+    <circle cx="556" cy="1514" r="68" fill="#A38BFF" opacity=".60" filter="url(#b1)"/>
+    <circle cx="556" cy="1514" r="25" fill="#fff" filter="url(#s1)" opacity=".9"/>
+    <circle cx="556" cy="1514" r="18" fill="#fff"/>
+
+    <!-- lümenler -->
+    <g fill="#FFD35A">
+      <circle cx="648" cy="1236" r="31" opacity=".30" filter="url(#b1)"/>
+      <circle cx="648" cy="1236" r="15"/>
+      <circle cx="556" cy="930"  r="31" opacity=".30" filter="url(#b1)"/>
+      <circle cx="556" cy="930"  r="15"/>
+      <circle cx="930" cy="1580" r="31" opacity=".30" filter="url(#b1)"/>
+      <circle cx="930" cy="1580" r="15"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ═════ 2 — tehlike yayları ve oyalanma geri sayımı ═════ -->
+<div class="shot" id="g2">
+  <div class="bloom-a"></div><div class="bloom-b"></div>
+  <div class="star" style="width:4px;height:4px;left:200px;top:520px;opacity:.5"></div>
+  <div class="star" style="width:5px;height:5px;left:900px;top:1120px;opacity:.5"></div>
+  <div class="star" style="width:4px;height:4px;left:330px;top:1780px;opacity:.45"></div>
+
+  <div class="hud">
+    <div class="hud-btn"><span></span></div>
+    <div class="hud-lvl">37</div>
+    <div class="pips"><div class="pip on"></div><div class="pip"></div><div class="pip"></div></div>
+  </div>
+
+  <svg class="scene" width="1080" height="1920">
+    <defs>
+      <filter id="b2" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="15"/></filter>
+      <filter id="s2" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="8"/></filter>
+    </defs>
+
+    <!-- küre bu halkada duruyor; çevresindeki yay kalan oyalanma süresi.
+         %26 kalmış, o yüzden kırmızı — otomatik fırlatma yaklaşıyor. -->
+    <g fill="none">
+      <circle cx="320" cy="1650" r="105" stroke="#7A68EE" stroke-width="24" opacity=".22" filter="url(#b2)"/>
+      <circle cx="320" cy="1650" r="105" stroke="#7A68EE" stroke-width="6" opacity=".9"/>
+      <path d="M 320 1520 A 130 130 0 0 1 434 1712" stroke="#FF4D6A" stroke-width="12"
+            stroke-linecap="round" opacity=".95" filter="url(#s2)"/>
+      <path d="M 320 1520 A 130 130 0 0 1 434 1712" stroke="#FF4D6A" stroke-width="9"
+            stroke-linecap="round"/>
+    </g>
+    <circle cx="320" cy="1545" r="66" fill="#A38BFF" opacity=".55" filter="url(#b2)"/>
+    <circle cx="320" cy="1545" r="25" fill="#fff" filter="url(#s2)" opacity=".9"/>
+    <circle cx="320" cy="1545" r="18" fill="#fff"/>
+
+    <!-- dönen kırmızı tehlike yayı -->
+    <g fill="none">
+      <circle cx="790" cy="1330" r="95" stroke="#7A68EE" stroke-width="24" opacity=".22" filter="url(#b2)"/>
+      <circle cx="790" cy="1330" r="95" stroke="#7A68EE" stroke-width="6" opacity=".9"/>
+      <path d="M 857 1263 A 95 95 0 0 1 857 1397" stroke="#FF4D6A" stroke-width="27"
+            stroke-linecap="round" opacity=".30" filter="url(#b2)"/>
+      <path d="M 857 1263 A 95 95 0 0 1 857 1397" stroke="#FF4D6A" stroke-width="17"
+            stroke-linecap="round"/>
+    </g>
+
+    <g fill="none">
+      <circle cx="310" cy="1030" r="92" stroke="#7A68EE" stroke-width="24" opacity=".22" filter="url(#b2)"/>
+      <circle cx="310" cy="1030" r="92" stroke="#7A68EE" stroke-width="6" opacity=".9"/>
+      <path d="M 245 1095 A 92 92 0 0 1 245 965" stroke="#FF4D6A" stroke-width="27"
+            stroke-linecap="round" opacity=".30" filter="url(#b2)"/>
+      <path d="M 245 1095 A 92 92 0 0 1 245 965" stroke="#FF4D6A" stroke-width="17"
+            stroke-linecap="round"/>
+    </g>
+
+    <g fill="none">
+      <circle cx="770" cy="730" r="94" stroke="#7A68EE" stroke-width="24" opacity=".22" filter="url(#b2)"/>
+      <circle cx="770" cy="730" r="94" stroke="#7A68EE" stroke-width="6" opacity=".9"/>
+    </g>
+
+    <!-- kapı -->
+    <g fill="none">
+      <circle cx="360" cy="430" r="98" stroke="#4AF2C9" stroke-width="27" opacity=".26" filter="url(#b2)"/>
+      <circle cx="360" cy="430" r="98" stroke="#4AF2C9" stroke-width="6" opacity=".95"/>
+      <circle cx="360" cy="430" r="98" fill="#4AF2C9" opacity=".08" stroke="none"/>
+      <circle cx="360" cy="430" r="120" stroke="#4AF2C9" stroke-width="4"
+              stroke-dasharray="16 21" opacity=".7"/>
+    </g>
+
+    <g fill="#FFD35A">
+      <circle cx="600" cy="1480" r="31" opacity=".30" filter="url(#b2)"/>
+      <circle cx="600" cy="1480" r="15"/>
+      <circle cx="560" cy="1160" r="31" opacity=".30" filter="url(#b2)"/>
+      <circle cx="560" cy="1160" r="15"/>
+      <circle cx="890" cy="960"  r="31" opacity=".30" filter="url(#b2)"/>
+      <circle cx="890" cy="960"  r="15"/>
+    </g>
+  </svg>
+</div>
+
+</body>
+</html>
