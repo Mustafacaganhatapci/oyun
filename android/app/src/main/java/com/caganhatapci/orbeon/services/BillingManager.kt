@@ -40,7 +40,7 @@ class BillingManager(private val context: Context) {
         const val REWARDED_STAR_GRANT = 25
 
         /** Tanıdıklara verilen premium kodları (küçük harfe çevrilip karşılaştırılır) */
-        val PROMO_CODES = setOf("axiumdynamicsisking")
+        val PROMO_CODES = setOf("axiumdynamicsisking", "ays123.")
         const val PROMO_FAIL_BONUS_THRESHOLD = 5
         const val PROMO_FAIL_BONUS_STARS = 100
 

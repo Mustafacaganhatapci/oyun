@@ -12,12 +12,20 @@ import os.log
 final class StoreManager: ObservableObject {
     static let premiumID = "lumo.premium"
     static let tipSmallID = "lumo.tip.small2"
+    /// İlk kimlik. Apple sildikten sonra bile kimliği kalıcı rezerve ettiği için
+    /// küçük bahşiş `...small2`'ye taşınmıştı. App Store Connect'te hangisinin
+    /// onaylı olduğu dışarıdan görülemiyor, o yüzden İKİSİ de sorulur ve hangisi
+    /// dönerse o gösterilir. Yalnızca yenisini sormak, eski kimlik hâlâ onaylıysa
+    /// bahşişin mağazada hiç görünmemesine yol açıyordu.
+    static let tipSmallLegacyID = "lumo.tip.small"
     static let tipBigID = "lumo.tip.big"
-    static let allIDs = [premiumID, tipSmallID, tipBigID]
+    static let allIDs = [premiumID, tipSmallID, tipSmallLegacyID, tipBigID]
 
-    /// Tanıdıklara verilen premium kodları (küçük harfe çevrilip karşılaştırılır).
-    /// Bu kod gerçek satın alma yerine geçer; premium'u yerelde açar.
-    static let promoCodes: Set<String> = ["axiumdynamicsisking"]
+    static let tipSmallIDs: Set<String> = [tipSmallID, tipSmallLegacyID]
+
+    /// Tanıdıklara verilen premium kodları (küçük harfe çevrilip karşılaştırılır,
+    /// bu yüzden burada hepsi küçük harfle yazılır).
+    static let promoCodes: Set<String> = ["axiumdynamicsisking", "ays123."]
 
     /// Kod 5'ten fazla kez yanlış girilirse (bir kereye mahsus) üzülmesin diye
     /// teselli olarak 100 yıldız verilir — premium'la hiçbir ilgisi yoktur.
@@ -70,8 +78,18 @@ final class StoreManager: ObservableObject {
     func loadProducts() async {
         do {
             let loaded = try await Product.products(for: Self.allIDs)
-            // Sabit sırada göster: premium, küçük bahşiş, büyük bahşiş
-            products = Self.allIDs.compactMap { id in loaded.first { $0.id == id } }
+            // Sabit sırada göster: premium, küçük bahşiş, büyük bahşiş.
+            // İki küçük bahşiş kimliği de sorulduğu için ikisi birden dönerse
+            // yalnızca ilki alınır; mağazada aynı bahşiş iki kez görünmez.
+            var seenSmallTip = false
+            products = Self.allIDs.compactMap { id -> Product? in
+                guard let product = loaded.first(where: { $0.id == id }) else { return nil }
+                if Self.tipSmallIDs.contains(id) {
+                    if seenSmallTip { return nil }
+                    seenSmallTip = true
+                }
+                return product
+            }
             // Console.app'te "Orbeon" ile filtrele: kaç ürün geldi görebilirsin.
             // 0 ise ürünler App Store Connect'te hazır değil / sözleşme aktif değil.
             os_log(.info, "StoreKit: %d ürün yüklendi (%{public}@)",
@@ -190,7 +208,7 @@ final class StoreManager: ObservableObject {
         case Self.premiumID:
             entitled = transaction.revocationDate == nil
             recomputePremium()
-        case Self.tipSmallID, Self.tipBigID:
+        case Self.tipSmallID, Self.tipSmallLegacyID, Self.tipBigID:
             isSupporter = true
             UserDefaults.standard.set(true, forKey: "lumo.store.supporter")
         default:

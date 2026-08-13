@@ -496,9 +496,11 @@ struct ShopView: View {
                         Task { await store.purchase(product) }
                     } label: {
                         VStack(spacing: 4) {
-                            Text(product.id == StoreManager.tipSmallID ? "🏠☕️" : "🥐☕️")
+                            // Küçük bahşişin iki olası kimliği var (eski ve yeni);
+                            // hangisi mağazadan dönerse dönsün aynı görünsün
+                            Text(StoreManager.tipSmallIDs.contains(product.id) ? "🏠☕️" : "🥐☕️")
                                 .font(.title2)
-                            Text(product.id == StoreManager.tipSmallID
+                            Text(StoreManager.tipSmallIDs.contains(product.id)
                                  ? "Coffee at home" : "Coffee at a café")
                                 .font(.system(.caption, design: .rounded).bold())
                                 .foregroundStyle(.white.opacity(0.85))
