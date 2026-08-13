@@ -17,9 +17,38 @@ import com.google.firebase.firestore.Query
  */
 class LeaderboardService {
 
-    enum class Mode(val collection: String) {
+    enum class Mode(private val base: String) {
         ENDLESS("leaderboard_endless"),
-        SPEEDRUN("leaderboard_speedrun")
+        SPEEDRUN("leaderboard_speedrun");
+
+        /**
+         * Her hafta kendi koleksiyonuna yazılır. Tek koleksiyonda `week` alanıyla
+         * süzmek Firestore'da bileşik dizin ister; ayrı koleksiyon yalnızca
+         * `value` sıralaması kullandığı için ek kurulum gerektirmez.
+         */
+        fun collection(week: Int): String = "${base}_w$week"
+    }
+
+    companion object {
+        /**
+         * Hafta numarası: sabit bir Pazartesiden (1 Ocak 2024 00:00 UTC) geçen
+         * tam hafta sayısı. iOS ile BİREBİR aynı formül — tablo ortak olduğu için
+         * iki platformun aynı koleksiyon adını üretmesi şart. Takvim/ISO hafta
+         * hesabı yerine bu kullanılıyor: java.time minSdk 24'te desugaring
+         * istiyor, bu aritmetik ise her yerde aynı sonucu veriyor.
+         */
+        private const val WEEK_ANCHOR_SECONDS = 1_704_067_200L   // 2024-01-01, Pazartesi, UTC
+        private const val WEEK_LENGTH_SECONDS = 7L * 24 * 60 * 60
+
+        fun currentWeek(): Int =
+            Math.floorDiv(System.currentTimeMillis() / 1000 - WEEK_ANCHOR_SECONDS,
+                          WEEK_LENGTH_SECONDS).toInt()
+
+        /** Sıralamanın sıfırlanmasına kalan saniye */
+        fun secondsUntilReset(): Long {
+            val nextStart = WEEK_ANCHOR_SECONDS + (currentWeek() + 1L) * WEEK_LENGTH_SECONDS
+            return (nextStart - System.currentTimeMillis() / 1000).coerceAtLeast(0)
+        }
     }
 
     data class Entry(val username: String, val value: Double, val playerId: String)
@@ -53,7 +82,7 @@ class LeaderboardService {
     fun submit(mode: Mode, value: Double, username: String, playerId: String) {
         val database = db ?: return
         if (username.isBlank()) return
-        val doc = database.collection(mode.collection).document(playerId)
+        val doc = database.collection(mode.collection(currentWeek())).document(playerId)
         doc.get().addOnSuccessListener { snapshot ->
             val existing = snapshot.getDouble("value")
             val better = when (mode) {
@@ -76,7 +105,7 @@ class LeaderboardService {
         val database = db ?: return
         loading = true
         val direction = if (mode == Mode.ENDLESS) Query.Direction.DESCENDING else Query.Direction.ASCENDING
-        database.collection(mode.collection)
+        database.collection(mode.collection(currentWeek()))
             .orderBy("value", direction)
             .limit(limit)
             .get()

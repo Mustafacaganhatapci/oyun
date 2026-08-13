@@ -5,12 +5,18 @@ enum LeaderboardMode {
     case endless    // yüksek skor kazanır
     case speedrun   // düşük süre kazanır
 
-    var collection: String {
+    fileprivate var base: String {
         switch self {
         case .endless: return "leaderboard_endless"
         case .speedrun: return "leaderboard_speedrun"
         }
     }
+
+    /// Her hafta kendi koleksiyonuna yazılır. Tek koleksiyonda `week` alanıyla
+    /// süzmek Firestore'da bileşik dizin ister; ayrı koleksiyon yalnızca
+    /// `value` sıralaması kullandığı için ek kurulum gerektirmez ve geçmiş
+    /// haftalar silinmeden kendiliğinden arşivlenmiş olur.
+    func collection(week: Int) -> String { "\(base)_w\(week)" }
 }
 
 struct LeaderboardEntry: Identifiable {
@@ -38,6 +44,38 @@ final class LeaderboardService: ObservableObject {
 
     private var didConfigure = false
 
+    // MARK: Haftalık dönem
+    //
+    // Hafta numarası, sabit bir Pazartesiden (1 Ocak 2024 00:00 UTC) geçen tam
+    // hafta sayısıdır. Takvim/ISO hafta hesabı yerine bu kullanılıyor çünkü iki
+    // platformda da tek satırlık aritmetikle birebir aynı sonucu veriyor ve
+    // sıralama herkes için aynı anda, Pazartesi 00:00 UTC'de sıfırlanıyor.
+    private static let weekAnchor: TimeInterval = 1_704_067_200   // 2024-01-01, Pazartesi, UTC
+    private static let weekLength: TimeInterval = 7 * 24 * 60 * 60
+
+    static func weekIndex(at date: Date = Date()) -> Int {
+        Int(floor((date.timeIntervalSince1970 - weekAnchor) / weekLength))
+    }
+
+    /// Bu haftanın numarası — okuma ve yazma bunun üzerinden yapılır
+    var currentWeek: Int { Self.weekIndex() }
+
+    /// Sıralamanın sıfırlanmasına kalan süre
+    var timeUntilReset: TimeInterval {
+        let nextStart = Self.weekAnchor + Double(currentWeek + 1) * Self.weekLength
+        return max(0, nextStart - Date().timeIntervalSince1970)
+    }
+
+    /// "2g 4s" gibi kısa bir kalan süre metni
+    var resetCountdownText: String {
+        let total = Int(timeUntilReset)
+        let days = total / 86_400
+        let hours = (total % 86_400) / 3_600
+        if days > 0 { return "\(days)d \(hours)h" }
+        let minutes = (total % 3_600) / 60
+        return "\(hours)h \(minutes)m"
+    }
+
     /// Uygulama başlangıcında (LumoApp.init) çağrılır — Firebase'in
     /// istediği gibi ilk kare çizilmeden önce yapılandırır.
     static func bootstrapFirebase() {
@@ -62,17 +100,22 @@ final class LeaderboardService: ObservableObject {
     func submit(mode: LeaderboardMode, value: Double, username: String, playerID: String) {
         guard isAvailable, !username.isEmpty else { return }
         #if canImport(FirebaseCore)
-        Task { await FirebaseBridge.submit(mode: mode, value: value, username: username, playerID: playerID) }
+        let week = currentWeek
+        Task {
+            await FirebaseBridge.submit(mode: mode, week: week, value: value,
+                                        username: username, playerID: playerID)
+        }
         #endif
     }
 
-    /// İlk 50 sonucu getirir
+    /// Bu haftanın ilk 50 sonucunu getirir
     func refresh(mode: LeaderboardMode, myPlayerID: String) {
         guard isAvailable else { return }
         #if canImport(FirebaseCore)
         isLoading = true
+        let week = currentWeek
         Task {
-            let entries = await FirebaseBridge.fetchTop(mode: mode, myPlayerID: myPlayerID)
+            let entries = await FirebaseBridge.fetchTop(mode: mode, week: week, myPlayerID: myPlayerID)
             await MainActor.run {
                 switch mode {
                 case .endless: self.endlessEntries = entries
@@ -106,9 +149,10 @@ enum FirebaseBridge {
         }
     }
 
-    static func submit(mode: LeaderboardMode, value: Double, username: String, playerID: String) async {
+    static func submit(mode: LeaderboardMode, week: Int, value: Double,
+                       username: String, playerID: String) async {
         let db = Firestore.firestore()
-        let doc = db.collection(mode.collection).document(playerID)
+        let doc = db.collection(mode.collection(week: week)).document(playerID)
         do {
             // Sadece daha iyi sonucu yaz
             let snapshot = try? await doc.getDocument()
@@ -126,11 +170,11 @@ enum FirebaseBridge {
         }
     }
 
-    static func fetchTop(mode: LeaderboardMode, myPlayerID: String) async -> [LeaderboardEntry] {
+    static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] {
         let db = Firestore.firestore()
         let descending = (mode == .endless)   // endless: yüksek üstte, speedrun: düşük üstte
         do {
-            let query = db.collection(mode.collection)
+            let query = db.collection(mode.collection(week: week))
                 .order(by: "value", descending: descending)
                 .limit(to: 50)
             let snap = try await query.getDocuments()
@@ -154,8 +198,9 @@ enum FirebaseBridge {
     static func configure() {
         if FirebaseApp.app() == nil { FirebaseApp.configure() }
     }
-    static func submit(mode: LeaderboardMode, value: Double, username: String, playerID: String) async {}
-    static func fetchTop(mode: LeaderboardMode, myPlayerID: String) async -> [LeaderboardEntry] { [] }
+    static func submit(mode: LeaderboardMode, week: Int, value: Double,
+                       username: String, playerID: String) async {}
+    static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] { [] }
 }
 #endif
 #endif

@@ -28,6 +28,15 @@ struct WorldRankingView: View {
             .padding(.top, 8)
             .onChange(of: mode) { _, _ in load() }
 
+            // Tablo haftalık: oyuncu neye baktığını ve ne zaman sıfırlanacağını
+            // bilmezse eski skorların kaybolması hata gibi görünür
+            if leaderboard.isAvailable {
+                Text("This week · resets in \(leaderboard.resetCountdownText)")
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.45))
+                    .padding(.top, 8)
+            }
+
             if !leaderboard.isAvailable {
                 notConnected
             } else if leaderboard.isLoading && entries.isEmpty {

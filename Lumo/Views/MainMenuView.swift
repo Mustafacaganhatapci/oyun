@@ -8,6 +8,7 @@ struct MainMenuView: View {
     @EnvironmentObject private var player: PlayerStore
     @EnvironmentObject private var daily: DailyRewardStore
     @EnvironmentObject private var missions: MissionStore
+    @EnvironmentObject private var leaderboard: LeaderboardService
 
     @State private var orbPulse = false
     @State private var showMissions = false
@@ -82,6 +83,10 @@ struct MainMenuView: View {
                             .padding(.horizontal, 28)
                             .padding(.bottom, 14)
 
+                        weeklyPodium
+                            .padding(.horizontal, 28)
+                            .padding(.bottom, 14)
+
                         actions
                             .padding(.horizontal, 28)
                             .padding(.bottom, 28)
@@ -92,7 +97,62 @@ struct MainMenuView: View {
                 }
             }
         }
+        .onAppear {
+            leaderboard.configureIfPossible()
+            leaderboard.refresh(mode: .endless, myPlayerID: player.playerID)
+        }
     }
+
+    /// Haftanın ilk üçü. Sıralama her Pazartesi sıfırlandığı için menüde
+    /// durması anlamlı: tablo ulaşılabilir görünüyor ve hafta içinde değişiyor.
+    @ViewBuilder
+    private var weeklyPodium: some View {
+        let top = Array(leaderboard.endlessEntries.prefix(3))
+        if !top.isEmpty {
+            VStack(spacing: 10) {
+                HStack(spacing: 6) {
+                    Image(systemName: "crown.fill")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(settings.theme.lumen.color)
+                    Text("Champions of the week")
+                        .font(.system(.caption, design: .rounded).bold())
+                        .foregroundStyle(.white.opacity(0.75))
+                    Spacer(minLength: 0)
+                    Text("resets in \(leaderboard.resetCountdownText)")
+                        .font(.system(size: 10, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.35))
+                }
+
+                ForEach(Array(top.enumerated()), id: \.element.id) { index, entry in
+                    HStack(spacing: 10) {
+                        Text(Self.medals[index])
+                            .font(.system(size: 15))
+                        Text(entry.username)
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundStyle(entry.isMe ? settings.theme.lumen.color : .white.opacity(0.9))
+                            .lineLimit(1)
+                        Spacer(minLength: 0)
+                        Text("\(Int(entry.value))")
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(.white.opacity(0.07))
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                AudioEngine.shared.playTap()
+                player.hasUsername ? (app.route = .ranking) : app.openUsername()
+            }
+        }
+    }
+
+    private static let medals = ["🥇", "🥈", "🥉"]
 
     private var logo: some View {
         ZStack {
