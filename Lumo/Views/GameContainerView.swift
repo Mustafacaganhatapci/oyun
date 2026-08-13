@@ -47,6 +47,7 @@ struct GameContainerView: View {
     @State private var lumenCount = 0
     @State private var deathsThisLevel = 0
     @State private var revivedThisRun = false
+    @State private var reviveFailed = false
     @State private var endlessScore = 0
     @State private var bonusRemaining = 0
     @State private var timeRemaining = -1      // süreli bölüm geri sayımı (-1: süresiz)
@@ -177,6 +178,11 @@ struct GameContainerView: View {
         startCoachIfNeeded()
     }
 
+    /// Bu kadarlık bir boyut oynaması düzenin oturması sayılır, cihazın
+    /// değişmesi değil. Eşik 1pt iken tam ekran reklam açılıp kapanırken
+    /// düşen bir kaç puntoluk fark sahneyi baştan kurduruyordu.
+    private static let resizeTolerance: CGFloat = 24
+
     /// Sahneyi yalnızca geçerli bir boyutta oluşturur. Splash→oyun geçişi
     /// sırasında düzen henüz oturmadan boyut 0 gelebiliyor; o an sahne
     /// kurulursa gri kalırdı. Boyut sonradan düzelirse sahne yeniden kurulur.
@@ -188,11 +194,22 @@ struct GameContainerView: View {
             installScene(makeScene(size: size))
             showLevelIntroIfNeeded()
             startCoachIfNeeded()
-        } else if abs(sceneSize.width - size.width) > 1 || abs(sceneSize.height - size.height) > 1 {
-            // Sahne hatalı/eski boyutta kurulmuşsa (ör. geçiş anı) taze kur
+        } else if abs(sceneSize.width - size.width) > Self.resizeTolerance
+                    || abs(sceneSize.height - size.height) > Self.resizeTolerance {
+            // Sahne hatalı/eski boyutta kurulmuşsa (ör. geçiş anı) taze kur.
+            //
+            // Ama bir kaplama açıkken ASLA yeniden kurma. Tam ekran bir reklam
+            // sunulup kapanırken düzen bir kare oynuyor ve buraya küçük bir
+            // boyut değişimi düşüyordu; eski hâlinde bu, sonsuz mod turunu
+            // silip sıfırdan sahne kuruyor ve `overlay = .none` ile bitiş
+            // ekranını da kaldırıyordu. Oyuncu ödüllü reklamı izledikten sonra
+            // ne turuna dönebiliyor ne de bir düğme görebiliyordu.
+            guard overlay == .none else {
+                sceneSize = size
+                return
+            }
             sceneSize = size
             coach = nil
-            overlay = .none
             installScene(makeScene(size: size))
             showLevelIntroIfNeeded()
             startCoachIfNeeded()
@@ -643,9 +660,17 @@ struct GameContainerView: View {
                         AudioEngine.shared.playTap()
                         ads.showRewarded { earned in
                             guard earned else { return }
+                            // Bitiş ekranı YALNIZCA canlanma gerçekten
+                            // tuttuysa kapanır. Önce kapatıp sonra canlandırmak,
+                            // canlanma tutmadığında oyuncuyu düğmesiz ve ölü bir
+                            // ekranda bırakıyordu.
+                            guard let scene, scene.reviveEndless() else {
+                                reviveFailed = true
+                                return
+                            }
                             revivedThisRun = true
                             overlay = .none
-                            scene?.reviveEndless()
+                            reviveFailed = false
                             Haptics.shared.win()
                         }
                     } label: {
@@ -653,6 +678,15 @@ struct GameContainerView: View {
                     }
                     .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color, prominent: true))
                     .padding(.top, 10)
+
+                    if reviveFailed {
+                        Label("Couldn't bring you back — tap Try Again",
+                              systemImage: "exclamationmark.triangle.fill")
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.6))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 24)
+                    }
 
                     // Reklam gelmediyse ya da ödül kazanılmadıysa düğme sessizce
                     // hiçbir şey yapmış gibi görünüyordu; sebebi burada söylenir.
@@ -993,6 +1027,7 @@ struct GameContainerView: View {
         lumenCount = 0
         deathsThisLevel = 0
         revivedThisRun = false
+        reviveFailed = false
         endlessScore = 0
         bonusRemaining = 0
         timeRemaining = -1

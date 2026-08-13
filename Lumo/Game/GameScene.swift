@@ -958,12 +958,27 @@ final class GameScene: SKScene {
 
     /// Sonsuz modda ödüllü reklam izlendikten sonra çağrılır: skor korunur,
     /// küre son tutunduğu halkaya güvenli bir açıdan geri oturur.
-    func reviveEndless() {
-        guard case .endless = mode else { return }
+    ///
+    /// Başarılı olduysa true döner. Arayüz bitiş ekranını yalnızca bu true
+    /// ise kapatır — aksi hâlde oyuncu ne turuna dönebildiği ne de bir düğme
+    /// görebildiği boş bir ekranda kalıyordu.
+    @discardableResult
+    func reviveEndless() -> Bool {
+        guard case .endless = mode, !ringSpecs.isEmpty else { return false }
         endlessOverSent = false
         deadSince = nil
+        finished = false
         orbNode.isHidden = false
+        // softReturn son halkaya oturtur; halka indeksi bir şekilde geçersizse
+        // kendi içinde fail() çağırıp yine ölü duruma düşerdi. Burada indeksi
+        // önce sınır içine çekiyoruz ki canlanma her hâlükârda tutsun.
+        lastRing = min(max(lastRing, 0), ringSpecs.count - 1)
         softReturn()
+        if case .attached = orbState { return true }
+        // Son çare: başlangıç halkasına oturt
+        respawn(animated: true)
+        if case .attached = orbState { return true }
+        return false
     }
 
     /// Aktif halkanın çevresinde kalan oyalanma süresini gösteren azalan yay.
