@@ -23,7 +23,7 @@ struct MainMenuView: View {
                     Spacer()
                     Button {
                         AudioEngine.shared.playTap()
-                        app.route = player.hasUsername ? .ranking : .username
+                        player.hasUsername ? (app.route = .ranking) : app.openUsername()
                     } label: {
                         Image(systemName: "trophy.fill")
                             .font(.system(size: 17, weight: .bold))

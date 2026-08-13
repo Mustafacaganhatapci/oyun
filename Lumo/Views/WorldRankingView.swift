@@ -55,7 +55,7 @@ struct WorldRankingView: View {
                 .font(.system(.title2, design: .rounded).bold())
                 .foregroundStyle(.white)
             Spacer()
-            Button { app.route = .username } label: {
+            Button { app.openUsername() } label: {
                 Image(systemName: "person.crop.circle")
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)

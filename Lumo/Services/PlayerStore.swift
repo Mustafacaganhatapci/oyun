@@ -8,14 +8,20 @@ final class PlayerStore: ObservableObject {
     @Published private(set) var username: String
     @Published private(set) var playerID: String
 
+    /// Ad bir kez soruldu mu? Boş bırakan oyuncuya her açılışta sormamak için
+    /// tutulur; sıralamaya katılmak isteğe bağlıdır.
+    @Published private(set) var wasPromptedForUsername: Bool
+
     private let defaults = UserDefaults.standard
     private enum Key {
         static let username = "lumo.player.username"
         static let playerID = "lumo.player.id"
+        static let prompted = "lumo.player.usernamePrompted"
     }
 
     init() {
         username = defaults.string(forKey: Key.username) ?? ""
+        wasPromptedForUsername = defaults.bool(forKey: Key.prompted)
         if let existing = defaults.string(forKey: Key.playerID) {
             playerID = existing
         } else {
@@ -26,6 +32,17 @@ final class PlayerStore: ObservableObject {
     }
 
     var hasUsername: Bool { !username.trimmingCharacters(in: .whitespaces).isEmpty }
+
+    /// Ad ekranı gösterildi (kaydedilmiş olsun ya da olmasın) — bir daha
+    /// kendiliğinden açılmaz.
+    func markUsernamePrompted() {
+        guard !wasPromptedForUsername else { return }
+        wasPromptedForUsername = true
+        defaults.set(true, forKey: Key.prompted)
+    }
+
+    /// İlk açılışta ad sorulmalı mı?
+    var shouldPromptForUsername: Bool { !hasUsername && !wasPromptedForUsername }
 
     /// Kullanıcı adını temizleyip kaydeder (3–16 karakter, harf/rakam/altçizgi).
     @discardableResult

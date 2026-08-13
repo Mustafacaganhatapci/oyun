@@ -10,13 +10,15 @@ struct UsernameView: View {
     @FocusState private var focused: Bool
     @State private var showError = false
 
-    /// Kaydettikten sonra nereye gidilecek (varsayılan: sıralama)
-    var onDone: Route = .ranking
-
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                BackButton { app.route = .menu }
+                // Geri çıkmak da "soruldu" sayılır: sıralamaya katılmak isteğe
+                // bağlı, adı boş bırakan oyuncuya her açılışta sormayız.
+                BackButton {
+                    player.markUsernamePrompted()
+                    app.route = app.usernameDestination
+                }
                 Spacer()
                 Text("Username")
                     .font(.system(.title2, design: .rounded).bold())
@@ -69,7 +71,8 @@ struct UsernameView: View {
                 Button {
                     if player.setUsername(name) {
                         AudioEngine.shared.playTap()
-                        app.route = onDone
+                        player.markUsernamePrompted()
+                        app.route = app.usernameDestination
                     } else {
                         showError = true
                         AudioEngine.shared.playFail()

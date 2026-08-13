@@ -80,4 +80,17 @@ enum Route: Equatable {
 @MainActor
 final class AppModel: ObservableObject {
     @Published var route: Route = .menu
+
+    /// Kullanıcı adı ekranı kapandığında gidilecek yer. Sıralamadan ya da
+    /// menüden girildiğinde sıralama doğru hedef; ilk açılışta ise oyuncuyu
+    /// antrenman bölümüne göndermek gerekiyor.
+    @Published var usernameDestination: Route = .ranking
+
+    /// Ad ekranını açar ve kapandığında nereye dönüleceğini de belirler.
+    /// Hedefi her açılışta yeniden yazmak, ilk açılışta kurulan hedefin
+    /// sonraki ziyaretlere sızmasını engeller.
+    func openUsername(then destination: Route = .ranking) {
+        usernameDestination = destination
+        route = .username
+    }
 }

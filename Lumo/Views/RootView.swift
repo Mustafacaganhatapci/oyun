@@ -7,6 +7,7 @@ struct RootView: View {
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var ads: AdsManager
     @EnvironmentObject private var tutorial: TutorialStore
+    @EnvironmentObject private var player: PlayerStore
 
     @State private var splashDone = false
 
@@ -80,10 +81,7 @@ struct RootView: View {
             if !splashDone {
                 SplashView {
                     withAnimation(.easeOut(duration: 0.5)) { splashDone = true }
-                    // İlk açılış: doğrudan "nasıl oynanır" antrenman bölümüne
-                    if tutorial.shouldShow(.launch) {
-                        app.route = .game(LevelLibrary.tutorialID)
-                    }
+                    startFirstRunFlow()
                 }
                 .transition(.opacity)
                 .zIndex(200)
@@ -96,6 +94,20 @@ struct RootView: View {
         // Pencere/kök görünüm arka planını siyaha sabitler: bölüm geçişinde
         // SpriteKit sahnesi yeniden kurulurken bir karelik BEYAZ parlama olmasın
         .background(WindowBackgroundFixer())
+    }
+
+    /// Açılıştan sonraki ilk yönlendirme. Ad önce sorulur — sıralamaya sonradan
+    /// katılmak isteyen oyuncunun ekranı kendi başına bulması gerekiyordu.
+    /// Ad ekranı kapanınca (kaydedilsin ya da atlansın) antrenman bölümü
+    /// devralır; ad bir kez sorulduktan sonra bir daha kendiliğinden açılmaz.
+    private func startFirstRunFlow() {
+        let tutorialRoute: Route = .game(LevelLibrary.tutorialID)
+        if player.shouldPromptForUsername {
+            app.usernameDestination = tutorial.shouldShow(.launch) ? tutorialRoute : .menu
+            app.route = .username
+        } else if tutorial.shouldShow(.launch) {
+            app.route = tutorialRoute
+        }
     }
 }
 

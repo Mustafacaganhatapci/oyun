@@ -715,7 +715,7 @@ struct GameContainerView: View {
                                              prominent: revivedThisRun || store.isPremium))
                 .padding(.top, revivedThisRun || store.isPremium ? 10 : 0)
 
-                Button { app.route = player.hasUsername ? .ranking : .username } label: {
+                Button { player.hasUsername ? (app.route = .ranking) : app.openUsername() } label: {
                     Label("World Ranking", systemImage: "globe")
                 }
                 .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color))
@@ -765,7 +765,7 @@ struct GameContainerView: View {
                 .buttonStyle(GlowButtonStyle(color: settings.theme.accent.color, prominent: true))
                 .padding(.top, 10)
 
-                Button { app.route = player.hasUsername ? .ranking : .username } label: {
+                Button { player.hasUsername ? (app.route = .ranking) : app.openUsername() } label: {
                     Label("World Ranking", systemImage: "globe")
                 }
                 .buttonStyle(GlowButtonStyle(color: settings.theme.gate.color))
