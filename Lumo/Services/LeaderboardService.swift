@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import os
 
 enum LeaderboardMode {
     case endless    // yüksek skor kazanır
@@ -200,6 +201,8 @@ enum FirebaseBridge {
             }
             return result as? Bool
         } catch {
+            os_log(.error, "Ad sahiplenilemedi (usernames/%{public}@): %{public}@",
+                   name.lowercased(), error.localizedDescription)
             return nil
         }
     }
@@ -220,8 +223,13 @@ enum FirebaseBridge {
                 "value": value,
                 "updatedAt": FieldValue.serverTimestamp()
             ], merge: true)
+            os_log(.info, "Sıralama yazıldı: %{public}@ = %f", mode.collection(week: week), value)
         } catch {
-            // sessizce yut
+            // Sessizce yutmak, izin kuralları yazmayı engellediğinde tabloyu
+            // "boş" gösteriyor ve hiçbir iz bırakmıyordu. Console.app'te
+            // "Orbeon" süzülerek gerçek sebep görülebilsin.
+            os_log(.error, "Sıralama YAZILAMADI (%{public}@): %{public}@",
+                   mode.collection(week: week), error.localizedDescription)
         }
     }
 
@@ -233,6 +241,8 @@ enum FirebaseBridge {
                 .order(by: "value", descending: descending)
                 .limit(to: 50)
             let snap = try await query.getDocuments()
+            os_log(.info, "Sıralama okundu: %{public}@ → %d kayıt",
+                   mode.collection(week: week), snap.documents.count)
             return snap.documents.compactMap { doc in
                 guard let username = doc.data()["username"] as? String,
                       let value = doc.data()["value"] as? Double else { return nil }
@@ -240,6 +250,8 @@ enum FirebaseBridge {
                                         value: value, isMe: doc.documentID == myPlayerID)
             }
         } catch {
+            os_log(.error, "Sıralama OKUNAMADI (%{public}@): %{public}@",
+                   mode.collection(week: week), error.localizedDescription)
             return []
         }
     }
