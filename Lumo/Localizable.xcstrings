@@ -3775,6 +3775,76 @@
         }
       }
     },
+    "No scores this week yet — play Endless to take the top spot": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Woche noch keine Ergebnisse – spiele Endlos und sichere dir Platz 1"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún no hay puntuaciones esta semana — juega al modo Infinito y ponte primero"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun score cette semaine — joue en mode Infini pour prendre la tête"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今週はまだスコアがありません。エンドレスをプレイして1位を取ろう"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu hafta henüz skor yok — sonsuz modu oyna, zirveyi kap"
+          }
+        }
+      }
+    },
+    "No scores this week yet — set your name to join": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Woche noch keine Ergebnisse – wähle einen Namen, um mitzumachen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún no hay puntuaciones esta semana — elige un nombre para participar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun score cette semaine — choisis un nom pour participer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今週はまだスコアがありません。名前を決めて参加しよう"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu hafta henüz skor yok — katılmak için adını belirle"
+          }
+        }
+      }
+    },
     "No scores yet — be the first!": {
       "extractionState": "manual",
       "localizations": {

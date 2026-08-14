@@ -105,10 +105,15 @@ struct MainMenuView: View {
 
     /// Haftanın ilk üçü. Sıralama her Pazartesi sıfırlandığı için menüde
     /// durması anlamlı: tablo ulaşılabilir görünüyor ve hafta içinde değişiyor.
+    ///
+    /// Kutu tablo boşken de çizilir. Önce boşsa tamamen gizleniyordu ve bu,
+    /// "henüz kimse oynamamış", "adın yok" ve "sıralama bağlı değil"
+    /// durumlarını birbirinden ayırt edilemez kılıyordu — ekranda hiçbir şey
+    /// olmadığı için sebebi ancak günlüklere bakarak anlamak mümkündü.
     @ViewBuilder
     private var weeklyPodium: some View {
-        let top = Array(leaderboard.endlessEntries.prefix(3))
-        if !top.isEmpty {
+        if leaderboard.isAvailable {
+            let top = Array(leaderboard.endlessEntries.prefix(3))
             VStack(spacing: 10) {
                 HStack(spacing: 6) {
                     Image(systemName: "crown.fill")
@@ -123,19 +128,35 @@ struct MainMenuView: View {
                         .foregroundStyle(.white.opacity(0.35))
                 }
 
-                ForEach(Array(top.enumerated()), id: \.element.id) { index, entry in
-                    HStack(spacing: 10) {
-                        Text(Self.medals[index])
-                            .font(.system(size: 15))
-                        Text(entry.username)
-                            .font(.system(.subheadline, design: .rounded).bold())
-                            .foregroundStyle(entry.isMe ? settings.theme.lumen.color : .white.opacity(0.9))
-                            .lineLimit(1)
-                        Spacer(minLength: 0)
-                        Text("\(Int(entry.value))")
-                            .font(.system(.subheadline, design: .rounded).bold())
-                            .foregroundStyle(.white.opacity(0.7))
+                if !top.isEmpty {
+                    ForEach(Array(top.enumerated()), id: \.element.id) { index, entry in
+                        HStack(spacing: 10) {
+                            Text(Self.medals[index])
+                                .font(.system(size: 15))
+                            Text(entry.username)
+                                .font(.system(.subheadline, design: .rounded).bold())
+                                .foregroundStyle(entry.isMe ? settings.theme.lumen.color : .white.opacity(0.9))
+                                .lineLimit(1)
+                            Spacer(minLength: 0)
+                            Text("\(Int(entry.value))")
+                                .font(.system(.subheadline, design: .rounded).bold())
+                                .foregroundStyle(.white.opacity(0.7))
+                        }
                     }
+                } else if leaderboard.isLoading {
+                    ProgressView()
+                        .tint(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 6)
+                } else {
+                    Text(player.hasUsername
+                         ? "No scores this week yet — play Endless to take the top spot"
+                         : "No scores this week yet — set your name to join")
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.45))
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 2)
                 }
             }
             .padding(.horizontal, 14)
