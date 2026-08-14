@@ -15,6 +15,11 @@ struct SplashView: View {
 
     private let accent = Color(red: 0.35, green: 0.85, blue: 1.0)   // buz mavisi
 
+    /// İçinde bulunulan yıl — telif satırı her yıl elle güncellenmesin
+    private static var copyrightYear: Int {
+        Calendar.current.component(.year, from: Date())
+    }
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
@@ -64,6 +69,19 @@ struct SplashView: View {
                 }
                 .opacity(showName ? 1 : 0)
                 .offset(y: showName ? 0 : 12)
+            }
+
+            // Telif satırı en altta, stüdyo imzasıyla birlikte belirir
+            VStack {
+                Spacer()
+                VStack(spacing: 3) {
+                    Text(verbatim: "© \(Self.copyrightYear) Axium Dynamics")
+                    Text("All rights reserved")
+                }
+                .font(.system(size: 11, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.32))
+                .opacity(showName ? 1 : 0)
+                .padding(.bottom, 26)
             }
         }
         .contentShape(Rectangle())

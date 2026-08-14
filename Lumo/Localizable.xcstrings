@@ -439,6 +439,41 @@
         }
       }
     },
+    "All rights reserved": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Rechte vorbehalten"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todos los derechos reservados"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous droits réservés"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無断複写・転載を禁じます"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tüm hakları saklıdır"
+          }
+        }
+      }
+    },
     "Aurora": {
       "extractionState": "manual",
       "localizations": {
