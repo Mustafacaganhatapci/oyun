@@ -968,17 +968,53 @@ final class GameScene: SKScene {
         endlessOverSent = false
         deadSince = nil
         finished = false
-        orbNode.isHidden = false
+        flightTime = 0
+
         // softReturn son halkaya oturtur; halka indeksi bir şekilde geçersizse
         // kendi içinde fail() çağırıp yine ölü duruma düşerdi. Burada indeksi
         // önce sınır içine çekiyoruz ki canlanma her hâlükârda tutsun.
         lastRing = min(max(lastRing, 0), ringSpecs.count - 1)
         softReturn()
-        if case .attached = orbState { return true }
+        if case .attached = orbState {
+            makeOrbVisible()
+            snapEndlessCameraToOrb()
+            return true
+        }
         // Son çare: başlangıç halkasına oturt
         respawn(animated: true)
-        if case .attached = orbState { return true }
-        return false
+        guard case .attached = orbState else { return false }
+        makeOrbVisible()
+        snapEndlessCameraToOrb()
+        return true
+    }
+
+    /// Küreyi kesin olarak görünür kılar.
+    ///
+    /// Hem `softReturn` hem `respawn` küreyi 0.2 ölçekte bırakıp büyüme
+    /// animasyonu çalıştırıyor. Reklamdan dönerken sahne bir an duraklamış
+    /// olabildiği için bu animasyon çalışmayabiliyor ve küre ekranda görünmez
+    /// kalıyordu — bu yüzden ölçek ve görünürlük burada elle sabitlenir.
+    private func makeOrbVisible() {
+        orbNode.removeAllActions()
+        orbNode.isHidden = false
+        orbNode.alpha = 1
+        orbNode.setScale(1.0)
+    }
+
+    /// Kamerayı küreye ışınlar.
+    ///
+    /// `updateEndlessCamera` kamerayı yalnızca YUKARI taşır — tırmanışta geri
+    /// kaymasın diye. Ama küre yukarıda ölüp aşağıdaki halkasına döndürülünce
+    /// kamera ölüm yüksekliğinde asılı kalıyordu: küre görüş alanının altında
+    /// kaldığı için ekranda hiç görünmüyor, dokunulup fırlatıldığı anda da
+    /// `checkBounds` onu sınır dışı sayıp anında öldürüyordu. Canlanmadan sonra
+    /// kamera bu yüzden elle küreye çekiliyor.
+    private func snapEndlessCameraToOrb() {
+        guard let cam = cameraNode else { return }
+        cam.position.y = max(orbNode.position.y + size.height * 0.18, size.height / 2)
+        if let bg = childNode(withName: "bg") {
+            bg.position.y = cam.position.y - size.height / 2
+        }
     }
 
     /// Aktif halkanın çevresinde kalan oyalanma süresini gösteren azalan yay.
