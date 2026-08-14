@@ -258,6 +258,41 @@
         }
       }
     },
+    "Ad closed early — no extra life this time": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Werbung zu früh geschlossen – diesmal kein Extraleben"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anuncio cerrado antes de tiempo — esta vez sin vida extra"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pub fermée trop tôt — pas de vie supplémentaire cette fois"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "広告が途中で閉じられました。今回は復活できません"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reklam erken kapatıldı — bu sefer ek hak yok"
+          }
+        }
+      }
+    },
     "Ad closed early — no stars this time": {
       "extractionState": "manual",
       "localizations": {
@@ -934,6 +969,41 @@
         }
       }
     },
+    "Champions of the week": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Champions der Woche"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Campeones de la semana"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Champions de la semaine"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今週のチャンピオン"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haftanın şampiyonları"
+          }
+        }
+      }
+    },
     "Change Photo": {
       "extractionState": "manual",
       "localizations": {
@@ -1477,6 +1547,41 @@
         }
       }
     },
+    "Continue": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiter"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "つづける"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devam"
+          }
+        }
+      }
+    },
     "Continue — Level %lld": {
       "extractionState": "manual",
       "localizations": {
@@ -1578,6 +1683,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mercan"
+          }
+        }
+      }
+    },
+    "Couldn't bring you back — tap Try Again": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rückkehr nicht möglich – tippe auf Erneut versuchen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No pudimos traerte de vuelta — toca Reintentar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de te ramener — appuie sur Réessayer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "復帰できませんでした。「もう一度」を押してください"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geri getiremedik — Tekrar Dene'ye bas"
           }
         }
       }
@@ -3281,6 +3421,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Müzik"
+          }
+        }
+      }
+    },
+    "Names are unique and chosen once, so this one cannot be changed.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Namen sind eindeutig und werden einmal gewählt – dieser lässt sich nicht mehr ändern."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los nombres son únicos y se eligen una vez, así que este no se puede cambiar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les noms sont uniques et choisis une seule fois : celui-ci ne peut plus être modifié."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名前は重複できず、一度だけ設定できます。あとから変更はできません。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adlar benzersizdir ve bir kez seçilir; bu ad değiştirilemez."
           }
         }
       }
@@ -5255,6 +5430,41 @@
         }
       }
     },
+    "That name is taken — pick another": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Name ist vergeben – wähle einen anderen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ese nombre ya está en uso — elige otro"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce nom est déjà pris — choisis-en un autre"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "その名前は使われています。別の名前を選んでください"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu ad alınmış — başka bir tane seç"
+          }
+        }
+      }
+    },
     "The first %lld levels are completely ad-free": {
       "extractionState": "manual",
       "localizations": {
@@ -5430,6 +5640,41 @@
         }
       }
     },
+    "This is the name shown on the world ranking. It is chosen once and cannot be changed later.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Name erscheint in der Weltrangliste. Er wird einmal gewählt und kann später nicht geändert werden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este es el nombre que aparece en la clasificación mundial. Se elige una vez y no se puede cambiar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C'est le nom affiché dans le classement mondial. Il est choisi une seule fois et ne peut plus être modifié."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "世界ランキングに表示される名前です。一度だけ設定でき、あとから変更はできません。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dünya sıralamasında görünecek ad budur. Bir kez seçilir, sonradan değiştirilemez."
+          }
+        }
+      }
+    },
     "This level is timed! Reach the gate before the countdown hits zero.": {
       "extractionState": "manual",
       "localizations": {
@@ -5496,6 +5741,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bu halka kayıyor — sıçramanı zamanla!"
+          }
+        }
+      }
+    },
+    "This week · resets in %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Woche · Reset in %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta semana · se reinicia en %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cette semaine · réinit. dans %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今週 · %@ 後にリセット"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu hafta · %@ sonra sıfırlanır"
           }
         }
       }
@@ -6025,6 +6305,41 @@
         }
       }
     },
+    "Your name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Name"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu nombre"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ton nom"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あなたの名前"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adın"
+          }
+        }
+      }
+    },
     "Your own photo inside the orb": {
       "extractionState": "manual",
       "localizations": {
@@ -6097,6 +6412,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fotoğrafın yalnızca cihazında kalır."
+          }
+        }
+      }
+    },
+    "resets in %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset in %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "se reinicia en %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "réinit. dans %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 後にリセット"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ sonra sıfırlanır"
           }
         }
       }

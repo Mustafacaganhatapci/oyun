@@ -12,16 +12,26 @@ final class PlayerStore: ObservableObject {
     /// tutulur; sıralamaya katılmak isteğe bağlıdır.
     @Published private(set) var wasPromptedForUsername: Bool
 
+    /// Ad bir kez seçilir. Sıralamada adlar tekil olduğu için sonradan
+    /// değiştirmeye izin vermek, bırakılan adın yeniden alınıp alınamayacağı
+    /// ve eski hafta kayıtlarının kime ait olduğu gibi sorular doğuruyor.
+    @Published private(set) var isUsernameLocked: Bool
+
     private let defaults = UserDefaults.standard
     private enum Key {
         static let username = "lumo.player.username"
         static let playerID = "lumo.player.id"
         static let prompted = "lumo.player.usernamePrompted"
+        static let locked = "lumo.player.usernameLocked"
     }
 
     init() {
         username = defaults.string(forKey: Key.username) ?? ""
         wasPromptedForUsername = defaults.bool(forKey: Key.prompted)
+        // Bu sürümden önce ad koymuş oyuncular da kilitli sayılır: adları zaten
+        // sıralamada geçiyor, sonradan serbest bırakmak tekilliği bozardı.
+        isUsernameLocked = defaults.bool(forKey: Key.locked)
+            || !(defaults.string(forKey: Key.username) ?? "").isEmpty
         if let existing = defaults.string(forKey: Key.playerID) {
             playerID = existing
         } else {
@@ -45,12 +55,16 @@ final class PlayerStore: ObservableObject {
     var shouldPromptForUsername: Bool { !hasUsername && !wasPromptedForUsername }
 
     /// Kullanıcı adını temizleyip kaydeder (3–16 karakter, harf/rakam/altçizgi).
+    /// Ad bir kez kilitlendikten sonra değiştirilemez.
     @discardableResult
     func setUsername(_ raw: String) -> Bool {
+        guard !isUsernameLocked else { return false }
         let cleaned = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard Self.isValid(cleaned) else { return false }
         username = cleaned
         defaults.set(cleaned, forKey: Key.username)
+        isUsernameLocked = true
+        defaults.set(true, forKey: Key.locked)
         return true
     }
 

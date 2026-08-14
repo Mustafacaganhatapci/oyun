@@ -96,6 +96,25 @@ final class LeaderboardService: ObservableObject {
         #endif
     }
 
+    /// Ad sahiplenme sonucu
+    enum NameClaim { case claimed, taken, offline }
+
+    /// Adı küresel olarak sahiplenmeye çalışır. Aynı ad başkasındaysa `.taken`
+    /// döner. Firebase yoksa `.offline` — o durumda sıralama da kapalı olduğu
+    /// için ad yalnızca cihazda anlam taşır.
+    func claimUsername(_ name: String, playerID: String) async -> NameClaim {
+        guard isAvailable else { return .offline }
+        #if canImport(FirebaseCore)
+        switch await FirebaseBridge.claimUsername(name, playerID: playerID) {
+        case .some(true): return .claimed
+        case .some(false): return .taken
+        case .none: return .offline     // ağ/izin hatası: adı yerelde kabul et
+        }
+        #else
+        return .offline
+        #endif
+    }
+
     /// Oyuncunun en iyi sonucunu küresel tabloya yazar
     func submit(mode: LeaderboardMode, value: Double, username: String, playerID: String) {
         guard isAvailable, !username.isEmpty else { return }
@@ -149,6 +168,42 @@ enum FirebaseBridge {
         }
     }
 
+    /// Adı `usernames` koleksiyonunda sahiplenir. Belge kimliği adın küçük
+    /// harfli hâli olduğu için "Ali" ve "ali" aynı ad sayılır.
+    ///
+    /// İşlem (transaction) içinde yapılır: iki oyuncu aynı anda aynı adı
+    /// isterse yalnızca biri alır. Okuyup sonra yazmak bu yarışı açık bırakırdı.
+    ///
+    /// true = alındı, false = başkasında, nil = hata (çağıran yerelde kabul eder)
+    static func claimUsername(_ name: String, playerID: String) async -> Bool? {
+        let db = Firestore.firestore()
+        let doc = db.collection("usernames").document(name.lowercased())
+        do {
+            let result = try await db.runTransaction { transaction, errorPointer -> Any? in
+                do {
+                    let snapshot = try transaction.getDocument(doc)
+                    if snapshot.exists,
+                       let owner = snapshot.data()?["playerID"] as? String,
+                       owner != playerID {
+                        return false
+                    }
+                    transaction.setData([
+                        "playerID": playerID,
+                        "username": name,
+                        "claimedAt": FieldValue.serverTimestamp()
+                    ], forDocument: doc)
+                    return true
+                } catch let error as NSError {
+                    errorPointer?.pointee = error
+                    return nil
+                }
+            }
+            return result as? Bool
+        } catch {
+            return nil
+        }
+    }
+
     static func submit(mode: LeaderboardMode, week: Int, value: Double,
                        username: String, playerID: String) async {
         let db = Firestore.firestore()
@@ -198,6 +253,7 @@ enum FirebaseBridge {
     static func configure() {
         if FirebaseApp.app() == nil { FirebaseApp.configure() }
     }
+    static func claimUsername(_ name: String, playerID: String) async -> Bool? { nil }
     static func submit(mode: LeaderboardMode, week: Int, value: Double,
                        username: String, playerID: String) async {}
     static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] { [] }
