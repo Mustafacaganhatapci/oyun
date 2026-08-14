@@ -1053,6 +1053,11 @@ final class GameScene: SKScene {
         if case .dead = orbState { return }
         if case .won = orbState { return }
         if finished { return }
+        // Halkanın üstündeyken ölündüyse (tehlikeye değme, süre dolması) geri
+        // dönüş noktası O halka olmalı. `lastRing` yalnızca fırlatma anında
+        // yazıldığı için bir öncekini gösteriyordu: sonsuz modda reklam izleyip
+        // canlanan oyuncu, skoru 27 yazarken 26. halkada başlıyordu.
+        if case .attached(let ring, _, _) = orbState { lastRing = ring }
         orbState = .dead
         deadSince = elapsed
         combo = 0
