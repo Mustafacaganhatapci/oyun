@@ -2,6 +2,19 @@ import Foundation
 import SwiftUI
 import os
 
+/// Sıralama günlüğü.
+///
+/// `os_log`'un `.info` seviyesi Xcode'un hata ayıklama panelinde her zaman
+/// gösterilmiyor; sorun ararken "log hiç düşmedi mi yoksa gizlendi mi"
+/// belirsizliği başlı başına vakit kaybettiriyor. Hata ayıklama derlemesinde
+/// ayrıca `print` ile yazılır, böylece panelde kesinlikle görünür.
+func leaderboardLog(_ message: String, isError: Bool = false) {
+    os_log(isError ? .error : .info, "%{public}@", message)
+    #if DEBUG
+    print("[Orbeon.Leaderboard] \(message)")
+    #endif
+}
+
 enum LeaderboardMode {
     case endless    // yüksek skor kazanır
     case speedrun   // düşük süre kazanır
@@ -118,7 +131,16 @@ final class LeaderboardService: ObservableObject {
 
     /// Oyuncunun en iyi sonucunu küresel tabloya yazar
     func submit(mode: LeaderboardMode, value: Double, username: String, playerID: String) {
-        guard isAvailable, !username.isEmpty else { return }
+        // Sessizce çıkmak, "yazma denendi ama reddedildi" ile "yazma hiç
+        // denenmedi" durumlarını ayırt edilemez kılıyordu.
+        guard isAvailable else {
+            leaderboardLog("GÖNDERİLMEDİ: Firebase bağlı değil (isAvailable=false)", isError: true)
+            return
+        }
+        guard !username.isEmpty else {
+            leaderboardLog("GÖNDERİLMEDİ: kullanıcı adı boş — skor \(value) yazılmadı", isError: true)
+            return
+        }
         #if canImport(FirebaseCore)
         let week = currentWeek
         Task {
@@ -201,8 +223,8 @@ enum FirebaseBridge {
             }
             return result as? Bool
         } catch {
-            os_log(.error, "Ad sahiplenilemedi (usernames/%{public}@): %{public}@",
-                   name.lowercased(), error.localizedDescription)
+            leaderboardLog("AD SAHİPLENİLEMEDİ usernames/\(name.lowercased()): \(error.localizedDescription)",
+                           isError: true)
             return nil
         }
     }
@@ -223,13 +245,13 @@ enum FirebaseBridge {
                 "value": value,
                 "updatedAt": FieldValue.serverTimestamp()
             ], merge: true)
-            os_log(.info, "Sıralama yazıldı: %{public}@ = %f", mode.collection(week: week), value)
+            leaderboardLog("YAZILDI \(mode.collection(week: week)) ← \(username) = \(value)")
         } catch {
             // Sessizce yutmak, izin kuralları yazmayı engellediğinde tabloyu
             // "boş" gösteriyor ve hiçbir iz bırakmıyordu. Console.app'te
             // "Orbeon" süzülerek gerçek sebep görülebilsin.
-            os_log(.error, "Sıralama YAZILAMADI (%{public}@): %{public}@",
-                   mode.collection(week: week), error.localizedDescription)
+            leaderboardLog("YAZILAMADI \(mode.collection(week: week)): \(error.localizedDescription)",
+                           isError: true)
         }
     }
 
@@ -241,8 +263,7 @@ enum FirebaseBridge {
                 .order(by: "value", descending: descending)
                 .limit(to: 50)
             let snap = try await query.getDocuments()
-            os_log(.info, "Sıralama okundu: %{public}@ → %d kayıt",
-                   mode.collection(week: week), snap.documents.count)
+            leaderboardLog("OKUNDU \(mode.collection(week: week)) → \(snap.documents.count) kayıt")
             return snap.documents.compactMap { doc in
                 guard let username = doc.data()["username"] as? String,
                       let value = doc.data()["value"] as? Double else { return nil }
@@ -250,8 +271,8 @@ enum FirebaseBridge {
                                         value: value, isMe: doc.documentID == myPlayerID)
             }
         } catch {
-            os_log(.error, "Sıralama OKUNAMADI (%{public}@): %{public}@",
-                   mode.collection(week: week), error.localizedDescription)
+            leaderboardLog("OKUNAMADI \(mode.collection(week: week)): \(error.localizedDescription)",
+                           isError: true)
             return []
         }
     }
