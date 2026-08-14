@@ -1,47 +1,26 @@
 // Orbeon — Firestore güvenlik kuralları
 //
-// Firebase Console → Firestore Database → Rules ekranına yapıştırıp
-// "Publish" de. Bu dosya kaydın kendisi; konsoldaki kurallar buradan ayrı
-// yaşadığı için değiştirdiğinde burayı da güncelle.
+// Firebase Console → Firestore Database → Rules → yapıştır → PUBLISH.
+// Yayınlandığını Rules sekmesinin üstündeki "Last published" tarihinden
+// doğrula; yayınlanma birkaç saniye sürebiliyor.
 //
-// ÖNEMLİ: Sıralama haftalık koleksiyonlara yazılıyor —
-//   leaderboard_endless_w136, leaderboard_speedrun_w136, ...
-// Kurallarda koleksiyon adı TAM eşleşir. `match /leaderboard_endless/{doc}`
-// yazan bir kural haftalık koleksiyonlara UYMAZ ve hem yazma hem okuma
-// reddedilir; tablo uygulamada sessizce boş görünür. Aşağıdaki kurallar bu
-// yüzden joker (wildcard) önek kullanıyor.
+// Bilerek sade tutuldu. Önceki sürüm koleksiyon adını düzenli ifadeyle
+// süzüyordu ve sahada hem okuma hem yazma "Missing or insufficient
+// permissions" ile reddedildi. Sıralama tablosunda korunacak bir sır yok:
+// tablo zaten herkese açık, yazan taraf da anonim de olsa kimliği doğrulanmış
+// bir oturum. Kuralın anlaşılır olması, kılı kırk yarmasından daha değerli.
 
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Haftalık sıralama tabloları.
-    // Herkes okuyabilir. Yazmak için anonim de olsa oturum açmış olmak gerekir.
-    // Belge kimliği oyuncunun kendi kimliğidir; başkasının satırını ezmemesi
-    // için kimlik doğrulaması burada tek başına yeterli değildir ama oyunun
-    // yazdığı tek alanlar ad ve skor olduğu için risk sınırlıdır.
-    match /{board}/{playerID} {
-      allow read: if board.matches('leaderboard_(endless|speedrun)_w[0-9]+');
-      allow write: if board.matches('leaderboard_(endless|speedrun)_w[0-9]+')
-                   && request.auth != null
-                   && request.resource.data.keys().hasOnly(
-                        ['username', 'value', 'playerID', 'updatedAt'])
-                   && request.resource.data.username is string
-                   && request.resource.data.username.size() <= 16
-                   && request.resource.data.value is number;
-    }
-
-    // Kullanıcı adı sahiplenme. Belge kimliği adın küçük harfli hâli.
-    // Var olan bir belge YALNIZCA sahibi tarafından güncellenebilir; böylece
-    // bir başkası mevcut bir adı üstüne yazamaz.
-    match /usernames/{name} {
+    // Tüm koleksiyonlar (haftalık sıralama tabloları ve `usernames`):
+    //   • okuma herkese açık — tablo zaten kamuya görünür
+    //   • yazma yalnızca oturum açmış istemcilere (uygulama anonim giriş yapar)
+    match /{document=**} {
       allow read: if true;
-      allow create: if request.auth != null
-                    && request.resource.data.playerID is string;
-      allow update: if request.auth != null
-                    && resource.data.playerID == request.resource.data.playerID;
-      allow delete: if false;
+      allow write: if request.auth != null;
     }
   }
 }
