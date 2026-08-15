@@ -50,17 +50,29 @@ YENİ
 
 • 30 yeni bölüm — kampanya artık 150 bölüm.
 
-• Topla-bitir turları: yeşil kapı, haritadaki her ışığı toplayana kadar kilitli kalıyor. Üstüne konsan bile açılmıyor, dönmeye devam ediyorsun. Ama bir kere yanarsan tur sıfırdan, bütün ışıklar geri gelerek başlıyor.
+• Topla-bitir turları: yeşil kapı, haritadaki her ışığı toplayana kadar kilitli kalıyor. Üstüne konsan bile açılmıyor, dönmeye devam ediyorsun. Bir kere yanarsan tur sıfırdan, bütün ışıklar geri gelerek başlıyor.
 
 • Büyük yıldız: bazı bölümlerde üç küçük ışık yerine dört yıldız eden tek bir dev yıldız var. Uçuş hattının dışında duruyor — uğruna sapman gerekiyor.
 
-Her iki tür de 60. bölümden itibaren serpiştirildi, son bölümlerde sıklaşıyor.
+Her iki tür de 60. bölümden itibaren serpiştirildi, sona doğru sıklaşıyor.
+
+• Haftalık dünya sıralaması. Tablo her Pazartesi sıfırlanıyor, yani zirve her hafta yeniden ulaşılabilir oluyor. Haftanın ilk üçü artık ana ekranda, sıfırlanmaya kalan süreyle birlikte duruyor.
+
+• Takma adlar artık benzersiz. Ad bir kez seçiliyor, aynı adı iki kişi alamıyor, ve oyun ilk açılışta adını soruyor — sıralamaya girmek için ekran aramana gerek yok.
 
 DEĞİŞTİ
 
 • Halkadaki geri sayım dolunca artık ölmüyorsun. Küre kendiliğinden fırlıyor. Yayın kırmızıya dönmesi bir ceza değil, "otomatik fırlatma geliyor" uyarısı — istersen daha iyi bir açıda kendin bırakabilirsin.
 
 • Son bölümlerde zorluk artık düzleşmiyor. Halka sayısı, hız ve tehlike yayları kampanyanın sonuna kadar yükselmeye devam ediyor.
+
+DÜZELTİLDİ
+
+• Sonsuz modda reklam izleyip devam etmek düzgün çalışıyor. Küre tam öldüğü halkada, skorun korunmuş hâlde geri dönüyor; kamera da ona geliyor. Önceden küre görüş alanının dışında kalıyor ve ilk dokunuşta anında yanıyordu.
+
+• Ödüllü reklamlar ödülünü güvenilir biçimde veriyor.
+
+• Küçük bahşiş mağazada yeniden görünüyor.
 
 İyi eğlenceler.
 ```
@@ -71,11 +83,15 @@ NEW
 
 • Thirty new levels — the campaign is now 150 levels long.
 
-• Collect rounds: the green gate stays locked until you have swept up every light on the map. Landing on it does not open it; you simply keep orbiting. But one mistake restarts the whole round with all the lights back.
+• Collect rounds: the green gate stays locked until you have swept up every light on the map. Landing on it does not open it; you simply keep orbiting. One mistake restarts the whole round with all the lights back.
 
 • Grand stars: some levels replace the three small lights with a single giant star worth four. It sits off the flight line, so you have to leave your path to earn it.
 
 Both kinds start appearing at level 60 and grow more frequent toward the end.
+
+• The world ranking is now weekly. The board resets every Monday, so the top is within reach again each week, and the current top three sit on the main menu with the time left before the reset.
+
+• Names are unique now. A name is chosen once, no two players can hold the same one, and the game asks for yours on first launch instead of leaving you to find the screen.
 
 CHANGED
 
@@ -83,8 +99,22 @@ CHANGED
 
 • Difficulty no longer flattens out in the late game. Ring count, speed and hazard arcs keep climbing all the way to the end.
 
+FIXED
+
+• Continuing an endless run after an ad works properly. The orb comes back on the ring it died on with your score intact, and the camera follows it there. Before, the orb was left outside the visible area and the first tap ended the run instantly.
+
+• Rewarded ads now reliably grant their reward.
+
+• The small tip shows up in the shop again.
+
 Have fun.
 ```
+
+
+> **Uyarı:** Aşağıdaki Almanca, Fransızca, İspanyolca ve Japonca sürüm
+> notları 1.6'nın ilk hâline aittir; haftalık sıralama, benzersiz takma ad
+> ve sonsuz mod düzeltmeleri onlarda YOK. O dilleri de kullanacaksan
+> güncellenmeleri gerekiyor.
 
 ### Deutsch
 ```
