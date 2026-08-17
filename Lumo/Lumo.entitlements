@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- iCloud anahtar-değer deposu.
+	     ProgressStore ilerlemeyi NSUbiquitousKeyValueStore ile eşitliyor ama bu
+	     yetki olmadan iOS depoyu hiç açmıyor ("Unable to find entitlement for
+	     KVS store") ve senkronizasyon sessizce çalışmıyordu. Değer, Apple'ın
+	     beklediği <TeamID>.<BundleID> biçimini derleme sırasında üretir. -->
+	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
+	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
+</dict>
+</plist>

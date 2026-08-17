@@ -16,7 +16,9 @@ struct SettingsView: View {
     private func isAvailable(_ style: OrbStyle) -> Bool {
         switch style.unlock {
         case .free: return true
-        case .stars: return progress.isOrbUnlocked(style)
+        // Şampiyon küresi de kazanıldıysa kuşanılabilir; premium ya da yıldız
+        // onu açmaz, tek yolu haftalık ilk üçe girmek.
+        case .stars, .champion: return progress.isOrbUnlocked(style)
         case .premium: return store.isPremium
         }
     }

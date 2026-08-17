@@ -287,6 +287,10 @@ struct ShopView: View {
             ForEach(OrbStyle.starPurchasable) { style in
                 characterRow(style)
             }
+
+            // Şampiyon küresi listede DURUR ama satın alınamaz. Gizlemek,
+            // kazanılabileceğini kimsenin bilmemesi demek olurdu.
+            championRow
         }
         .padding(20)
         .background {
@@ -294,6 +298,53 @@ struct ShopView: View {
                 .fill(.white.opacity(0.05))
         }
         .padding(.horizontal, 20)
+    }
+
+    /// Yalnızca haftalık ilk üçe girerek kazanılan küre. Kazanıldıysa
+    /// seçilebilir, kazanılmadıysa nasıl alınacağını söyler.
+    private var championRow: some View {
+        let style = OrbStyle.champion
+        let owned = progress.isOrbUnlocked(style)
+        let selected = settings.orbStyleID == style.id
+        return HStack(spacing: 14) {
+            CharacterPreview(kind: style.kind, theme: settings.theme)
+                .frame(width: 46, height: 46)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(style.localizedName)
+                    .font(.system(.body, design: .rounded).bold())
+                    .foregroundStyle(.white)
+                Text(owned ? "Won on the weekly board"
+                           : "Finish in the weekly top 3 to win it")
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.45))
+            }
+
+            Spacer(minLength: 0)
+
+            if owned {
+                Button {
+                    AudioEngine.shared.playTap()
+                    settings.orbStyleID = style.id
+                } label: {
+                    Text(selected ? "Selected" : "Select")
+                        .font(.system(.caption, design: .rounded).bold())
+                        .foregroundStyle(selected ? .black.opacity(0.8) : .white)
+                        .padding(.horizontal, 14).padding(.vertical, 8)
+                        .background {
+                            Capsule().fill(selected
+                                           ? AnyShapeStyle(settings.theme.lumen.color)
+                                           : AnyShapeStyle(Color.white.opacity(0.14)))
+                        }
+                }
+                .disabled(selected)
+            } else {
+                Image(systemName: "lock.fill")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.35))
+            }
+        }
+        .padding(.vertical, 4)
     }
 
     private func characterRow(_ style: OrbStyle) -> some View {
@@ -617,6 +668,10 @@ struct CharacterPreview: View {
         case .cloud:
             Image(systemName: "cloud.fill").font(.system(size: 18))
                 .foregroundStyle(.white)
+        case .champion:
+            Image(systemName: "crown.fill").font(.system(size: 18))
+                .foregroundStyle(Color(red: 1.0, green: 0.82, blue: 0.35))
+                .shadow(color: Color(red: 1.0, green: 0.82, blue: 0.35), radius: 7)
         }
     }
 }

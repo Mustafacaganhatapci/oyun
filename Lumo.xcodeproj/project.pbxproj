@@ -291,6 +291,7 @@
 				DEVELOPMENT_TEAM = TDJ59SWRZJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
+				CODE_SIGN_ENTITLEMENTS = Lumo/Lumo.entitlements;
 				INFOPLIST_FILE = Lumo/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -317,6 +318,7 @@
 				DEVELOPMENT_TEAM = TDJ59SWRZJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
+				CODE_SIGN_ENTITLEMENTS = Lumo/Lumo.entitlements;
 				INFOPLIST_FILE = Lumo/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

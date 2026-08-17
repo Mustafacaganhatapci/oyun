@@ -13,6 +13,8 @@ final class ProgressStore: ObservableObject {
     @Published private(set) var spentStars: Int = 0          // karakter almak için harcanan yıldız
     @Published private(set) var unlockedOrbs: Set<String> = []  // yıldızla açılan küre stilleri
     @Published private(set) var bonusStars: Int = 0          // hediye/teselli yıldızları (ör. promo kodu)
+    /// Şampiyonluk ödülü verilen son hafta — aynı hafta iki kez ödenmesin
+    @Published private(set) var lastChampionWeek: Int = -1
 
     private let defaults = UserDefaults.standard
     private enum Key {
@@ -23,6 +25,7 @@ final class ProgressStore: ObservableObject {
         static let spentStars = "lumo.progress.spentStars"
         static let unlockedOrbs = "lumo.progress.unlockedOrbs"
         static let bonusStars = "lumo.progress.bonusStars"
+        static let lastChampionWeek = "lumo.progress.lastChampionWeek"
     }
 
     private let cloud = NSUbiquitousKeyValueStore.default
@@ -38,6 +41,9 @@ final class ProgressStore: ObservableObject {
         spentStars = defaults.integer(forKey: Key.spentStars)
         unlockedOrbs = Set(defaults.stringArray(forKey: Key.unlockedOrbs) ?? [])
         bonusStars = defaults.integer(forKey: Key.bonusStars)
+        // -1: hiç ödül alınmamış. Hafta numaraları 0'dan başladığı için
+        // varsayılan 0 kullanılamaz, ilk haftayı ödenmiş sayardı.
+        lastChampionWeek = defaults.object(forKey: Key.lastChampionWeek) as? Int ?? -1
 
         // Yeni cihazda/silme sonrası buluttaki ilerlemeyi geri getir
         NotificationCenter.default.addObserver(
@@ -71,6 +77,9 @@ final class ProgressStore: ObservableObject {
         // sıfırlanıp aynı karakter iki kez satın alınabilirdi
         spentStars = max(spentStars, Int(cloud.longLong(forKey: Key.spentStars)))
         unlockedOrbs.formUnion(cloud.array(forKey: Key.unlockedOrbs) as? [String] ?? [])
+        // İleri olan hafta kazanır: ödül aynı hesapta ikinci bir cihazda
+        // tekrar verilmesin
+        lastChampionWeek = max(lastChampionWeek, Int(cloud.longLong(forKey: Key.lastChampionWeek)))
 
         let remoteSpeed = cloud.double(forKey: Key.speedrunBest)
         if remoteSpeed > 0, speedrunBest == 0 || remoteSpeed < speedrunBest {
@@ -91,6 +100,7 @@ final class ProgressStore: ObservableObject {
         cloud.set(Int64(bonusStars), forKey: Key.bonusStars)
         cloud.set(speedrunBest, forKey: Key.speedrunBest)
         cloud.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
+        cloud.set(Int64(lastChampionWeek), forKey: Key.lastChampionWeek)
         cloud.synchronize()
     }
 
@@ -104,6 +114,7 @@ final class ProgressStore: ObservableObject {
         defaults.set(spentStars, forKey: Key.spentStars)
         defaults.set(bonusStars, forKey: Key.bonusStars)
         defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
+        defaults.set(lastChampionWeek, forKey: Key.lastChampionWeek)
     }
 
     /// Tamamlanan en yüksek bölüm + 1 oynanabilir; 1. bölüm her zaman açık.
@@ -133,8 +144,24 @@ final class ProgressStore: ObservableObject {
         switch style.unlock {
         case .free: return true
         case .premium: return false          // premium ayrı yönetilir (StoreManager)
-        case .stars: return unlockedOrbs.contains(style.id)
+        // Şampiyon küresi de kazanıldığında aynı kümeye yazılır; farkı satın
+        // alınamaması, yalnızca haftalık ilk üçe girerek verilmesi.
+        case .stars, .champion: return unlockedOrbs.contains(style.id)
         }
+    }
+
+    /// Haftalık şampiyonluk ödülü: yıldızlar + şampiyon küresi.
+    /// Aynı hafta için birden fazla kez verilmez.
+    @discardableResult
+    func grantChampionReward(week: Int, rank: Int, stars amount: Int) -> Bool {
+        guard week > lastChampionWeek else { return false }
+        lastChampionWeek = week
+        defaults.set(week, forKey: Key.lastChampionWeek)
+        unlockedOrbs.insert(OrbStyle.championID)
+        defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
+        grantBonusStars(amount)
+        pushToCloud()
+        return true
     }
 
     func canAfford(_ style: OrbStyle) -> Bool {

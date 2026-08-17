@@ -13,6 +13,7 @@ struct MainMenuView: View {
     @State private var orbPulse = false
     @State private var showMissions = false
     @State private var claimedFlash: Int?
+    @State private var championAward: (rank: Int, stars: Int)?
 
     var body: some View {
         ZStack {
@@ -100,7 +101,28 @@ struct MainMenuView: View {
         .onAppear {
             leaderboard.configureIfPossible()
             leaderboard.refresh(mode: .endless, myPlayerID: player.playerID)
+            Task { await claimChampionRewardIfEarned() }
         }
+        .overlay {
+            if let award = championAward {
+                ChampionAwardView(rank: award.rank, stars: award.stars,
+                                  theme: settings.theme) { championAward = nil }
+            }
+        }
+    }
+
+    /// Geçen haftanın ilk üçündeysem ödülü bir kez verir ve kutlama gösterir.
+    /// Sıra sunucudan okunur; ödülün iki kez verilmemesini ProgressStore
+    /// hafta numarasıyla güvenceye alır (iCloud üzerinden de eşitlenir).
+    private func claimChampionRewardIfEarned() async {
+        guard player.hasUsername else { return }
+        guard let result = await leaderboard.previousWeekRank(playerID: player.playerID) else { return }
+        guard result.week > progress.lastChampionWeek else { return }
+        let amount = LeaderboardService.championStars(forRank: result.rank)
+        guard progress.grantChampionReward(week: result.week, rank: result.rank, stars: amount) else { return }
+        AudioEngine.shared.playWin()
+        Haptics.shared.win()
+        championAward = (result.rank, amount)
     }
 
     /// Haftanın ilk üçü. Sıralama her Pazartesi sıfırlandığı için menüde
@@ -386,6 +408,90 @@ struct MainMenuView: View {
                 }
                 .buttonStyle(GlowButtonStyle(color: Color.white.opacity(0.7)))
             }
+        }
+    }
+}
+
+/// Haftalık şampiyonluk kutlaması. Ödül zaten verilmiş olur; bu ekran yalnızca
+/// oyuncuya ne kazandığını söyler ve kapatılana kadar durur.
+private struct ChampionAwardView: View {
+    let rank: Int
+    let stars: Int
+    let theme: Theme
+    let onClose: () -> Void
+
+    private var medal: String {
+        switch rank {
+        case 1: return "🥇"
+        case 2: return "🥈"
+        default: return "🥉"
+        }
+    }
+
+    private var rankSentence: LocalizedStringKey {
+        switch rank {
+        case 1: return "You finished 1st on last week's board."
+        case 2: return "You finished 2nd on last week's board."
+        default: return "You finished 3rd on last week's board."
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.72).ignoresSafeArea()
+
+            VStack(spacing: 18) {
+                Text(medal).font(.system(size: 64))
+
+                Text("Champion of the week")
+                    .font(.system(.title2, design: .rounded).bold())
+                    .foregroundStyle(.white)
+
+                // Üç ayrı düz metin: araya sıra numarası enterpole edilirse
+                // çeviri anahtarı "%@" içeren tek bir kalıba dönüşür ve
+                // eklenen çeviriler eşleşmez.
+                Text(rankSentence)
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.65))
+                    .multilineTextAlignment(.center)
+
+                HStack(spacing: 22) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .font(.title2)
+                            .foregroundStyle(theme.lumen.color)
+                        Text("+\(stars)")
+                            .font(.system(.headline, design: .rounded).bold())
+                            .foregroundStyle(.white)
+                    }
+                    VStack(spacing: 4) {
+                        Image(systemName: "crown.fill")
+                            .font(.title2)
+                            .foregroundStyle(Color(red: 1.0, green: 0.82, blue: 0.35))
+                        Text("Champion orb")
+                            .font(.system(.caption, design: .rounded).bold())
+                            .foregroundStyle(.white)
+                    }
+                }
+                .padding(.top, 4)
+
+                Text("The champion orb cannot be bought — it is only won.")
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.45))
+                    .multilineTextAlignment(.center)
+
+                Button(action: onClose) { Text("Nice") }
+                    .buttonStyle(GlowButtonStyle(color: theme.lumen.color, prominent: true))
+                    .padding(.top, 6)
+            }
+            .padding(28)
+            .background {
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(.black.opacity(0.55))
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .strokeBorder(Color(red: 1.0, green: 0.82, blue: 0.35).opacity(0.45), lineWidth: 1.5)
+            }
+            .padding(.horizontal, 34)
         }
     }
 }

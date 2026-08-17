@@ -150,6 +150,30 @@ final class LeaderboardService: ObservableObject {
         #endif
     }
 
+    /// Şampiyonluk ödülü: sıraya göre yıldız. Şampiyon küresi üçüne de verilir.
+    static func championStars(forRank rank: Int) -> Int {
+        switch rank {
+        case 1: return 250
+        case 2: return 150
+        default: return 100
+        }
+    }
+
+    /// GEÇEN haftanın ilk üçünde miyim? Değilsem nil döner.
+    /// Ödülü vermek çağıranın işi — burada yalnızca sıra okunur.
+    func previousWeekRank(playerID: String) async -> (week: Int, rank: Int)? {
+        guard isAvailable else { return nil }
+        let week = currentWeek - 1
+        guard week >= 0 else { return nil }
+        #if canImport(FirebaseCore)
+        let top = await FirebaseBridge.fetchTop(mode: .endless, week: week, myPlayerID: playerID)
+        guard let index = top.prefix(3).firstIndex(where: { $0.id == playerID }) else { return nil }
+        return (week, index + 1)
+        #else
+        return nil
+        #endif
+    }
+
     /// Bu haftanın ilk 50 sonucunu getirir
     func refresh(mode: LeaderboardMode, myPlayerID: String) {
         guard isAvailable else { return }

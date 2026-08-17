@@ -7,6 +7,9 @@ enum OrbUnlock: Equatable {
     case free               // baştan açık
     case stars(Int)         // toplanan yıldızlarla satın alınır
     case premium            // Orbeon Premium (IAP) ile açılır
+    /// Haftalık sıralamada ilk üçe girerek kazanılır. Satın alınamaz,
+    /// yıldızla açılamaz — tek yolu o hafta zirveye oynamak.
+    case champion
 }
 
 /// Kürenin (oyuncu "karakterinin") görsel stili.
@@ -27,6 +30,10 @@ struct OrbStyle: Identifiable, Equatable {
         case heart      // kalp atışı gibi nabız atan kalp
         case firefly    // yanıp sönen kuyruklu ateşböceği
         case cloud      // yumuşakça sallanan küçük bulut
+        /// Haftanın şampiyonu: altın bir taç, çevresinde dönen defne halkası.
+        /// Kasten diğerlerinden çok farklı — köşeli silueti ve altın parıltısı
+        /// uzaktan bile "bu oyuncu zirveye çıkmış" diye okunuyor.
+        case champion
     }
 
     let id: String
@@ -53,11 +60,15 @@ struct OrbStyle: Identifiable, Equatable {
         OrbStyle(id: "flame",   name: "Flame",   unlock: .stars(100),  kind: .flame),
         OrbStyle(id: "rainbow", name: "Rainbow", unlock: .stars(130),  kind: .rainbow),
         OrbStyle(id: "cloud",   name: "Cloud",   unlock: .stars(150),  kind: .cloud),
-        OrbStyle(id: "photo",   name: "Photo",   unlock: .premium,     kind: .photo)
+        OrbStyle(id: "photo",   name: "Photo",   unlock: .premium,     kind: .photo),
+        OrbStyle(id: "champion", name: "Champion", unlock: .champion,  kind: .champion)
     ]
 
     /// Yıldızla satın alınabilen stiller (mağazada listelenir)
     static var starPurchasable: [OrbStyle] { all.filter { $0.starCost != nil } }
+
+    static let championID = "champion"
+    static var champion: OrbStyle { style(id: championID) }
 
     static func style(id: String) -> OrbStyle {
         all.first { $0.id == id } ?? all[0]

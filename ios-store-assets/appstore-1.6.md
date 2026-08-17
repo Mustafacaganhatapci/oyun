@@ -58,6 +58,8 @@ Her iki tür de 60. bölümden itibaren serpiştirildi, sona doğru sıklaşıyo
 
 • Haftalık dünya sıralaması. Tablo her Pazartesi sıfırlanıyor, yani zirve her hafta yeniden ulaşılabilir oluyor. Haftanın ilk üçü artık ana ekranda, sıfırlanmaya kalan süreyle birlikte duruyor.
 
+• Haftanın şampiyonları ödüllendiriliyor. Haftalık sıralamada ilk üçe girersen bir sonraki hafta yıldız kazanıyorsun (1. 250, 2. 150, 3. 100) ve yalnızca bu yolla açılan Şampiyon küresini alıyorsun — satın alınamıyor, yıldızla açılamıyor.
+
 • Takma adlar artık benzersiz. Ad bir kez seçiliyor, aynı adı iki kişi alamıyor, ve oyun ilk açılışta adını soruyor — sıralamaya girmek için ekran aramana gerek yok.
 
 DEĞİŞTİ
@@ -90,6 +92,8 @@ NEW
 Both kinds start appearing at level 60 and grow more frequent toward the end.
 
 • The world ranking is now weekly. The board resets every Monday, so the top is within reach again each week, and the current top three sit on the main menu with the time left before the reset.
+
+• The weekly top three are rewarded. Finish in the top 3 and the next week you collect stars (250, 150, 100) and the Champion orb, which cannot be bought or unlocked with stars — winning it is the only way.
 
 • Names are unique now. A name is chosen once, no two players can hold the same one, and the game asks for yours on first launch instead of leaving you to find the screen.
 

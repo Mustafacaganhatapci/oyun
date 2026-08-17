@@ -366,6 +366,43 @@ final class GameScene: SKScene {
             ])))
             orbCore = puff2
 
+        case .champion:
+            // Altın taç + çevresinde ters yönde dönen defne halkası. Köşeli
+            // siluet diğer kürelerin hepsinden ayrışsın diye seçildi.
+            let gold = UIColor(red: 1.0, green: 0.82, blue: 0.35, alpha: 1)
+            let halo = SKShapeNode(circleOfRadius: orbRadius * 1.9)
+            halo.fillColor = gold.withAlphaComponent(0.16)
+            halo.strokeColor = .clear
+            halo.glowWidth = 10
+            container.addChild(halo)
+
+            let crown = SKShapeNode(path: Self.crownPath(width: orbRadius * 2.6,
+                                                         height: orbRadius * 1.9))
+            crown.fillColor = gold
+            crown.strokeColor = gold
+            crown.lineWidth = 1
+            crown.glowWidth = 6
+            container.addChild(crown)
+
+            // Defne: kesikli çember, tacın tersine döner
+            let wreath = SKShapeNode(path: CGPath(ellipseIn: CGRect(x: -orbRadius * 2.1,
+                                                                    y: -orbRadius * 2.1,
+                                                                    width: orbRadius * 4.2,
+                                                                    height: orbRadius * 4.2),
+                                                  transform: nil)
+                .copy(dashingWithPhase: 0, lengths: [5, 6]))
+            wreath.strokeColor = gold.withAlphaComponent(0.85)
+            wreath.lineWidth = 2
+            wreath.glowWidth = 3
+            wreath.run(.repeatForever(.rotate(byAngle: -.pi * 2, duration: 5)))
+            container.addChild(wreath)
+
+            crown.run(.repeatForever(.sequence([
+                .scale(to: 1.08, duration: 0.7),
+                .scale(to: 0.96, duration: 0.7)
+            ])))
+            orbCore = crown
+
         case .photo:
             if let photo = orbPhoto {
                 let crop = SKCropNode()
@@ -586,6 +623,21 @@ final class GameScene: SKScene {
             lumenNodes.append(node)
             lumenCollected.append(false)
         }
+    }
+
+    /// Üç sivri uçlu taç silueti — şampiyon küresi için
+    private static func crownPath(width w: CGFloat, height h: CGFloat) -> CGPath {
+        let p = CGMutablePath()
+        let x = w / 2, y = h / 2
+        p.move(to: CGPoint(x: -x, y: -y))            // sol alt
+        p.addLine(to: CGPoint(x: -x, y: y * 0.35))   // sol yükseliş
+        p.addLine(to: CGPoint(x: -x * 0.5, y: -y * 0.1))
+        p.addLine(to: CGPoint(x: 0, y: y))           // orta uç
+        p.addLine(to: CGPoint(x: x * 0.5, y: -y * 0.1))
+        p.addLine(to: CGPoint(x: x, y: y * 0.35))    // sağ yükseliş
+        p.addLine(to: CGPoint(x: x, y: -y))          // sağ alt
+        p.closeSubpath()
+        return p
     }
 
     /// Beş köşeli yıldız yolu — büyük lumen için
