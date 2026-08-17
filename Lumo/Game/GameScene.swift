@@ -62,6 +62,23 @@ final class GameScene: SKScene {
     private var restartsOnDeath = false
     private weak var gateDashed: SKShapeNode?
 
+    // MARK: Tehlike müsamahası
+    //
+    // 65. bölümden sonra ve sonsuz modda, tehlikeli bir halkaya tutunan küre
+    // O HALKA ETRAFINDA BİR TAM TUR boyunca yanmaz. Bu sürede yay mor çizilir;
+    // tur dolunca kırmızıya döner ve o andan sonra değmek öldürür. Geç
+    // bölümlerde halkalar küçülüp hızlandığı için oyuncu ineceği yeri
+    // göremeden ölüyordu; bir tur, haritayı okumaya yetecek kadar zaman veriyor.
+    private var hazardGraceEnabled = false
+    /// Müsamahanın bittiği an; nil ise müsamaha yok
+    private var hazardGraceUntil: TimeInterval?
+    private var hazardGraceActive: Bool {
+        guard let until = hazardGraceUntil else { return false }
+        return elapsed < until
+    }
+    /// Yayların o an hangi renkte çizildiği — her karede renk atamamak için
+    private var hazardTintIsSafe = false
+
     private var orbState: OrbState = .dead
     private var orbNode: SKNode!
     private var orbCore: SKShapeNode?
@@ -139,6 +156,7 @@ final class GameScene: SKScene {
             forgivingBounds = LevelLibrary.isForgiving(id)
             gateNeedsAllLumens = lvl.gateNeedsAllLumens
             restartsOnDeath = lvl.restartsOnDeath
+            hazardGraceEnabled = LevelLibrary.hasHazardGrace(id)
             lumenSpecs = lvl.lumens
             if isBonus { bonusDeadline = lvl.bonusDuration }
             buildRings(lvl.rings)
@@ -146,6 +164,7 @@ final class GameScene: SKScene {
             respawn(animated: false)
             if isTutorial { setupTutorialVisuals() }
         case .endless:
+            hazardGraceEnabled = true
             let cam = SKCameraNode()
             cameraNode = cam
             cam.position = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -611,6 +630,13 @@ final class GameScene: SKScene {
     /// Küreyi halkadan teğet yönünde fırlatır. Hem dokunuşla hem de oyalanma
     /// süresi dolduğunda (otomatik fırlatma) buradan geçilir.
     private func launch(from ring: Int, angle: CGFloat, direction: CGFloat) {
+        // Halkadan ayrılırken müsamaha biter ve yay kırmızıya döner; yoksa
+        // geride mor kalmış bir tehlike "güvenli" izlenimi bırakırdı.
+        if hazardGraceEnabled {
+            tintHazard(ring: ring, safe: false)
+            hazardGraceUntil = nil
+            hazardTintIsSafe = false
+        }
         let c = ringCenter(ring, at: elapsed)
         let r = ringRadius(ring)
         let pos = CGPoint(x: c.x + cos(angle) * r, y: c.y + sin(angle) * r)
@@ -710,6 +736,7 @@ final class GameScene: SKScene {
                 aim.position = orbNode.position
                 aim.zRotation = atan2(cos(angle) * direction, -sin(angle) * direction)
             }
+            updateHazardTint()
             checkHazard(ring: ring, angle: angle)
             checkLumens()
             // "Devam et ya da düş" — bu halkada fazla oyalanınca süre dolar
@@ -789,14 +816,20 @@ final class GameScene: SKScene {
             guard dist <= r else { continue }
 
             let angle = atan2(dy, dx)
-            // Kırmızı yayın üstüne konmak da ölümdür — kırmızıya temas HER ZAMAN öldürür
-            if hazardContains(ring: i, angle: angle) {
+            // Müsamaha kapalıyken kırmızıya konmak da ölümdür. Açıkken bu ilk
+            // temas öldürmez; tur sayacı başlar.
+            if !hazardGraceEnabled, hazardContains(ring: i, angle: angle) {
                 fail()
                 return
             }
-            let cross = dx * v.dy - dy * v.dx
-            let direction: CGFloat = cross >= 0 ? 1 : -1
+            // Küre halkanın SOL yarısına geldiyse saat yönünün tersine, SAĞ
+            // yarısına geldiyse saat yönünde döner. Eskiden yön geliş hızının
+            // açısal momentumundan çıkıyordu; aynı noktaya benzer görünen iki
+            // atıştan farklı yönler çıkabildiği için nereye savrulacağı
+            // önceden okunamıyordu. Bu kural her zaman aynı sonucu veriyor.
+            let direction: CGFloat = dx < 0 ? 1 : -1
             orbState = .attached(ring: i, angle: angle, direction: direction)
+            startHazardGraceIfNeeded(ring: i)
             dwellStart = elapsed
             combo += 1
 
@@ -821,9 +854,43 @@ final class GameScene: SKScene {
         }
     }
 
-    /// Kırmızıya temas her zaman öldürür — bağışıklık/koruma süresi yoktur.
     private func checkHazard(ring: Int, angle: CGFloat) {
+        guard !hazardGraceActive else { return }
         if hazardContains(ring: ring, angle: angle) { fail() }
+    }
+
+    /// Tehlikeli bir halkaya tutunulduğunda bir tam turluk müsamaha başlatır.
+    /// Süre halkanın kendi dönüş hızından hesaplanır, böylece hızlı halkada
+    /// kısa, yavaş halkada uzun olur — her zaman TAM BİR TUR eder.
+    private func startHazardGraceIfNeeded(ring: Int) {
+        guard hazardGraceEnabled, !ringSpecs[ring].hazardArcs.isEmpty else {
+            hazardGraceUntil = nil
+            hazardTintIsSafe = false
+            return
+        }
+        let speed = max(0.1, ringSpecs[ring].orbitSpeed)
+        hazardGraceUntil = elapsed + TimeInterval((2 * CGFloat.pi) / speed)
+        hazardTintIsSafe = true
+        tintHazard(ring: ring, safe: true)
+    }
+
+    private func tintHazard(ring: Int, safe: Bool) {
+        guard ring < hazardNodes.count, let node = hazardNodes[ring] else { return }
+        let color = safe ? theme.accent.uiColor : theme.hazard.uiColor
+        for case let shape as SKShapeNode in node.children {
+            shape.strokeColor = color
+        }
+    }
+
+    /// Tur dolduğu anda yayı kırmızıya çevirir ve bir kez attırır — oyuncu
+    /// artık öldürücü olduğunu görsün.
+    private func updateHazardTint() {
+        guard hazardGraceEnabled, hazardTintIsSafe, !hazardGraceActive else { return }
+        hazardTintIsSafe = false
+        guard case .attached(let ring, _, _) = orbState else { return }
+        tintHazard(ring: ring, safe: false)
+        hazardNodes[ring]?.run(.sequence([.scale(to: 1.12, duration: 0.12),
+                                          .scale(to: 1.0, duration: 0.18)]))
     }
 
     /// Verilen açı, halkanın kırmızı yaylarından birinin üstünde mi?
@@ -948,6 +1015,9 @@ final class GameScene: SKScene {
             tries += 1
         }
         orbState = .attached(ring: lastRing, angle: angle, direction: ringSpecs[lastRing].direction)
+        // Geri dönülen halka tehlikeliyse müsamaha yeniden başlar — reklam
+        // izleyip canlanan oyuncu doğrudan kırmızının içine düşmesin
+        startHazardGraceIfNeeded(ring: lastRing)
         dwellStart = elapsed
         exitedLastRing = true
         orbNode.position = CGPoint(x: c.x + cos(angle) * r, y: c.y + sin(angle) * r)
@@ -1073,6 +1143,7 @@ final class GameScene: SKScene {
         deadSince = nil
         orbNode.isHidden = false
         orbState = .attached(ring: start, angle: -.pi / 2, direction: ringSpecs[start].direction)
+        startHazardGraceIfNeeded(ring: start)
         dwellStart = elapsed
         dwellArc?.isHidden = true
         exitedLastRing = true

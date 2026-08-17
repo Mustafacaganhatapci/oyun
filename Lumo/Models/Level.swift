@@ -115,6 +115,18 @@ enum LevelLibrary {
         return min(max(t, 0), 1)
     }
 
+    /// Tehlike müsamahasının başladığı bölüm. Buradan sonra (ve sonsuz modda)
+    /// tehlikeli bir halkaya tutunan küre, o halka etrafında bir tam tur
+    /// dönene kadar yanmaz; yay o süre boyunca mor çizilir.
+    ///
+    /// Geç bölümlerde halkalar küçülüp hızlandığı ve tehlike yayları
+    /// genişlediği için oyuncu ineceği yeri okuyamadan ölüyordu. Bir tur,
+    /// haritayı görmeye yetecek kadar zaman veriyor ama zamanlamayı ortadan
+    /// kaldırmıyor: tur dolduğunda kırmızı geri geliyor.
+    static let hazardGraceFrom = 65
+
+    static func hasHazardGrace(_ id: Int) -> Bool { id >= hazardGraceFrom }
+
     /// Bölümün azami yıldızı — bölüm seçme ekranı bunu üretmeden bilmek ister.
     static func maxStars(for id: Int) -> Int {
         if isBonus(id) { return 3 }
