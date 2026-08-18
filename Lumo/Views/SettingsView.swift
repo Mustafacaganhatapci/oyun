@@ -298,6 +298,10 @@ private struct OrbSwatch: View {
         case .cloud:
             Image(systemName: "cloud.fill").font(.system(size: 20))
                 .foregroundStyle(.white).shadow(color: .white.opacity(0.7), radius: 6)
+        case .champion:
+            Image(systemName: "crown.fill").font(.system(size: 20))
+                .foregroundStyle(Color(red: 1.0, green: 0.82, blue: 0.35))
+                .shadow(color: Color(red: 1.0, green: 0.82, blue: 0.35), radius: 8)
         case .photo:
             if photoVersion >= 0, let image = OrbPhotoStore.load() {
                 Image(uiImage: image)
