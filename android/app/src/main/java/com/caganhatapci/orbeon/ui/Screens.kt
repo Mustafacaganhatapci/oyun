@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -105,13 +106,27 @@ fun MainMenuScreen(
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            // Üst şerit: solda premium durumu, sağda sıralama ve ayarlar.
+            // Alttaki düğme yığını böylece kısaldı ve menü daha sakin duruyor.
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PremiumBadge(theme, app.billing.isPremium) { app.audio.playTap(); onShop() }
+                Spacer(Modifier.weight(1f))
                 Box(
                     Modifier.size(44.dp)
                         .background(Color.White.copy(alpha = 0.1f), CircleShape)
                         .clickable { app.audio.playTap(); onRanking() },
                     contentAlignment = Alignment.Center
                 ) { Text("🏆", fontSize = 18.sp) }
+                Box(
+                    Modifier.size(44.dp)
+                        .background(Color.White.copy(alpha = 0.1f), CircleShape)
+                        .clickable { app.audio.playTap(); onSettings() },
+                    contentAlignment = Alignment.Center
+                ) { Text("⚙", color = Color.White.copy(alpha = 0.75f), fontSize = 18.sp) }
             }
 
             MenuLogo(theme, frameTime)
@@ -222,21 +237,44 @@ fun MainMenuScreen(
                     enabled = app.progress.endlessUnlocked
                 ) { app.audio.playTap(); onSpeedrun() }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Box(Modifier.weight(1f)) {
-                        GlowButton(
-                            if (app.billing.isPremium) stringResource(R.string.premium_active_short)
-                            else stringResource(R.string.shop),
-                            theme.lumen
-                        ) { app.audio.playTap(); onShop() }
-                    }
-                    Box(Modifier.weight(1f)) {
-                        GlowButton(stringResource(R.string.settings), Color.White.copy(alpha = 0.7f)) {
-                            app.audio.playTap(); onSettings()
-                        }
-                    }
+                // Ayarlar sağ üste taşındı; burada tek başına mağaza kaldı.
+                GlowButton(stringResource(R.string.shop), theme.lumen) {
+                    app.audio.playTap(); onShop()
                 }
             }
+        }
+    }
+}
+
+/**
+ * Sol üst köşe. Premium değilse sade bir çağrı, premiumsa yalnızca bir nişan —
+ * ikisi de mağazaya götürüyor, böylece alttaki ikinci düğmeye gerek kalmadı.
+ */
+@Composable
+private fun PremiumBadge(theme: Theme, isPremium: Boolean, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .height(32.dp)
+            .background(
+                Color.White.copy(alpha = if (isPremium) 0.06f else 0.12f),
+                RoundedCornerShape(16.dp)
+            )
+            .border(
+                1.dp,
+                if (isPremium) theme.lumen.copy(alpha = 0.55f) else Color.White.copy(alpha = 0.14f),
+                RoundedCornerShape(16.dp)
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text("👑", fontSize = 12.sp)
+        if (isPremium) {
+            Text("PREMIUM", color = theme.lumen, fontSize = 11.sp, fontWeight = FontWeight.Black)
+        } else {
+            Text(stringResource(R.string.go_premium), color = Color.White.copy(alpha = 0.85f),
+                fontSize = 12.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

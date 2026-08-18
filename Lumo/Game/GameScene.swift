@@ -11,6 +11,7 @@ enum GameEvent {
     case bonusTick(remaining: Int)
     case timeTick(remaining: Int)      // süreli bölüm geri sayımı
     case endlessScore(Int)
+    case extraLifeUsed(remaining: Int)   // premium can hakkı harcandı
     case endlessGameOver(score: Int)
 }
 
@@ -59,7 +60,12 @@ final class GameScene: SKScene {
     private var lumenValues: [Int] = []          // her lumenin yıldız değeri (normal 1, büyük 4)
     private var lumenSpecs: [LumenSpec] = []     // topla-bitir bölümünde yeniden kurmak için
     private var gateNeedsAllLumens = false
+    /// Hız turunda kapı, yıldızların hepsi toplanmadan açılmaz — sıralamayı
+    /// yıldızları atlayarak kısaltmak mümkün olmasın diye.
+    private let requiresAllLumens: Bool
     private var restartsOnDeath = false
+    /// Premium'un sonsuz modda tur başına kullanabildiği can hakkı
+    private(set) var extraLives = 0
     private weak var gateDashed: SKShapeNode?
 
     // MARK: Tehlike müsamahası
@@ -76,8 +82,11 @@ final class GameScene: SKScene {
         guard let until = hazardGraceUntil else { return false }
         return elapsed < until
     }
-    /// Yayların o an hangi renkte çizildiği — her karede renk atamamak için
-    private var hazardTintIsSafe = false
+    /// O an mor (müsamahalı) çizilen halka — her karede yeniden boyamamak ve
+    /// terk edilen halkayı kırmızıya döndürmeyi unutmamak için tutuluyor
+    private var hazardTintedRing: Int?
+    private static let hazardBaseName = "hazardArcBase"
+    private static let hazardSafeName = "hazardArcSafe"
 
     private var orbState: OrbState = .dead
     private var orbNode: SKNode!
@@ -132,11 +141,18 @@ final class GameScene: SKScene {
 
     // MARK: Kurulum
 
-    init(size: CGSize, mode: Mode, theme: Theme, orbStyle: OrbStyle, orbPhoto: UIImage? = nil) {
+    init(size: CGSize, mode: Mode, theme: Theme, orbStyle: OrbStyle,
+         orbPhoto: UIImage? = nil, isPremium: Bool = false,
+         requiresAllLumens: Bool = false) {
         self.mode = mode
+        self.requiresAllLumens = requiresAllLumens
         self.theme = theme
         self.orbStyle = orbStyle
         self.orbPhoto = orbPhoto
+        // Premium'a sonsuz modda tur başına bir can: reklam izlemeden, kendi
+        // kendine kullanılır. Bölümlerde ölmek zaten turu bitirmediği için
+        // orada karşılığı yok.
+        if case .endless = mode, isPremium { extraLives = 1 }
         super.init(size: size)
         scaleMode = .resizeFill
         backgroundColor = theme.bgBottom.uiColor
@@ -154,7 +170,7 @@ final class GameScene: SKScene {
             isBonus = lvl.kind == .bonus
             dwellLimit = lvl.dwellLimit
             forgivingBounds = LevelLibrary.isForgiving(id)
-            gateNeedsAllLumens = lvl.gateNeedsAllLumens
+            gateNeedsAllLumens = lvl.gateNeedsAllLumens || (requiresAllLumens && !lvl.lumens.isEmpty)
             restartsOnDeath = lvl.restartsOnDeath
             hazardGraceEnabled = LevelLibrary.hasHazardGrace(id)
             lumenSpecs = lvl.lumens
@@ -514,11 +530,36 @@ final class GameScene: SKScene {
                 path.addArc(center: .zero, radius: r,
                             startAngle: arc.lowerBound, endAngle: arc.upperBound, clockwise: false)
                 let shape = SKShapeNode(path: path)
+                shape.name = Self.hazardBaseName
                 shape.strokeColor = theme.hazard.uiColor
                 shape.lineWidth = 7
                 shape.lineCap = .round
                 shape.glowWidth = 6
                 hz.addChild(shape)
+
+                // Müsamaha turunda üste binen mor kesikli kaplama. Altındaki
+                // kırmızı tamamen kaybolmuyor — yay hâlâ "tehlike" gibi duruyor,
+                // ama oyuncu atlamadan da o turda yakmayacağını görebiliyor.
+                let dashed = CGMutablePath()
+                let span = arc.upperBound - arc.lowerBound
+                let segments = max(3, Int((span * r) / 18))
+                let step = span / CGFloat(segments)
+                for s in 0..<segments {
+                    let from = arc.lowerBound + CGFloat(s) * step
+                    // Her kesik ayrı başlasın; yoksa aralar kirişle birleşir
+                    dashed.move(to: CGPoint(x: cos(from) * r, y: sin(from) * r))
+                    dashed.addArc(center: .zero, radius: r,
+                                  startAngle: from, endAngle: from + step * 0.55,
+                                  clockwise: false)
+                }
+                let safeOverlay = SKShapeNode(path: dashed)
+                safeOverlay.name = Self.hazardSafeName
+                safeOverlay.strokeColor = theme.accent.uiColor
+                safeOverlay.lineWidth = 7
+                safeOverlay.lineCap = .round
+                safeOverlay.glowWidth = 6
+                safeOverlay.alpha = 0
+                hz.addChild(safeOverlay)
             }
             container.addChild(hz)
             hazardNode = hz
@@ -685,9 +726,9 @@ final class GameScene: SKScene {
         // Halkadan ayrılırken müsamaha biter ve yay kırmızıya döner; yoksa
         // geride mor kalmış bir tehlike "güvenli" izlenimi bırakırdı.
         if hazardGraceEnabled {
+            clearHazardTint()
             tintHazard(ring: ring, safe: false)
             hazardGraceUntil = nil
-            hazardTintIsSafe = false
         }
         let c = ringCenter(ring, at: elapsed)
         let r = ringRadius(ring)
@@ -813,7 +854,7 @@ final class GameScene: SKScene {
             flightTime += dt
             orbNode.position = CGPoint(x: orbNode.position.x + v.dx * CGFloat(dt),
                                        y: orbNode.position.y + v.dy * CGFloat(dt))
-            checkCapture(velocity: v)
+            checkCapture()
             checkLumens()
             checkBounds()
             if flightTime > maxFlightTime { missedShot() }
@@ -826,8 +867,16 @@ final class GameScene: SKScene {
             if let since = deadSince, elapsed - since >= respawnDelay {
                 if case .endless = mode {
                     if !endlessOverSent {
-                        endlessOverSent = true
-                        onEvent?(.endlessGameOver(score: endlessScore))
+                        // Can hakkı varsa tur bitmez: harcanır ve küre kaldığı
+                        // halkadan devam eder. Bitiş ekranı hiç açılmaz.
+                        if extraLives > 0, reviveEndless() {
+                            extraLives -= 1
+                            onEvent?(.extraLifeUsed(remaining: extraLives))
+                            burst(at: orbNode.position, color: theme.lumen.uiColor, count: 24)
+                        } else {
+                            endlessOverSent = true
+                            onEvent?(.endlessGameOver(score: endlessScore))
+                        }
                     }
                 } else if !finished {
                     restartsOnDeath ? restartLevel() : respawn(animated: true)
@@ -853,7 +902,7 @@ final class GameScene: SKScene {
 
     // MARK: Yakalama, tehlike, ödül
 
-    private func checkCapture(velocity v: CGVector) {
+    private func checkCapture() {
         for i in ringSpecs.indices {
             let c = ringCenter(i, at: elapsed)
             let dx = orbNode.position.x - c.x
@@ -915,32 +964,44 @@ final class GameScene: SKScene {
     /// Süre halkanın kendi dönüş hızından hesaplanır, böylece hızlı halkada
     /// kısa, yavaş halkada uzun olur — her zaman TAM BİR TUR eder.
     private func startHazardGraceIfNeeded(ring: Int) {
+        clearHazardTint()
         guard hazardGraceEnabled, !ringSpecs[ring].hazardArcs.isEmpty else {
             hazardGraceUntil = nil
-            hazardTintIsSafe = false
             return
         }
         let speed = max(0.1, ringSpecs[ring].orbitSpeed)
         hazardGraceUntil = elapsed + TimeInterval((2 * CGFloat.pi) / speed)
-        hazardTintIsSafe = true
         tintHazard(ring: ring, safe: true)
+        hazardTintedRing = ring
+    }
+
+    /// Mor boyalı halka varsa kırmızıya geri döndürür. Küre başka bir halkaya
+    /// geçtiğinde ya da öldüğünde çağrılır; yoksa terk edilen halka mor kalır.
+    private func clearHazardTint() {
+        guard let old = hazardTintedRing else { return }
+        hazardTintedRing = nil
+        tintHazard(ring: old, safe: false)
     }
 
     private func tintHazard(ring: Int, safe: Bool) {
         guard ring < hazardNodes.count, let node = hazardNodes[ring] else { return }
-        let color = safe ? theme.accent.uiColor : theme.hazard.uiColor
         for case let shape as SKShapeNode in node.children {
-            shape.strokeColor = color
+            if shape.name == Self.hazardSafeName {
+                shape.alpha = safe ? 1 : 0
+            } else {
+                // Kırmızı hiç yok olmuyor, sadece geri çekiliyor.
+                shape.alpha = safe ? 0.35 : 1
+            }
         }
     }
 
     /// Tur dolduğu anda yayı kırmızıya çevirir ve bir kez attırır — oyuncu
     /// artık öldürücü olduğunu görsün.
     private func updateHazardTint() {
-        guard hazardGraceEnabled, hazardTintIsSafe, !hazardGraceActive else { return }
-        hazardTintIsSafe = false
-        guard case .attached(let ring, _, _) = orbState else { return }
+        guard let ring = hazardTintedRing, !hazardGraceActive else { return }
+        hazardTintedRing = nil
         tintHazard(ring: ring, safe: false)
+        guard ring < hazardNodes.count else { return }
         hazardNodes[ring]?.run(.sequence([.scale(to: 1.12, duration: 0.12),
                                           .scale(to: 1.0, duration: 0.18)]))
     }
@@ -1180,6 +1241,8 @@ final class GameScene: SKScene {
         // yazıldığı için bir öncekini gösteriyordu: sonsuz modda reklam izleyip
         // canlanan oyuncu, skoru 27 yazarken 26. halkada başlıyordu.
         if case .attached(let ring, _, _) = orbState { lastRing = ring }
+        hazardGraceUntil = nil
+        clearHazardTint()
         orbState = .dead
         deadSince = elapsed
         combo = 0
@@ -1312,7 +1375,21 @@ final class GameScene: SKScene {
 
     private func updateEndlessCamera(dt: TimeInterval) {
         guard let cam = cameraNode else { return }
-        let targetY = max(orbNode.position.y + size.height * 0.18, size.height / 2)
+        guard !ringSpecs.isEmpty else { return }
+        // Kamera, ulaşılan son halkanın bir miktar üstünden yukarı ÇIKMAZ.
+        // Öncesinde küreyi koşulsuz takip ediyordu: boşluğa atılan küre
+        // kadrajdan hiç çıkmıyor, `checkBounds` sınırları da kameraya göre
+        // ölçüldüğü için ölüm saniyelerce gecikiyordu. Tavan konunca küre
+        // oynanabilir alanı terk eder etmez kadrajdan çıkıp ölüyor.
+        //
+        // Ölçü ileride hazır bekleyen halkalar OLAMAZ: sonsuz modda küreden 4
+        // halka ötesi zaten üretilmiş olduğu için tavan ekranlarca yukarı
+        // kayar ve kısıtlama hiçbir işe yaramaz.
+        var anchorRing = lastRing
+        if case .attached(let ring, _, _) = orbState { anchorRing = ring }
+        anchorRing = min(max(anchorRing, 0), ringSpecs.count - 1)
+        let ceiling = scenePoint(ringSpecs[anchorRing].center).y + size.height * 0.35
+        let targetY = min(max(orbNode.position.y + size.height * 0.18, size.height / 2), ceiling)
         if targetY > cam.position.y {
             cam.position.y += (targetY - cam.position.y) * CGFloat(min(1, dt * 4))
         }

@@ -123,7 +123,7 @@ enum LevelLibrary {
     /// genişlediği için oyuncu ineceği yeri okuyamadan ölüyordu. Bir tur,
     /// haritayı görmeye yetecek kadar zaman veriyor ama zamanlamayı ortadan
     /// kaldırmıyor: tur dolduğunda kırmızı geri geliyor.
-    static let hazardGraceFrom = 65
+    static let hazardGraceFrom = 67
 
     static func hasHazardGrace(_ id: Int) -> Bool { id >= hazardGraceFrom }
 

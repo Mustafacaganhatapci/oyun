@@ -149,6 +149,15 @@ object LevelLibrary {
         return if (id > LEGACY_COUNT) id % 3 == 2 else id % 7 == 1
     }
 
+    /**
+     * Tehlike müsamahasının başladığı bölüm. Buradan sonra (ve sonsuz modda)
+     * tehlikeli bir halkaya tutunan küre, o halka etrafında bir tam tur dönene
+     * kadar yanmaz; yay o süre boyunca mor kesiklerle çizilir.
+     */
+    const val HAZARD_GRACE_FROM = 67
+
+    fun hasHazardGrace(id: Int): Boolean = id >= HAZARD_GRACE_FROM
+
     /** Zorluk eğrisinin 0...1 konumu; 100. normal bölümden sonra 1'de durur. */
     private fun curveT(n: Int): Float =
         ((n - 1).toFloat() / max(1, CURVE_NORMAL_COUNT - 1).toFloat()).coerceIn(0f, 1f)

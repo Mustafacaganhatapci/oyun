@@ -49,6 +49,8 @@ struct GameContainerView: View {
     @State private var revivedThisRun = false
     @State private var reviveFailed = false
     @State private var endlessScore = 0
+    /// Premium'un sonsuz modda kalan can hakkı (HUD'da sağ üstte)
+    @State private var extraLives = 0
     @State private var bonusRemaining = 0
     @State private var timeRemaining = -1      // süreli bölüm geri sayımı (-1: süresiz)
     @State private var sceneSize: CGSize = .zero
@@ -220,6 +222,9 @@ struct GameContainerView: View {
     /// tetikler (sahne hazır olunca yumuşakça açılır).
     private func installScene(_ newScene: GameScene) {
         scene = newScene
+        // Can hakkı sahnenin kendi kararı (mod + premium); burada tekrar
+        // hesaplamak yerine ondan okunuyor
+        extraLives = newScene.extraLives
         sceneID += 1
         sceneCover = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.04) {
@@ -243,7 +248,9 @@ struct GameContainerView: View {
         }
         let photo = settings.orbStyle.kind == .photo ? OrbPhotoStore.load() : nil
         let s = GameScene(size: size, mode: mode, theme: settings.theme,
-                          orbStyle: settings.orbStyle, orbPhoto: photo)
+                          orbStyle: settings.orbStyle, orbPhoto: photo,
+                          isPremium: store.isPremium,
+                          requiresAllLumens: playMode == .speedrun)
         s.onEvent = { event in handle(event) }
         return s
     }
@@ -336,6 +343,11 @@ struct GameContainerView: View {
 
         case .endlessScore(let score):
             endlessScore = score
+
+        case .extraLifeUsed(let remaining):
+            extraLives = remaining
+            AudioEngine.shared.playWin()
+            Haptics.shared.win()
 
         case .endlessGameOver(let score):
             progress.recordEndless(score: score)
@@ -476,6 +488,21 @@ struct GameContainerView: View {
                 }
             }
             .frame(width: 56)
+        } else if playMode == .endless && extraLives > 0 {
+            // Premium oyuncular reklam izlemiyor; onun yerine tek kullanımlık
+            // bir can hakları var. Kalpten kaç tane kaldığını burada gösteriyoruz.
+            HStack(spacing: 4) {
+                Image(systemName: "heart.fill")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(settings.theme.hazard.color)
+                    .shadow(color: settings.theme.hazard.opacity(0.7), radius: 6)
+                Text("\(extraLives)")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .foregroundStyle(.white)
+                    .contentTransition(.numericText())
+            }
+            .frame(width: 56)
+            .animation(.spring(duration: 0.3), value: extraLives)
         } else {
             Color.clear.frame(width: 56, height: 1)
         }
@@ -1029,6 +1056,7 @@ struct GameContainerView: View {
         revivedThisRun = false
         reviveFailed = false
         endlessScore = 0
+        extraLives = store.isPremium && playMode == .endless ? 1 : 0
         bonusRemaining = 0
         timeRemaining = -1
         speedIndex = 0

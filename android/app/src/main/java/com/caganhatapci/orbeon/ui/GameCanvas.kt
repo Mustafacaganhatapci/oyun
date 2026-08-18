@@ -143,18 +143,30 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
             }
         }
 
-        // Kırmızı tehlike yayları: parıltılı, yuvarlak uçlu
+        // Kırmızı tehlike yayları: parıltılı, yuvarlak uçlu.
+        // Müsamaha turunda kırmızı tamamen kaybolmuyor, yalnızca geri çekiliyor
+        // ve üstüne mor kesikler biniyor: yay hâlâ "tehlike" gibi duruyor ama
+        // oyuncu atlamadan da o turda yakmayacağını görebiliyor.
         val rot = t * spec.hazardRotationSpeed
+        val graced = engine.hazardSafeRing == i
         for (arc in spec.hazardArcs) {
             val startDeg = Math.toDegrees((arc.start + rot).toDouble()).toFloat()
             val sweepDeg = Math.toDegrees((arc.end - arc.start).toDouble()).toFloat()
             val box = Rect(cx - r, cy - r, cx + r, cy + r)
-            drawArc(theme.hazard.copy(alpha = 0.30f), startDeg, sweepDeg, false,
+            val fade = if (graced) 0.35f else 1f
+            drawArc(theme.hazard.copy(alpha = 0.30f * fade), startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
                 style = Stroke(width = 15f * den, cap = StrokeCap.Round))
-            drawArc(theme.hazard, startDeg, sweepDeg, false,
+            drawArc(theme.hazard.copy(alpha = fade), startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
                 style = Stroke(width = 7f * den, cap = StrokeCap.Round))
+            if (graced) {
+                drawArc(theme.accent, startDeg, sweepDeg, false,
+                    topLeft = box.topLeft, size = Size(box.width, box.height),
+                    style = Stroke(width = 7f * den, cap = StrokeCap.Round,
+                        pathEffect = PathEffect.dashPathEffect(
+                            floatArrayOf(9f * den, 8f * den))))
+            }
         }
 
         // "Devam et ya da düş" — aktif halkada azalan süre yayı

@@ -19,9 +19,12 @@ struct MainMenuView: View {
         ZStack {
             AnimatedBackground(theme: settings.theme)
 
-            // Dünya sıralaması — sağ üstte, ortalamayı bozmayan katman
+            // Üst şerit: solda premium durumu, sağda sıralama ve ayarlar.
+            // İkisi de ortalamayı bozmayan ayrı bir katmanda duruyor; alttaki
+            // düğme yığını böylece kısaldı ve menü daha sakin görünüyor.
             VStack {
-                HStack {
+                HStack(spacing: 8) {
+                    premiumBadge
                     Spacer()
                     Button {
                         AudioEngine.shared.playTap()
@@ -30,6 +33,16 @@ struct MainMenuView: View {
                         Image(systemName: "trophy.fill")
                             .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(settings.theme.lumen.color)
+                            .frame(width: 44, height: 44)
+                            .background(Circle().fill(.white.opacity(0.1)))
+                    }
+                    Button {
+                        AudioEngine.shared.playTap()
+                        app.route = .settings
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                            .font(.system(size: 17, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.75))
                             .frame(width: 44, height: 44)
                             .background(Circle().fill(.white.opacity(0.1)))
                     }
@@ -108,6 +121,48 @@ struct MainMenuView: View {
                 ChampionAwardView(rank: award.rank, stars: award.stars,
                                   theme: settings.theme) { championAward = nil }
             }
+        }
+    }
+
+    /// Sol üst köşe. Premium değilse sade bir çağrı, premiumsa yalnızca bir
+    /// nişan — ikisi de mağazaya götürüyor, böylece alttaki "Mağaza" düğmesine
+    /// gerek kalmadı.
+    private var premiumBadge: some View {
+        Button {
+            AudioEngine.shared.playTap()
+            app.route = .shop
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "crown.fill")
+                    .font(.system(size: 12, weight: .bold))
+                if store.isPremium {
+                    Text(verbatim: "PREMIUM")
+                        .font(.system(size: 11, weight: .heavy, design: .rounded))
+                        .kerning(1.6)
+                } else {
+                    Text("Go Premium")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                }
+            }
+            .foregroundStyle(
+                store.isPremium
+                ? LinearGradient(colors: [settings.theme.lumen.color, .white],
+                                 startPoint: .leading, endPoint: .trailing)
+                : LinearGradient(colors: [.white.opacity(0.85), .white.opacity(0.85)],
+                                 startPoint: .leading, endPoint: .trailing)
+            )
+            .padding(.horizontal, 12)
+            .frame(height: 32)
+            .background(
+                Capsule().fill(.white.opacity(store.isPremium ? 0.06 : 0.12))
+            )
+            .overlay(
+                Capsule().stroke(
+                    store.isPremium ? settings.theme.lumen.opacity(0.55) : .white.opacity(0.14),
+                    lineWidth: 1
+                )
+            )
+            .shadow(color: store.isPremium ? settings.theme.lumen.opacity(0.35) : .clear, radius: 10)
         }
     }
 
@@ -387,27 +442,14 @@ struct MainMenuView: View {
             .buttonStyle(GlowButtonStyle(color: settings.theme.hazard.color))
             .opacity(progress.endlessUnlocked ? 1 : 0.55)
 
-            HStack(spacing: 12) {
-                Button {
-                    AudioEngine.shared.playTap()
-                    app.route = .shop
-                } label: {
-                    if store.isPremium {
-                        Label("Premium ✓", systemImage: "crown.fill")
-                    } else {
-                        Label("Shop", systemImage: "crown.fill")
-                    }
-                }
-                .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color))
-
-                Button {
-                    AudioEngine.shared.playTap()
-                    app.route = .settings
-                } label: {
-                    Label("Settings", systemImage: "gearshape.fill")
-                }
-                .buttonStyle(GlowButtonStyle(color: Color.white.opacity(0.7)))
+            // Ayarlar sağ üste taşındı; burada tek başına mağaza kaldı.
+            Button {
+                AudioEngine.shared.playTap()
+                app.route = .shop
+            } label: {
+                Label("Shop", systemImage: "bag.fill")
             }
+            .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color))
         }
     }
 }

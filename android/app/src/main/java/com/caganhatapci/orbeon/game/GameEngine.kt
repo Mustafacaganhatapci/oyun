@@ -30,6 +30,8 @@ sealed class GameEvent {
     data class TimeTick(val remaining: Int) : GameEvent()
     data class EndlessScore(val score: Int) : GameEvent()
     data class EndlessGameOver(val score: Int) : GameEvent()
+    /** Premium ekstra canı harcandı — HUD göstergesi güncellensin */
+    data class ExtraLifeUsed(val remaining: Int) : GameEvent()
 }
 
 sealed class GameMode {
@@ -46,7 +48,14 @@ sealed class GameMode {
  */
 class GameEngine(
     val mode: GameMode,
-    var onEvent: ((GameEvent) -> Unit)? = null
+    var onEvent: ((GameEvent) -> Unit)? = null,
+    /** Premium oyuncuya sonsuz modda tur başına bir can (reklam izlemiyorlar) */
+    isPremium: Boolean = false,
+    /**
+     * Hız turunda kapı, yıldızların hepsi toplanmadan açılmaz — sıralamayı
+     * yıldızları atlayarak kısaltmak mümkün olmasın diye.
+     */
+    private val requiresAllLumens: Boolean = false
 ) {
     // MARK: Ayar sabitleri — iOS ile aynı (puntolar yoğunlukla ölçeklenir)
     private val flightSpeedFactor = 1.55f   // ekran genişliği / sn
@@ -127,6 +136,20 @@ class GameEngine(
     /** Kilitli kapı sönük çizilsin diye tuvalin okuduğu bayrak */
     val gateLocked: Boolean get() = gateNeedsAllLumens && !gateOpen
 
+    // Tehlike müsamahası — ilk tam tur yakmaz
+    private var hazardGraceEnabled = false
+    private var hazardGraceUntil: Double? = null
+    private val hazardGraceActive: Boolean
+        get() = hazardGraceUntil?.let { elapsed < it } ?: false
+
+    /**
+     * Tuval bu bayrağa bakarak müsamaha turundaki yayı yarı saydam kırmızının
+     * üstüne mor kesiklerle çizer: yay hâlâ "tehlike" gibi durur ama oyuncu
+     * atlamadan da o turda yakmayacağını görebilir.
+     */
+    val hazardSafeRing: Int?
+        get() = if (hazardGraceActive) (orbState as? OrbState.Attached)?.ring else null
+
     // "Devam et ya da düş"
     private var dwellLimit: Double? = null
     private var dwellStart = 0.0
@@ -138,6 +161,9 @@ class GameEngine(
 
     // Sonsuz mod
     var endlessScore = 0
+        private set
+    /** Kalan ekstra can — HUD sağ üstte kalp olarak gösterir */
+    var extraLives = if (mode is GameMode.Endless && isPremium) 1 else 0
         private set
     var cameraY = 0f
         private set
@@ -196,7 +222,9 @@ class GameEngine(
                 isBonus = lvl.kind == LevelKind.BONUS
                 dwellLimit = lvl.dwellLimit
                 forgivingBounds = LevelLibrary.isForgiving(mode.id)
-                gateNeedsAllLumens = lvl.gateNeedsAllLumens
+                hazardGraceEnabled = LevelLibrary.hasHazardGrace(mode.id)
+                gateNeedsAllLumens = lvl.gateNeedsAllLumens ||
+                    (requiresAllLumens && lvl.lumens.isNotEmpty())
                 restartsOnDeath = lvl.restartsOnDeath
                 lumenSpecs = lvl.lumens
                 if (isBonus) bonusDeadline = lvl.bonusDuration
@@ -208,6 +236,7 @@ class GameEngine(
                 respawn()
             }
             GameMode.Endless -> {
+                hazardGraceEnabled = true
                 seedEndless()
                 lumens = emptyList()
                 lumenCollected = BooleanArray(0)
@@ -341,7 +370,7 @@ class GameEngine(
                 val r = ringRadius(s.ring)
                 orbX = cx + cos(angle) * r
                 orbY = cy + sin(angle) * r
-                if (hazardContains(s.ring, angle)) { fail(); return }
+                if (!hazardGraceActive && hazardContains(s.ring, angle)) { fail(); return }
                 checkLumens()
                 // Süre dolunca ceza yok: küre kendiliğinden fırlar. Yayın son
                 // üçte biri kırmızıya döndüğünde oyuncu bunun geldiğini görür
@@ -364,7 +393,7 @@ class GameEngine(
                 flightTime += dt
                 orbX += s.vx * dt.toFloat()
                 orbY += s.vy * dt.toFloat()
-                checkCapture(s.vx, s.vy)
+                checkCapture()
                 checkLumens()
                 checkBounds()
                 if (flightTime > maxFlightTime) missedShot()
@@ -375,7 +404,12 @@ class GameEngine(
                 val since = deadSince
                 if (since != null && elapsed - since >= respawnDelay) {
                     if (mode is GameMode.Endless) {
-                        if (!endlessOverSent) {
+                        if (extraLives > 0) {
+                            extraLives--
+                            reviveEndless()
+                            burst(orbX, orbY, 24, FxColor.LUMEN)
+                            onEvent?.invoke(GameEvent.ExtraLifeUsed(extraLives))
+                        } else if (!endlessOverSent) {
                             endlessOverSent = true
                             onEvent?.invoke(GameEvent.EndlessGameOver(endlessScore))
                         }
@@ -393,7 +427,7 @@ class GameEngine(
 
     // MARK: Yakalama, tehlike, ödül
 
-    private fun checkCapture(vx: Float, vy: Float) {
+    private fun checkCapture() {
         for (i in ringSpecs.indices) {
             val (cx, cy) = ringCenter(i)
             val dx = orbX - cx
@@ -408,12 +442,16 @@ class GameEngine(
             if (dist > r) continue
 
             val angle = atan2(dy, dx)
-            // Kırmızıya temas HER ZAMAN öldürür — üstüne konmak da dahil
-            if (hazardContains(i, angle)) { fail(); return }
+            // Müsamaha kapalıyken kırmızıya konmak da ölümdür. Açıkken bu ilk
+            // temas öldürmez; tur sayacı başlar.
+            if (!hazardGraceEnabled && hazardContains(i, angle)) { fail(); return }
 
-            val cross = dx * vy - dy * vx
-            val direction = if (cross >= 0) 1f else -1f
+            // Küre halkanın SOL yarısına geldiyse saat yönünün tersine, SAĞ
+            // yarısına geldiyse saat yönünde döner. Ekran ekseni iOS'un tersi
+            // olduğu için işaret de ters: aynı görüntüyü veren değer bu.
+            val direction = if (dx < 0) -1f else 1f
             orbState = OrbState.Attached(i, angle, direction)
+            startHazardGraceIfNeeded(i)
             dwellStart = elapsed
             combo++
             burst(orbX, orbY, 10, FxColor.ACCENT)
@@ -436,6 +474,20 @@ class GameEngine(
             }
             return
         }
+    }
+
+    /**
+     * Tehlikeli bir halkaya tutunulduğunda bir tam turluk müsamaha başlatır.
+     * Süre halkanın kendi dönüş hızından hesaplanır: hızlı halkada kısa,
+     * yavaş halkada uzun — her zaman TAM BİR TUR eder.
+     */
+    private fun startHazardGraceIfNeeded(ring: Int) {
+        if (!hazardGraceEnabled || ringSpecs[ring].hazardArcs.isEmpty()) {
+            hazardGraceUntil = null
+            return
+        }
+        val speed = max(0.1f, ringSpecs[ring].orbitSpeed)
+        hazardGraceUntil = elapsed + (2 * PI / speed)
     }
 
     /** Verilen açı, halkanın kırmızı yaylarından birinin üstünde mi? */
@@ -526,6 +578,7 @@ class GameEngine(
             tries++
         }
         orbState = OrbState.Attached(lastRing, angle, ringSpecs[lastRing].direction)
+        startHazardGraceIfNeeded(lastRing)
         dwellStart = elapsed
         exitedLastRing = true
         orbX = cx + cos(angle) * r
@@ -537,16 +590,27 @@ class GameEngine(
      * küre son tutunduğu halkaya güvenli bir açıdan geri oturur.
      */
     fun reviveEndless() {
-        if (mode !is GameMode.Endless) return
+        if (mode !is GameMode.Endless || ringSpecs.isEmpty()) return
         endlessOverSent = false
         deadSince = null
+        flightTime = 0.0
         orbVisible = true
+        lastRing = lastRing.coerceIn(0, ringSpecs.size - 1)
         softReturn()
+        // Kamera yalnızca yukarı taşındığı için ölüm yüksekliğinde asılı
+        // kalıyordu: aşağıdaki halkasına dönen küre kadrajın altında kalıyor,
+        // dokunulduğu anda da sınır dışı sayılıp anında ölüyordu.
+        cameraY = min(orbY - height * 0.18f, height / 2f)
     }
 
     private fun fail() {
         if (orbState is OrbState.Dead || orbState is OrbState.Won) return
         if (finished) return
+        // Canlanma tam öldüğü halkadan devam etsin diye tutunulan halkayı
+        // kaydediyoruz; `lastRing` yalnızca fırlatmada güncellendiği için
+        // halka üstünde ölünce bir gerideki halkadan başlıyordu.
+        (orbState as? OrbState.Attached)?.let { lastRing = it.ring }
+        hazardGraceUntil = null
         orbState = OrbState.Dead
         deadSince = elapsed
         combo = 0
@@ -562,6 +626,7 @@ class GameEngine(
         deadSince = null
         orbVisible = true
         orbState = OrbState.Attached(start, (-PI / 2).toFloat(), ringSpecs[start].direction)
+        startHazardGraceIfNeeded(start)
         dwellStart = elapsed
         dwellVisible = false
         exitedLastRing = true
@@ -663,7 +728,16 @@ class GameEngine(
     }
 
     private fun updateEndlessCamera(dt: Double) {
-        val targetY = min(orbY - height * 0.18f, height / 2f)
+        // Kamera, ulaşılan son halkanın bir miktar üstünden yukarı ÇIKMAZ.
+        // Öncesinde küreyi koşulsuz takip ediyordu: boşluğa atılan küre
+        // kadrajdan hiç çıkmıyor, sınırlar da kameraya göre ölçüldüğü için
+        // ölüm saniyelerce gecikiyordu. (Ekran ekseni aşağı doğru arttığı
+        // için "tavan" burada sayısal olarak alt sınırdır.)
+        if (ringSpecs.isEmpty()) return
+        val anchorRing = ((orbState as? OrbState.Attached)?.ring ?: lastRing)
+            .coerceIn(0, ringSpecs.size - 1)
+        val ceiling = ringCenter(anchorRing).second - height * 0.35f
+        val targetY = min(orbY - height * 0.18f, height / 2f).coerceAtLeast(ceiling)
         if (targetY < cameraY) {
             cameraY += (targetY - cameraY) * min(1f, (dt * 4).toFloat())
         }

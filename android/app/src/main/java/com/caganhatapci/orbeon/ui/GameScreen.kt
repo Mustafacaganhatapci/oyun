@@ -110,6 +110,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
     var deathsThisLevel by remember { mutableIntStateOf(0) }
     var revivedThisRun by remember { mutableStateOf(false) }
     var endlessScore by remember { mutableIntStateOf(0) }
+    var extraLives by remember { mutableIntStateOf(0) }
     var bonusRemaining by remember { mutableIntStateOf(0) }
     var timeRemaining by remember { mutableIntStateOf(-1) }
     var tutorialHops by remember { mutableIntStateOf(0) }
@@ -119,7 +120,11 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
     val engine = remember(currentLevelId, playMode, runId) {
         val mode = if (playMode == PlayMode.Endless) GameMode.Endless
                    else GameMode.LevelMode(currentLevelId ?: 1)
-        GameEngine(mode)
+        GameEngine(
+            mode,
+            isPremium = app.billing.isPremium,
+            requiresAllLumens = playMode == PlayMode.Speedrun
+        )
     }
 
     // Yeni motor = yeni deneme: sayaçlar, bölüm kartı ve koç sıfırdan
@@ -132,6 +137,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
         overlay = Overlay.None
         coach = null
         if (playMode == PlayMode.Endless) revivedThisRun = false
+        extraLives = engine.extraLives
 
         if (currentLevelId != null && !isTutorialLevel) {
             levelIntroVisible = true
@@ -213,6 +219,10 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             is GameEvent.BonusTick -> bonusRemaining = event.remaining
             is GameEvent.TimeTick -> timeRemaining = event.remaining
             is GameEvent.EndlessScore -> endlessScore = event.score
+            is GameEvent.ExtraLifeUsed -> {
+                extraLives = event.remaining
+                app.haptics.fail()
+            }
             is GameEvent.EndlessGameOver -> {
                 app.progress.recordEndless(event.score)
                 if (app.player.hasUsername) {
@@ -308,6 +318,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                 endlessScore = endlessScore,
                 bonusRemaining = bonusRemaining,
                 timeRemaining = timeRemaining,
+                extraLives = extraLives,
                 theme = theme,
                 onPause = { overlay = Overlay.Paused }
             )
@@ -417,6 +428,7 @@ private fun GameHud(
     endlessScore: Int,
     bonusRemaining: Int,
     timeRemaining: Int,
+    extraLives: Int,
     theme: Theme,
     onPause: () -> Unit
 ) {
@@ -451,7 +463,17 @@ private fun GameHud(
                         fontSize = 18.sp, fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(end = 10.dp))
                 }
-                Text("★ $lumenCount", color = theme.lumen, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                // Premium oyuncu reklam izlemiyor; onun yerine tur başına tek
+                // kullanımlık bir canı var, kalpten kaç tane kaldığı burada.
+                if (playMode == PlayMode.Endless && extraLives > 0) {
+                    Text("♥ $extraLives", color = theme.hazard,
+                        fontSize = 16.sp, fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(end = 10.dp))
+                }
+                if (playMode != PlayMode.Endless) {
+                    Text("★ $lumenCount", color = theme.lumen,
+                        fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
