@@ -96,7 +96,6 @@ final class GameScene: SKScene {
     private static let hazardBaseName = "hazardArcBase"
     private static let hazardSafeName = "hazardArcSafe"
     private static let hazardNotchName = "hazardArcNotch"
-    private static let dwellTrackName = "dwellTrack"
 
     /// Tehlike yayının üstündeki yeşil kaplama. Yolu her karede yeniden
     /// üretildiği için yayın açısal sınırları burada saklanıyor.
@@ -1280,10 +1279,10 @@ final class GameScene: SKScene {
     /// Aktif halkanın çevresinde kalan oyalanma süresini gösteren azalan yay.
     /// Üstten başlar, saat yönünde tükenir; süre azaldıkça kırmızıya döner.
     ///
-    /// Yayın arkasında TAM BİR ÇEMBER var: tükenmiş kısım sönük bir yuva
-    /// olarak yerinde duruyor. Yalnızca kalan kısım çizilirken gösterge, halka
-    /// üstündeki tehlike yaylarıyla aynı şekle giriyor ve hangisinin sayaç
-    /// olduğu anlaşılmıyordu.
+    /// Arkasına bir yuva çemberi konmuştu — göstergeyi tehlike yaylarından
+    /// ayırmak için. Tehlike yayları artık kendi geri sayımını taşıdığı ve
+    /// bu yay da bitmeye yakın kırmızıya döndüğü için yuva fazlalıktı:
+    /// ekranda halka sayısını iki katına çıkarmaktan başka işi yoktu.
     private func updateDwellArc(ring: Int, fraction: CGFloat) {
         let arc: SKShapeNode
         if let existing = dwellArc {
@@ -1295,13 +1294,6 @@ final class GameScene: SKScene {
             n.glowWidth = 0
             n.zPosition = 16
             n.fillColor = .clear
-            let track = SKShapeNode()
-            track.name = Self.dwellTrackName
-            track.lineWidth = 4
-            track.glowWidth = 0
-            track.fillColor = .clear
-            track.zPosition = -1
-            n.addChild(track)
             addChild(n)
             dwellArc = n
             arc = n
@@ -1317,15 +1309,6 @@ final class GameScene: SKScene {
         let low = fraction < 0.34
         arc.strokeColor = low ? theme.hazard.uiColor : theme.accent.uiColor
         arc.alpha = low ? 0.95 : 0.7
-
-        if let track = arc.childNode(withName: Self.dwellTrackName) as? SKShapeNode {
-            track.path = CGPath(ellipseIn: CGRect(x: -r, y: -r, width: r * 2, height: r * 2),
-                                transform: nil)
-            track.strokeColor = theme.ring.uiColor
-            // Çocuk düğümün alfası ebeveyninkiyle ÇARPILIYOR; yuva ekranda
-            // her zaman aynı sönüklükte kalsın diye bölerek telafi ediliyor
-            track.alpha = 0.26 / arc.alpha
-        }
     }
 
     // MARK: Kazanma / kaybetme

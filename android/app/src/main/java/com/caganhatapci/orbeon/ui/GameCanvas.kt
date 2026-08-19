@@ -199,12 +199,10 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
         if (engine.dwellVisible && attached?.ring == i) {
             val frac = engine.dwellFraction
             val rr = r + 9f * den
-            // Tükenmiş kısım sönük bir yuva olarak yerinde duruyor. Yalnızca
-            // kalan kısım çizilirken gösterge, halka üstündeki tehlike
-            // yaylarıyla aynı şekle giriyor ve hangisinin sayaç olduğu
-            // anlaşılmıyordu.
-            drawCircle(theme.ring.copy(alpha = 0.26f), rr, Offset(cx, cy),
-                style = Stroke(width = 3f * den))
+            // Arkasına bir yuva çemberi konmuştu; tehlike yayları artık kendi
+            // geri sayımını taşıdığı ve bu yay da bitmeye yakın kırmızıya
+            // döndüğü için fazlalıktı — ekranda halka sayısını iki katına
+            // çıkarmaktan başka işi yoktu.
             drawArc(
                 if (frac < 0.3f) theme.hazard else theme.lumen.copy(alpha = 0.8f),
                 -90f, 360f * frac, false,
