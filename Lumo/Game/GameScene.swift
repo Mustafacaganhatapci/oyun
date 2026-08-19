@@ -305,7 +305,7 @@ final class GameScene: SKScene {
             core.fillColor = .clear
             core.strokeColor = theme.orb.uiColor
             core.lineWidth = 3.5
-            core.glowWidth = 3
+            core.glowWidth = 1
             container.addChild(core)
             orbCore = core
 
@@ -342,7 +342,7 @@ final class GameScene: SKScene {
             core.fillColor = UIColor.white.withAlphaComponent(0.32)
             core.strokeColor = UIColor.white.withAlphaComponent(0.8)
             core.lineWidth = 1.5
-            core.glowWidth = 5
+            core.glowWidth = 2
             core.run(.repeatForever(.sequence([
                 .group([.scaleX(to: 1.1, y: 0.92, duration: 1.1), .fadeAlpha(to: 0.85, duration: 1.1)]),
                 .group([.scaleX(to: 0.92, y: 1.1, duration: 1.1), .fadeAlpha(to: 1.0, duration: 1.1)])
@@ -372,7 +372,7 @@ final class GameScene: SKScene {
             let tail = SKShapeNode(circleOfRadius: orbRadius * 0.45)
             tail.fillColor = UIColor(red: 0.75, green: 1.0, blue: 0.4, alpha: 1)
             tail.strokeColor = .clear
-            tail.glowWidth = 10
+            tail.glowWidth = 3
             tail.position = CGPoint(x: 0, y: -orbRadius * 0.65)
             tail.run(.repeatForever(.sequence([
                 .fadeAlpha(to: 0.15, duration: 0.5),
@@ -408,7 +408,7 @@ final class GameScene: SKScene {
             let halo = SKShapeNode(circleOfRadius: orbRadius * 1.9)
             halo.fillColor = gold.withAlphaComponent(0.16)
             halo.strokeColor = .clear
-            halo.glowWidth = 10
+            halo.glowWidth = 3
             container.addChild(halo)
 
             let crown = SKShapeNode(path: Self.crownPath(width: orbRadius * 2.6,
@@ -416,7 +416,7 @@ final class GameScene: SKScene {
             crown.fillColor = gold
             crown.strokeColor = gold
             crown.lineWidth = 1
-            crown.glowWidth = 6
+            crown.glowWidth = 2
             container.addChild(crown)
 
             // Defne: kesikli çember, tacın tersine döner
@@ -428,7 +428,7 @@ final class GameScene: SKScene {
                 .copy(dashingWithPhase: 0, lengths: [5, 6]))
             wreath.strokeColor = gold.withAlphaComponent(0.85)
             wreath.lineWidth = 2
-            wreath.glowWidth = 3
+            wreath.glowWidth = 1
             wreath.run(.repeatForever(.rotate(byAngle: -.pi * 2, duration: 5)))
             container.addChild(wreath)
 
@@ -452,7 +452,7 @@ final class GameScene: SKScene {
                 let ring = SKShapeNode(circleOfRadius: orbRadius * 1.6)
                 ring.strokeColor = theme.orb.uiColor
                 ring.lineWidth = 2
-                ring.glowWidth = 4
+                ring.glowWidth = 1
                 container.addChild(ring)
             } else {
                 let core = SKShapeNode(circleOfRadius: orbRadius)
@@ -515,7 +515,8 @@ final class GameScene: SKScene {
         // buna karşılık biraz kalınlaştı ve tam opaklığa çıktı. Düşük
         // kontrast, parlaklıktan daha çok göz yoruyor.
         circle.lineWidth = 3.5
-        circle.glowWidth = spec.isGate ? 10 : 6
+        // Mat dil: parıltı yok, yalnızca kapı çok hafif bir hâle taşıyor
+        circle.glowWidth = spec.isGate ? 3 : 0
         circle.alpha = locked ? 0.35 : 1.0
         circle.fillColor = .clear
         container.addChild(circle)
@@ -563,7 +564,7 @@ final class GameScene: SKScene {
                 shape.strokeColor = theme.hazard.uiColor
                 shape.lineWidth = 7
                 shape.lineCap = .round
-                shape.glowWidth = 6
+                shape.glowWidth = 2
                 hz.addChild(shape)
 
                 if hazardGraceEnabled {
@@ -571,9 +572,9 @@ final class GameScene: SKScene {
                     cover.name = Self.hazardSafeName
                     cover.strokeColor = theme.hazardSafe.uiColor
                     // Kırmızıdan bir tık kalın: kenarda kırmızı sızmasın
-                    cover.lineWidth = 8
+                    cover.lineWidth = 8.5
                     cover.lineCap = .round
-                    cover.glowWidth = 6
+                    cover.glowWidth = 0
                     cover.fillColor = .clear
                     hz.addChild(cover)
                     safe.append(SafeArc(shape: cover, lower: arc.lowerBound,
@@ -641,7 +642,7 @@ final class GameScene: SKScene {
         line.strokeColor = UIColor.white.withAlphaComponent(0.7)
         line.lineWidth = 3
         line.lineCap = .round
-        line.glowWidth = 2
+        line.glowWidth = 0
         line.zPosition = 30
         addChild(line)
         aimLine = line
@@ -693,10 +694,10 @@ final class GameScene: SKScene {
             let node: SKShapeNode
             if spec.isGrand {
                 node = SKShapeNode(path: Self.starPath(outer: 17, inner: 7.4))
-                node.glowWidth = 14
+                node.glowWidth = 4
             } else {
                 node = SKShapeNode(circleOfRadius: 7)
-                node.glowWidth = 8
+                node.glowWidth = 2
             }
             node.fillColor = theme.lumen.uiColor
             node.strokeColor = .clear
@@ -1291,7 +1292,7 @@ final class GameScene: SKScene {
             let n = SKShapeNode()
             n.lineWidth = 4
             n.lineCap = .round
-            n.glowWidth = 4
+            n.glowWidth = 0
             n.zPosition = 16
             n.fillColor = .clear
             let track = SKShapeNode()

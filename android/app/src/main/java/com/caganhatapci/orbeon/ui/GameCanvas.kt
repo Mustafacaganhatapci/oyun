@@ -98,7 +98,7 @@ private fun DrawScope.drawTrail(engine: GameEngine, theme: Theme, orbStyle: OrbS
         val a = (1f - p.age / life).coerceIn(0f, 1f)
         if (a <= 0f) continue
         val r = (if (comet) 7f else 5f) * a * den
-        drawCircle(theme.accent.copy(alpha = a * 0.45f), r * 2.2f, Offset(p.x, p.y))
+        drawCircle(theme.accent.copy(alpha = a * 0.22f), r * 1.7f, Offset(p.x, p.y))
         drawCircle(theme.accent.copy(alpha = a * 0.8f), r, Offset(p.x, p.y))
     }
 }
@@ -130,8 +130,11 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
         val dim = if (locked) 0.39f else 1f
 
         // Dış parıltı + çizginin kendisi
-        drawCircle(color.copy(alpha = 0.22f * dim), r, c,
-            style = Stroke(width = (if (spec.isGate) 16f else 11f) * den))
+        // Mat dil: parıltı yok, yalnızca kapı çok hafif bir hâle taşıyor
+        if (spec.isGate) {
+            drawCircle(color.copy(alpha = 0.14f * dim), r, c,
+                style = Stroke(width = 12f * den))
+        }
         // Halka zeminden net ayrılsın: arka planlar koyulaştı, çizgi de tam
         // opaklığa çıktı. Düşük kontrast, parlaklıktan çok göz yoruyor.
         drawCircle(color.copy(alpha = 1f * dim), r, c, style = Stroke(width = 3.5f * den))
@@ -158,9 +161,9 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
             val startDeg = Math.toDegrees((arc.start + rot).toDouble()).toFloat()
             val sweepDeg = Math.toDegrees((arc.end - arc.start).toDouble()).toFloat()
             val box = Rect(cx - r, cy - r, cx + r, cy + r)
-            drawArc(theme.hazard.copy(alpha = 0.30f), startDeg, sweepDeg, false,
+            drawArc(theme.hazard.copy(alpha = 0.16f), startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
-                style = Stroke(width = 15f * den, cap = StrokeCap.Round))
+                style = Stroke(width = 11f * den, cap = StrokeCap.Round))
             drawArc(theme.hazard, startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
                 style = Stroke(width = 7f * den, cap = StrokeCap.Round))
@@ -168,9 +171,6 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
                 // Ortadan iki yana açılan yeşil: kırmızı dışarıdan içeri kapanır
                 val safeSweep = sweepDeg * safeFraction
                 val safeStart = startDeg + (sweepDeg - safeSweep) / 2f
-                drawArc(theme.hazardSafe.copy(alpha = 0.30f), safeStart, safeSweep, false,
-                    topLeft = box.topLeft, size = Size(box.width, box.height),
-                    style = Stroke(width = 15f * den, cap = StrokeCap.Round))
                 drawArc(theme.hazardSafe, safeStart, safeSweep, false,
                     topLeft = box.topLeft, size = Size(box.width, box.height),
                     style = Stroke(width = 8f * den, cap = StrokeCap.Round))
@@ -230,7 +230,7 @@ private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme, t: Float, den
             val grandPhase = sin(t * (PI / 0.55).toFloat() + i * 1.3f)
             val gs = 1.07f + 0.18f * grandPhase
             val ga = 0.87f + 0.13f * grandPhase
-            drawCircle(theme.lumen.copy(alpha = 0.26f * ga), 30f * gs * den, c)
+            drawCircle(theme.lumen.copy(alpha = 0.14f * ga), 22f * gs * den, c)
             rotate(degrees = (t * 60f).mod(360f), pivot = c) {
                 drawPath(
                     starPath(c, 17f * gs * den, 7.4f * gs * den),
@@ -238,7 +238,7 @@ private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme, t: Float, den
                 )
             }
         } else {
-            drawCircle(theme.lumen.copy(alpha = 0.30f * a), 15f * s * den, c)
+            drawCircle(theme.lumen.copy(alpha = 0.18f * a), 12f * s * den, c)
             drawCircle(theme.lumen.copy(alpha = a), 7f * s * den, c)
         }
     }
@@ -333,7 +333,7 @@ private fun DrawScope.drawOrb(
             val w = 1f + 0.09f * sin(t * (PI / 1.1).toFloat())
             val h = 1f - 0.09f * sin(t * (PI / 1.1).toFloat())
             withTransform({ scale(w, h, pivot = c) }) {
-                drawCircle(Color.White.copy(alpha = 0.32f), r * 1.1f, c)
+                drawCircle(Color.White.copy(alpha = 0.20f), r * 1.05f, c)
                 drawCircle(Color.White.copy(alpha = 0.8f), r * 1.1f, c, style = Stroke(width = 1.5f * den))
             }
         }
