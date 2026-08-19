@@ -138,8 +138,9 @@ class GameEngine(
 
     // Tehlike müsamahası — ilk tam tur yakmaz
     /**
-     * Müsamahalı bölümde tehlike yayları BAŞTAN mor çizilir: oyuncu daha
-     * atlamadan "buraya konarsam ilk tur yakmaz" bilgisini görür.
+     * Müsamahalı bölümde tehlike yayının üstünde BAŞTAN yeşil bir kaplama
+     * var: oyuncu daha atlamadan "buraya konarsam ilk tur yakmaz" bilgisini
+     * görür.
      */
     var hazardGraceEnabled = false
         private set
@@ -148,12 +149,29 @@ class GameEngine(
         get() = hazardGraceUntil?.let { elapsed < it } ?: false
 
     /**
-     * Turu dolup kırmızıya dönmüş halka. Yalnızca bu halkanın yayı kırmızı
-     * çizilir; küre oradan ayrılınca müsamaha yeniden başlayacağı için renk
-     * de mora geri döner.
+     * Turu dolup kırmızıya dönmüş halka. Yalnızca bu halkanın yayı çıplak
+     * kırmızı çizilir; küre oradan ayrılınca müsamaha yeniden başlayacağı
+     * için yeşil kaplama da geri geliyor.
      */
     var hazardArmedRing: Int? = null
         private set
+    /** Müsamahanın tam uzunluğu — geri sayım oranı buna bölünerek çıkıyor */
+    private var hazardGraceDuration = 0.0
+
+    /**
+     * Yayın ne kadarının hâlâ güvenli (yeşil) olduğu: 1 = hiç dokunulmamış,
+     * 0 = tur doldu, yay silahlı. Tuval yeşil kaplamayı bu orana göre iki
+     * ucundan çekerek çiziyor — geri sayım yayın üstünde okunuyor.
+     */
+    fun hazardSafeFraction(ring: Int): Float {
+        if (!hazardGraceEnabled || hazardArmedRing == ring) return 0f
+        val until = hazardGraceUntil
+        val s = orbState
+        if (s is OrbState.Attached && s.ring == ring && until != null && hazardGraceDuration > 0) {
+            return ((until - elapsed) / hazardGraceDuration).toFloat().coerceIn(0f, 1f)
+        }
+        return 1f
+    }
 
     // "Devam et ya da düş"
     private var dwellLimit: Double? = null
@@ -294,7 +312,7 @@ class GameEngine(
         lastRing = ring
         exitedLastRing = false
         flightTime = 0.0
-        // Ayrılınca sayaç sıfırlanır ve kırmızıya dönmüş yay mora döner:
+        // Ayrılınca sayaç sıfırlanır ve kırmızıya dönmüş yayın yeşili gelir:
         // küre buraya yeniden konarsa müsamaha da yeniden başlıyor.
         hazardGraceUntil = null
         hazardArmedRing = null
@@ -502,7 +520,8 @@ class GameEngine(
             return
         }
         val speed = max(0.1f, ringSpecs[ring].orbitSpeed)
-        hazardGraceUntil = elapsed + (2 * PI / speed)
+        hazardGraceDuration = 2 * PI / speed
+        hazardGraceUntil = elapsed + hazardGraceDuration
     }
 
     /** Verilen açı, halkanın kırmızı yaylarından birinin üstünde mi? */

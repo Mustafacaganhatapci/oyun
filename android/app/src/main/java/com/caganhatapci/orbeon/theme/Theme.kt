@@ -25,15 +25,15 @@ data class Theme(
     val isColorBlindSafe: Boolean = false
 ) {
     /**
-     * "Bu tur yakmaz" durumundaki tehlike yayının rengi. Temanın `accent`
-     * rengi kullanılamıyor: bazı temalarda (mercan) vurgu, tehlikenin
-     * kendisine çok yakın bir somon tonu — yay silahlı mı değil mi
-     * anlaşılmıyor. Tüm temaların halkası soğuk (mor/mavi/yeşil/beyaz)
-     * olduğu için magenta hem halkayla hem kırmızıyla karışmıyor.
+     * "Bu tur yakmaz" durumundaki tehlike yayının rengi. Kırmızının tam
+     * karşıtı olduğu için yeşil: yayın hangi hâlde olduğu bakışta okunuyor.
+     * Temanın `gate` yeşilinden bilerek farklı (o mint, bu çimen) — kapıyla
+     * karışmasın. Renk körlüğü modunda yeşil tam da işe yaramayan renk;
+     * orada Okabe–Ito'nun mavimsi yeşiline geçiliyor.
      */
     val hazardSafe: Color
-        get() = if (isColorBlindSafe) Color(0.800f, 0.475f, 0.655f, 1f)
-                else Color(0.839f, 0.361f, 0.941f, 1f)
+        get() = if (isColorBlindSafe) Color(0f, 0.620f, 0.451f, 1f)
+                else Color(0.278f, 0.851f, 0.325f, 1f)
 
     /**
      * Oyunun anlamı renge bağlı: yeşil kapı "git", kırmızı yay "ölürsün",

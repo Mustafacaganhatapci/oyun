@@ -167,7 +167,7 @@ object LevelLibrary {
     /**
      * Tehlike müsamahasının başladığı bölüm. Buradan sonra (ve sonsuz modda)
      * tehlikeli bir halkaya tutunan küre, o halka etrafında bir tam tur dönene
-     * kadar yanmaz; yay o süre boyunca mor kesiklerle çizilir.
+     * kadar yanmaz; yayın üstündeki yeşil kaplama o süre boyunca erir.
      */
     const val HAZARD_GRACE_FROM = 67
 

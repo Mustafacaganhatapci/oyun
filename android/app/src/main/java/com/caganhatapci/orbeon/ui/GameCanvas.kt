@@ -148,27 +148,33 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
             }
         }
 
-        // Tehlike yayları: parıltılı, yuvarlak uçlu. Müsamahalı bölümde yay
-        // BAŞTAN mor çizilir (bu tur yakmaz), turu dolan halka kırmızıya
-        // döner. Tek renk: iki katman üst üste binince "üstünü boyamışsın"
-        // gibi duruyor ve yay azalan bir sayaç sanılıyordu.
+        // Tehlike yayları: parıltılı, yuvarlak uçlu. Taban her zaman KIRMIZI;
+        // müsamaha varsa üstüne, süre doldukça iki ucundan geri çekilen yeşil
+        // bir kaplama biniyor. Geri sayımın kendisi yayın üstünde okunuyor:
+        // yeşil bittiği an yay silahlanmış oluyor.
         val rot = t * spec.hazardRotationSpeed
-        val safeArc = engine.hazardGraceEnabled && engine.hazardArmedRing != i
-        val hazardColor = if (safeArc) theme.hazardSafe else theme.hazard
-        // Silahlı yay kalın ve parıltılı, müsamahalı yay ince ve sakin:
-        // durum yalnızca renkten değil çizgi ağırlığından da okunuyor
-        val hazardWidth = if (safeArc) 5f else 7f
-        val hazardGlow = if (safeArc) 11f else 15f
+        val safeFraction = engine.hazardSafeFraction(i)
         for (arc in spec.hazardArcs) {
             val startDeg = Math.toDegrees((arc.start + rot).toDouble()).toFloat()
             val sweepDeg = Math.toDegrees((arc.end - arc.start).toDouble()).toFloat()
             val box = Rect(cx - r, cy - r, cx + r, cy + r)
-            drawArc(hazardColor.copy(alpha = 0.30f), startDeg, sweepDeg, false,
+            drawArc(theme.hazard.copy(alpha = 0.30f), startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
-                style = Stroke(width = hazardGlow * den, cap = StrokeCap.Round))
-            drawArc(hazardColor, startDeg, sweepDeg, false,
+                style = Stroke(width = 15f * den, cap = StrokeCap.Round))
+            drawArc(theme.hazard, startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
-                style = Stroke(width = hazardWidth * den, cap = StrokeCap.Round))
+                style = Stroke(width = 7f * den, cap = StrokeCap.Round))
+            if (safeFraction > 0.001f) {
+                // Ortadan iki yana açılan yeşil: kırmızı dışarıdan içeri kapanır
+                val safeSweep = sweepDeg * safeFraction
+                val safeStart = startDeg + (sweepDeg - safeSweep) / 2f
+                drawArc(theme.hazardSafe.copy(alpha = 0.30f), safeStart, safeSweep, false,
+                    topLeft = box.topLeft, size = Size(box.width, box.height),
+                    style = Stroke(width = 15f * den, cap = StrokeCap.Round))
+                drawArc(theme.hazardSafe, safeStart, safeSweep, false,
+                    topLeft = box.topLeft, size = Size(box.width, box.height),
+                    style = Stroke(width = 8f * den, cap = StrokeCap.Round))
+            }
             // Renk körlüğü modunda tehlike yayı ayrıca ÇENTİKLİ çiziliyor.
             // Renk hangi palete çevrilirse çevrilsin tek başına yetmiyor;
             // yaya dik kısa çentikler yayı halkadan şekliyle ayırıyor.

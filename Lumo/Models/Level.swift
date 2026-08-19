@@ -129,7 +129,7 @@ enum LevelLibrary {
 
     /// Tehlike müsamahasının başladığı bölüm. Buradan sonra (ve sonsuz modda)
     /// tehlikeli bir halkaya tutunan küre, o halka etrafında bir tam tur
-    /// dönene kadar yanmaz; yay o süre boyunca mor çizilir.
+    /// dönene kadar yanmaz; yayın üstündeki yeşil kaplama o süre boyunca erir.
     ///
     /// Geç bölümlerde halkalar küçülüp hızlandığı ve tehlike yayları
     /// genişlediği için oyuncu ineceği yeri okuyamadan ölüyordu. Bir tur,

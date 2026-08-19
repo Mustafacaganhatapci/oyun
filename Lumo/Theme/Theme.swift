@@ -36,15 +36,15 @@ struct Theme: Identifiable, Equatable {
     /// tırtıklar), çünkü tek başına renk hiçbir palette yeterli değil.
     var isColorBlindSafe = false
 
-    /// "Bu tur yakmaz" durumundaki tehlike yayının rengi. Temanın `accent`
-    /// rengi kullanılamıyor: bazı temalarda (mercan) vurgu, tehlikenin
-    /// kendisine çok yakın bir somon tonu — yay silahlı mı değil mi
-    /// anlaşılmıyor. Tüm temaların halkası soğuk (mor/mavi/yeşil/beyaz)
-    /// olduğu için magenta hem halkayla hem kırmızıyla karışmıyor.
+    /// "Bu tur yakmaz" durumundaki tehlike yayının rengi. Kırmızının tam
+    /// karşıtı olduğu için yeşil: yayın hangi hâlde olduğu bakışta okunuyor.
+    /// Temanın `gate` yeşilinden bilerek farklı (o mint, bu çimen) — kapıyla
+    /// karışmasın. Renk körlüğü modunda yeşil tam da işe yaramayan renk;
+    /// orada Okabe–Ito'nun mavimsi yeşiline geçiliyor.
     var hazardSafe: ThemeColor {
         isColorBlindSafe
-        ? ThemeColor(r: 0.800, g: 0.475, b: 0.655)   // Okabe–Ito kırmızımsı mor
-        : ThemeColor(r: 0.839, g: 0.361, b: 0.941)   // magenta
+        ? ThemeColor(r: 0.000, g: 0.620, b: 0.451)
+        : ThemeColor(r: 0.278, g: 0.851, b: 0.325)
     }
 
     // Varsayılan tema. Arka plan bilerek DÜŞÜK doygunlukta: eski mor
