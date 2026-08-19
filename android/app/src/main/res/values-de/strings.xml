@@ -144,4 +144,6 @@
     <string name="hint_timed_body">Dieses Level ist auf Zeit! Erreiche das Tor, bevor der Countdown abläuft.</string>
     <string name="hint_bounds_body">Ab diesem Level verlierst du den Versuch, wenn die Kugel aus dem Bildschirm fliegt.</string>
     <string name="choose_photo">Dein eigenes Foto in der Kugel</string>
+    <string name="colorblind_mode">Farbenblind-Modus</string>
+    <string name="colorblind_mode_note">Nutzt eine Palette, die bei jeder Form von Farbenblindheit unterscheidbar bleibt, und markiert Gefahren zusätzlich mit Kerben.</string>
 </resources>

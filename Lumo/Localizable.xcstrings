@@ -1617,6 +1617,41 @@
         }
       }
     },
+    "Colorblind Mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farbenblind-Modus"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modo daltónico"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode daltonien"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色覚サポート"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renk körlüğü modu"
+          }
+        }
+      }
+    },
     "Comet": {
       "extractionState": "manual",
       "localizations": {
@@ -6266,6 +6301,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kullanıcı Adı"
+          }
+        }
+      }
+    },
+    "Uses a palette that stays distinct for every kind of color blindness, and marks hazards with notches as well as color.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutzt eine Palette, die bei jeder Form von Farbenblindheit unterscheidbar bleibt, und markiert Gefahren zusätzlich mit Kerben."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usa una paleta que se distingue con cualquier tipo de daltonismo y marca los peligros con muescas además del color."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilise une palette qui reste lisible avec tous les types de daltonisme et marque les dangers par des encoches en plus de la couleur."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あらゆる色覚特性で見分けられる配色を使い、危険な円弧には色に加えて刻み目を付けます。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her renk körlüğü türünde ayrışan bir palet kullanır; tehlikeli yayları renge ek olarak çentiklerle işaretler."
           }
         }
       }

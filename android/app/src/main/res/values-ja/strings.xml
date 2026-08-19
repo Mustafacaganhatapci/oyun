@@ -144,4 +144,6 @@
     <string name="hint_timed_body">この面は時間制限あり！カウントがゼロになる前にゲートへ。</string>
     <string name="hint_bounds_body">このレベルからは、オーブが画面の外に出るとミスになります。</string>
     <string name="choose_photo">オーブの中にあなたの写真を</string>
+    <string name="colorblind_mode">色覚サポート</string>
+    <string name="colorblind_mode_note">あらゆる色覚特性で見分けられる配色を使い、危険な円弧には色に加えて刻み目を付けます。</string>
 </resources>

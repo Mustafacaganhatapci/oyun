@@ -31,6 +31,7 @@ import com.caganhatapci.orbeon.model.OrbStyle
 import com.caganhatapci.orbeon.theme.Theme
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.sin
 
 /**
@@ -117,8 +118,10 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
             1.01f + 0.02f * sin(t * (PI / 1.6).toFloat() + i)
         val r = baseR * breath
 
-        // Öğreticide hedef bariz YEŞİL — "buraya atacaksın"
-        val gateColor = if (isTutorial) Color(0xFF34C759) else theme.gate
+        // Öğreticide hedef bariz YEŞİL — ama renk körlüğü modunda o yeşil tam
+        // da ayırt edilemeyen renk; orada temanın güvenli kapı rengi kalıyor
+        val gateColor = if (isTutorial && !theme.isColorBlindSafe) Color(0xFF34C759)
+                        else theme.gate
         val color = if (spec.isGate) gateColor else theme.ring
 
         // Topla-bitir bölümünde kapı, her şey toplanana kadar sönük durur —
@@ -160,6 +163,23 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
             drawArc(theme.hazard.copy(alpha = fade), startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
                 style = Stroke(width = 7f * den, cap = StrokeCap.Round))
+            // Renk körlüğü modunda tehlike yayı ayrıca ÇENTİKLİ çiziliyor.
+            // Renk hangi palete çevrilirse çevrilsin tek başına yetmiyor;
+            // yaya dik kısa çentikler yayı halkadan şekliyle ayırıyor.
+            if (theme.isColorBlindSafe) {
+                val spacing = max(0.14f, 16f * den / max(r, 1f))
+                var a = arc.start + rot + spacing / 2f
+                while (a < arc.end + rot) {
+                    val inner = 8f * den
+                    drawLine(
+                        theme.bgBottom.copy(alpha = fade),
+                        Offset(cx + cos(a) * (r - inner), cy + sin(a) * (r - inner)),
+                        Offset(cx + cos(a) * (r + inner), cy + sin(a) * (r + inner)),
+                        strokeWidth = 2.5f * den, cap = StrokeCap.Round
+                    )
+                    a += spacing
+                }
+            }
             if (graced) {
                 drawArc(theme.accent, startDeg, sweepDeg, false,
                     topLeft = box.topLeft, size = Size(box.width, box.height),

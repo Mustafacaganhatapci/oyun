@@ -79,7 +79,7 @@ private val CELEBRATIONS = listOf(
 fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> Unit) {
     val app = LocalAppState.current
     val activity = LocalActivity.current
-    val theme = Theme.byId(app.settings.themeId)
+    val theme = app.settings.theme
     val orbStyle = OrbStyle.byId(app.settings.orbStyleId)
     val orbPhoto = remember {
         if (orbStyle.kind == OrbStyle.Kind.PHOTO) OrbPhotoStore.load(activity) else null

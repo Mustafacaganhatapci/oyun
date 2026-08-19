@@ -46,6 +46,13 @@ struct SettingsView: View {
                         toggleRow("speaker.wave.2.fill", "Sound Effects", $settings.sfxOn)
                         Divider().overlay(.white.opacity(0.1))
                         toggleRow("iphone.radiowaves.left.and.right", "Haptics", $settings.hapticsOn)
+                        Divider().overlay(.white.opacity(0.1))
+                        toggleRow("eye.fill", "Colorblind Mode", $settings.colorBlindOn)
+                        Text("Uses a palette that stays distinct for every kind of color blindness, and marks hazards with notches as well as color.")
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.5))
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 6)
                     }
                     .padding(.vertical, 8)
                     .background {

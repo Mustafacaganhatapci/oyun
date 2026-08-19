@@ -94,7 +94,7 @@ fun MainMenuScreen(
     onSpeedrun: () -> Unit, onShop: () -> Unit, onSettings: () -> Unit, onRanking: () -> Unit
 ) {
     val app = LocalAppState.current
-    val theme = Theme.byId(app.settings.themeId)
+    val theme = app.settings.theme
     var showMissions by remember { mutableStateOf(false) }
     var claimedFlash by remember { mutableStateOf<Int?>(null) }
 
@@ -330,7 +330,7 @@ private fun MissionRow(mission: MissionStore.Mission, theme: Theme) {
 @Composable
 fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
     val app = LocalAppState.current
-    val theme = Theme.byId(app.settings.themeId)
+    val theme = app.settings.theme
 
     ThemeBackground(theme) {
         Column(Modifier.fillMaxSize()) {
@@ -395,7 +395,7 @@ fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
 fun ShopScreen(onBack: () -> Unit) {
     val app = LocalAppState.current
     val activity = LocalActivity.current
-    val theme = Theme.byId(app.settings.themeId)
+    val theme = app.settings.theme
     val scroll = rememberScrollState()
     var codeInput by remember { mutableStateOf("") }
     var codeState by remember { mutableStateOf(0) }   // 0 boş, 1 başarılı, 2 hatalı, 3 teselli
@@ -691,7 +691,7 @@ private fun CharacterRow(style: OrbStyle, theme: Theme, t: Float) {
 @Composable
 fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Unit) {
     val app = LocalAppState.current
-    val theme = Theme.byId(app.settings.themeId)
+    val theme = app.settings.theme
     val frameTime = rememberFrameTime()
 
     ThemeBackground(theme) {
@@ -712,6 +712,13 @@ fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Uni
                         ToggleRow(stringResource(R.string.haptics), app.settings.hapticsOn) {
                             app.settings.hapticsOn = it; app.haptics.enabled = it; app.settings.persist()
                         }
+                        ToggleRow(stringResource(R.string.colorblind_mode), app.settings.colorBlindOn) {
+                            app.settings.colorBlindOn = it; app.settings.persist()
+                        }
+                        Text(
+                            stringResource(R.string.colorblind_mode_note),
+                            color = Color.White.copy(alpha = 0.5f), fontSize = 12.sp
+                        )
                     }
                 }
 
@@ -778,7 +785,7 @@ private fun ToggleRow(label: String, checked: Boolean, onChange: (Boolean) -> Un
 @Composable
 fun UsernameScreen(onDone: () -> Unit, onBack: () -> Unit) {
     val app = LocalAppState.current
-    val theme = Theme.byId(app.settings.themeId)
+    val theme = app.settings.theme
     var name by remember { mutableStateOf(app.player.username) }
 
     ThemeBackground(theme) {
@@ -821,7 +828,7 @@ fun UsernameScreen(onDone: () -> Unit, onBack: () -> Unit) {
 @Composable
 fun RankingScreen(onBack: () -> Unit, onEditName: () -> Unit) {
     val app = LocalAppState.current
-    val theme = Theme.byId(app.settings.themeId)
+    val theme = app.settings.theme
     var mode by remember { mutableStateOf(LeaderboardService.Mode.ENDLESS) }
 
     LaunchedEffect(mode) { app.leaderboard.load(mode) }

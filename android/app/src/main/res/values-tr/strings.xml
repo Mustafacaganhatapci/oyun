@@ -144,4 +144,6 @@
     <string name="hint_timed_body">Bu bölüm süreli! Geri sayım sıfırlanmadan kapıya ulaş.</string>
     <string name="hint_bounds_body">Bu bölümden itibaren top ekrandan çıkarsa deneme yanar.</string>
     <string name="choose_photo">Kürenin içinde kendi fotoğrafın</string>
+    <string name="colorblind_mode">Renk körlüğü modu</string>
+    <string name="colorblind_mode_note">Her renk körlüğü türünde ayrışan bir palet kullanır; tehlikeli yayları renge ek olarak çentiklerle işaretler.</string>
 </resources>

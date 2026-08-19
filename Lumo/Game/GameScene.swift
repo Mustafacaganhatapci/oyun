@@ -481,7 +481,10 @@ final class GameScene: SKScene {
         container.zPosition = 10
 
         // Antrenman bölümünde hedef halka bariz YEŞİL — "buraya atacaksın"
-        let gateColor = isTutorial ? UIColor.systemGreen : theme.gate.uiColor
+        // Öğreticide hedef bariz YEŞİL — ama renk körlüğü modunda o yeşil
+        // tam da ayırt edilemeyen renk; orada temanın güvenli kapı rengi kalır
+        let gateColor = (isTutorial && !theme.isColorBlindSafe)
+            ? UIColor.systemGreen : theme.gate.uiColor
 
         // Topla-bitir bölümünde kapı, her şey toplanana kadar sönük durur —
         // "buraya gelmek yetmiyor" bilgisi renkten okunsun
@@ -536,6 +539,26 @@ final class GameScene: SKScene {
                 shape.lineCap = .round
                 shape.glowWidth = 6
                 hz.addChild(shape)
+
+                // Renk körlüğü modunda tehlike yayı ayrıca TIRTIKLI çiziliyor.
+                // Renk hangi palete çevrilirse çevrilsin tek başına yetmiyor;
+                // yaya dik kısa çentikler yayı halkadan şekliyle ayırıyor.
+                if theme.isColorBlindSafe {
+                    let notches = CGMutablePath()
+                    let spacing = max(0.14, 16 / max(r, 1))
+                    var a = arc.lowerBound + spacing / 2
+                    while a < arc.upperBound {
+                        notches.move(to: CGPoint(x: cos(a) * (r - 8), y: sin(a) * (r - 8)))
+                        notches.addLine(to: CGPoint(x: cos(a) * (r + 8), y: sin(a) * (r + 8)))
+                        a += spacing
+                    }
+                    let notchShape = SKShapeNode(path: notches)
+                    notchShape.name = Self.hazardBaseName
+                    notchShape.strokeColor = theme.bgBottom.uiColor
+                    notchShape.lineWidth = 2.5
+                    notchShape.lineCap = .round
+                    hz.addChild(notchShape)
+                }
 
                 // Müsamaha turunda üste binen mor kesikli kaplama. Altındaki
                 // kırmızı tamamen kaybolmuyor — yay hâlâ "tehlike" gibi duruyor,

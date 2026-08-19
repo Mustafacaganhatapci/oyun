@@ -56,7 +56,7 @@ sealed class Route {
 fun RootScreen() {
     val app = LocalAppState.current
     val activity = LocalActivity.current
-    val theme = Theme.byId(app.settings.themeId)
+    val theme = app.settings.theme
 
     var route by remember { mutableStateOf<Route>(Route.Menu) }
     var splashDone by remember { mutableStateOf(false) }

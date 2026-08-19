@@ -21,6 +21,11 @@ final class SettingsStore: ObservableObject {
             Haptics.shared.enabled = hapticsOn
         }
     }
+    /// Renk körlüğü modu — oynanışı belirleyen renkleri ayrışan bir palete
+    /// çevirir ve tehlike yaylarına şekil ipucu ekler
+    @Published var colorBlindOn: Bool {
+        didSet { UserDefaults.standard.set(colorBlindOn, forKey: "lumo.settings.colorBlind") }
+    }
     @Published var themeID: String {
         didSet { UserDefaults.standard.set(themeID, forKey: "lumo.settings.theme") }
     }
@@ -30,7 +35,13 @@ final class SettingsStore: ObservableObject {
     /// Fotoğraflı küre görselini değiştirince arayüzü tazelemek için
     @Published var orbPhotoVersion = 0
 
-    var theme: Theme { Theme.theme(id: themeID) }
+    /// Oyunun her yerinde kullanılan tema. Renk körlüğü modu burada
+    /// uygulanıyor: tek noktadan geçtiği için menü, HUD ve oyun alanı
+    /// kendiliğinden aynı paleti görüyor.
+    var theme: Theme {
+        let base = Theme.theme(id: themeID)
+        return colorBlindOn ? base.colorBlindSafe : base
+    }
     var orbStyle: OrbStyle { OrbStyle.style(id: orbStyleID) }
 
     init() {
@@ -38,6 +49,7 @@ final class SettingsStore: ObservableObject {
         musicOn = d.object(forKey: "lumo.settings.music") as? Bool ?? true
         sfxOn = d.object(forKey: "lumo.settings.sfx") as? Bool ?? true
         hapticsOn = d.object(forKey: "lumo.settings.haptics") as? Bool ?? true
+        colorBlindOn = d.object(forKey: "lumo.settings.colorBlind") as? Bool ?? false
         themeID = d.string(forKey: "lumo.settings.theme") ?? Theme.nebula.id
         orbStyleID = d.string(forKey: "lumo.settings.orbStyle") ?? "classic"
         AudioEngine.shared.musicEnabled = musicOn

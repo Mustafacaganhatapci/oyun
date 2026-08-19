@@ -16,8 +16,34 @@ data class Theme(
     val orb: Color,
     val hazard: Color,
     val lumen: Color,
-    val accent: Color
+    val accent: Color,
+    /**
+     * Renk körlüğü modunda üretilmiş bir tema mı? Oyun alanı bu bayrağa
+     * bakarak renge ek olarak ŞEKİL ipucu da çiziyor (tehlike yaylarındaki
+     * çentikler), çünkü tek başına renk hiçbir palette yeterli değil.
+     */
+    val isColorBlindSafe: Boolean = false
 ) {
+    /**
+     * Oyunun anlamı renge bağlı: yeşil kapı "git", kırmızı yay "ölürsün",
+     * sarı yıldız "topla". En yaygın renk körlüğü tam bu kırmızı–yeşil
+     * ayrımını siliyor. Bu mod açıkken zemin temanın kendisi olarak kalıyor,
+     * ama OYNANIŞI belirleyen renkler Okabe–Ito paletinden sabit değerlerle
+     * değiştiriliyor: bu palet protanopi, döteranopi ve tritanopide de
+     * birbirinden ayrışır. Halka da nötr griye çekiliyor; yoksa kapının
+     * mavisi bazı temaların mavi halkasıyla karışıyor.
+     */
+    val colorBlindSafe: Theme
+        get() = copy(
+            ring = Color(0.788f, 0.808f, 0.863f, 1f),      // nötr gri-mavi
+            gate = Color(0.196f, 0.588f, 0.894f, 1f),      // doygun mavi
+            orb = Color(1f, 1f, 1f, 1f),
+            hazard = Color(0.902f, 0.400f, 0.055f, 1f),    // vermilyon
+            lumen = Color(0.941f, 0.894f, 0.259f, 1f),     // sarı
+            accent = Color(0f, 0.694f, 0.506f, 1f),        // mavimsi yeşil
+            isColorBlindSafe = true
+        )
+
     companion object {
         private fun c(r: Double, g: Double, b: Double) =
             Color(r.toFloat(), g.toFloat(), b.toFloat(), 1f)

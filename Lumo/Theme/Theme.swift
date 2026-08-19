@@ -31,6 +31,11 @@ struct Theme: Identifiable, Equatable {
     let lumen: ThemeColor
     let accent: ThemeColor
 
+    /// Renk körlüğü modunda üretilmiş bir tema mı? Oyun alanı bu bayrağa
+    /// bakarak renge ek olarak ŞEKİL ipucu da çiziyor (tehlike yaylarındaki
+    /// tırtıklar), çünkü tek başına renk hiçbir palette yeterli değil.
+    var isColorBlindSafe = false
+
     static let nebula = Theme(
         id: "nebula", name: "Nebula", isPremium: false,
         bgTop: ThemeColor(r: 0.055, g: 0.043, b: 0.161),
@@ -172,5 +177,30 @@ struct Theme: Identifiable, Equatable {
 
     static func theme(id: String) -> Theme {
         all.first { $0.id == id } ?? .nebula
+    }
+
+    // MARK: Renk körlüğü modu
+
+    /// Oyunun anlamı renge bağlı: yeşil kapı "git", kırmızı yay "ölürsün",
+    /// sarı yıldız "topla". En yaygın renk körlüğü tam bu kırmızı–yeşil
+    /// ayrımını siliyor. Bu mod açıkken zemin ve arka plan temanın kendisi
+    /// olarak kalıyor, ama OYNANIŞI belirleyen dört renk Okabe–Ito
+    /// paletinden sabit değerlerle değiştiriliyor: bu palet protanopi,
+    /// döteranopi ve tritanopide de birbirinden ayrışır.
+    ///
+    /// Halka da nötr griye çekiliyor; yoksa kapının mavisi bazı temaların
+    /// mavi halkasıyla karışıyor.
+    var colorBlindSafe: Theme {
+        Theme(
+            id: id, name: name, isPremium: isPremium,
+            bgTop: bgTop, bgBottom: bgBottom,
+            ring: ThemeColor(r: 0.788, g: 0.808, b: 0.863),      // nötr gri-mavi
+            gate: ThemeColor(r: 0.196, g: 0.588, b: 0.894),      // doygun mavi
+            orb: ThemeColor(r: 1.0, g: 1.0, b: 1.0),
+            hazard: ThemeColor(r: 0.902, g: 0.400, b: 0.055),    // vermilyon
+            lumen: ThemeColor(r: 0.941, g: 0.894, b: 0.259),     // sarı
+            accent: ThemeColor(r: 0.0, g: 0.694, b: 0.506),      // mavimsi yeşil
+            isColorBlindSafe: true
+        )
     }
 }

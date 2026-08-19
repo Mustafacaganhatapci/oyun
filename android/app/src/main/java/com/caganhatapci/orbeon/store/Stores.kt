@@ -12,6 +12,7 @@ import com.caganhatapci.orbeon.model.LevelLibrary
 import com.caganhatapci.orbeon.model.OrbStyle
 import com.caganhatapci.orbeon.model.OrbUnlock
 import com.caganhatapci.orbeon.model.SplitMix64
+import com.caganhatapci.orbeon.theme.Theme
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -144,6 +145,20 @@ class SettingsStore(context: Context) {
     var soundOn by mutableStateOf(p.getBoolean("settings.sound", true))
     var musicOn by mutableStateOf(p.getBoolean("settings.music", true))
     var hapticsOn by mutableStateOf(p.getBoolean("settings.haptics", true))
+    /**
+     * Renk körlüğü modu — oynanışı belirleyen renkleri her renk körlüğü
+     * türünde ayrışan bir palete çevirir ve tehlike yaylarına şekil ipucu
+     * ekler.
+     */
+    var colorBlindOn by mutableStateOf(p.getBoolean("settings.colorBlind", false))
+
+    /**
+     * Oyunun her yerinde kullanılan tema. Renk körlüğü modu burada
+     * uygulanıyor: tek noktadan geçtiği için menü, HUD ve oyun alanı
+     * kendiliğinden aynı paleti görüyor.
+     */
+    val theme: Theme
+        get() = Theme.byId(themeId).let { if (colorBlindOn) it.colorBlindSafe else it }
 
     fun persist() {
         p.edit()
@@ -152,6 +167,7 @@ class SettingsStore(context: Context) {
             .putBoolean("settings.sound", soundOn)
             .putBoolean("settings.music", musicOn)
             .putBoolean("settings.haptics", hapticsOn)
+            .putBoolean("settings.colorBlind", colorBlindOn)
             .apply()
     }
 }

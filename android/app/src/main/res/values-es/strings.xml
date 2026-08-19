@@ -144,4 +144,6 @@
     <string name="hint_timed_body">¡Este nivel es contrarreloj! Llega a la puerta antes de que el contador llegue a cero.</string>
     <string name="hint_bounds_body">A partir de este nivel, si el orbe sale de la pantalla, pierdes el intento.</string>
     <string name="choose_photo">Tu propia foto dentro del orbe</string>
+    <string name="colorblind_mode">Modo daltónico</string>
+    <string name="colorblind_mode_note">Usa una paleta que se distingue con cualquier tipo de daltonismo y marca los peligros con muescas además del color.</string>
 </resources>
