@@ -442,14 +442,6 @@ struct MainMenuView: View {
             .buttonStyle(GlowButtonStyle(color: settings.theme.hazard.color))
             .opacity(progress.endlessUnlocked ? 1 : 0.55)
 
-            // Ayarlar sağ üste taşındı; burada tek başına mağaza kaldı.
-            Button {
-                AudioEngine.shared.playTap()
-                app.route = .shop
-            } label: {
-                Label("Shop", systemImage: "bag.fill")
-            }
-            .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color))
         }
     }
 }

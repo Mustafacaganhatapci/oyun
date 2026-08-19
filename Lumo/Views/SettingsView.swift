@@ -61,31 +61,16 @@ struct SettingsView: View {
                     }
                     .padding(.horizontal, 20)
 
-                    // Temalar
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Theme")
-                            .font(.system(.headline, design: .rounded).bold())
-                            .foregroundStyle(.white.opacity(0.9))
-                            .padding(.horizontal, 24)
-
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 14) {
-                                ForEach(Theme.all) { theme in
-                                    ThemeSwatch(theme: theme,
-                                                selected: settings.themeID == theme.id,
-                                                locked: theme.isPremium && !store.isPremium) {
-                                        if theme.isPremium && !store.isPremium {
-                                            app.route = .shop
-                                        } else {
-                                            AudioEngine.shared.playTap()
-                                            settings.themeID = theme.id
-                                        }
-                                    }
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                        }
+                    // Mağaza ana menüden kaldırıldı (menü kalabalıktı);
+                    // arka planlar, bahşiş ve premium oraya taşındı
+                    Button {
+                        AudioEngine.shared.playTap()
+                        app.route = .shop
+                    } label: {
+                        Label("Shop", systemImage: "bag.fill")
                     }
+                    .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color))
+                    .padding(.horizontal, 20)
 
                     // Küre stilleri — oyuncunun "karakteri"
                     VStack(alignment: .leading, spacing: 12) {
@@ -326,7 +311,9 @@ private struct OrbSwatch: View {
     }
 }
 
-private struct ThemeSwatch: View {
+/// Arka plan kartı. Mağaza da kullanıyor (temalar oraya taşındı), bu yüzden
+/// dosyaya özel değil.
+struct ThemeSwatch: View {
     let theme: Theme
     let selected: Bool
     let locked: Bool

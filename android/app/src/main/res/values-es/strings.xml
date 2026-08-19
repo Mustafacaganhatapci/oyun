@@ -146,4 +146,5 @@
     <string name="choose_photo">Tu propia foto dentro del orbe</string>
     <string name="colorblind_mode">Modo daltónico</string>
     <string name="colorblind_mode_note">Usa una paleta que se distingue con cualquier tipo de daltonismo y marca los peligros con muescas además del color.</string>
+    <string name="backgrounds">Fondos</string>
 </resources>

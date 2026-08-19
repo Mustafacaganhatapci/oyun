@@ -146,4 +146,5 @@
     <string name="choose_photo">Kürenin içinde kendi fotoğrafın</string>
     <string name="colorblind_mode">Renk körlüğü modu</string>
     <string name="colorblind_mode_note">Her renk körlüğü türünde ayrışan bir palet kullanır; tehlikeli yayları renge ek olarak çentiklerle işaretler.</string>
+    <string name="backgrounds">Arka planlar</string>
 </resources>

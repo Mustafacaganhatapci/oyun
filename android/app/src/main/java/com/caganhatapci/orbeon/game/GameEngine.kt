@@ -137,18 +137,23 @@ class GameEngine(
     val gateLocked: Boolean get() = gateNeedsAllLumens && !gateOpen
 
     // Tehlike müsamahası — ilk tam tur yakmaz
-    private var hazardGraceEnabled = false
+    /**
+     * Müsamahalı bölümde tehlike yayları BAŞTAN mor çizilir: oyuncu daha
+     * atlamadan "buraya konarsam ilk tur yakmaz" bilgisini görür.
+     */
+    var hazardGraceEnabled = false
+        private set
     private var hazardGraceUntil: Double? = null
     private val hazardGraceActive: Boolean
         get() = hazardGraceUntil?.let { elapsed < it } ?: false
 
     /**
-     * Tuval bu bayrağa bakarak müsamaha turundaki yayı yarı saydam kırmızının
-     * üstüne mor kesiklerle çizer: yay hâlâ "tehlike" gibi durur ama oyuncu
-     * atlamadan da o turda yakmayacağını görebilir.
+     * Turu dolup kırmızıya dönmüş halka. Yalnızca bu halkanın yayı kırmızı
+     * çizilir; küre oradan ayrılınca müsamaha yeniden başlayacağı için renk
+     * de mora geri döner.
      */
-    val hazardSafeRing: Int?
-        get() = if (hazardGraceActive) (orbState as? OrbState.Attached)?.ring else null
+    var hazardArmedRing: Int? = null
+        private set
 
     // "Devam et ya da düş"
     private var dwellLimit: Double? = null
@@ -289,6 +294,10 @@ class GameEngine(
         lastRing = ring
         exitedLastRing = false
         flightTime = 0.0
+        // Ayrılınca sayaç sıfırlanır ve kırmızıya dönmüş yay mora döner:
+        // küre buraya yeniden konarsa müsamaha da yeniden başlıyor.
+        hazardGraceUntil = null
+        hazardArmedRing = null
     }
 
     fun onTap() {
@@ -371,6 +380,11 @@ class GameEngine(
                 orbX = cx + cos(angle) * r
                 orbY = cy + sin(angle) * r
                 if (!hazardGraceActive && hazardContains(s.ring, angle)) { fail(); return }
+                // Tur dolduğu an yay kırmızıya döner — artık öldürüyor
+                if (hazardGraceUntil != null && !hazardGraceActive) {
+                    hazardGraceUntil = null
+                    hazardArmedRing = s.ring
+                }
                 checkLumens()
                 // Süre dolunca ceza yok: küre kendiliğinden fırlar. Yayın son
                 // üçte biri kırmızıya döndüğünde oyuncu bunun geldiğini görür
@@ -482,6 +496,7 @@ class GameEngine(
      * yavaş halkada uzun — her zaman TAM BİR TUR eder.
      */
     private fun startHazardGraceIfNeeded(ring: Int) {
+        hazardArmedRing = null
         if (!hazardGraceEnabled || ringSpecs[ring].hazardArcs.isEmpty()) {
             hazardGraceUntil = null
             return
@@ -611,6 +626,7 @@ class GameEngine(
         // halka üstünde ölünce bir gerideki halkadan başlıyordu.
         (orbState as? OrbState.Attached)?.let { lastRing = it.ring }
         hazardGraceUntil = null
+        hazardArmedRing = null
         orbState = OrbState.Dead
         deadSince = elapsed
         combo = 0

@@ -146,23 +146,27 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
             }
         }
 
-        // Kırmızı tehlike yayları: parıltılı, yuvarlak uçlu.
-        // Müsamaha turunda kırmızı tamamen kaybolmuyor, yalnızca geri çekiliyor
-        // ve üstüne mor kesikler biniyor: yay hâlâ "tehlike" gibi duruyor ama
-        // oyuncu atlamadan da o turda yakmayacağını görebiliyor.
+        // Tehlike yayları: parıltılı, yuvarlak uçlu. Müsamahalı bölümde yay
+        // BAŞTAN mor çizilir (bu tur yakmaz), turu dolan halka kırmızıya
+        // döner. Tek renk: iki katman üst üste binince "üstünü boyamışsın"
+        // gibi duruyor ve yay azalan bir sayaç sanılıyordu.
         val rot = t * spec.hazardRotationSpeed
-        val graced = engine.hazardSafeRing == i
+        val safeArc = engine.hazardGraceEnabled && engine.hazardArmedRing != i
+        val hazardColor = if (safeArc) theme.hazardSafe else theme.hazard
+        // Silahlı yay kalın ve parıltılı, müsamahalı yay ince ve sakin:
+        // durum yalnızca renkten değil çizgi ağırlığından da okunuyor
+        val hazardWidth = if (safeArc) 5f else 7f
+        val hazardGlow = if (safeArc) 11f else 15f
         for (arc in spec.hazardArcs) {
             val startDeg = Math.toDegrees((arc.start + rot).toDouble()).toFloat()
             val sweepDeg = Math.toDegrees((arc.end - arc.start).toDouble()).toFloat()
             val box = Rect(cx - r, cy - r, cx + r, cy + r)
-            val fade = if (graced) 0.35f else 1f
-            drawArc(theme.hazard.copy(alpha = 0.30f * fade), startDeg, sweepDeg, false,
+            drawArc(hazardColor.copy(alpha = 0.30f), startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
-                style = Stroke(width = 15f * den, cap = StrokeCap.Round))
-            drawArc(theme.hazard.copy(alpha = fade), startDeg, sweepDeg, false,
+                style = Stroke(width = hazardGlow * den, cap = StrokeCap.Round))
+            drawArc(hazardColor, startDeg, sweepDeg, false,
                 topLeft = box.topLeft, size = Size(box.width, box.height),
-                style = Stroke(width = 7f * den, cap = StrokeCap.Round))
+                style = Stroke(width = hazardWidth * den, cap = StrokeCap.Round))
             // Renk körlüğü modunda tehlike yayı ayrıca ÇENTİKLİ çiziliyor.
             // Renk hangi palete çevrilirse çevrilsin tek başına yetmiyor;
             // yaya dik kısa çentikler yayı halkadan şekliyle ayırıyor.
@@ -172,20 +176,13 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
                 while (a < arc.end + rot) {
                     val inner = 8f * den
                     drawLine(
-                        theme.bgBottom.copy(alpha = fade),
+                        theme.bgBottom,
                         Offset(cx + cos(a) * (r - inner), cy + sin(a) * (r - inner)),
                         Offset(cx + cos(a) * (r + inner), cy + sin(a) * (r + inner)),
                         strokeWidth = 2.5f * den, cap = StrokeCap.Round
                     )
                     a += spacing
                 }
-            }
-            if (graced) {
-                drawArc(theme.accent, startDeg, sweepDeg, false,
-                    topLeft = box.topLeft, size = Size(box.width, box.height),
-                    style = Stroke(width = 7f * den, cap = StrokeCap.Round,
-                        pathEffect = PathEffect.dashPathEffect(
-                            floatArrayOf(9f * den, 8f * den))))
             }
         }
 
@@ -194,6 +191,12 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
         if (engine.dwellVisible && attached?.ring == i) {
             val frac = engine.dwellFraction
             val rr = r + 9f * den
+            // Tükenmiş kısım sönük bir yuva olarak yerinde duruyor. Yalnızca
+            // kalan kısım çizilirken gösterge, halka üstündeki tehlike
+            // yaylarıyla aynı şekle giriyor ve hangisinin sayaç olduğu
+            // anlaşılmıyordu.
+            drawCircle(theme.ring.copy(alpha = 0.26f), rr, Offset(cx, cy),
+                style = Stroke(width = 3f * den))
             drawArc(
                 if (frac < 0.3f) theme.hazard else theme.lumen.copy(alpha = 0.8f),
                 -90f, 360f * frac, false,

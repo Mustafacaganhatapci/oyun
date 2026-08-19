@@ -82,11 +82,14 @@ final class GameScene: SKScene {
         guard let until = hazardGraceUntil else { return false }
         return elapsed < until
     }
-    /// O an mor (müsamahalı) çizilen halka — her karede yeniden boyamamak ve
-    /// terk edilen halkayı kırmızıya döndürmeyi unutmamak için tutuluyor
-    private var hazardTintedRing: Int?
+    /// Rengi VARSAYILANDAN farklı çizilen halka. Müsamahalı bölümlerde
+    /// yayların dinlenme rengi mor; burada yalnızca turu dolup kırmızıya
+    /// dönmüş halka tutuluyor, çünkü oradan ayrılınca geri mora dönmesi
+    /// gerekiyor.
+    private var hazardArmedRing: Int?
     private static let hazardBaseName = "hazardArcBase"
-    private static let hazardSafeName = "hazardArcSafe"
+    private static let hazardNotchName = "hazardArcNotch"
+    private static let dwellTrackName = "dwellTrack"
 
     private var orbState: OrbState = .dead
     private var orbNode: SKNode!
@@ -534,11 +537,12 @@ final class GameScene: SKScene {
                             startAngle: arc.lowerBound, endAngle: arc.upperBound, clockwise: false)
                 let shape = SKShapeNode(path: path)
                 shape.name = Self.hazardBaseName
-                shape.strokeColor = theme.hazard.uiColor
-                shape.lineWidth = 7
+                // Müsamahalı bölümlerde yay BAŞTAN magenta çiziliyor: oyuncu
+                // daha atlamadan "buraya konarsam ilk tur yakmaz" bilgisini
+                // görsün. Kırmızıya, tur dolduğu anda dönüyor.
                 shape.lineCap = .round
-                shape.glowWidth = 6
                 hz.addChild(shape)
+                applyHazardStyle(shape, safe: hazardGraceEnabled)
 
                 // Renk körlüğü modunda tehlike yayı ayrıca TIRTIKLI çiziliyor.
                 // Renk hangi palete çevrilirse çevrilsin tek başına yetmiyor;
@@ -553,36 +557,12 @@ final class GameScene: SKScene {
                         a += spacing
                     }
                     let notchShape = SKShapeNode(path: notches)
-                    notchShape.name = Self.hazardBaseName
+                    notchShape.name = Self.hazardNotchName
                     notchShape.strokeColor = theme.bgBottom.uiColor
                     notchShape.lineWidth = 2.5
                     notchShape.lineCap = .round
                     hz.addChild(notchShape)
                 }
-
-                // Müsamaha turunda üste binen mor kesikli kaplama. Altındaki
-                // kırmızı tamamen kaybolmuyor — yay hâlâ "tehlike" gibi duruyor,
-                // ama oyuncu atlamadan da o turda yakmayacağını görebiliyor.
-                let dashed = CGMutablePath()
-                let span = arc.upperBound - arc.lowerBound
-                let segments = max(3, Int((span * r) / 18))
-                let step = span / CGFloat(segments)
-                for s in 0..<segments {
-                    let from = arc.lowerBound + CGFloat(s) * step
-                    // Her kesik ayrı başlasın; yoksa aralar kirişle birleşir
-                    dashed.move(to: CGPoint(x: cos(from) * r, y: sin(from) * r))
-                    dashed.addArc(center: .zero, radius: r,
-                                  startAngle: from, endAngle: from + step * 0.55,
-                                  clockwise: false)
-                }
-                let safeOverlay = SKShapeNode(path: dashed)
-                safeOverlay.name = Self.hazardSafeName
-                safeOverlay.strokeColor = theme.accent.uiColor
-                safeOverlay.lineWidth = 7
-                safeOverlay.lineCap = .round
-                safeOverlay.glowWidth = 6
-                safeOverlay.alpha = 0
-                hz.addChild(safeOverlay)
             }
             container.addChild(hz)
             hazardNode = hz
@@ -746,11 +726,11 @@ final class GameScene: SKScene {
     /// Küreyi halkadan teğet yönünde fırlatır. Hem dokunuşla hem de oyalanma
     /// süresi dolduğunda (otomatik fırlatma) buradan geçilir.
     private func launch(from ring: Int, angle: CGFloat, direction: CGFloat) {
-        // Halkadan ayrılırken müsamaha biter ve yay kırmızıya döner; yoksa
-        // geride mor kalmış bir tehlike "güvenli" izlenimi bırakırdı.
+        // Halkadan ayrılınca müsamaha sayacı sıfırlanır ve turu dolup
+        // kırmızıya dönmüş yay mora geri döner: küre buraya yeniden konarsa
+        // müsamaha da yeniden başlıyor, renk bunu doğru anlatmalı.
         if hazardGraceEnabled {
-            clearHazardTint()
-            tintHazard(ring: ring, safe: false)
+            restoreHazardTint()
             hazardGraceUntil = nil
         }
         let c = ringCenter(ring, at: elapsed)
@@ -987,42 +967,50 @@ final class GameScene: SKScene {
     /// Süre halkanın kendi dönüş hızından hesaplanır, böylece hızlı halkada
     /// kısa, yavaş halkada uzun olur — her zaman TAM BİR TUR eder.
     private func startHazardGraceIfNeeded(ring: Int) {
-        clearHazardTint()
+        restoreHazardTint()
         guard hazardGraceEnabled, !ringSpecs[ring].hazardArcs.isEmpty else {
             hazardGraceUntil = nil
             return
         }
         let speed = max(0.1, ringSpecs[ring].orbitSpeed)
         hazardGraceUntil = elapsed + TimeInterval((2 * CGFloat.pi) / speed)
-        tintHazard(ring: ring, safe: true)
-        hazardTintedRing = ring
     }
 
-    /// Mor boyalı halka varsa kırmızıya geri döndürür. Küre başka bir halkaya
-    /// geçtiğinde ya da öldüğünde çağrılır; yoksa terk edilen halka mor kalır.
-    private func clearHazardTint() {
-        guard let old = hazardTintedRing else { return }
-        hazardTintedRing = nil
-        tintHazard(ring: old, safe: false)
+    /// Turu dolup kırmızıya dönmüş halkayı dinlenme rengine geri getirir.
+    /// Oradan ayrılan küre yeniden konarsa müsamaha da yeniden başlıyor;
+    /// yay bu yüzden kırmızı kalmamalı.
+    private func restoreHazardTint() {
+        guard let armed = hazardArmedRing else { return }
+        hazardArmedRing = nil
+        tintHazard(ring: armed, safe: hazardGraceEnabled)
     }
 
+    /// Yayı tek renge boyar: mor = bu tur yakmaz, kırmızı = silahlı.
+    /// Üst üste binen iki katman yerine düz renk; yay da böylece azalan bir
+    /// sayaç yayıyla karıştırılmıyor.
     private func tintHazard(ring: Int, safe: Bool) {
         guard ring < hazardNodes.count, let node = hazardNodes[ring] else { return }
-        for case let shape as SKShapeNode in node.children {
-            if shape.name == Self.hazardSafeName {
-                shape.alpha = safe ? 1 : 0
-            } else {
-                // Kırmızı hiç yok olmuyor, sadece geri çekiliyor.
-                shape.alpha = safe ? 0.35 : 1
-            }
+        for case let shape as SKShapeNode in node.children
+        where shape.name == Self.hazardBaseName {
+            applyHazardStyle(shape, safe: safe)
         }
+    }
+
+    /// Silahlı yay kalın ve parıltılı, müsamahalı yay ince ve sakin çiziliyor.
+    /// Durum yalnızca renkten değil ÇİZGİ AĞIRLIĞINDAN da okunuyor.
+    private func applyHazardStyle(_ shape: SKShapeNode, safe: Bool) {
+        shape.strokeColor = safe ? theme.hazardSafe.uiColor : theme.hazard.uiColor
+        shape.lineWidth = safe ? 5 : 7
+        shape.glowWidth = safe ? 3 : 6
     }
 
     /// Tur dolduğu anda yayı kırmızıya çevirir ve bir kez attırır — oyuncu
     /// artık öldürücü olduğunu görsün.
     private func updateHazardTint() {
-        guard let ring = hazardTintedRing, !hazardGraceActive else { return }
-        hazardTintedRing = nil
+        guard hazardGraceUntil != nil, !hazardGraceActive else { return }
+        hazardGraceUntil = nil
+        guard case .attached(let ring, _, _) = orbState else { return }
+        hazardArmedRing = ring
         tintHazard(ring: ring, safe: false)
         guard ring < hazardNodes.count else { return }
         hazardNodes[ring]?.run(.sequence([.scale(to: 1.12, duration: 0.12),
@@ -1225,6 +1213,11 @@ final class GameScene: SKScene {
 
     /// Aktif halkanın çevresinde kalan oyalanma süresini gösteren azalan yay.
     /// Üstten başlar, saat yönünde tükenir; süre azaldıkça kırmızıya döner.
+    ///
+    /// Yayın arkasında TAM BİR ÇEMBER var: tükenmiş kısım sönük bir yuva
+    /// olarak yerinde duruyor. Yalnızca kalan kısım çizilirken gösterge, halka
+    /// üstündeki tehlike yaylarıyla aynı şekle giriyor ve hangisinin sayaç
+    /// olduğu anlaşılmıyordu.
     private func updateDwellArc(ring: Int, fraction: CGFloat) {
         let arc: SKShapeNode
         if let existing = dwellArc {
@@ -1236,6 +1229,13 @@ final class GameScene: SKScene {
             n.glowWidth = 4
             n.zPosition = 16
             n.fillColor = .clear
+            let track = SKShapeNode()
+            track.name = Self.dwellTrackName
+            track.lineWidth = 4
+            track.glowWidth = 0
+            track.fillColor = .clear
+            track.zPosition = -1
+            n.addChild(track)
             addChild(n)
             dwellArc = n
             arc = n
@@ -1251,6 +1251,15 @@ final class GameScene: SKScene {
         let low = fraction < 0.34
         arc.strokeColor = low ? theme.hazard.uiColor : theme.accent.uiColor
         arc.alpha = low ? 0.95 : 0.7
+
+        if let track = arc.childNode(withName: Self.dwellTrackName) as? SKShapeNode {
+            track.path = CGPath(ellipseIn: CGRect(x: -r, y: -r, width: r * 2, height: r * 2),
+                                transform: nil)
+            track.strokeColor = theme.ring.uiColor
+            // Çocuk düğümün alfası ebeveyninkiyle ÇARPILIYOR; yuva ekranda
+            // her zaman aynı sönüklükte kalsın diye bölerek telafi ediliyor
+            track.alpha = 0.26 / arc.alpha
+        }
     }
 
     // MARK: Kazanma / kaybetme
@@ -1265,7 +1274,7 @@ final class GameScene: SKScene {
         // canlanan oyuncu, skoru 27 yazarken 26. halkada başlıyordu.
         if case .attached(let ring, _, _) = orbState { lastRing = ring }
         hazardGraceUntil = nil
-        clearHazardTint()
+        restoreHazardTint()
         orbState = .dead
         deadSince = elapsed
         combo = 0

@@ -1,5 +1,6 @@
 import SwiftUI
 import StoreKit
+import PhotosUI
 
 struct ShopView: View {
     @EnvironmentObject private var app: AppModel
@@ -14,6 +15,7 @@ struct ShopView: View {
     @State private var shimmer = false
     @State private var crownPulse = false
     @State private var starsJustEarned = false
+    @State private var photoItem: PhotosPickerItem?
 
     private enum CodeState { case idle, success, failure, bonusGranted }
 
@@ -52,10 +54,15 @@ struct ShopView: View {
 
                         charactersSection
 
-                        premiumCard
-                            .id(premiumAnchor)
+                        backgroundsSection(proxy)
 
+                        // Premium alındıysa satış kartı görünmüyor: parası
+                        // ödenmiş bir şeyin fiyatını her açılışta göstermenin
+                        // anlamı yok, ekranı da uzatıyordu.
                         if !store.isPremium {
+                            premiumCard
+                                .id(premiumAnchor)
+
                             redeemSection
                         }
 
@@ -103,6 +110,41 @@ struct ShopView: View {
             }
             withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) {
                 crownPulse = true
+            }
+        }
+    }
+
+    // MARK: Arka planlar
+
+    /// Temalar ayarlardan buraya taşındı: sekizi premium'a dahil olduğu için
+    /// asıl yeri satın alma ekranı, ayarlar da böylece sadeleşti.
+    private func backgroundsSection(_ proxy: ScrollViewProxy) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Backgrounds")
+                .font(.system(.headline, design: .rounded).bold())
+                .foregroundStyle(.white.opacity(0.9))
+                .padding(.horizontal, 24)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(Theme.all) { theme in
+                        let locked = theme.isPremium && !store.isPremium
+                        ThemeSwatch(theme: theme,
+                                    selected: settings.themeID == theme.id,
+                                    locked: locked) {
+                            AudioEngine.shared.playTap()
+                            if locked {
+                                // Kilitli tema = premium teklifi; kartı göster
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    proxy.scrollTo(premiumAnchor, anchor: .center)
+                                }
+                            } else {
+                                settings.themeID = theme.id
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
             }
         }
     }
@@ -291,6 +333,12 @@ struct ShopView: View {
             // Şampiyon küresi listede DURUR ama satın alınamaz. Gizlemek,
             // kazanılabileceğini kimsenin bilmemesi demek olurdu.
             championRow
+
+            // "Yüzünü küreye koy" premium'un kendi vaadi; fotoğraf seçme de
+            // bu yüzden burada duruyor
+            if store.isPremium {
+                photoOrbRow
+            }
         }
         .padding(20)
         .background {
@@ -298,6 +346,64 @@ struct ShopView: View {
                 .fill(.white.opacity(0.05))
         }
         .padding(.horizontal, 20)
+    }
+
+    /// Fotoğraflı küre — premium'un en görünür ayrıcalığı. Stili kuşandırır
+    /// ve fotoğrafı buradan seçtirir; ayarlara gitmeye gerek kalmıyor.
+    private var photoOrbRow: some View {
+        let style = OrbStyle.style(id: "photo")
+        let selected = settings.orbStyleID == style.id
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 14) {
+                CharacterPreview(kind: style.kind, theme: settings.theme)
+                    .frame(width: 46, height: 46)
+                    .id(settings.orbPhotoVersion)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(style.localizedName)
+                        .font(.system(.body, design: .rounded).bold())
+                        .foregroundStyle(.white)
+                    Text("Your photo stays on your device only.")
+                        .font(.system(.caption2, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.45))
+                }
+
+                Spacer()
+
+                Button {
+                    AudioEngine.shared.playTap()
+                    settings.orbStyleID = style.id
+                } label: {
+                    Text(selected ? "Selected" : "Select")
+                        .font(.system(.caption, design: .rounded).bold())
+                        .foregroundStyle(selected ? .white.opacity(0.5) : .black)
+                        .padding(.horizontal, 14).padding(.vertical, 8)
+                        .background(Capsule().fill(selected ? .white.opacity(0.12)
+                                                            : settings.theme.lumen.color))
+                }
+                .disabled(selected)
+            }
+
+            PhotosPicker(selection: $photoItem, matching: .images) {
+                Label(OrbPhotoStore.exists ? "Change Photo" : "Choose Photo",
+                      systemImage: "photo.circle.fill")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 10)
+                    .background(Capsule().fill(settings.theme.accent.opacity(0.3)))
+            }
+            .onChange(of: photoItem) { _, item in
+                guard let item else { return }
+                Task {
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        OrbPhotoStore.save(image)
+                        settings.orbPhotoVersion += 1
+                    }
+                }
+            }
+        }
     }
 
     /// Yalnızca haftalık ilk üçe girerek kazanılan küre. Kazanıldıysa

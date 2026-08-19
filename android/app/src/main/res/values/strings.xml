@@ -146,4 +146,5 @@
     <string name="choose_photo">Your own photo inside the orb</string>
     <string name="colorblind_mode">Colorblind mode</string>
     <string name="colorblind_mode_note">Uses a palette that stays distinct for every kind of color blindness, and marks hazards with notches as well as color.</string>
+    <string name="backgrounds">Backgrounds</string>
 </resources>

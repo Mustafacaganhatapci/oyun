@@ -36,11 +36,25 @@ struct Theme: Identifiable, Equatable {
     /// tırtıklar), çünkü tek başına renk hiçbir palette yeterli değil.
     var isColorBlindSafe = false
 
+    /// "Bu tur yakmaz" durumundaki tehlike yayının rengi. Temanın `accent`
+    /// rengi kullanılamıyor: bazı temalarda (mercan) vurgu, tehlikenin
+    /// kendisine çok yakın bir somon tonu — yay silahlı mı değil mi
+    /// anlaşılmıyor. Tüm temaların halkası soğuk (mor/mavi/yeşil/beyaz)
+    /// olduğu için magenta hem halkayla hem kırmızıyla karışmıyor.
+    var hazardSafe: ThemeColor {
+        isColorBlindSafe
+        ? ThemeColor(r: 0.800, g: 0.475, b: 0.655)   // Okabe–Ito kırmızımsı mor
+        : ThemeColor(r: 0.839, g: 0.361, b: 0.941)   // magenta
+    }
+
+    // Varsayılan tema. Arka plan bilerek DÜŞÜK doygunlukta: eski mor
+    // (0.129, 0.043, 0.267) uzun oturumlarda göz yoruyordu. Kimlik aynı
+    // kaldı, sadece morun kanı çekildi ve biraz maviye kaydırıldı.
     static let nebula = Theme(
         id: "nebula", name: "Nebula", isPremium: false,
-        bgTop: ThemeColor(r: 0.055, g: 0.043, b: 0.161),
-        bgBottom: ThemeColor(r: 0.129, g: 0.043, b: 0.267),
-        ring: ThemeColor(r: 0.478, g: 0.408, b: 0.933),
+        bgTop: ThemeColor(r: 0.055, g: 0.051, b: 0.126),
+        bgBottom: ThemeColor(r: 0.114, g: 0.086, b: 0.204),
+        ring: ThemeColor(r: 0.522, g: 0.478, b: 0.906),
         gate: ThemeColor(r: 0.290, g: 0.949, b: 0.788),
         orb: ThemeColor(r: 1.0, g: 1.0, b: 1.0),
         hazard: ThemeColor(r: 1.0, g: 0.302, b: 0.416),

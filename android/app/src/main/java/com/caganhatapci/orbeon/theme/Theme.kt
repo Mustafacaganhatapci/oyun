@@ -25,6 +25,17 @@ data class Theme(
     val isColorBlindSafe: Boolean = false
 ) {
     /**
+     * "Bu tur yakmaz" durumundaki tehlike yayının rengi. Temanın `accent`
+     * rengi kullanılamıyor: bazı temalarda (mercan) vurgu, tehlikenin
+     * kendisine çok yakın bir somon tonu — yay silahlı mı değil mi
+     * anlaşılmıyor. Tüm temaların halkası soğuk (mor/mavi/yeşil/beyaz)
+     * olduğu için magenta hem halkayla hem kırmızıyla karışmıyor.
+     */
+    val hazardSafe: Color
+        get() = if (isColorBlindSafe) Color(0.800f, 0.475f, 0.655f, 1f)
+                else Color(0.839f, 0.361f, 0.941f, 1f)
+
+    /**
      * Oyunun anlamı renge bağlı: yeşil kapı "git", kırmızı yay "ölürsün",
      * sarı yıldız "topla". En yaygın renk körlüğü tam bu kırmızı–yeşil
      * ayrımını siliyor. Bu mod açıkken zemin temanın kendisi olarak kalıyor,
@@ -48,8 +59,10 @@ data class Theme(
         private fun c(r: Double, g: Double, b: Double) =
             Color(r.toFloat(), g.toFloat(), b.toFloat(), 1f)
 
+        // Varsayılan tema. Arka plan bilerek DÜŞÜK doygunlukta: eski mor
+        // (0.129, 0.043, 0.267) uzun oturumlarda göz yoruyordu.
         val nebula = Theme("nebula", R.string.theme_nebula, false,
-            c(0.055,0.043,0.161), c(0.129,0.043,0.267), c(0.478,0.408,0.933),
+            c(0.055,0.051,0.126), c(0.114,0.086,0.204), c(0.522,0.478,0.906),
             c(0.290,0.949,0.788), c(1.0,1.0,1.0), c(1.0,0.302,0.416),
             c(1.0,0.827,0.353), c(0.639,0.545,1.0))
 

@@ -62,7 +62,7 @@ struct AnimatedBackground: View {
                     let rect = CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2)
                     let color = i % 2 == 0 ? theme.ring.color : theme.accent.color
                     context.fill(Circle().path(in: rect),
-                                 with: .radialGradient(Gradient(colors: [color.opacity(0.16), .clear]),
+                                 with: .radialGradient(Gradient(colors: [color.opacity(0.11), .clear]),
                                                        center: CGPoint(x: x, y: y),
                                                        startRadius: 0, endRadius: r))
                 }

@@ -237,10 +237,6 @@ fun MainMenuScreen(
                     enabled = app.progress.endlessUnlocked
                 ) { app.audio.playTap(); onSpeedrun() }
 
-                // Ayarlar sağ üste taşındı; burada tek başına mağaza kaldı.
-                GlowButton(stringResource(R.string.shop), theme.lumen) {
-                    app.audio.playTap(); onShop()
-                }
             }
         }
     }
@@ -471,8 +467,50 @@ fun ShopScreen(onBack: () -> Unit) {
                     }
                 }
 
-                // Premium kartı
-                Box(
+                // Arka planlar — ayarlardan buraya taşındı: sekizi premium'a
+                // dahil olduğu için asıl yeri satın alma ekranı
+                Card {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(stringResource(R.string.backgrounds), color = Color.White.copy(alpha = 0.9f),
+                            fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Theme.all.forEach { t ->
+                            val locked = t.isPremium && !app.billing.isPremium
+                            Row(
+                                Modifier.fillMaxWidth()
+                                    .background(
+                                        if (app.settings.themeId == t.id) t.accent.copy(alpha = 0.2f)
+                                        else Color.Transparent,
+                                        RoundedCornerShape(12.dp)
+                                    )
+                                    .clickable {
+                                        app.audio.playTap()
+                                        // Kilitli tema = premium teklifi; kart aşağıda
+                                        if (!locked) {
+                                            app.settings.themeId = t.id; app.settings.persist()
+                                        }
+                                    }
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(Modifier.size(20.dp).background(t.accent, CircleShape))
+                                Text(
+                                    stringResource(t.nameRes),
+                                    color = Color.White, fontSize = 14.sp,
+                                    modifier = Modifier.weight(1f).padding(start = 12.dp)
+                                )
+                                if (locked) Icon(Icons.Filled.Lock, null,
+                                    tint = Color.White.copy(alpha = 0.4f), modifier = Modifier.size(16.dp))
+                                else if (app.settings.themeId == t.id)
+                                    Icon(Icons.Filled.CheckCircle, null, tint = t.gate, modifier = Modifier.size(18.dp))
+                            }
+                        }
+                    }
+                }
+
+                // Premium kartı. Premium alındıysa gösterilmiyor: parası
+                // ödenmiş bir şeyin fiyatını her açılışta göstermenin anlamı
+                // yok, ekranı da uzatıyordu.
+                if (!app.billing.isPremium) Box(
                     Modifier.fillMaxWidth()
                         .background(theme.lumen.copy(alpha = 0.12f), RoundedCornerShape(28.dp))
                         .border(1.5.dp, theme.lumen.copy(alpha = 0.6f), RoundedCornerShape(28.dp))
@@ -497,10 +535,6 @@ fun ShopScreen(onBack: () -> Unit) {
 
                         val premium = app.billing.premiumProduct
                         when {
-                            app.billing.isPremium -> Text(
-                                stringResource(R.string.premium_active), color = theme.gate,
-                                fontSize = 16.sp, fontWeight = FontWeight.Bold
-                            )
                             premium != null -> GlowButton(
                                 stringResource(R.string.go_premium), theme.lumen, prominent = true,
                                 trailing = premium.oneTimePurchaseOfferDetails?.formattedPrice ?: "",
@@ -722,39 +756,10 @@ fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Uni
                     }
                 }
 
-                Card {
-                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text(stringResource(R.string.themes), color = Color.White.copy(alpha = 0.9f),
-                            fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        Theme.all.forEach { t ->
-                            val locked = t.isPremium && !app.billing.isPremium
-                            Row(
-                                Modifier.fillMaxWidth()
-                                    .background(
-                                        if (app.settings.themeId == t.id) t.accent.copy(alpha = 0.2f)
-                                        else Color.Transparent,
-                                        RoundedCornerShape(12.dp)
-                                    )
-                                    .clickable {
-                                        if (locked) onShop()
-                                        else { app.settings.themeId = t.id; app.settings.persist() }
-                                    }
-                                    .padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(Modifier.size(20.dp).background(t.accent, CircleShape))
-                                Text(
-                                    stringResource(t.nameRes),
-                                    color = Color.White, fontSize = 14.sp,
-                                    modifier = Modifier.weight(1f).padding(start = 12.dp)
-                                )
-                                if (locked) Icon(Icons.Filled.Lock, null,
-                                    tint = Color.White.copy(alpha = 0.4f), modifier = Modifier.size(16.dp))
-                                else if (app.settings.themeId == t.id)
-                                    Icon(Icons.Filled.CheckCircle, null, tint = t.gate, modifier = Modifier.size(18.dp))
-                            }
-                        }
-                    }
+                // Mağaza ana menüden kaldırıldı (menü kalabalıktı); arka
+                // planlar, bahşiş ve premium oraya taşındı
+                GlowButton(stringResource(R.string.shop), theme.lumen) {
+                    app.audio.playTap(); onShop()
                 }
 
                 // Foto küre: premium'sa fotoğraf seç + kuşan (iOS'taki photo orb)
@@ -908,7 +913,7 @@ fun AnimatedBlobs(theme: Theme, t: Float) {
             val color = if (i % 2 == 0) theme.ring else theme.accent
             drawCircle(
                 Brush.radialGradient(
-                    listOf(color.copy(alpha = 0.16f), Color.Transparent),
+                    listOf(color.copy(alpha = 0.11f), Color.Transparent),
                     center = Offset(x, y), radius = r.coerceAtLeast(1f)
                 ),
                 r.coerceAtLeast(1f), Offset(x, y)
