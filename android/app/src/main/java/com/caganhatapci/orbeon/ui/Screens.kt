@@ -913,7 +913,7 @@ fun AnimatedBlobs(theme: Theme, t: Float) {
             val color = if (i % 2 == 0) theme.ring else theme.accent
             drawCircle(
                 Brush.radialGradient(
-                    listOf(color.copy(alpha = 0.11f), Color.Transparent),
+                    listOf(color.copy(alpha = 0.08f), Color.Transparent),
                     center = Offset(x, y), radius = r.coerceAtLeast(1f)
                 ),
                 r.coerceAtLeast(1f), Offset(x, y)

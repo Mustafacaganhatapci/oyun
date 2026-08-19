@@ -79,7 +79,7 @@ struct SplitMix64: RandomNumberGenerator {
 // 48 düğüm: her 6. bölüm bonus turu (6, 12, 18, ...), aralarda 40 normal bölüm.
 
 enum LevelLibrary {
-    static let count = 150
+    static let count = 257
     static let adFreeLevels = 10        // ilk 10 bölümde asla reklam yok
 
     /// Kampanya 120'den 150'ye çıkarıldığında 1...120'nin AYNEN aynı kalması
@@ -89,6 +89,11 @@ enum LevelLibrary {
     /// eğrinin sonunda, en yüksek zorlukta oturur.
     static let legacyCount = 120
     private static let curveNormalCount = legacyCount - legacyCount / 6   // 100
+
+    /// Kampanyanın bir önceki uzunluğu. 121...150 de artık yayında olduğu
+    /// için o aralık da olduğu gibi korunuyor; yeni kurallar buradan sonrası
+    /// için geçerli.
+    static let priorCount = 150
 
     static func isBonus(_ id: Int) -> Bool { id > 0 && id % 6 == 0 }
 
@@ -104,9 +109,16 @@ enum LevelLibrary {
     }
 
     /// "Büyük yıldız" bölümleri: 3 küçük lumen yerine 4 eden tek bir iri lumen.
+    ///
+    /// 150'den sonra seyrekliyor (üçte birden dörtte bire) ve topla-bitir
+    /// bölümleriyle çakışmıyor: tek lumenli bir topla-bitir bölümü, kapıyı
+    /// tek yıldızla açmak demek olurdu — bölüm türünün anlamı kalmazdı.
+    /// Sayı ayrıca kampanyanın toplamını tam 806 yıldıza oturtuyor.
     static func hasGrandStar(_ id: Int) -> Bool {
         guard id >= kindsFrom, !isBonus(id) else { return false }
-        return id > legacyCount ? (id % 3 == 2) : (id % 7 == 1)
+        if id <= legacyCount { return id % 7 == 1 }
+        if id <= priorCount { return id % 3 == 2 }
+        return id % 4 == 1 && !isCollect(id)
     }
 
     /// Zorluk eğrisinin 0...1 konumu. 100. normal bölümden sonra 1'de durur.

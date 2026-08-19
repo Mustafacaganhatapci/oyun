@@ -495,9 +495,12 @@ final class GameScene: SKScene {
 
         let circle = SKShapeNode(circleOfRadius: r)
         circle.strokeColor = spec.isGate ? gateColor : theme.ring.uiColor
-        circle.lineWidth = 3
+        // Halka zeminden net ayrılsın: arka planlar koyulaştı, çizgi de
+        // buna karşılık biraz kalınlaştı ve tam opaklığa çıktı. Düşük
+        // kontrast, parlaklıktan daha çok göz yoruyor.
+        circle.lineWidth = 3.5
         circle.glowWidth = spec.isGate ? 10 : 6
-        circle.alpha = locked ? 0.35 : 0.9
+        circle.alpha = locked ? 0.35 : 1.0
         circle.fillColor = .clear
         container.addChild(circle)
 

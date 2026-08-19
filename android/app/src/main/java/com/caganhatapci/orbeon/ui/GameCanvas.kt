@@ -132,7 +132,9 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
         // Dış parıltı + çizginin kendisi
         drawCircle(color.copy(alpha = 0.22f * dim), r, c,
             style = Stroke(width = (if (spec.isGate) 16f else 11f) * den))
-        drawCircle(color.copy(alpha = 0.9f * dim), r, c, style = Stroke(width = 3.5f * den))
+        // Halka zeminden net ayrılsın: arka planlar koyulaştı, çizgi de tam
+        // opaklığa çıktı. Düşük kontrast, parlaklıktan çok göz yoruyor.
+        drawCircle(color.copy(alpha = 1f * dim), r, c, style = Stroke(width = 3.5f * den))
 
         if (spec.isGate) {
             drawCircle(gateColor.copy(alpha = 0.10f * dim), r, c)

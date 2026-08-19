@@ -115,7 +115,7 @@ data class Difficulty(
 )
 
 object LevelLibrary {
-    const val COUNT = 150
+    const val COUNT = 257
     const val AD_FREE_LEVELS = 10        // ilk 10 bölümde asla reklam yok
     const val TUTORIAL_ID = 0
 
@@ -127,6 +127,12 @@ object LevelLibrary {
      */
     const val LEGACY_COUNT = 120
     private const val CURVE_NORMAL_COUNT = LEGACY_COUNT - LEGACY_COUNT / 6   // 100
+
+    /**
+     * Kampanyanın bir önceki uzunluğu. 121...150 de artık yayında olduğu için
+     * o aralık da olduğu gibi korunuyor; yeni kurallar buradan sonrası için.
+     */
+    const val PRIOR_COUNT = 150
 
     fun isBonus(id: Int): Boolean = id > 0 && id % 6 == 0
 
@@ -143,10 +149,19 @@ object LevelLibrary {
         return if (id > LEGACY_COUNT) id % 3 == 1 else id % 7 == 4
     }
 
-    /** "Büyük yıldız": 3 küçük lumen yerine 4 eden tek bir iri lumen. */
+    /**
+     * "Büyük yıldız": 3 küçük lumen yerine 4 eden tek bir iri lumen.
+     *
+     * 150'den sonra seyrekliyor (üçte birden dörtte bire) ve topla-bitir
+     * bölümleriyle çakışmıyor: tek lumenli bir topla-bitir bölümü, kapıyı tek
+     * yıldızla açmak demek olurdu — bölüm türünün anlamı kalmazdı. Sayı
+     * ayrıca kampanyanın toplamını tam 806 yıldıza oturtuyor.
+     */
     fun hasGrandStar(id: Int): Boolean {
         if (id < KINDS_FROM || isBonus(id)) return false
-        return if (id > LEGACY_COUNT) id % 3 == 2 else id % 7 == 1
+        if (id <= LEGACY_COUNT) return id % 7 == 1
+        if (id <= PRIOR_COUNT) return id % 3 == 2
+        return id % 4 == 1 && !isCollect(id)
     }
 
     /**
