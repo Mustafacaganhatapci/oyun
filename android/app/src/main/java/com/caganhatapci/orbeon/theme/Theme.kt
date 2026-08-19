@@ -25,17 +25,17 @@ data class Theme(
     val isColorBlindSafe: Boolean = false
 ) {
     /**
-     * "Bu tur yakmaz" durumundaki tehlike yayının rengi. Kırmızının tam
-     * karşıtı olduğu için yeşil, ama BİLEREK sönük: müsamahalı hâl ekranda
-     * bağırmamalı, bağıran şey öldüren kırmızı olmalı. Parlak yeşilken bütün
-     * yaylar aynı anda öne fırlıyor ve ekran okunmaz hâle geliyordu.
+     * "Bu tur yakmaz" durumundaki tehlike yayının rengi: kırmızının karşıtı
+     * olduğu için yeşil, ama BİLEREK sönük ve halkadan bir tık koyu. Tek vurgu
+     * dilinde ekranın tek doygun rengi tehlike kırmızısı olmalı; müsamahalı
+     * hâl fark edilir ama bağırmaz.
      *
      * Renk körlüğü modunda yeşil tam da işe yaramayan renk; orada
      * Okabe–Ito'nun mavimsi yeşiline geçiliyor.
      */
     val hazardSafe: Color
-        get() = if (isColorBlindSafe) Color(0.176f, 0.478f, 0.404f, 1f)
-                else Color(0.318f, 0.494f, 0.337f, 1f)
+        get() = if (isColorBlindSafe) Color(0.243f, 0.435f, 0.396f, 1f)
+                else Color(0.325f, 0.463f, 0.345f, 1f)
 
     /**
      * Oyunun anlamı renge bağlı: yeşil kapı "git", kırmızı yay "ölürsün",
@@ -61,37 +61,50 @@ data class Theme(
         private fun c(r: Double, g: Double, b: Double) =
             Color(r.toFloat(), g.toFloat(), b.toFloat(), 1f)
 
-        // Varsayılan tema. Arka plan bilerek DÜŞÜK doygunlukta: eski mor
-        // (0.129, 0.043, 0.267) uzun oturumlarda göz yoruyordu.
+        // TEK VURGU dili: halkalar, zemin ve küre nötr; ekrandaki TEK doygun
+        // renk tehlike kırmızısı, en parlak şey de hedef kapısı. Anlam taşıyan
+        // üç renk (kapı ≈ beyaz, tehlike kırmızı, yıldız altın) bütün
+        // temalarda AYNI — tema değiştirmek oynanışın dilini değiştirmiyor.
+
+        // Varsayılan tema. Menekşe-gri.
         val nebula = Theme("nebula", R.string.theme_nebula, false,
-            c(0.047,0.046,0.071), c(0.082,0.074,0.110), c(0.570,0.560,0.663), c(0.347,0.725,0.633), c(0.940,0.940,0.940), c(0.703,0.302,0.368), c(0.777,0.678,0.405), c(0.519,0.473,0.697))
+            c(0.048,0.047,0.061), c(0.094,0.089,0.112), c(0.503,0.499,0.540), c(0.829,0.955,0.925), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.453,0.433,0.531))
 
+        // Soğuk mavi-gri.
         val gece = Theme("gece", R.string.theme_night, false,
-            c(0.029,0.039,0.057), c(0.056,0.084,0.113), c(0.534,0.625,0.690), c(0.472,0.772,0.567), c(0.869,0.915,0.935), c(0.695,0.278,0.272), c(0.782,0.696,0.437), c(0.397,0.609,0.715))
+            c(0.043,0.050,0.062), c(0.078,0.096,0.115), c(0.478,0.512,0.537), c(0.857,0.949,0.886), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.385,0.471,0.513))
 
+        // Gül-gri, hafif sıcak.
         val safak = Theme("safak", R.string.theme_dawn, true,
-            c(0.095,0.069,0.116), c(0.220,0.138,0.184), c(0.659,0.675,0.742), c(0.789,0.715,0.530), c(0.936,0.908,0.882), c(0.699,0.299,0.292), c(0.774,0.668,0.373), c(0.730,0.543,0.508))
+            c(0.053,0.045,0.060), c(0.109,0.084,0.098), c(0.499,0.504,0.527), c(0.934,0.914,0.862), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.501,0.430,0.417))
 
+        // Yeşile çalan gri.
         val orman = Theme("orman", R.string.theme_forest, true,
-            c(0.041,0.071,0.065), c(0.082,0.135,0.115), c(0.597,0.706,0.633), c(0.450,0.709,0.765), c(0.896,0.937,0.896), c(0.696,0.288,0.257), c(0.782,0.696,0.437), c(0.483,0.699,0.564))
+            c(0.040,0.053,0.051), c(0.078,0.101,0.092), c(0.482,0.519,0.494), c(0.855,0.936,0.954), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.401,0.479,0.430))
 
+        // Deniz grisi.
         val mercan = Theme("mercan", R.string.theme_coral, true,
-            c(0.048,0.066,0.091), c(0.085,0.152,0.171), c(0.560,0.691,0.692), c(0.776,0.664,0.461), c(0.937,0.918,0.896), c(0.695,0.277,0.295), c(0.783,0.698,0.468), c(0.715,0.493,0.470))
+            c(0.042,0.050,0.061), c(0.074,0.100,0.107), c(0.473,0.519,0.519), c(0.944,0.911,0.850), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.514,0.424,0.415))
 
+        // Mor-yeşil arası soğuk gri.
         val aurora = Theme("aurora", R.string.theme_aurora, true,
-            c(0.034,0.028,0.062), c(0.061,0.108,0.122), c(0.588,0.727,0.685), c(0.612,0.452,0.734), c(0.897,0.938,0.928), c(0.694,0.271,0.298), c(0.782,0.696,0.437), c(0.465,0.721,0.648))
+            c(0.049,0.044,0.072), c(0.075,0.100,0.107), c(0.474,0.520,0.506), c(0.944,0.884,0.990), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.389,0.480,0.454))
 
+        // En koyu zemin, mor-gri halka.
         val neon = Theme("neon", R.string.theme_neon, true,
-            c(0.018,0.018,0.033), c(0.041,0.031,0.060), c(0.541,0.709,0.733), c(0.452,0.767,0.508), c(0.940,0.940,0.940), c(0.680,0.193,0.308), c(0.785,0.729,0.355), c(0.608,0.362,0.681))
+            c(0.047,0.047,0.067), c(0.098,0.084,0.124), c(0.464,0.521,0.530), c(0.854,0.953,0.872), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.515,0.398,0.550))
 
+        // Tamamen nötr gri — hiç renk sapması yok.
         val karbon = Theme("karbon", R.string.theme_carbon, true,
-            c(0.032,0.032,0.036), c(0.077,0.077,0.083), c(0.795,0.795,0.807), c(0.354,0.755,0.469), c(0.548,0.786,0.908), c(0.682,0.223,0.223), c(0.769,0.654,0.309), c(0.507,0.532,0.581))
+            c(0.049,0.049,0.052), c(0.093,0.093,0.097), c(0.505,0.505,0.508), c(0.831,0.965,0.869), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.440,0.451,0.472))
 
+        // Gece mavisine çalan gri.
         val kraliyet = Theme("kraliyet", R.string.theme_royal, true,
-            c(0.039,0.044,0.075), c(0.078,0.087,0.136), c(0.719,0.730,0.758), c(0.354,0.690,0.543), c(0.938,0.929,0.897), c(0.692,0.262,0.284), c(0.774,0.661,0.407), c(0.726,0.643,0.463))
+            c(0.045,0.048,0.066), c(0.086,0.091,0.119), c(0.502,0.505,0.514), c(0.837,0.955,0.904), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.477,0.449,0.386))
 
+        // Erik-gri, yumuşak.
         val sakura = Theme("sakura", R.string.theme_sakura, true,
-            c(0.073,0.054,0.078), c(0.137,0.096,0.128), c(0.672,0.659,0.738), c(0.463,0.737,0.615), c(0.937,0.909,0.918), c(0.689,0.252,0.259), c(0.779,0.682,0.434), c(0.750,0.592,0.650))
+            c(0.054,0.045,0.056), c(0.104,0.086,0.100), c(0.505,0.501,0.527), c(0.858,0.944,0.906), c(0.941,0.945,0.953), c(0.820,0.286,0.357), c(0.710,0.580,0.314), c(0.486,0.431,0.451))
 
         val all = listOf(nebula, gece, safak, orman, mercan, aurora,
                          neon, karbon, kraliyet, sakura)

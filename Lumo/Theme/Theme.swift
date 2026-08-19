@@ -36,156 +36,155 @@ struct Theme: Identifiable, Equatable {
     /// tırtıklar), çünkü tek başına renk hiçbir palette yeterli değil.
     var isColorBlindSafe = false
 
-    /// "Bu tur yakmaz" durumundaki tehlike yayının rengi. Kırmızının tam
-    /// karşıtı olduğu için yeşil, ama BİLEREK sönük: müsamahalı hâl ekranda
-    /// bağırmamalı, bağıran şey öldüren kırmızı olmalı. Parlak yeşilken bütün
-    /// yaylar aynı anda öne fırlıyor ve ekran okunmaz hâle geliyordu.
+    /// "Bu tur yakmaz" durumundaki tehlike yayının rengi: kırmızının karşıtı
+    /// olduğu için yeşil, ama BİLEREK sönük ve halkadan bir tık koyu. Tek
+    /// vurgu dilinde ekranın tek doygun rengi tehlike kırmızısı olmalı;
+    /// müsamahalı hâl fark edilir ama bağırmaz.
     ///
     /// Renk körlüğü modunda yeşil tam da işe yaramayan renk; orada
     /// Okabe–Ito'nun mavimsi yeşiline geçiliyor.
     var hazardSafe: ThemeColor {
         isColorBlindSafe
-        ? ThemeColor(r: 0.176, g: 0.478, b: 0.404)
-        : ThemeColor(r: 0.318, g: 0.494, b: 0.337)
+        ? ThemeColor(r: 0.243, g: 0.435, b: 0.396)
+        : ThemeColor(r: 0.325, g: 0.463, b: 0.345)
     }
 
-    // Varsayılan tema. Arka plan bilerek DÜŞÜK doygunlukta: eski mor
-    // (0.129, 0.043, 0.267) uzun oturumlarda göz yoruyordu. Kimlik aynı
-    // kaldı, sadece morun kanı çekildi ve biraz maviye kaydırıldı.
+    // MARK: Temalar
+    //
+    // TEK VURGU dili: halkalar, zemin ve küre nötr; ekrandaki TEK doygun renk
+    // tehlike kırmızısı, en parlak şey de hedef kapısı. Anlam taşıyan üç renk
+    // (kapı ≈ beyaz, tehlike kırmızı, yıldız altın) bütün temalarda AYNI —
+    // tema değiştirmek oynanışın dilini değiştirmiyor, yalnızca zeminin ve
+    // halkanın ton sapmasını değiştiriyor.
+
+    // Varsayılan tema. Menekşe-gri.
     static let nebula = Theme(
         id: "nebula", name: "Nebula", isPremium: false,
-        bgTop: ThemeColor(r: 0.047, g: 0.046, b: 0.071),
-        bgBottom: ThemeColor(r: 0.082, g: 0.074, b: 0.110),
-        ring: ThemeColor(r: 0.570, g: 0.560, b: 0.663),
-        gate: ThemeColor(r: 0.347, g: 0.725, b: 0.633),
-        orb: ThemeColor(r: 0.940, g: 0.940, b: 0.940),
-        hazard: ThemeColor(r: 0.703, g: 0.302, b: 0.368),
-        lumen: ThemeColor(r: 0.777, g: 0.678, b: 0.405),
-        accent: ThemeColor(r: 0.519, g: 0.473, b: 0.697)
+        bgTop: ThemeColor(r: 0.048, g: 0.047, b: 0.061),
+        bgBottom: ThemeColor(r: 0.094, g: 0.089, b: 0.112),
+        ring: ThemeColor(r: 0.503, g: 0.499, b: 0.540),
+        gate: ThemeColor(r: 0.829, g: 0.955, b: 0.925),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.453, g: 0.433, b: 0.531)
     )
 
+    // Soğuk mavi-gri.
     static let gece = Theme(
         id: "gece", name: "Night", isPremium: false,
-        bgTop: ThemeColor(r: 0.029, g: 0.039, b: 0.057),
-        bgBottom: ThemeColor(r: 0.056, g: 0.084, b: 0.113),
-        ring: ThemeColor(r: 0.534, g: 0.625, b: 0.690),
-        gate: ThemeColor(r: 0.472, g: 0.772, b: 0.567),
-        orb: ThemeColor(r: 0.869, g: 0.915, b: 0.935),
-        hazard: ThemeColor(r: 0.695, g: 0.278, b: 0.272),
-        lumen: ThemeColor(r: 0.782, g: 0.696, b: 0.437),
-        accent: ThemeColor(r: 0.397, g: 0.609, b: 0.715)
+        bgTop: ThemeColor(r: 0.043, g: 0.050, b: 0.062),
+        bgBottom: ThemeColor(r: 0.078, g: 0.096, b: 0.115),
+        ring: ThemeColor(r: 0.478, g: 0.512, b: 0.537),
+        gate: ThemeColor(r: 0.857, g: 0.949, b: 0.886),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.385, g: 0.471, b: 0.513)
     )
 
-    // Pembe/gül tonlu tema — ama halka SOĞUK (periwinkle) olduğu için
-    // kırmızı tehlike net ayrışır, göz yormaz.
+    // Gül-gri, hafif sıcak.
     static let safak = Theme(
         id: "safak", name: "Dawn", isPremium: true,
-        bgTop: ThemeColor(r: 0.095, g: 0.069, b: 0.116),
-        bgBottom: ThemeColor(r: 0.220, g: 0.138, b: 0.184),
-        ring: ThemeColor(r: 0.659, g: 0.675, b: 0.742),
-        gate: ThemeColor(r: 0.789, g: 0.715, b: 0.530),
-        orb: ThemeColor(r: 0.936, g: 0.908, b: 0.882),
-        hazard: ThemeColor(r: 0.699, g: 0.299, b: 0.292),
-        lumen: ThemeColor(r: 0.774, g: 0.668, b: 0.373),
-        accent: ThemeColor(r: 0.730, g: 0.543, b: 0.508)
+        bgTop: ThemeColor(r: 0.053, g: 0.045, b: 0.060),
+        bgBottom: ThemeColor(r: 0.109, g: 0.084, b: 0.098),
+        ring: ThemeColor(r: 0.499, g: 0.504, b: 0.527),
+        gate: ThemeColor(r: 0.934, g: 0.914, b: 0.862),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.501, g: 0.430, b: 0.417)
     )
 
-    // Orman: halka yeşil olduğundan kapı AÇIK CAMGÖBEĞİ — sarı yıldızlarla
-    // ve yeşil halkayla karışmaz; kırmızı tehlike yeşilin tam karşıtıdır.
+    // Yeşile çalan gri.
     static let orman = Theme(
         id: "orman", name: "Forest", isPremium: true,
-        bgTop: ThemeColor(r: 0.041, g: 0.071, b: 0.065),
-        bgBottom: ThemeColor(r: 0.082, g: 0.135, b: 0.115),
-        ring: ThemeColor(r: 0.597, g: 0.706, b: 0.633),
-        gate: ThemeColor(r: 0.450, g: 0.709, b: 0.765),
-        orb: ThemeColor(r: 0.896, g: 0.937, b: 0.896),
-        hazard: ThemeColor(r: 0.696, g: 0.288, b: 0.257),
-        lumen: ThemeColor(r: 0.782, g: 0.696, b: 0.437),
-        accent: ThemeColor(r: 0.483, g: 0.699, b: 0.564)
+        bgTop: ThemeColor(r: 0.040, g: 0.053, b: 0.051),
+        bgBottom: ThemeColor(r: 0.078, g: 0.101, b: 0.092),
+        ring: ThemeColor(r: 0.482, g: 0.519, b: 0.494),
+        gate: ThemeColor(r: 0.855, g: 0.936, b: 0.954),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.401, g: 0.479, b: 0.430)
     )
 
-    // Mercan/okyanus teması — halka AQUA (soğuk), kapı amber, tehlike canlı
-    // mercan-kırmızısı: üçü de birbirinden net ayrışır.
+    // Deniz grisi.
     static let mercan = Theme(
         id: "mercan", name: "Coral", isPremium: true,
-        bgTop: ThemeColor(r: 0.048, g: 0.066, b: 0.091),
-        bgBottom: ThemeColor(r: 0.085, g: 0.152, b: 0.171),
-        ring: ThemeColor(r: 0.560, g: 0.691, b: 0.692),
-        gate: ThemeColor(r: 0.776, g: 0.664, b: 0.461),
-        orb: ThemeColor(r: 0.937, g: 0.918, b: 0.896),
-        hazard: ThemeColor(r: 0.695, g: 0.277, b: 0.295),
-        lumen: ThemeColor(r: 0.783, g: 0.698, b: 0.468),
-        accent: ThemeColor(r: 0.715, g: 0.493, b: 0.470)
+        bgTop: ThemeColor(r: 0.042, g: 0.050, b: 0.061),
+        bgBottom: ThemeColor(r: 0.074, g: 0.100, b: 0.107),
+        ring: ThemeColor(r: 0.473, g: 0.519, b: 0.519),
+        gate: ThemeColor(r: 0.944, g: 0.911, b: 0.850),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.514, g: 0.424, b: 0.415)
     )
 
-    // Aurora: yıldızlar tüm temalarda olduğu gibi AMBER (öğretici "sarıları
-    // topla" der — yeşil yıldız kafa karıştırıyordu); tehlike net kırmızı.
+    // Mor-yeşil arası soğuk gri.
     static let aurora = Theme(
         id: "aurora", name: "Aurora", isPremium: true,
-        bgTop: ThemeColor(r: 0.034, g: 0.028, b: 0.062),
-        bgBottom: ThemeColor(r: 0.061, g: 0.108, b: 0.122),
-        ring: ThemeColor(r: 0.588, g: 0.727, b: 0.685),
-        gate: ThemeColor(r: 0.612, g: 0.452, b: 0.734),
-        orb: ThemeColor(r: 0.897, g: 0.938, b: 0.928),
-        hazard: ThemeColor(r: 0.694, g: 0.271, b: 0.298),
-        lumen: ThemeColor(r: 0.782, g: 0.696, b: 0.437),
-        accent: ThemeColor(r: 0.465, g: 0.721, b: 0.648)
+        bgTop: ThemeColor(r: 0.049, g: 0.044, b: 0.072),
+        bgBottom: ThemeColor(r: 0.075, g: 0.100, b: 0.107),
+        ring: ThemeColor(r: 0.474, g: 0.520, b: 0.506),
+        gate: ThemeColor(r: 0.944, g: 0.884, b: 0.990),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.389, g: 0.480, b: 0.454)
     )
 
-    // Yüksek kontrastlı premium tema — neredeyse siyah zeminde elektrik renkleri;
-    // her öğe (özellikle kırmızı tehlike) keskin ayrışır.
+    // En koyu zemin, mor-gri halka.
     static let neon = Theme(
         id: "neon", name: "Neon", isPremium: true,
-        bgTop: ThemeColor(r: 0.018, g: 0.018, b: 0.033),
-        bgBottom: ThemeColor(r: 0.041, g: 0.031, b: 0.060),
-        ring: ThemeColor(r: 0.541, g: 0.709, b: 0.733),
-        gate: ThemeColor(r: 0.452, g: 0.767, b: 0.508),
-        orb: ThemeColor(r: 0.940, g: 0.940, b: 0.940),
-        hazard: ThemeColor(r: 0.680, g: 0.193, b: 0.308),
-        lumen: ThemeColor(r: 0.785, g: 0.729, b: 0.355),
-        accent: ThemeColor(r: 0.608, g: 0.362, b: 0.681)
+        bgTop: ThemeColor(r: 0.047, g: 0.047, b: 0.067),
+        bgBottom: ThemeColor(r: 0.098, g: 0.084, b: 0.124),
+        ring: ThemeColor(r: 0.464, g: 0.521, b: 0.530),
+        gate: ThemeColor(r: 0.854, g: 0.953, b: 0.872),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.515, g: 0.398, b: 0.550)
     )
 
-    // Ultra yüksek kontrast / erişilebilirlik teması — beyaz halka, saf kırmızı
-    // tehlike, yeşil kapı (trafik ışığı netliği); kömür siyahı zemin.
+    // Tamamen nötr gri — hiç renk sapması yok.
     static let karbon = Theme(
         id: "karbon", name: "Carbon", isPremium: true,
-        bgTop: ThemeColor(r: 0.032, g: 0.032, b: 0.036),
-        bgBottom: ThemeColor(r: 0.077, g: 0.077, b: 0.083),
-        ring: ThemeColor(r: 0.795, g: 0.795, b: 0.807),
-        gate: ThemeColor(r: 0.354, g: 0.755, b: 0.469),
-        orb: ThemeColor(r: 0.548, g: 0.786, b: 0.908),
-        hazard: ThemeColor(r: 0.682, g: 0.223, b: 0.223),
-        lumen: ThemeColor(r: 0.769, g: 0.654, b: 0.309),
-        accent: ThemeColor(r: 0.507, g: 0.532, b: 0.581)
+        bgTop: ThemeColor(r: 0.049, g: 0.049, b: 0.052),
+        bgBottom: ThemeColor(r: 0.093, g: 0.093, b: 0.097),
+        ring: ThemeColor(r: 0.505, g: 0.505, b: 0.508),
+        gate: ThemeColor(r: 0.831, g: 0.965, b: 0.869),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.440, g: 0.451, b: 0.472)
     )
 
-    // Lüks tema: gece mavisi kadife zemin, platin halka, zümrüt kapı,
-    // altın vurgu — "kraliyet" havası, ama oyun okunurluğu tam.
+    // Gece mavisine çalan gri.
     static let kraliyet = Theme(
         id: "kraliyet", name: "Royal", isPremium: true,
-        bgTop: ThemeColor(r: 0.039, g: 0.044, b: 0.075),
-        bgBottom: ThemeColor(r: 0.078, g: 0.087, b: 0.136),
-        ring: ThemeColor(r: 0.719, g: 0.730, b: 0.758),
-        gate: ThemeColor(r: 0.354, g: 0.690, b: 0.543),
-        orb: ThemeColor(r: 0.938, g: 0.929, b: 0.897),
-        hazard: ThemeColor(r: 0.692, g: 0.262, b: 0.284),
-        lumen: ThemeColor(r: 0.774, g: 0.661, b: 0.407),
-        accent: ThemeColor(r: 0.726, g: 0.643, b: 0.463)
+        bgTop: ThemeColor(r: 0.045, g: 0.048, b: 0.066),
+        bgBottom: ThemeColor(r: 0.086, g: 0.091, b: 0.119),
+        ring: ThemeColor(r: 0.502, g: 0.505, b: 0.514),
+        gate: ThemeColor(r: 0.837, g: 0.955, b: 0.904),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.477, g: 0.449, b: 0.386)
     )
 
-    // Sakura: mürekkep koyuluğunda erik zemin, lavanta halka, nane kapı,
-    // kiraz çiçeği vurgusu — pembe yalnızca süslemede, tehlike net kırmızı.
+    // Erik-gri, yumuşak.
     static let sakura = Theme(
         id: "sakura", name: "Sakura", isPremium: true,
-        bgTop: ThemeColor(r: 0.073, g: 0.054, b: 0.078),
-        bgBottom: ThemeColor(r: 0.137, g: 0.096, b: 0.128),
-        ring: ThemeColor(r: 0.672, g: 0.659, b: 0.738),
-        gate: ThemeColor(r: 0.463, g: 0.737, b: 0.615),
-        orb: ThemeColor(r: 0.937, g: 0.909, b: 0.918),
-        hazard: ThemeColor(r: 0.689, g: 0.252, b: 0.259),
-        lumen: ThemeColor(r: 0.779, g: 0.682, b: 0.434),
-        accent: ThemeColor(r: 0.750, g: 0.592, b: 0.650)
+        bgTop: ThemeColor(r: 0.054, g: 0.045, b: 0.056),
+        bgBottom: ThemeColor(r: 0.104, g: 0.086, b: 0.100),
+        ring: ThemeColor(r: 0.505, g: 0.501, b: 0.527),
+        gate: ThemeColor(r: 0.858, g: 0.944, b: 0.906),
+        orb: ThemeColor(r: 0.941, g: 0.945, b: 0.953),
+        hazard: ThemeColor(r: 0.820, g: 0.286, b: 0.357),
+        lumen: ThemeColor(r: 0.710, g: 0.580, b: 0.314),
+        accent: ThemeColor(r: 0.486, g: 0.431, b: 0.451)
     )
 
     static let all: [Theme] = [.nebula, .gece, .safak, .orman, .mercan, .aurora,
