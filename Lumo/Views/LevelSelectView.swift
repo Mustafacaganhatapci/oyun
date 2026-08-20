@@ -68,7 +68,7 @@ struct LevelSelectView: View {
                                       isBonus: LevelLibrary.isBonus(id),
                                       // Bonus turlar bir kere oynanır — tamamlandıysa harita üzerinden bir daha açılmaz
                                       isBonusCompleted: LevelLibrary.isBonus(id) && progress.stars[id] != nil,
-                                      isTimed: LevelLibrary.isTimed(id),
+                                      isTimed: LevelLibrary.hasTimer(id),
                                       isCollect: LevelLibrary.isCollect(id),
                                       maxStars: LevelLibrary.maxStars(for: id),
                                       theme: settings.theme) {

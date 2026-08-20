@@ -198,6 +198,12 @@ enum LevelLibrary {
         return n >= 12 && n % 4 == 0
     }
 
+    /// HUD geri sayımı göstermeli mi? `isTimed` tek başına yetmiyor:
+    /// topla-bitir bölümlerinde süre baskısı BİLEREK kaldırılıyor (bkz.
+    /// `normalLevel`), ama gösterge yine de çiziliyordu ve süresiz bir
+    /// bölümde 0'da donmuş bir sayaç gibi duruyordu.
+    static func hasTimer(_ id: Int) -> Bool { isTimed(id) && !isCollect(id) }
+
     /// Öğrenme bölgesi: ilk bölümlerde (ve öğreticide/bonusta) top ekrandan
     /// çıkarsa elenmek yerine fırlatıldığı halkaya geri döner. 11. normal
     /// bölümden itibaren kaçırmak = elenmek.

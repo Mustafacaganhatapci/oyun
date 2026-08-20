@@ -221,6 +221,14 @@ object LevelLibrary {
         return n >= 12 && n % 4 == 0
     }
 
+    /**
+     * HUD geri sayımı göstermeli mi? `isTimed` tek başına yetmiyor:
+     * topla-bitir bölümlerinde süre baskısı BİLEREK kaldırılıyor
+     * (bkz. `normalLevel`), ama gösterge yine de çiziliyordu ve süresiz bir
+     * bölümde 0'da donmuş bir sayaç gibi duruyordu.
+     */
+    fun hasTimer(id: Int): Boolean = isTimed(id) && !isCollect(id)
+
     /** Öğrenme bölgesi: ekrandan çıkan küre elenmek yerine halkasına döner. */
     fun isForgiving(id: Int): Boolean {
         if (id == TUTORIAL_ID || isBonus(id)) return true

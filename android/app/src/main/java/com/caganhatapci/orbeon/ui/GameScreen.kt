@@ -149,7 +149,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             if (!LevelLibrary.isForgiving(id) && app.tutorial.shouldShow(TutorialStore.Step.BOUNDS)) {
                 engine.coachFrozen = true
                 coach = Coach.BOUNDS_INTRO
-            } else if (LevelLibrary.isTimed(id) && app.tutorial.shouldShow(TutorialStore.Step.TIMED)) {
+            } else if (LevelLibrary.hasTimer(id) && app.tutorial.shouldShow(TutorialStore.Step.TIMED)) {
                 engine.coachFrozen = true
                 coach = Coach.TIMED_INTRO
             }
@@ -339,7 +339,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                                 Coach.BOUNDS_INTRO -> {
                                     app.tutorial.markShown(TutorialStore.Step.BOUNDS)
                                     val id = (playMode as? PlayMode.LevelPlay)?.id
-                                    if (id != null && LevelLibrary.isTimed(id) &&
+                                    if (id != null && LevelLibrary.hasTimer(id) &&
                                         app.tutorial.shouldShow(TutorialStore.Step.TIMED)) {
                                         coach = Coach.TIMED_INTRO   // dondurma sürsün
                                     } else {

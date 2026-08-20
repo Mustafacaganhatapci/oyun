@@ -91,16 +91,19 @@ final class GameScene: SKScene {
     private var hazardArmedRing: Int?
     /// Müsamahanın tam uzunluğu — geri sayım oranı buna bölünerek çıkıyor
     private var hazardGraceDuration: TimeInterval = 0
-    /// Yayların üstündeki yeşil kaplamalar (halka sırasına göre)
-    private var hazardSafeArcs: [[SafeArc]] = []
+    /// Müsamahalı halkaların yayları (halka sırasına göre)
+    private var hazardSafeArcs: [[HazardArc]] = []
     private static let hazardBaseName = "hazardArcBase"
     private static let hazardSafeName = "hazardArcSafe"
     private static let hazardNotchName = "hazardArcNotch"
 
-    /// Tehlike yayının üstündeki yeşil kaplama. Yolu her karede yeniden
-    /// üretildiği için yayın açısal sınırları burada saklanıyor.
-    private struct SafeArc {
-        let shape: SKShapeNode
+    /// Bir tehlike yayının iki parçası. Kırmızı ile yeşil ÜST ÜSTE BİNMİYOR:
+    /// yay ikiye bölüşülüyor, yoksa üstteki yeşilin kenarından alttaki kırmızı
+    /// sızıyor ve daha konmadan yay kırmızı konturluymuş gibi duruyordu.
+    /// Yollar her karede yeniden üretildiği için açısal sınırlar burada.
+    private struct HazardArc {
+        let base: SKShapeNode      // kırmızı — yalnızca yeşilin dışında kalan uçlar
+        let cover: SKShapeNode     // yeşil — kalan müsamaha
         let lower: CGFloat
         let upper: CGFloat
         let radius: CGFloat
@@ -550,7 +553,7 @@ final class GameScene: SKScene {
         var hazardNode: SKNode? = nil
         if !spec.hazardArcs.isEmpty {
             let hz = SKNode()
-            var safe: [SafeArc] = []
+            var safe: [HazardArc] = []
             for arc in spec.hazardArcs {
                 // Taban her zaman KIRMIZI. Müsamaha varsa üstüne, süre
                 // doldukça iki ucundan geri çekilen yeşil bir kaplama
@@ -570,14 +573,15 @@ final class GameScene: SKScene {
                     let cover = SKShapeNode()
                     cover.name = Self.hazardSafeName
                     cover.strokeColor = theme.hazardSafe.uiColor
-                    // Kırmızıdan bir tık kalın: kenarda kırmızı sızmasın
-                    cover.lineWidth = 8.5
+                    // Kırmızıyla aynı kalınlık: ikisi yayı bölüşüyor
+                    cover.lineWidth = 7
                     cover.lineCap = .round
                     cover.glowWidth = 0
                     cover.fillColor = .clear
                     hz.addChild(cover)
-                    safe.append(SafeArc(shape: cover, lower: arc.lowerBound,
-                                        upper: arc.upperBound, radius: r))
+                    safe.append(HazardArc(base: shape, cover: cover,
+                                          lower: arc.lowerBound,
+                                          upper: arc.upperBound, radius: r))
                 }
 
                 // Renk körlüğü modunda tehlike yayı ayrıca TIRTIKLI çiziliyor.
@@ -886,9 +890,17 @@ final class GameScene: SKScene {
             // Süre dolunca ceza yok: küre kendiliğinden fırlar. Yayın son
             // üçte biri kırmızıya döndüğünde oyuncu bunun geldiğini görür ve
             // isterse daha iyi bir açıda kendi fırlatır.
+            // Tehlikeli halkada dış geri sayım yayı ÇİZİLMİYOR: o halkanın
+            // kendi yayı zaten yeşilden kırmızıya doğru eriyor, ikinci bir
+            // sayaç halkası aynı bilgiyi ikinci kez ve karışık anlatıyordu.
+            // Süre yine işliyor, yalnızca göstergesi yok.
             if let limit = dwellLimit, !spec.isGate {
                 let frac = max(0, 1 - CGFloat((elapsed - dwellStart) / limit))
-                updateDwellArc(ring: ring, fraction: frac)
+                if spec.hazardArcs.isEmpty {
+                    updateDwellArc(ring: ring, fraction: frac)
+                } else {
+                    dwellArc?.isHidden = true
+                }
                 if frac <= 0 {
                     dwellArc?.isHidden = true
                     dismissTapHint()
@@ -1055,14 +1067,36 @@ final class GameScene: SKScene {
         guard ring >= 0, ring < hazardSafeArcs.count else { return }
         let f = hazardSafeFraction(ring: ring)
         for arc in hazardSafeArcs[ring] {
-            guard f > 0.001 else { arc.shape.isHidden = true; continue }
-            arc.shape.isHidden = false
             let mid = (arc.lower + arc.upper) / 2
             let half = (arc.upper - arc.lower) * f / 2
-            let path = CGMutablePath()
-            path.addArc(center: .zero, radius: arc.radius,
-                        startAngle: mid - half, endAngle: mid + half, clockwise: false)
-            arc.shape.path = path
+
+            arc.cover.isHidden = f <= 0.001
+            if !arc.cover.isHidden {
+                let green = CGMutablePath()
+                green.addArc(center: .zero, radius: arc.radius,
+                             startAngle: mid - half, endAngle: mid + half, clockwise: false)
+                arc.cover.path = green
+            }
+
+            // Kırmızı yalnızca yeşilin BIRAKTIĞI yerde duruyor
+            arc.base.isHidden = f >= 0.999
+            if !arc.base.isHidden {
+                let red = CGMutablePath()
+                if f <= 0.001 {
+                    red.addArc(center: .zero, radius: arc.radius,
+                               startAngle: arc.lower, endAngle: arc.upper, clockwise: false)
+                } else {
+                    red.move(to: CGPoint(x: cos(arc.lower) * arc.radius,
+                                         y: sin(arc.lower) * arc.radius))
+                    red.addArc(center: .zero, radius: arc.radius,
+                               startAngle: arc.lower, endAngle: mid - half, clockwise: false)
+                    red.move(to: CGPoint(x: cos(mid + half) * arc.radius,
+                                         y: sin(mid + half) * arc.radius))
+                    red.addArc(center: .zero, radius: arc.radius,
+                               startAngle: mid + half, endAngle: arc.upper, clockwise: false)
+                }
+                arc.base.path = red
+            }
         }
     }
 

@@ -410,7 +410,7 @@ struct GameContainerView: View {
                         .contentTransition(.numericText())
                         .animation(.spring(duration: 0.3), value: bonusRemaining)
                 }
-            } else if LevelLibrary.isTimed(id) {
+            } else if LevelLibrary.hasTimer(id) {
                 VStack(spacing: 0) {
                     HStack(spacing: 4) {
                         Image(systemName: "timer")
@@ -817,7 +817,7 @@ struct GameContainerView: View {
             // İlk katı bölüm: artık ekrandan çıkmak = elenmek — bir kez tanıt
             scene?.coachFrozen = true
             coach = .boundsIntro
-        } else if LevelLibrary.isTimed(id), tutorial.shouldShow(.timed) {
+        } else if LevelLibrary.hasTimer(id), tutorial.shouldShow(.timed) {
             scene?.coachFrozen = true
             coach = .timedIntro
         }
@@ -858,7 +858,7 @@ struct GameContainerView: View {
         case .boundsIntro:
             tutorial.markShown(.bounds)
             // Aynı bölüm süreliyse sıradaki kartı göster (dondurma sürsün)
-            if case .level(let id) = playMode, LevelLibrary.isTimed(id), tutorial.shouldShow(.timed) {
+            if case .level(let id) = playMode, LevelLibrary.hasTimer(id), tutorial.shouldShow(.timed) {
                 coach = .timedIntro
             } else {
                 scene?.coachFrozen = false
