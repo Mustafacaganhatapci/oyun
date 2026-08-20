@@ -333,9 +333,15 @@ struct MainMenuView: View {
                 .frame(width: 17, height: 17)
                 .offset(y: 48)
                 .rotationEffect(.degrees(orbPulse ? 335 : -25))
+                // Süregiden animasyon YALNIZCA küreye bağlı. Kapsayıcıya
+                // bağlıyken repeatForever, işaretin konum değişimlerini de
+                // yakalıyordu: ana ekran yerleşimi oturduğunda (yıldız hedefi
+                // tek satırdan iki satıra geçtiğinde) logo aşağı yukarı
+                // süzülüyordu.
+                .animation(.linear(duration: 9).repeatForever(autoreverses: false),
+                           value: orbPulse)
         }
         .frame(width: 110, height: 110)
-        .animation(.linear(duration: 9).repeatForever(autoreverses: false), value: orbPulse)
         .onAppear { orbPulse = true }
     }
 
