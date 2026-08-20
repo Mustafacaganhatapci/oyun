@@ -404,6 +404,14 @@ class GameEngine(
                     hazardArmedRing = s.ring
                 }
                 checkLumens()
+
+                // AÇIK kapının üstünde durmak da kazanmaktır. Kazanma yalnızca
+                // `checkCapture` içinde, yani kapıya UÇARAK konulduğunda
+                // sınanıyordu. Kilitli kapıdan fırlayıp son yıldızı havada
+                // toplayan ve ıskalayan oyuncu, bağışlayıcı bölümde kapının
+                // üstüne geri oturuyor — kapı artık açık ama kimse sormuyordu.
+                if (spec.isGate && gateOpen && !finished) { win(); return }
+
                 // Süre dolunca ceza yok: küre kendiliğinden fırlar. Yayın son
                 // üçte biri kırmızıya döndüğünde oyuncu bunun geldiğini görür
                 // ve isterse daha iyi bir açıda kendi fırlatır.

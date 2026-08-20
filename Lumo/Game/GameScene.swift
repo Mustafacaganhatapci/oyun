@@ -886,6 +886,19 @@ final class GameScene: SKScene {
             updateHazardTint()
             checkHazard(ring: ring, angle: angle)
             checkLumens()
+
+            // AÇIK kapının üstünde durmak da kazanmaktır. Kazanma yalnızca
+            // `checkCapture` içinde, yani kapıya UÇARAK konulduğunda
+            // sınanıyordu. Kilitli kapıdan fırlayıp son yıldızı havada
+            // toplayan ve ıskalayan oyuncu, bağışlayıcı bölümde kapının
+            // üstüne geri oturuyor — kapı artık açık ama kimse sormuyordu.
+            // Bölüm bitmiyor, oyuncu başka halkaya gidip dönmek zorunda
+            // kalıyordu.
+            if spec.isGate, gateOpen, !finished {
+                win()
+                return
+            }
+
             // "Devam et ya da düş" — bu halkada fazla oyalanınca süre dolar
             // Süre dolunca ceza yok: küre kendiliğinden fırlar. Yayın son
             // üçte biri kırmızıya döndüğünde oyuncu bunun geldiğini görür ve
