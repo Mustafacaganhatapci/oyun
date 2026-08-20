@@ -56,6 +56,9 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.caganhatapci.orbeon.LocalActivity
@@ -162,8 +165,10 @@ fun MainMenuScreen(
 
             MenuLogo(theme, frameTime)
 
-            Text("ORBEON", color = Color.White, fontSize = 44.sp, fontWeight = FontWeight.Black,
-                modifier = Modifier.padding(top = 14.dp))
+            // İnce ve geniş aralıklı: kalın siyah harf mat görsel dille çelişiyordu
+            Text("ORBEON", color = Color.White, fontSize = 40.sp,
+                fontWeight = FontWeight.Light, letterSpacing = 13.sp,
+                modifier = Modifier.padding(top = 16.dp))
             Text(stringResource(R.string.tagline), color = Color.White.copy(alpha = 0.55f), fontSize = 13.sp)
 
             // Ham "x / 806" oyuncuya hiçbir şey söylemiyordu; sıradaki karakter
@@ -999,18 +1004,25 @@ fun AnimatedBlobs(theme: Theme, t: Float) {
 /** Nabız atan logo küresi: parıltı + çekirdek + dış halka. */
 @Composable
 private fun MenuLogo(theme: Theme, t: Float) {
-    Canvas(Modifier.padding(top = 20.dp).size(96.dp)) {
+    // Marka işareti oyunun kendisi: nötr bir halka, üstünde tek kırmızı yay,
+    // çemberin üstünde oturan beyaz küre. Yani logo, oyunun bir karesi —
+    // parıltısı ve gradyanı olan eski küre, içerinin mat diline uymuyordu.
+    // Küre yörüngede ağır ağır dolanıyor: duran bir işaret yerine oyunun tek
+    // fiilini gösteriyor.
+    Canvas(Modifier.padding(top = 20.dp).size(110.dp)) {
         val c = Offset(size.width / 2, size.height / 2)
-        val pulse = 1f + 0.1f * sin(t * (PI / 1.1).toFloat())
-        drawCircle(
-            Brush.radialGradient(
-                listOf(theme.accent.copy(alpha = 0.5f), Color.Transparent),
-                center = c, radius = 46f * pulse
-            ), 46f * pulse, c
+        val r = size.minDimension * 0.44f
+        val box = Rect(c.x - r, c.y - r, c.x + r, c.y + r)
+
+        drawCircle(theme.ring, r, c, style = Stroke(width = size.minDimension * 0.037f))
+        drawArc(
+            theme.hazard, -125f, 94f, false,
+            topLeft = box.topLeft, size = Size(box.width, box.height),
+            style = Stroke(width = size.minDimension * 0.083f, cap = StrokeCap.Round)
         )
-        drawCircle(theme.orb, 12f, c)
-        drawCircle(theme.ring.copy(alpha = 0.8f), 39f * (1f + 0.04f * sin(t * 2f)), c,
-            style = Stroke(width = 3f))
+        val a = ((t / 9f) * 2f * PI.toFloat()) + (PI / 2).toFloat()
+        drawCircle(theme.orb, size.minDimension * 0.078f,
+                   Offset(c.x + cos(a) * r, c.y + sin(a) * r))
     }
 }
 

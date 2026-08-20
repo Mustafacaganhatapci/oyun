@@ -66,15 +66,16 @@ struct MainMenuView: View {
 
                         // kerning son harften sonra da boşluk ekler; sola kaymayı
                         // dengelemek için sol tarafa aynı miktarda boşluk veriyoruz
+                        // İnce ve geniş aralıklı, parıltısız: kalın siyah harf
+                        // ve mor hâle, mat görsel dille çelişiyordu
                         Text("ORBEON")
-                            .font(.system(size: 46, weight: .black, design: .rounded))
+                            .font(.system(size: 42, weight: .light, design: .default))
                             .foregroundStyle(.white)
-                            .kerning(10)
-                            .padding(.leading, 10)
+                            .kerning(13)
+                            .padding(.leading, 13)
                             .minimumScaleFactor(0.6)
                             .lineLimit(1)
-                            .shadow(color: settings.theme.accent.opacity(0.8), radius: 20)
-                            .padding(.top, 6)
+                            .padding(.top, 14)
 
                         Text("the journey of light")
                             .font(.system(.subheadline, design: .rounded))
@@ -300,23 +301,33 @@ struct MainMenuView: View {
 
     private static let medals = ["🥇", "🥈", "🥉"]
 
+    /// Marka işareti oyunun kendisi: nötr bir halka, üstünde tek kırmızı yay,
+    /// çemberin üstünde oturan beyaz küre. Yani logo, oyunun bir karesi —
+    /// parıltısı ve gradyanı olan eski küre, içerinin mat diline uymuyordu.
+    ///
+    /// Küre halkanın çevresinde ağır ağır dönüyor: duran bir işaret yerine
+    /// oyunun tek fiilini (yörüngede dolanmak) gösteriyor.
     private var logo: some View {
         ZStack {
             Circle()
-                .fill(RadialGradient(colors: [settings.theme.accent.opacity(0.55), .clear],
-                                     center: .center, startRadius: 4, endRadius: 62))
-                .frame(width: 124, height: 124)
-                .scaleEffect(orbPulse ? 1.12 : 0.92)
+                .strokeBorder(settings.theme.ring.color, lineWidth: 4)
+                .frame(width: 96, height: 96)
+
+            Circle()
+                .trim(from: 0.06, to: 0.32)
+                .stroke(settings.theme.hazard.color,
+                        style: StrokeStyle(lineWidth: 9, lineCap: .round))
+                .frame(width: 96, height: 96)
+                .rotationEffect(.degrees(-125))
+
             Circle()
                 .fill(settings.theme.orb.color)
-                .frame(width: 24, height: 24)
-                .shadow(color: settings.theme.accent.color, radius: 16)
-            Circle()
-                .strokeBorder(settings.theme.ring.opacity(0.8), lineWidth: 3)
-                .frame(width: 78, height: 78)
-                .scaleEffect(orbPulse ? 1.05 : 0.97)
+                .frame(width: 17, height: 17)
+                .offset(y: 48)
+                .rotationEffect(.degrees(orbPulse ? 335 : -25))
         }
-        .animation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true), value: orbPulse)
+        .frame(width: 110, height: 110)
+        .animation(.linear(duration: 9).repeatForever(autoreverses: false), value: orbPulse)
         .onAppear { orbPulse = true }
     }
 

@@ -31,6 +31,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import kotlinx.coroutines.launch
+import kotlin.math.cos
+import kotlin.math.sin
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.caganhatapci.orbeon.LocalActivity
@@ -108,7 +125,9 @@ fun RootScreen() {
     }
 
     LaunchedEffect(Unit) {
-        delay(1600)
+        // Açılış animasyonu ~1.8 sn sürüyor (halka → küre turu → patlama →
+        // isim); 1600 ms'de kapanınca stüdyo adı belirmeden kesiliyordu.
+        delay(2600)
         splashDone = true
         // İlk açılış: doğrudan "nasıl oynanır" antrenman bölümüne
         if (app.tutorial.shouldShow(TutorialStore.Step.LAUNCH)) {
@@ -117,19 +136,94 @@ fun RootScreen() {
     }
 }
 
+/**
+ * Açılış imzası — stüdyo adı üstte, sahne Orbeon marka işaretinin.
+ *
+ * İşaret oyunun kendisi: nötr bir halka, üstünde tek kırmızı yay, çemberin
+ * üstünde dolanan beyaz küre. Animasyon da oyunun kendisi: halka çizilir,
+ * küre yörüngeyi tamamlar, sonra kırmızı yay yerine PATLAR.
+ */
 @Composable
 private fun SplashScreen(theme: Theme) {
+    val ringProgress = remember { Animatable(0f) }
+    val orbAngle = remember { Animatable(-90f) }
+    val hazardIn = remember { Animatable(0f) }     // 0 = dışarıda, 1 = yerinde
+    val burst = remember { Animatable(0f) }
+    val nameIn = remember { Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        launch { orbAngle.animateTo(270f, tween(1050, easing = FastOutSlowInEasing)) }
+        ringProgress.animateTo(1f, tween(1050, easing = FastOutSlowInEasing))
+        launch { hazardIn.animateTo(1f, spring(dampingRatio = 0.55f, stiffness = 900f)) }
+        launch { burst.animateTo(1f, tween(550, easing = LinearOutSlowInEasing)) }
+        delay(220)
+        nameIn.animateTo(1f, tween(550, easing = LinearOutSlowInEasing))
+    }
+
     ThemeBackground(theme) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("ORBEON", color = Color.White, fontSize = 42.sp, fontWeight = FontWeight.Black)
-                Text(
-                    stringResource(R.string.tagline),
-                    color = Color.White.copy(alpha = 0.55f),
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
+        Column(
+            Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(Modifier.height(78.dp))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.alpha(nameIn.value)
+            ) {
+                Text("AXIUM", color = Color.White.copy(alpha = 0.92f), fontSize = 26.sp,
+                     fontWeight = FontWeight.Light, letterSpacing = 13.sp)
+                Text("DYNAMICS", color = Color.White.copy(alpha = 0.42f), fontSize = 12.sp,
+                     letterSpacing = 7.sp, modifier = Modifier.padding(top = 7.dp))
             }
+
+            Spacer(Modifier.weight(1f))
+
+            Canvas(Modifier.size(190.dp)) {
+                val c = Offset(size.width / 2, size.height / 2)
+                val r = 59.dp.toPx()
+                val box = Rect(c.x - r, c.y - r, c.x + r, c.y + r)
+
+                // 1) Halka çizilir
+                drawArc(
+                    theme.ring, -90f, 360f * ringProgress.value, false,
+                    topLeft = box.topLeft, size = Size(box.width, box.height),
+                    style = Stroke(width = 5.dp.toPx(), cap = StrokeCap.Round)
+                )
+
+                // 2) Kırmızı yay dışarıdan içeri çöker
+                if (hazardIn.value > 0f) {
+                    val scale = 1f + (1f - hazardIn.value) * 0.45f
+                    val rr = r * scale
+                    val hb = Rect(c.x - rr, c.y - rr, c.x + rr, c.y + rr)
+                    drawArc(
+                        theme.hazard.copy(alpha = hazardIn.value.coerceIn(0f, 1f)),
+                        -125f, 94f, false,
+                        topLeft = hb.topLeft, size = Size(hb.width, hb.height),
+                        style = Stroke(width = 11.dp.toPx(), cap = StrokeCap.Round)
+                    )
+                }
+
+                // 3) Patlama: yayın ortasından savrulan parçacıklar
+                if (burst.value > 0f) {
+                    val b = burst.value
+                    for (i in 0 until 12) {
+                        val a = Math.toRadians(-78.0 + (i - 6) * 7.0).toFloat()
+                        val dist = r + b * 46.dp.toPx()
+                        drawCircle(
+                            theme.hazard.copy(alpha = (1f - b).coerceIn(0f, 1f)),
+                            2.3.dp.toPx() * (1f - b * 0.55f),
+                            Offset(c.x + cos(a) * dist, c.y + sin(a) * dist)
+                        )
+                    }
+                }
+
+                // 4) Küre yörüngede dolanır
+                val oa = Math.toRadians(orbAngle.value.toDouble()).toFloat()
+                drawCircle(theme.orb, 9.5.dp.toPx(),
+                           Offset(c.x + cos(oa) * r, c.y + sin(oa) * r))
+            }
+
+            Spacer(Modifier.weight(2f))
         }
     }
 }
