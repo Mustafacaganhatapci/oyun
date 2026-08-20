@@ -94,17 +94,35 @@ object ReviewPrompt {
  * ToneGenerator kısa, tiz tonlar için yeterlidir ve APK'yı büyütmez.
  */
 class AudioEngine(context: Context) {
-    private var tone: ToneGenerator? = null
+    /**
+     * TEK bir ToneGenerator, çalarken gelen ikinci tonu yutuyor: hızlı bir
+     * komboda atlayışların sesi düşüyor ve ses "tıkanmış" gibi duyuluyordu.
+     * Küçük bir havuz, üst üste binen sesleri ayrı üreticilere dağıtıyor.
+     */
+    private val tones = mutableListOf<ToneGenerator>()
+    /** Her üreticinin ne zaman boşalacağı (ms) — boş olanı seçmek için */
+    private val freeAt = LongArray(4)
     var soundEnabled = true
     var musicEnabled = true
 
     init {
-        tone = runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, 70) }.getOrNull()
+        repeat(4) {
+            runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, 70) }
+                .getOrNull()?.let { tones.add(it) }
+        }
     }
 
     private fun play(type: Int, ms: Int) {
-        if (!soundEnabled) return
-        runCatching { tone?.startTone(type, ms) }
+        if (!soundEnabled || tones.isEmpty()) return
+        val now = System.currentTimeMillis()
+        // Boş üretici varsa onu kullan; yoksa en erken bitecek olanı ödünç al
+        var i = (0 until tones.size).firstOrNull { freeAt[it] <= now }
+        if (i == null) {
+            i = (0 until tones.size).minByOrNull { freeAt[it] } ?: 0
+            runCatching { tones[i].stopTone() }
+        }
+        freeAt[i] = now + ms
+        runCatching { tones[i].startTone(type, ms) }
     }
 
     /** Kombo yükseldikçe ton tizleşir — ilerleme kulakla da hissedilir. */
@@ -124,8 +142,8 @@ class AudioEngine(context: Context) {
     fun playTap() = play(ToneGenerator.TONE_PROP_BEEP, 40)
 
     fun release() {
-        tone?.release()
-        tone = null
+        tones.forEach { runCatching { it.release() } }
+        tones.clear()
     }
 }
 

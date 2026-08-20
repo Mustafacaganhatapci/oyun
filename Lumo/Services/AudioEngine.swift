@@ -11,7 +11,9 @@ final class AudioEngine {
     private let musicMixer = AVAudioMixerNode()
     private let sfxMixer = AVAudioMixerNode()
     private var sfxPlayers: [AVAudioPlayerNode] = []
-    private var nextPlayer = 0
+    /// Her sesin ne zaman biteceği. Sıra sıra dolaşmak yerine BOŞ olan düğüm
+    /// seçilsin diye tutuluyor; yoksa hâlâ tınlayan bir nota kesiliyor.
+    private var sfxFreeAt: [CFAbsoluteTime] = []
     private var started = false        // startIfNeeded çağrıldı (kurulum başladı/bitti)
     private var configured = false     // grafik kuruldu; engine.start() güvenli
 
@@ -139,11 +141,16 @@ final class AudioEngine {
         engine.attach(pad)
         engine.connect(pad, to: musicMixer, format: format)
 
-        for _ in 0..<4 {
+        // Sekiz ses. Dördü yetmiyordu: pluck 0.45 sn sürüyor, hızlı bir
+        // komboda dördüncü atlayıştan sonra sıra başa dönüp HÂLÂ ÇALAN notayı
+        // kesiyordu. Üstüne lumen, dokunuş ve kazanma sesleri de aynı havuzu
+        // paylaşınca ses "tıkanıyor" gibi duyuluyordu.
+        for _ in 0..<8 {
             let p = AVAudioPlayerNode()
             engine.attach(p)
             engine.connect(p, to: sfxMixer, format: format)
             sfxPlayers.append(p)
+            sfxFreeAt.append(0)
         }
 
         buildBuffers()
@@ -220,11 +227,26 @@ final class AudioEngine {
         play(b)
     }
 
+    /// Sesi BOŞ bir düğüme verir. Hepsi doluysa en erken bitecek olanı seçer
+    /// ve yalnızca o zaman keser — sırayla dolaşmak, kesilecek notayı rastgele
+    /// seçtiği için tam duyulan notayı kırpabiliyordu.
     private func play(_ buffer: AVAudioPCMBuffer) {
-        guard started, sfxEnabled else { return }
-        let player = sfxPlayers[nextPlayer]
-        nextPlayer = (nextPlayer + 1) % sfxPlayers.count
-        player.scheduleBuffer(buffer, at: nil, options: .interrupts)
+        guard started, sfxEnabled, !sfxPlayers.isEmpty else { return }
+        let now = CFAbsoluteTimeGetCurrent()
+        let duration = Double(buffer.frameLength) / sampleRate
+
+        var index = 0
+        var interrupt = true
+        if let free = sfxFreeAt.firstIndex(where: { $0 <= now }) {
+            index = free
+            interrupt = false
+        } else {
+            // Hepsi çalıyor: en erken bitecek olanı ödünç al
+            index = sfxFreeAt.enumerated().min(by: { $0.element < $1.element })?.offset ?? 0
+        }
+        sfxFreeAt[index] = now + duration
+        sfxPlayers[index].scheduleBuffer(buffer, at: nil,
+                                         options: interrupt ? .interrupts : [])
     }
 
     // MARK: Sentez
