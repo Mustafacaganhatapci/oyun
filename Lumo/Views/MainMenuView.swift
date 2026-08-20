@@ -134,9 +134,9 @@ struct MainMenuView: View {
         }
     }
 
-    /// Yıldız sayacı. Ham "x / 806" oyuncuya hiçbir şey söylemiyordu; sıradaki
-    /// karakter bir hedef veriyor ve toplananın niye toplandığını anlatıyor.
-    /// Hepsi açıldıysa toplam sayaca dönülür.
+    /// Yıldız hedefi. Toplam sayı ("x / 806") oyuncuya hiçbir şey
+    /// söylemiyordu — kaç yıldız biriktiği değil, SIRADAKİ karaktere ne
+    /// kaldığı önemli. Hepsi açıldıysa yalnızca bu söyleniyor, sayı yok.
     @ViewBuilder
     private var starGoal: some View {
         if let goal = progress.nextOrbGoal {
@@ -163,20 +163,15 @@ struct MainMenuView: View {
                 }
             }
         } else {
-            // Hepsi açıldı: çıplak "x / 806" hiçbir şey anlatmıyordu, en
-            // azından neden hedef kalmadığını söylüyor
-            VStack(spacing: 4) {
+            // Hepsi açıldı: toplanan yıldız sayısı burada bir işe yaramıyor,
+            // yalnızca hedefin bittiğini söylemek yetiyor
+            HStack(spacing: 6) {
+                Image(systemName: "star.fill")
+                    .font(.system(size: 12))
+                    .foregroundStyle(settings.theme.lumen.color)
                 Text("All characters unlocked")
                     .font(.system(.subheadline, design: .rounded).bold())
-                    .foregroundStyle(settings.theme.lumen.color)
-                HStack(spacing: 6) {
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 11))
-                        .foregroundStyle(.white.opacity(0.5))
-                    Text("\(progress.totalStars) / \(LevelLibrary.totalStarsAvailable)")
-                        .font(.system(.caption, design: .rounded).bold())
-                        .foregroundStyle(.white.opacity(0.5))
-                }
+                    .foregroundStyle(.white.opacity(0.8))
             }
         }
     }
