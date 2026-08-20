@@ -141,6 +141,13 @@ final class LeaderboardService: ObservableObject {
             leaderboardLog("GÖNDERİLMEDİ: kullanıcı adı boş — skor \(value) yazılmadı", isError: true)
             return
         }
+        // Sonsuz modda 0, "oynadım" değil "ilk halkadan atlayamadım" demek.
+        // Tabloyu sıfırlarla doldurmanın kimseye faydası yok; hız turunda ise
+        // düşük değer İYİ olduğu için aynı eşik uygulanamaz.
+        guard !(mode == .endless && value < 1) else {
+            leaderboardLog("GÖNDERİLMEDİ: sonsuz modda 0 skor tabloya yazılmaz")
+            return
+        }
         #if canImport(FirebaseCore)
         let week = currentWeek
         Task {
@@ -291,6 +298,9 @@ enum FirebaseBridge {
             return snap.documents.compactMap { doc in
                 guard let username = doc.data()["username"] as? String,
                       let value = doc.data()["value"] as? Double else { return nil }
+                // Eskiden yazılmış 0 skorlar tabloda duruyor; okurken de
+                // eleniyorlar ki kimse sıfırla sıralamada yer tutmasın
+                if mode == .endless, value < 1 { return nil }
                 return LeaderboardEntry(id: doc.documentID, username: username,
                                         value: value, isMe: doc.documentID == myPlayerID)
             }

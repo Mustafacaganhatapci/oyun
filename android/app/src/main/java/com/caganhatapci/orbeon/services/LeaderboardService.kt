@@ -82,6 +82,10 @@ class LeaderboardService {
     fun submit(mode: Mode, value: Double, username: String, playerId: String) {
         val database = db ?: return
         if (username.isBlank()) return
+        // Sonsuz modda 0, "oynadım" değil "ilk halkadan atlayamadım" demek.
+        // Tabloyu sıfırlarla doldurmanın kimseye faydası yok; hız turunda ise
+        // düşük değer İYİ olduğu için aynı eşik uygulanamaz.
+        if (mode == Mode.ENDLESS && value < 1.0) return
         val doc = database.collection(mode.collection(currentWeek())).document(playerId)
         doc.get().addOnSuccessListener { snapshot ->
             val existing = snapshot.getDouble("value")
@@ -113,6 +117,9 @@ class LeaderboardService {
                 entries = snap.documents.mapNotNull { doc ->
                     val name = doc.getString("username") ?: return@mapNotNull null
                     val value = doc.getDouble("value") ?: return@mapNotNull null
+                    // Eskiden yazılmış 0 skorlar tabloda duruyor; okurken de
+                    // eleniyorlar ki kimse sıfırla sıralamada yer tutmasın
+                    if (mode == Mode.ENDLESS && value < 1.0) return@mapNotNull null
                     Entry(name, value, doc.getString("playerID") ?: doc.id)
                 }
                 loading = false
