@@ -80,14 +80,17 @@ final class LeaderboardService: ObservableObject {
         return max(0, nextStart - Date().timeIntervalSince1970)
     }
 
-    /// "2g 4s" gibi kısa bir kalan süre metni
+    /// Kalan süre: "3 g 14 s" gibi yalnızca iki birim. Birim harfleri dile
+    /// göre değişiyor — sabit "d/h" İngilizce dışında hiçbir dilde okunmuyordu.
     var resetCountdownText: String {
         let total = Int(timeUntilReset)
         let days = total / 86_400
         let hours = (total % 86_400) / 3_600
-        if days > 0 { return "\(days)d \(hours)h" }
+        let d = String(localized: "unit.day.short")
+        let h = String(localized: "unit.hour.short")
+        if days > 0 { return "\(days) \(d) \(hours) \(h)" }
         let minutes = (total % 3_600) / 60
-        return "\(hours)h \(minutes)m"
+        return "\(hours) \(h) \(minutes) \(String(localized: "unit.minute.short"))"
     }
 
     /// Uygulama başlangıcında (LumoApp.init) çağrılır — Firebase'in

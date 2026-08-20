@@ -147,4 +147,10 @@
     <string name="colorblind_mode">Farbenblind-Modus</string>
     <string name="colorblind_mode_note">Nutzt eine Palette, die bei jeder Form von Farbenblindheit unterscheidbar bleibt, und markiert Gefahren zusätzlich mit Kerben.</string>
     <string name="backgrounds">Hintergründe</string>
+    <string name="more_stars">Noch %1$d Sterne</string>
+    <string name="stars_to_next_character">Noch %1$d Sterne bis zur nächsten Figur</string>
+    <string name="new_character_unlocked">Neue Figur freigeschaltet</string>
+    <string name="later">Später</string>
+    <string name="unlocks_with_stars">Öffnet sich beim Sternesammeln ★</string>
+    <string name="characters_unlock_note">Neue Figuren öffnen sich beim Sternesammeln.</string>
 </resources>

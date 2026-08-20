@@ -147,4 +147,10 @@
     <string name="colorblind_mode">Colorblind mode</string>
     <string name="colorblind_mode_note">Uses a palette that stays distinct for every kind of color blindness, and marks hazards with notches as well as color.</string>
     <string name="backgrounds">Backgrounds</string>
+    <string name="more_stars">%1$d more stars</string>
+    <string name="stars_to_next_character">%1$d stars to the next character</string>
+    <string name="new_character_unlocked">New character unlocked</string>
+    <string name="later">Later</string>
+    <string name="unlocks_with_stars">Unlocks as you collect stars ★</string>
+    <string name="characters_unlock_note">New characters unlock as you collect stars.</string>
 </resources>

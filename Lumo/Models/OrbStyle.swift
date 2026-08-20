@@ -5,7 +5,9 @@ import UIKit
 /// Bir küre stilinin nasıl açıldığı.
 enum OrbUnlock: Equatable {
     case free               // baştan açık
-    case stars(Int)         // toplanan yıldızlarla satın alınır
+    /// Toplam yıldız bu eşiği geçtiği anda KENDİLİĞİNDEN açılır. Yıldız
+    /// harcanmıyor: biriktirmek tek başına ilerleme, her eşik bir ödül.
+    case stars(Int)
     case premium            // Orbeon Premium (IAP) ile açılır
     /// Haftalık sıralamada ilk üçe girerek kazanılır. Satın alınamaz,
     /// yıldızla açılamaz — tek yolu o hafta zirveye oynamak.
@@ -46,26 +48,42 @@ struct OrbStyle: Identifiable, Equatable {
     var isPremium: Bool { unlock == .premium }
     var starCost: Int? { if case .stars(let n) = unlock { return n }; return nil }
 
+    // Eşikler kampanyanın YARISINA yayılıyor. Eskiden en pahalı küre 150
+    // yıldızdaydı; kampanya 806 yıldıza çıkınca hepsi ilk beşte biri
+    // bitmeden açılıyor ve "sıradaki küreye ne kaldı" sorusu anlamsızlaşıyordu.
+    // İlki 9'da: üç bölümü üçer yıldızla bitiren oyuncu ilk ödülünü orada alır.
     static let all: [OrbStyle] = [
         OrbStyle(id: "classic", name: "Light",   unlock: .free,        kind: .classic),
         OrbStyle(id: "star",    name: "Star",    unlock: .free,        kind: .star),
-        OrbStyle(id: "ring",    name: "Ring",    unlock: .stars(15),   kind: .ring),
+        OrbStyle(id: "ring",    name: "Ring",    unlock: .stars(9),    kind: .ring),
         OrbStyle(id: "bubble",  name: "Bubble",  unlock: .stars(20),   kind: .bubble),
-        OrbStyle(id: "crystal", name: "Crystal", unlock: .stars(25),   kind: .crystal),
-        OrbStyle(id: "pixel",   name: "Pixel",   unlock: .stars(40),   kind: .pixel),
-        OrbStyle(id: "heart",   name: "Heart",   unlock: .stars(45),   kind: .heart),
-        OrbStyle(id: "comet",   name: "Comet",   unlock: .stars(55),   kind: .comet),
-        OrbStyle(id: "diamond", name: "Diamond", unlock: .stars(75),   kind: .diamond),
-        OrbStyle(id: "firefly", name: "Firefly", unlock: .stars(90),   kind: .firefly),
-        OrbStyle(id: "flame",   name: "Flame",   unlock: .stars(100),  kind: .flame),
-        OrbStyle(id: "rainbow", name: "Rainbow", unlock: .stars(130),  kind: .rainbow),
-        OrbStyle(id: "cloud",   name: "Cloud",   unlock: .stars(150),  kind: .cloud),
+        OrbStyle(id: "crystal", name: "Crystal", unlock: .stars(35),   kind: .crystal),
+        OrbStyle(id: "pixel",   name: "Pixel",   unlock: .stars(55),   kind: .pixel),
+        OrbStyle(id: "heart",   name: "Heart",   unlock: .stars(80),   kind: .heart),
+        OrbStyle(id: "comet",   name: "Comet",   unlock: .stars(110),  kind: .comet),
+        OrbStyle(id: "diamond", name: "Diamond", unlock: .stars(150),  kind: .diamond),
+        OrbStyle(id: "firefly", name: "Firefly", unlock: .stars(200),  kind: .firefly),
+        OrbStyle(id: "flame",   name: "Flame",   unlock: .stars(260),  kind: .flame),
+        OrbStyle(id: "rainbow", name: "Rainbow", unlock: .stars(330),  kind: .rainbow),
+        OrbStyle(id: "cloud",   name: "Cloud",   unlock: .stars(420),  kind: .cloud),
         OrbStyle(id: "photo",   name: "Photo",   unlock: .premium,     kind: .photo),
         OrbStyle(id: "champion", name: "Champion", unlock: .champion,  kind: .champion)
     ]
 
-    /// Yıldızla satın alınabilen stiller (mağazada listelenir)
-    static var starPurchasable: [OrbStyle] { all.filter { $0.starCost != nil } }
+    /// Yıldız eşiğiyle açılan stiller, eşiğe göre sıralı
+    static var starLadder: [OrbStyle] {
+        all.filter { $0.starCost != nil }.sorted { ($0.starCost ?? 0) < ($1.starCost ?? 0) }
+    }
+
+    /// Verilen yıldız sayısıyla henüz açılmamış İLK küre ve kalan yıldız.
+    /// Hepsi açıldıysa nil — ana ekran o zaman toplam sayacına döner.
+    static func nextLocked(totalStars: Int) -> (style: OrbStyle, remaining: Int)? {
+        for style in starLadder {
+            guard let cost = style.starCost, totalStars < cost else { continue }
+            return (style, cost - totalStars)
+        }
+        return nil
+    }
 
     static let championID = "champion"
     static var champion: OrbStyle { style(id: championID) }

@@ -50,6 +50,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.ui.draw.blur
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.caganhatapci.orbeon.LocalActivity
@@ -97,8 +103,33 @@ fun MainMenuScreen(
     val theme = app.settings.theme
     var showMissions by remember { mutableStateOf(false) }
     var claimedFlash by remember { mutableStateOf<Int?>(null) }
+    // Günlük ödül ve görev yıldızları da eşik geçirebilir; menüye her
+    // dönüşte bekleyen açılış var mı diye bakılıyor
+    var orbReveal by remember { mutableStateOf<OrbStyle?>(null) }
+    LaunchedEffect(app.progress.totalStars) {
+        if (orbReveal == null) orbReveal = app.progress.pendingOrbReveal()
+    }
 
     val frameTime = rememberFrameTime()
+
+    // Kutlama ekranı menünün yerine geçiyor; arkada temanın zemini kalsın
+    // diye kendi arka planıyla çiziliyor
+    orbReveal?.let { style ->
+      ThemeBackground(theme) {
+        OrbRevealOverlay(style, theme, onEquip = {
+            app.audio.playTap()
+            app.settings.orbStyleId = style.id
+            app.settings.persist()
+            app.progress.markOrbRevealed(style)
+            orbReveal = app.progress.pendingOrbReveal()
+        }, onClose = {
+            app.audio.playTap()
+            app.progress.markOrbRevealed(style)
+            orbReveal = app.progress.pendingOrbReveal()
+        })
+      }
+      return
+    }
 
     ThemeBackground(theme) {
         AnimatedBlobs(theme, frameTime)
@@ -135,12 +166,46 @@ fun MainMenuScreen(
                 modifier = Modifier.padding(top = 14.dp))
             Text(stringResource(R.string.tagline), color = Color.White.copy(alpha = 0.55f), fontSize = 13.sp)
 
+            // Ham "x / 806" oyuncuya hiçbir şey söylemiyordu; sıradaki karakter
+            // bir hedef veriyor ve toplananın niye toplandığını anlatıyor.
             if (app.progress.totalStars > 0) {
-                Text(
-                    "★ ${app.progress.totalStars} / ${LevelLibrary.totalStarsAvailable}",
-                    color = theme.lumen, fontSize = 15.sp, fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 12.dp)
-                )
+                val goal = app.progress.nextOrbGoal
+                if (goal != null) {
+                    val (style, remaining) = goal
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(top = 12.dp)
+                    ) {
+                        Text(
+                            "★ " + stringResource(R.string.stars_to_next_character, remaining),
+                            color = theme.lumen, fontSize = 15.sp, fontWeight = FontWeight.Bold
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(top = 6.dp)
+                        ) {
+                            // Önizleme BULANIK: ne kazanacağını merak etsin
+                            CharacterPreview(style.kind, theme, frameTime,
+                                Modifier.size(22.dp).blur(5.dp))
+                            LinearProgressIndicator(
+                                progress = {
+                                    app.progress.totalStars.toFloat() /
+                                        (style.starCost ?: 1).coerceAtLeast(1)
+                                },
+                                color = theme.lumen,
+                                trackColor = Color.White.copy(alpha = 0.12f),
+                                modifier = Modifier.width(120.dp)
+                            )
+                        }
+                    }
+                } else {
+                    Text(
+                        "★ ${app.progress.totalStars} / ${LevelLibrary.totalStarsAvailable}",
+                        color = theme.lumen, fontSize = 15.sp, fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
+                }
             }
 
             // Günlük ödül + görevler
@@ -409,7 +474,7 @@ fun ShopScreen(onBack: () -> Unit) {
     ThemeBackground(theme) {
         Column(Modifier.fillMaxSize()) {
             ScreenHeader(stringResource(R.string.shop), onBack) {
-                Text("★ ${app.progress.availableStars}", color = theme.lumen,
+                Text("★ ${app.progress.totalStars}", color = theme.lumen,
                     fontSize = 13.sp, fontWeight = FontWeight.Bold)
             }
 
@@ -461,7 +526,9 @@ fun ShopScreen(onBack: () -> Unit) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(stringResource(R.string.characters), color = Color.White.copy(alpha = 0.9f),
                             fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        OrbStyle.starPurchasable.forEach { style ->
+                        Text(stringResource(R.string.unlocks_with_stars),
+                            color = Color.White.copy(alpha = 0.45f), fontSize = 12.sp)
+                        OrbStyle.starLadder.forEach { style ->
                             CharacterRow(style, theme, frameTime)
                         }
                     }
@@ -678,12 +745,33 @@ private fun CharacterRow(style: OrbStyle, theme: Theme, t: Float) {
     val equipped = app.settings.orbStyleId == style.id
     val cost = style.starCost ?: 0
 
+    // Küreler artık satın alınmıyor: yıldız eşiği geçilince kendiliğinden
+    // açılıyor. Kilitliyken önizleme BULANIK ve adı gizli — ne kazanacağını
+    // merak etsin, ama ne olduğunu görmesin.
+    val remaining = (cost - app.progress.totalStars).coerceAtLeast(0)
+
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        CharacterPreview(style.kind, theme, t, Modifier.size(46.dp))
+        Box(contentAlignment = Alignment.Center) {
+            CharacterPreview(
+                style.kind, theme, t,
+                Modifier.size(46.dp).then(if (owned) Modifier else Modifier.blur(9.dp))
+            )
+            if (!owned) {
+                Icon(Icons.Filled.Lock, null, tint = Color.White.copy(alpha = 0.75f),
+                    modifier = Modifier.size(16.dp))
+            }
+        }
 
         Column(Modifier.weight(1f).padding(start = 12.dp)) {
-            Text(stringResource(style.nameRes), color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-            if (!owned) Text("★ $cost", color = theme.lumen, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Text(
+                if (owned) stringResource(style.nameRes) else "???",
+                color = if (owned) Color.White else Color.White.copy(alpha = 0.55f),
+                fontSize = 15.sp, fontWeight = FontWeight.Bold
+            )
+            if (!owned) {
+                Text("★ " + stringResource(R.string.more_stars, remaining),
+                    color = theme.lumen, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            }
         }
 
         when {
@@ -695,27 +783,13 @@ private fun CharacterRow(style: OrbStyle, theme: Theme, t: Float) {
                     .clickable { app.audio.playTap(); app.settings.orbStyleId = style.id; app.settings.persist() }
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
-            else -> {
-                val afford = app.progress.canAfford(style)
-                Text(
-                    stringResource(R.string.buy),
-                    color = if (afford) Color.Black else Color.White.copy(alpha = 0.4f),
-                    fontSize = 13.sp, fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .background(
-                            if (afford) theme.lumen else Color.White.copy(alpha = 0.1f),
-                            RoundedCornerShape(20.dp)
-                        )
-                        .clickable(enabled = afford) {
-                            if (app.progress.purchaseOrb(style)) {
-                                app.audio.playWin()
-                                app.settings.orbStyleId = style.id
-                                app.settings.persist()
-                            } else app.audio.playFail()
-                        }
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
+            // Eşiğe ne kadar kaldığı çubuktan da okunsun
+            else -> LinearProgressIndicator(
+                progress = { app.progress.totalStars.toFloat() / cost.coerceAtLeast(1) },
+                color = theme.lumen,
+                trackColor = Color.White.copy(alpha = 0.12f),
+                modifier = Modifier.width(70.dp)
+            )
         }
     }
 }
@@ -1103,6 +1177,83 @@ private fun PhotoOrbCard(theme: Theme, t: Float) {
                         picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     }
                     .padding(horizontal = 14.dp, vertical = 8.dp)
+            )
+        }
+    }
+}
+
+/**
+ * Yıldız eşiği geçilince açılan yeni karakterin kutlama ekranı.
+ *
+ * Küreler artık satın alınmıyor: yıldız biriktirmek tek başına ilerleme ve her
+ * eşik bir ödül. Ödülün hissedilmesi için açılışın GÖRÜLMESİ gerekiyor —
+ * mağazaya girip fark etmesini beklemek, ödülü ödül olmaktan çıkarıyordu.
+ */
+@Composable
+fun OrbRevealOverlay(
+    style: OrbStyle,
+    theme: Theme,
+    onEquip: () -> Unit,
+    onClose: () -> Unit
+) {
+    val t = rememberFrameTime()
+    val appeared = remember { Animatable(0f) }
+    LaunchedEffect(style.id) {
+        appeared.animateTo(1f, spring(dampingRatio = 0.62f, stiffness = 260f))
+    }
+
+    Box(
+        Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.78f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            Modifier.padding(horizontal = 34.dp)
+                .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(28.dp))
+                .border(1.5.dp, theme.lumen.copy(alpha = 0.35f), RoundedCornerShape(28.dp))
+                .padding(28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(18.dp)
+        ) {
+            Text(
+                stringResource(R.string.new_character_unlocked).uppercase(),
+                color = theme.lumen, fontSize = 13.sp, fontWeight = FontWeight.Bold
+            )
+
+            Box(Modifier.size(180.dp), contentAlignment = Alignment.Center) {
+                // Yavaşça dönen kesikli çember — kürenin "sunulduğu" his
+                Canvas(Modifier.size(148.dp)) {
+                    rotate(t * 20f) {
+                        drawCircle(
+                            theme.lumen.copy(alpha = 0.5f),
+                            size.minDimension / 2f,
+                            style = Stroke(
+                                width = 1.5.dp.toPx(),
+                                pathEffect = PathEffect.dashPathEffect(
+                                    floatArrayOf(7.dp.toPx(), 11.dp.toPx())
+                                )
+                            )
+                        )
+                    }
+                }
+                CharacterPreview(
+                    style.kind, theme, t,
+                    Modifier.size((108 * appeared.value).dp.coerceAtLeast(1.dp))
+                )
+            }
+
+            Text(stringResource(style.nameRes), color = Color.White,
+                fontSize = 26.sp, fontWeight = FontWeight.Bold)
+
+            style.starCost?.let {
+                Text("★ $it", color = Color.White.copy(alpha = 0.5f), fontSize = 13.sp)
+            }
+
+            GlowButton(stringResource(R.string.equip), theme.lumen, prominent = true, onClick = onEquip)
+            Text(
+                stringResource(R.string.later),
+                color = Color.White.copy(alpha = 0.55f), fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable(onClick = onClose).padding(8.dp)
             )
         }
     }

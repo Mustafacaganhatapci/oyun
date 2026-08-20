@@ -147,4 +147,10 @@
     <string name="colorblind_mode">Renk körlüğü modu</string>
     <string name="colorblind_mode_note">Her renk körlüğü türünde ayrışan bir palet kullanır; tehlikeli yayları renge ek olarak çentiklerle işaretler.</string>
     <string name="backgrounds">Arka planlar</string>
+    <string name="more_stars">%1$d yıldız daha</string>
+    <string name="stars_to_next_character">Sıradaki karaktere %1$d yıldız</string>
+    <string name="new_character_unlocked">Yeni karakter açıldı</string>
+    <string name="later">Sonra</string>
+    <string name="unlocks_with_stars">Yıldız topladıkça açılır ★</string>
+    <string name="characters_unlock_note">Yeni karakterler yıldız topladıkça açılır.</string>
 </resources>

@@ -36,7 +36,7 @@ struct ShopView: View {
                     Image(systemName: "star.fill")
                         .font(.footnote)
                         .foregroundStyle(settings.theme.lumen.color)
-                    Text("\(progress.availableStars)")
+                    Text("\(progress.totalStars)")
                         .font(.system(.subheadline, design: .rounded).bold())
                         .foregroundStyle(.white)
                 }
@@ -321,12 +321,12 @@ struct ShopView: View {
                     .font(.system(.headline, design: .rounded).bold())
                     .foregroundStyle(.white.opacity(0.9))
                 Spacer()
-                Text("Unlock with stars ★")
+                Text("Unlocks as you collect stars ★")
                     .font(.system(.caption, design: .rounded))
                     .foregroundStyle(.white.opacity(0.45))
             }
 
-            ForEach(OrbStyle.starPurchasable) { style in
+            ForEach(OrbStyle.starLadder) { style in
                 characterRow(style)
             }
 
@@ -454,23 +454,34 @@ struct ShopView: View {
     }
 
     private func characterRow(_ style: OrbStyle) -> some View {
-        // Yıldızlı karakterler premium'da bile yıldızla alınır — yıldız
-        // toplamanın anlamı korunur; premium yalnızca foto küreyi açar
+        // Küreler artık satın alınmıyor: yıldız eşiği geçilince kendiliğinden
+        // açılıyor. Kilitliyken önizleme BULANIK ve adı gizli — ne kazanacağını
+        // merak etsin, ama ne olduğunu görmesin.
         let owned = progress.isOrbUnlocked(style)
         let equipped = settings.orbStyleID == style.id
         let cost = style.starCost ?? 0
+        let remaining = max(0, cost - progress.totalStars)
         return HStack(spacing: 14) {
             CharacterPreview(kind: style.kind, theme: settings.theme)
                 .frame(width: 46, height: 46)
+                .blur(radius: owned ? 0 : 7)
+                .overlay {
+                    if !owned {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.75))
+                    }
+                }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(style.localizedName)
+                Text(owned ? style.localizedName : "???")
                     .font(.system(.body, design: .rounded).bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(owned ? .white : .white.opacity(0.55))
                 if !owned {
                     HStack(spacing: 3) {
                         Image(systemName: "star.fill").font(.system(size: 10))
-                        Text("\(cost)").font(.system(.subheadline, design: .rounded).bold())
+                        Text("\(remaining) more stars")
+                            .font(.system(.caption, design: .rounded).bold())
                     }
                     .foregroundStyle(settings.theme.lumen.color)
                 }
@@ -494,23 +505,11 @@ struct ShopView: View {
                         .background(Capsule().fill(settings.theme.accent.color))
                 }
             } else {
-                Button {
-                    if progress.purchaseOrb(style) {
-                        AudioEngine.shared.playWin()
-                        settings.orbStyleID = style.id   // alınca hemen kuşan
-                    } else {
-                        AudioEngine.shared.playFail()
-                    }
-                } label: {
-                    Text("Buy")
-                        .font(.system(.subheadline, design: .rounded).bold())
-                        .foregroundStyle(progress.canAfford(style) ? .black : .white.opacity(0.4))
-                        .padding(.horizontal, 16).padding(.vertical, 8)
-                        .background(Capsule().fill(progress.canAfford(style)
-                                                   ? settings.theme.lumen.color
-                                                   : Color.white.opacity(0.1)))
-                }
-                .disabled(!progress.canAfford(style))
+                // Eşiğe ne kadar kaldığı çubuktan da okunsun
+                ProgressView(value: Double(min(progress.totalStars, cost)),
+                             total: Double(max(cost, 1)))
+                    .tint(settings.theme.lumen.color)
+                    .frame(width: 70)
             }
         }
         .padding(.vertical, 4)

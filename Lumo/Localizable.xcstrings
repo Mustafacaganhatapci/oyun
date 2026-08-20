@@ -1,6 +1,41 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ left": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quedan %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reste %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "残り %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son %@"
+          }
+        }
+      }
+    },
     "%lld": {
       "shouldTranslate": false
     },
@@ -38,6 +73,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld günlük seri"
+          }
+        }
+      }
+    },
+    "%lld more stars": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch %lld Sterne"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld estrellas más"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encore %lld étoiles"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あと %lld 個"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld yıldız daha"
+          }
+        }
+      }
+    },
+    "%lld stars to the next character": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch %lld Sterne bis zur nächsten Figur"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld estrellas para el próximo personaje"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld étoiles avant le prochain personnage"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "次のキャラクターまで %lld 個"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sıradaki karaktere %lld yıldız"
           }
         }
       }
@@ -824,41 +929,6 @@
         }
       }
     },
-    "Buy": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaufen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Comprar"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Acheter"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "購入"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Al"
-          }
-        }
-      }
-    },
     "Buy a coffee": {
       "extractionState": "manual",
       "localizations": {
@@ -890,41 +960,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bir kahve ısmarla"
-          }
-        }
-      }
-    },
-    "Buy more characters with stars in the Shop.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaufe im Shop mehr Charaktere mit Sternen."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Compra más personajes con estrellas en la tienda."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Achète plus de personnages avec des étoiles dans la boutique."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ショップでスターを使ってキャラクターを増やそう。"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mağazada yıldızlarınla daha çok karakter al."
           }
         }
       }
@@ -3209,6 +3244,41 @@
         }
       }
     },
+    "Later": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Später"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Más tarde"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus tard"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あとで"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonra"
+          }
+        }
+      }
+    },
     "Legendary!": {
       "extractionState": "manual",
       "localizations": {
@@ -3771,6 +3841,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yeni Rekor!"
+          }
+        }
+      }
+    },
+    "New character unlocked": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Figur freigeschaltet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuevo personaje desbloqueado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveau personnage débloqué"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しいキャラクター解放"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni karakter açıldı"
+          }
+        }
+      }
+    },
+    "New characters unlock as you collect stars.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Figuren öffnen sich beim Sternesammeln."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los nuevos personajes se desbloquean al reunir estrellas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De nouveaux personnages se débloquent avec les étoiles."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "星を集めると新しいキャラクターが解放されます。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni karakterler yıldız topladıkça açılır."
           }
         }
       }
@@ -6165,37 +6305,37 @@
         }
       }
     },
-    "This week · resets in %@": {
+    "This week · %@ left": {
       "extractionState": "manual",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Diese Woche · Reset in %@"
+            "value": "Diese Woche · noch %@"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Esta semana · se reinicia en %@"
+            "value": "Esta semana · quedan %@"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cette semaine · réinit. dans %@"
+            "value": "Cette semaine · reste %@"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "今週 · %@ 後にリセット"
+            "value": "今週 · 残り %@"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bu hafta · %@ sonra sıfırlanır"
+            "value": "Bu hafta · son %@"
           }
         }
       }
@@ -6270,37 +6410,37 @@
         }
       }
     },
-    "Unlock with stars ★": {
+    "Unlocks as you collect stars ★": {
       "extractionState": "manual",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mit Sternen ★"
+            "value": "Öffnet sich beim Sternesammeln ★"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Desbloquea con estrellas ★"
+            "value": "Se desbloquean al reunir estrellas ★"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Débloquer avec des étoiles ★"
+            "value": "Se débloquent avec les étoiles ★"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "スターで解放 ★"
+            "value": "星を集めると解放 ★"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yıldızla aç ★"
+            "value": "Yıldız topladıkça açılır ★"
           }
         }
       }
@@ -7011,41 +7151,6 @@
         }
       }
     },
-    "resets in %@": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reset in %@"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "se reinicia en %@"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "réinit. dans %@"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ 後にリセット"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ sonra sıfırlanır"
-          }
-        }
-      }
-    },
     "the journey of light": {
       "extractionState": "manual",
       "localizations": {
@@ -7077,6 +7182,111 @@
           "stringUnit": {
             "state": "translated",
             "value": "ışığın yolculuğu"
+          }
+        }
+      }
+    },
+    "unit.day.short": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "T"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "d"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "j"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "g"
+          }
+        }
+      }
+    },
+    "unit.hour.short": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Std"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "h"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "h"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時間"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "s"
+          }
+        }
+      }
+    },
+    "unit.minute.short": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Min"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "min"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "min"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dk"
           }
         }
       }

@@ -147,4 +147,10 @@
     <string name="colorblind_mode">色覚サポート</string>
     <string name="colorblind_mode_note">あらゆる色覚特性で見分けられる配色を使い、危険な円弧には色に加えて刻み目を付けます。</string>
     <string name="backgrounds">背景</string>
+    <string name="more_stars">あと %1$d 個</string>
+    <string name="stars_to_next_character">次のキャラクターまで %1$d 個</string>
+    <string name="new_character_unlocked">新しいキャラクター解放</string>
+    <string name="later">あとで</string>
+    <string name="unlocks_with_stars">星を集めると解放 ★</string>
+    <string name="characters_unlock_note">星を集めると新しいキャラクターが解放されます。</string>
 </resources>

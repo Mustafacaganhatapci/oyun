@@ -14,6 +14,8 @@ struct MainMenuView: View {
     @State private var showMissions = false
     @State private var claimedFlash: Int?
     @State private var championAward: (rank: Int, stars: Int)?
+    /// Yıldız eşiği geçilip açılan, henüz gösterilmemiş karakter
+    @State private var orbReveal: OrbStyle?
 
     var body: some View {
         ZStack {
@@ -81,14 +83,7 @@ struct MainMenuView: View {
                             .padding(.leading, 4)
 
                         if progress.totalStars > 0 {
-                            HStack(spacing: 6) {
-                                Image(systemName: "star.fill")
-                                    .foregroundStyle(settings.theme.lumen.color)
-                                Text("\(progress.totalStars) / \(LevelLibrary.totalStarsAvailable)")
-                                    .font(.system(.subheadline, design: .rounded).bold())
-                                    .foregroundStyle(.white.opacity(0.8))
-                            }
-                            .padding(.top, 12)
+                            starGoal.padding(.top, 12)
                         }
 
                         Spacer(minLength: 24)
@@ -115,11 +110,64 @@ struct MainMenuView: View {
             leaderboard.configureIfPossible()
             leaderboard.refresh(mode: .endless, myPlayerID: player.playerID)
             Task { await claimChampionRewardIfEarned() }
+            orbReveal = progress.pendingOrbReveal()
+        }
+        .onChange(of: progress.totalStars) { _, _ in
+            // Günlük ödül, görev ve şampiyonluk yıldızları da eşik geçirebilir
+            if orbReveal == nil { orbReveal = progress.pendingOrbReveal() }
         }
         .overlay {
             if let award = championAward {
                 ChampionAwardView(rank: award.rank, stars: award.stars,
                                   theme: settings.theme) { championAward = nil }
+            } else if let style = orbReveal {
+                OrbRevealView(style: style, theme: settings.theme) {
+                    settings.orbStyleID = style.id
+                    progress.markOrbRevealed(style)
+                    orbReveal = progress.pendingOrbReveal()
+                } onClose: {
+                    progress.markOrbRevealed(style)
+                    orbReveal = progress.pendingOrbReveal()
+                }
+            }
+        }
+    }
+
+    /// Yıldız sayacı. Ham "x / 806" oyuncuya hiçbir şey söylemiyordu; sıradaki
+    /// karakter bir hedef veriyor ve toplananın niye toplandığını anlatıyor.
+    /// Hepsi açıldıysa toplam sayaca dönülür.
+    @ViewBuilder
+    private var starGoal: some View {
+        if let goal = progress.nextOrbGoal {
+            VStack(spacing: 6) {
+                HStack(spacing: 6) {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(settings.theme.lumen.color)
+                    Text("\(goal.remaining) stars to the next character")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(.white.opacity(0.8))
+                }
+                if let cost = goal.style.starCost {
+                    // Önizleme BULANIK: ne kazanacağını merak etsin
+                    HStack(spacing: 8) {
+                        CharacterPreview(kind: goal.style.kind, theme: settings.theme)
+                            .frame(width: 22, height: 22)
+                            .blur(radius: 4)
+                        ProgressView(value: Double(min(progress.totalStars, cost)),
+                                     total: Double(max(cost, 1)))
+                            .tint(settings.theme.lumen.color)
+                            .frame(width: 120)
+                    }
+                }
+            }
+        } else {
+            HStack(spacing: 6) {
+                Image(systemName: "star.fill")
+                    .foregroundStyle(settings.theme.lumen.color)
+                Text("\(progress.totalStars) / \(LevelLibrary.totalStarsAvailable)")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.8))
             }
         }
     }
@@ -200,7 +248,7 @@ struct MainMenuView: View {
                         .font(.system(.caption, design: .rounded).bold())
                         .foregroundStyle(.white.opacity(0.75))
                     Spacer(minLength: 0)
-                    Text("resets in \(leaderboard.resetCountdownText)")
+                    Text("\(leaderboard.resetCountdownText) left")
                         .font(.system(size: 10, design: .rounded))
                         .foregroundStyle(.white.opacity(0.35))
                 }

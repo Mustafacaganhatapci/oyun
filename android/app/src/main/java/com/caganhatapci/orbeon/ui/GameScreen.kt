@@ -111,6 +111,8 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
     var revivedThisRun by remember { mutableStateOf(false) }
     var endlessScore by remember { mutableIntStateOf(0) }
     var extraLives by remember { mutableIntStateOf(0) }
+    // Yıldız eşiği geçilip açılan, henüz gösterilmemiş karakter
+    var orbReveal by remember { mutableStateOf<OrbStyle?>(null) }
     var bonusRemaining by remember { mutableIntStateOf(0) }
     var timeRemaining by remember { mutableIntStateOf(-1) }
     var tutorialHops by remember { mutableIntStateOf(0) }
@@ -253,6 +255,11 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                             if (event.stars >= maxStarsForLevel) {
                                 ReviewPrompt.requestAfterGreatRun(activity, app.progress.completedCount)
                             }
+                            // Bu bölümün yıldızları bir eşiği geçtiyse yeni
+                            // karakter AÇILDIĞI ANDA gösterilsin; mağazada
+                            // tesadüfen fark edilmeyi beklemek ödülü ödül
+                            // olmaktan çıkarıyor.
+                            orbReveal = app.progress.pendingOrbReveal()
                         }
                         overlay = Overlay.Won(event.stars, celebration)
                     }
@@ -322,6 +329,20 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                 theme = theme,
                 onPause = { overlay = Overlay.Paused }
             )
+
+            orbReveal?.let { style ->
+                OrbRevealOverlay(style, theme, onEquip = {
+                    app.audio.playTap()
+                    app.settings.orbStyleId = style.id
+                    app.settings.persist()
+                    app.progress.markOrbRevealed(style)
+                    orbReveal = app.progress.pendingOrbReveal()
+                }, onClose = {
+                    app.audio.playTap()
+                    app.progress.markOrbRevealed(style)
+                    orbReveal = app.progress.pendingOrbReveal()
+                })
+            }
 
             // Etkileşimli öğretici: engelleyen kart ya da yönlendirme şeridi
             if (overlay == Overlay.None) {

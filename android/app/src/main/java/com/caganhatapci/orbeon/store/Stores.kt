@@ -43,11 +43,22 @@ class ProgressStore(context: Context) {
         private set
     var totalHops by mutableIntStateOf(p.getInt("progress.totalHops", 0))
         private set
+    /**
+     * ESKİ SÜRÜM ARTIĞI: küreler yıldızla satın alınırken harcanan bakiye.
+     * Artık hiçbir şey harcanmıyor (eşik geçilince açılıyor); yalnızca eski
+     * kayıtları bozmadan taşımak için okunuyor.
+     */
     var spentStars by mutableIntStateOf(p.getInt("progress.spentStars", 0))
         private set
     var bonusStars by mutableIntStateOf(p.getInt("progress.bonusStars", 0))
         private set
     var unlockedOrbs by mutableStateOf(p.getStringSet("progress.unlockedOrbs", emptySet())!!.toSet())
+        private set
+    /**
+     * Açılışı oyuncuya GÖSTERİLMİŞ küreler. Eşik geçildiği anda küre zaten
+     * açılıyor; bu küme yalnızca kutlama ekranının bir kez çıkmasını sağlıyor.
+     */
+    var revealedOrbs by mutableStateOf(p.getStringSet("progress.revealedOrbs", emptySet())!!.toSet())
         private set
 
     private fun loadStars(): Map<Int, Int> {
@@ -71,9 +82,6 @@ class ProgressStore(context: Context) {
     val completedCount: Int get() = stars.size
     val totalStars: Int get() = stars.values.sum() + bonusStars
 
-    /** Harcanabilir yıldız bakiyesi */
-    val availableStars: Int get() = max(0, totalStars - spentStars)
-
     val endlessUnlocked: Boolean get() = stars.containsKey(LevelLibrary.AD_FREE_LEVELS)
 
     fun isUnlocked(level: Int): Boolean = level <= highestUnlocked
@@ -83,29 +91,30 @@ class ProgressStore(context: Context) {
         p.edit().putInt("progress.bonusStars", bonusStars).apply()
     }
 
-    fun isOrbUnlocked(style: OrbStyle): Boolean = when (style.unlock) {
+    fun isOrbUnlocked(style: OrbStyle): Boolean = when (val u = style.unlock) {
         is OrbUnlock.Free -> true
         is OrbUnlock.Premium -> false      // premium ayrı yönetilir (BillingManager)
-        is OrbUnlock.Stars -> unlockedOrbs.contains(style.id)
+        // Yıldız eşiği geçildiği an açılır — harcama yok. `unlockedOrbs` eski
+        // sürümde satın almış oyuncular için duruyor: eşiğin altında olsalar
+        // bile aldıkları küre ellerinden gitmesin.
+        is OrbUnlock.Stars -> unlockedOrbs.contains(style.id) || totalStars >= u.cost
     }
 
-    fun canAfford(style: OrbStyle): Boolean {
-        val cost = style.starCost ?: return false
-        return availableStars >= cost
+    /**
+     * Açılmış ama oyuncuya HENÜZ gösterilmemiş ilk küre. Bölüm bitişinde
+     * sorulup kutlama ekranı buna göre açılıyor.
+     */
+    fun pendingOrbReveal(): OrbStyle? =
+        OrbStyle.starLadder.firstOrNull { isOrbUnlocked(it) && !revealedOrbs.contains(it.id) }
+
+    fun markOrbRevealed(style: OrbStyle) {
+        if (revealedOrbs.contains(style.id)) return
+        revealedOrbs = revealedOrbs + style.id
+        p.edit().putStringSet("progress.revealedOrbs", revealedOrbs).apply()
     }
 
-    /** Yeterli yıldız varsa satın alır; başarılıysa true döner. */
-    fun purchaseOrb(style: OrbStyle): Boolean {
-        val cost = style.starCost ?: return false
-        if (isOrbUnlocked(style) || availableStars < cost) return false
-        spentStars += cost
-        unlockedOrbs = unlockedOrbs + style.id
-        p.edit()
-            .putInt("progress.spentStars", spentStars)
-            .putStringSet("progress.unlockedOrbs", unlockedOrbs)
-            .apply()
-        return true
-    }
+    /** Sıradaki küre ve ona kalan yıldız. Hepsi açıldıysa null. */
+    val nextOrbGoal: Pair<OrbStyle, Int>? get() = OrbStyle.nextLocked(totalStars)
 
     fun complete(level: Int, newStars: Int) {
         val existing = stars[level] ?: 0

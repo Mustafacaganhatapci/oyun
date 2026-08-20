@@ -10,8 +10,14 @@ final class ProgressStore: ObservableObject {
     @Published private(set) var endlessBest: Int = 0
     @Published private(set) var speedrunBest: Double = 0     // saniye; 0 = henüz yok
     @Published private(set) var totalHops: Int = 0
-    @Published private(set) var spentStars: Int = 0          // karakter almak için harcanan yıldız
-    @Published private(set) var unlockedOrbs: Set<String> = []  // yıldızla açılan küre stilleri
+    /// ESKİ SÜRÜM ARTIĞI: küreler yıldızla satın alınırken harcanan bakiye.
+    /// Artık hiçbir şey harcanmıyor (eşik geçilince açılıyor); yalnızca eski
+    /// kayıtları bozmadan taşımak için okunup yazılmaya devam ediyor.
+    @Published private(set) var spentStars: Int = 0
+    @Published private(set) var unlockedOrbs: Set<String> = []  // ödülle kazanılan küre stilleri
+    /// Açılışı oyuncuya GÖSTERİLMİŞ küreler. Eşik geçildiği anda küre zaten
+    /// açılıyor; bu küme yalnızca kutlama ekranının bir kez çıkmasını sağlıyor.
+    @Published private(set) var revealedOrbs: Set<String> = []
     @Published private(set) var bonusStars: Int = 0          // hediye/teselli yıldızları (ör. promo kodu)
     /// Şampiyonluk ödülü verilen son hafta — aynı hafta iki kez ödenmesin
     @Published private(set) var lastChampionWeek: Int = -1
@@ -24,6 +30,7 @@ final class ProgressStore: ObservableObject {
         static let totalHops = "lumo.progress.totalHops"
         static let spentStars = "lumo.progress.spentStars"
         static let unlockedOrbs = "lumo.progress.unlockedOrbs"
+        static let revealedOrbs = "lumo.progress.revealedOrbs"
         static let bonusStars = "lumo.progress.bonusStars"
         static let lastChampionWeek = "lumo.progress.lastChampionWeek"
     }
@@ -40,6 +47,7 @@ final class ProgressStore: ObservableObject {
         totalHops = defaults.integer(forKey: Key.totalHops)
         spentStars = defaults.integer(forKey: Key.spentStars)
         unlockedOrbs = Set(defaults.stringArray(forKey: Key.unlockedOrbs) ?? [])
+        revealedOrbs = Set(defaults.stringArray(forKey: Key.revealedOrbs) ?? [])
         bonusStars = defaults.integer(forKey: Key.bonusStars)
         // -1: hiç ödül alınmamış. Hafta numaraları 0'dan başladığı için
         // varsayılan 0 kullanılamaz, ilk haftayı ödenmiş sayardı.
@@ -77,6 +85,7 @@ final class ProgressStore: ObservableObject {
         // sıfırlanıp aynı karakter iki kez satın alınabilirdi
         spentStars = max(spentStars, Int(cloud.longLong(forKey: Key.spentStars)))
         unlockedOrbs.formUnion(cloud.array(forKey: Key.unlockedOrbs) as? [String] ?? [])
+        revealedOrbs.formUnion(cloud.array(forKey: Key.revealedOrbs) as? [String] ?? [])
         // İleri olan hafta kazanır: ödül aynı hesapta ikinci bir cihazda
         // tekrar verilmesin
         lastChampionWeek = max(lastChampionWeek, Int(cloud.longLong(forKey: Key.lastChampionWeek)))
@@ -100,6 +109,7 @@ final class ProgressStore: ObservableObject {
         cloud.set(Int64(bonusStars), forKey: Key.bonusStars)
         cloud.set(speedrunBest, forKey: Key.speedrunBest)
         cloud.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
+        cloud.set(Array(revealedOrbs), forKey: Key.revealedOrbs)
         cloud.set(Int64(lastChampionWeek), forKey: Key.lastChampionWeek)
         cloud.synchronize()
     }
@@ -114,6 +124,7 @@ final class ProgressStore: ObservableObject {
         defaults.set(spentStars, forKey: Key.spentStars)
         defaults.set(bonusStars, forKey: Key.bonusStars)
         defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
+        defaults.set(Array(revealedOrbs), forKey: Key.revealedOrbs)
         defaults.set(lastChampionWeek, forKey: Key.lastChampionWeek)
     }
 
@@ -125,8 +136,6 @@ final class ProgressStore: ObservableObject {
 
     var completedCount: Int { stars.count }
     var totalStars: Int { stars.values.reduce(0, +) + bonusStars }
-    /// Harcanabilir yıldız bakiyesi (toplam - harcanan)
-    var availableStars: Int { max(0, totalStars - spentStars) }
 
     /// Hediye/teselli yıldızı ekler (ör. promo kodu 5'ten fazla yanlış girilince).
     func grantBonusStars(_ amount: Int) {
@@ -144,10 +153,31 @@ final class ProgressStore: ObservableObject {
         switch style.unlock {
         case .free: return true
         case .premium: return false          // premium ayrı yönetilir (StoreManager)
-        // Şampiyon küresi de kazanıldığında aynı kümeye yazılır; farkı satın
-        // alınamaması, yalnızca haftalık ilk üçe girerek verilmesi.
-        case .stars, .champion: return unlockedOrbs.contains(style.id)
+        // Yıldız eşiği geçildiği an açılır — harcama yok. `unlockedOrbs` eski
+        // sürümde satın almış oyuncular için duruyor: eşiğin altında olsalar
+        // bile aldıkları küre ellerinden gitmesin.
+        case .stars(let need): return unlockedOrbs.contains(style.id) || totalStars >= need
+        // Şampiyon küresi satın alınamaz, eşikle de açılmaz: tek yolu
+        // haftalık ilk üçe girmek.
+        case .champion: return unlockedOrbs.contains(style.id)
         }
+    }
+
+    /// Açılmış ama oyuncuya HENÜZ gösterilmemiş ilk küre. Bölüm bitişinde
+    /// sorulup kutlama ekranı buna göre açılıyor.
+    func pendingOrbReveal() -> OrbStyle? {
+        OrbStyle.starLadder.first { isOrbUnlocked($0) && !revealedOrbs.contains($0.id) }
+    }
+
+    func markOrbRevealed(_ style: OrbStyle) {
+        guard revealedOrbs.insert(style.id).inserted else { return }
+        defaults.set(Array(revealedOrbs), forKey: Key.revealedOrbs)
+        pushToCloud()
+    }
+
+    /// Sıradaki küre ve ona kalan yıldız. Hepsi açıldıysa nil.
+    var nextOrbGoal: (style: OrbStyle, remaining: Int)? {
+        OrbStyle.nextLocked(totalStars: totalStars)
     }
 
     /// Haftalık şampiyonluk ödülü: yıldızlar + şampiyon küresi.
@@ -160,23 +190,6 @@ final class ProgressStore: ObservableObject {
         unlockedOrbs.insert(OrbStyle.championID)
         defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
         grantBonusStars(amount)
-        pushToCloud()
-        return true
-    }
-
-    func canAfford(_ style: OrbStyle) -> Bool {
-        guard let cost = style.starCost else { return false }
-        return availableStars >= cost
-    }
-
-    /// Yeterli yıldız varsa satın alır; başarılıysa true döner.
-    @discardableResult
-    func purchaseOrb(_ style: OrbStyle) -> Bool {
-        guard let cost = style.starCost, !isOrbUnlocked(style), availableStars >= cost else { return false }
-        spentStars += cost
-        unlockedOrbs.insert(style.id)
-        defaults.set(spentStars, forKey: Key.spentStars)
-        defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
         pushToCloud()
         return true
     }

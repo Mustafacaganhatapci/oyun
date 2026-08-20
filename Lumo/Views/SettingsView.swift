@@ -101,7 +101,7 @@ struct SettingsView: View {
                             .padding(.horizontal, 20)
                         }
 
-                        Text("Buy more characters with stars in the Shop.")
+                        Text("New characters unlock as you collect stars.")
                             .font(.system(.caption, design: .rounded))
                             .foregroundStyle(.white.opacity(0.4))
                             .padding(.horizontal, 24)
@@ -206,10 +206,13 @@ private struct OrbSwatch: View {
                                              startPoint: .top, endPoint: .bottom))
                         .frame(width: 72, height: 72)
 
+                    // Kilitli karakter BULANIK: ne kazanacağını merak etsin,
+                    // ama ne olduğunu görmesin
                     orbPreview
+                        .blur(radius: locked ? 8 : 0)
 
                     if locked {
-                        Color.black.opacity(0.45).clipShape(Circle()).frame(width: 72, height: 72)
+                        Color.black.opacity(0.35).clipShape(Circle()).frame(width: 72, height: 72)
                         Image(systemName: "lock.fill")
                             .foregroundStyle(.white.opacity(0.85))
                     }
@@ -226,7 +229,7 @@ private struct OrbSwatch: View {
                             .font(.system(size: 9))
                             .foregroundStyle(theme.lumen.color)
                     }
-                    Text(style.localizedName)
+                    Text(locked ? "???" : style.localizedName)
                         .font(.system(.caption, design: .rounded).bold())
                         .foregroundStyle(selected ? .white : .white.opacity(0.6))
                 }

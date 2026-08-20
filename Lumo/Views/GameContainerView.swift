@@ -57,6 +57,8 @@ struct GameContainerView: View {
     @State private var tutorialHops = 0        // antrenman bölümünde kaç atlayış yapıldı
     @State private var celebrationKey: String? // 3 yıldız kutlama başlığı (rastgele seçilir)
     @State private var levelIntroVisible = false  // bölüm başındaki "Level X — Zorluk" kartı
+    /// Yıldız eşiği geçilip açılan, henüz gösterilmemiş karakter
+    @State private var orbReveal: OrbStyle?
 
     /// 3/3 yıldız için rastgele seçilen tebrik başlıkları (yerelleştirme anahtarları)
     private static let celebrations = ["Bravo!", "Perfect!", "Flawless!", "Spectacular!", "Legendary!"]
@@ -150,6 +152,19 @@ struct GameContainerView: View {
                 // Bölüm başı kartı: "Level X" + zorluk etiketi, kısa süre görünüp söner
                 if levelIntroVisible, overlay == .none {
                     levelIntro
+                }
+
+                // Yeni karakter kutlaması — bitiş ekranının da ÜSTÜNDE durur
+                if let style = orbReveal {
+                    OrbRevealView(style: style, theme: settings.theme) {
+                        settings.orbStyleID = style.id
+                        progress.markOrbRevealed(style)
+                        orbReveal = progress.pendingOrbReveal()
+                    } onClose: {
+                        progress.markOrbRevealed(style)
+                        orbReveal = progress.pendingOrbReveal()
+                    }
+                    .transition(.opacity)
                 }
             }
             .animation(.easeInOut(duration: 0.25), value: coach)
@@ -321,6 +336,10 @@ struct GameContainerView: View {
                     if stars >= maxStarsForCurrentLevel {
                         ReviewPrompt.requestAfterGreatRun(completedLevels: progress.completedCount)
                     }
+                    // Bu bölümün yıldızları bir eşiği geçtiyse yeni karakter
+                    // AÇILDIĞI ANDA gösterilsin; mağazada tesadüfen fark
+                    // edilmeyi beklemek ödülü ödül olmaktan çıkarıyor.
+                    orbReveal = progress.pendingOrbReveal()
                 }
                 overlay = .won(stars: stars)
             case .speedrun:

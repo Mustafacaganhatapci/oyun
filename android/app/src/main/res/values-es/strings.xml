@@ -147,4 +147,10 @@
     <string name="colorblind_mode">Modo daltónico</string>
     <string name="colorblind_mode_note">Usa una paleta que se distingue con cualquier tipo de daltonismo y marca los peligros con muescas además del color.</string>
     <string name="backgrounds">Fondos</string>
+    <string name="more_stars">%1$d estrellas más</string>
+    <string name="stars_to_next_character">%1$d estrellas para el próximo personaje</string>
+    <string name="new_character_unlocked">Nuevo personaje desbloqueado</string>
+    <string name="later">Más tarde</string>
+    <string name="unlocks_with_stars">Se desbloquean al reunir estrellas ★</string>
+    <string name="characters_unlock_note">Los nuevos personajes se desbloquean al reunir estrellas.</string>
 </resources>
