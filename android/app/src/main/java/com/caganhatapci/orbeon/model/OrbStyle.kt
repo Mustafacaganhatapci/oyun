@@ -32,10 +32,11 @@ data class OrbStyle(
     val starCost: Int? get() = (unlock as? OrbUnlock.Stars)?.cost
 
     companion object {
-        // Eşikler kampanyanın YARISINA yayılıyor. Eskiden en pahalı küre 150
-        // yıldızdaydı; kampanya 806 yıldıza çıkınca hepsi ilk beşte biri
-        // bitmeden açılıyordu. İlki 9'da: üç bölümü üçer yıldızla bitiren
-        // oyuncu ilk ödülünü orada alır.
+        // Eşikler kampanyanın TAMAMINA yayılıyor: sonuncusu 620, toplam 806.
+        // Önce 420'de bitiyordu ve kampanyanın yarısından sonrası ödülsüz
+        // kalıyordu — o oyuncular ana ekranda anlamsız bir "x / 806"
+        // görüyordu. İlki 9'da: üç bölümü üçer yıldızla bitiren oyuncu ilk
+        // ödülünü orada alır.
         val all = listOf(
             OrbStyle("classic", R.string.orb_light,   OrbUnlock.Free,        Kind.CLASSIC),
             OrbStyle("star",    R.string.orb_star,    OrbUnlock.Free,        Kind.STAR),
@@ -46,10 +47,10 @@ data class OrbStyle(
             OrbStyle("heart",   R.string.orb_heart,   OrbUnlock.Stars(80),   Kind.HEART),
             OrbStyle("comet",   R.string.orb_comet,   OrbUnlock.Stars(110),  Kind.COMET),
             OrbStyle("diamond", R.string.orb_diamond, OrbUnlock.Stars(150),  Kind.DIAMOND),
-            OrbStyle("firefly", R.string.orb_firefly, OrbUnlock.Stars(200),  Kind.FIREFLY),
-            OrbStyle("flame",   R.string.orb_flame,   OrbUnlock.Stars(260),  Kind.FLAME),
-            OrbStyle("rainbow", R.string.orb_rainbow, OrbUnlock.Stars(330),  Kind.RAINBOW),
-            OrbStyle("cloud",   R.string.orb_cloud,   OrbUnlock.Stars(420),  Kind.CLOUD),
+            OrbStyle("firefly", R.string.orb_firefly, OrbUnlock.Stars(220),  Kind.FIREFLY),
+            OrbStyle("flame",   R.string.orb_flame,   OrbUnlock.Stars(320),  Kind.FLAME),
+            OrbStyle("rainbow", R.string.orb_rainbow, OrbUnlock.Stars(450),  Kind.RAINBOW),
+            OrbStyle("cloud",   R.string.orb_cloud,   OrbUnlock.Stars(620),  Kind.CLOUD),
             OrbStyle("photo",   R.string.orb_photo,   OrbUnlock.Premium,     Kind.PHOTO)
         )
 

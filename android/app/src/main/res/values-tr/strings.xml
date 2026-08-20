@@ -153,4 +153,5 @@
     <string name="later">Sonra</string>
     <string name="unlocks_with_stars">Yıldız topladıkça açılır ★</string>
     <string name="characters_unlock_note">Yeni karakterler yıldız topladıkça açılır.</string>
+    <string name="all_characters_unlocked">Tüm karakterler açıldı</string>
 </resources>

@@ -169,9 +169,14 @@ final class ProgressStore: ObservableObject {
         OrbStyle.starLadder.first { isOrbUnlocked($0) && !revealedOrbs.contains($0.id) }
     }
 
+    /// Gösterilen küre aynı zamanda KALICI olarak sahiplenilir. Eşikler
+    /// ileride yeniden ayarlanabilir (kampanya uzadıkça uzuyor); bir kez
+    /// verilmiş ödülün eşik yükseldi diye geri alınması kabul edilemez.
     func markOrbRevealed(_ style: OrbStyle) {
         guard revealedOrbs.insert(style.id).inserted else { return }
+        unlockedOrbs.insert(style.id)
         defaults.set(Array(revealedOrbs), forKey: Key.revealedOrbs)
+        defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
         pushToCloud()
     }
 

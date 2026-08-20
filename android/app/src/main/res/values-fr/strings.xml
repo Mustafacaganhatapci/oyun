@@ -153,4 +153,5 @@
     <string name="later">Plus tard</string>
     <string name="unlocks_with_stars">Se débloquent avec les étoiles ★</string>
     <string name="characters_unlock_note">De nouveaux personnages se débloquent avec les étoiles.</string>
+    <string name="all_characters_unlocked">Tous les personnages débloqués</string>
 </resources>

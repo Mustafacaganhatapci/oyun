@@ -107,10 +107,19 @@ class ProgressStore(context: Context) {
     fun pendingOrbReveal(): OrbStyle? =
         OrbStyle.starLadder.firstOrNull { isOrbUnlocked(it) && !revealedOrbs.contains(it.id) }
 
+    /**
+     * Gösterilen küre aynı zamanda KALICI olarak sahiplenilir. Eşikler
+     * ileride yeniden ayarlanabilir (kampanya uzadıkça uzuyor); bir kez
+     * verilmiş ödülün eşik yükseldi diye geri alınması kabul edilemez.
+     */
     fun markOrbRevealed(style: OrbStyle) {
         if (revealedOrbs.contains(style.id)) return
         revealedOrbs = revealedOrbs + style.id
-        p.edit().putStringSet("progress.revealedOrbs", revealedOrbs).apply()
+        unlockedOrbs = unlockedOrbs + style.id
+        p.edit()
+            .putStringSet("progress.revealedOrbs", revealedOrbs)
+            .putStringSet("progress.unlockedOrbs", unlockedOrbs)
+            .apply()
     }
 
     /** Sıradaki küre ve ona kalan yıldız. Hepsi açıldıysa null. */

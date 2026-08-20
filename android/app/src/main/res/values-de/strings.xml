@@ -153,4 +153,5 @@
     <string name="later">Später</string>
     <string name="unlocks_with_stars">Öffnet sich beim Sternesammeln ★</string>
     <string name="characters_unlock_note">Neue Figuren öffnen sich beim Sternesammeln.</string>
+    <string name="all_characters_unlocked">Alle Figuren freigeschaltet</string>
 </resources>

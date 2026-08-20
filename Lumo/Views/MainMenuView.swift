@@ -163,12 +163,20 @@ struct MainMenuView: View {
                 }
             }
         } else {
-            HStack(spacing: 6) {
-                Image(systemName: "star.fill")
-                    .foregroundStyle(settings.theme.lumen.color)
-                Text("\(progress.totalStars) / \(LevelLibrary.totalStarsAvailable)")
+            // Hepsi açıldı: çıplak "x / 806" hiçbir şey anlatmıyordu, en
+            // azından neden hedef kalmadığını söylüyor
+            VStack(spacing: 4) {
+                Text("All characters unlocked")
                     .font(.system(.subheadline, design: .rounded).bold())
-                    .foregroundStyle(.white.opacity(0.8))
+                    .foregroundStyle(settings.theme.lumen.color)
+                HStack(spacing: 6) {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.white.opacity(0.5))
+                    Text("\(progress.totalStars) / \(LevelLibrary.totalStarsAvailable)")
+                        .font(.system(.caption, design: .rounded).bold())
+                        .foregroundStyle(.white.opacity(0.5))
+                }
             }
         }
     }

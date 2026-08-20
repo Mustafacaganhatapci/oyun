@@ -205,11 +205,21 @@ fun MainMenuScreen(
                         }
                     }
                 } else {
-                    Text(
-                        "★ ${app.progress.totalStars} / ${LevelLibrary.totalStarsAvailable}",
-                        color = theme.lumen, fontSize = 15.sp, fontWeight = FontWeight.Bold,
+                    // Hepsi açıldı: çıplak "x / 806" hiçbir şey anlatmıyordu,
+                    // en azından neden hedef kalmadığını söylüyor
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(top = 12.dp)
-                    )
+                    ) {
+                        Text(stringResource(R.string.all_characters_unlocked),
+                            color = theme.lumen, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "★ ${app.progress.totalStars} / ${LevelLibrary.totalStarsAvailable}",
+                            color = Color.White.copy(alpha = 0.5f), fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
                 }
             }
 

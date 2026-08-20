@@ -153,4 +153,5 @@
     <string name="later">Later</string>
     <string name="unlocks_with_stars">Unlocks as you collect stars ★</string>
     <string name="characters_unlock_note">New characters unlock as you collect stars.</string>
+    <string name="all_characters_unlocked">All characters unlocked</string>
 </resources>

@@ -153,4 +153,5 @@
     <string name="later">Más tarde</string>
     <string name="unlocks_with_stars">Se desbloquean al reunir estrellas ★</string>
     <string name="characters_unlock_note">Los nuevos personajes se desbloquean al reunir estrellas.</string>
+    <string name="all_characters_unlocked">Todos los personajes desbloqueados</string>
 </resources>

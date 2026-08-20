@@ -544,6 +544,41 @@
         }
       }
     },
+    "All characters unlocked": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Figuren freigeschaltet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todos los personajes desbloqueados"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les personnages débloqués"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全キャラクター解放"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tüm karakterler açıldı"
+          }
+        }
+      }
+    },
     "All music and sounds are synthesized in real time on your device.": {
       "extractionState": "manual",
       "localizations": {

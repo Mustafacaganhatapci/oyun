@@ -48,10 +48,11 @@ struct OrbStyle: Identifiable, Equatable {
     var isPremium: Bool { unlock == .premium }
     var starCost: Int? { if case .stars(let n) = unlock { return n }; return nil }
 
-    // Eşikler kampanyanın YARISINA yayılıyor. Eskiden en pahalı küre 150
-    // yıldızdaydı; kampanya 806 yıldıza çıkınca hepsi ilk beşte biri
-    // bitmeden açılıyor ve "sıradaki küreye ne kaldı" sorusu anlamsızlaşıyordu.
-    // İlki 9'da: üç bölümü üçer yıldızla bitiren oyuncu ilk ödülünü orada alır.
+    // Eşikler kampanyanın TAMAMINA yayılıyor: sonuncusu 620, toplam 806.
+    // Önce 420'de bitiyordu ve kampanyanın yarısından sonrası ödülsüz
+    // kalıyordu — o oyuncular ana ekranda anlamsız bir "x / 806" görüyordu.
+    // İlki 9'da: üç bölümü üçer yıldızla bitiren oyuncu ilk ödülünü orada
+    // alır; aralar sona doğru açılıyor.
     static let all: [OrbStyle] = [
         OrbStyle(id: "classic", name: "Light",   unlock: .free,        kind: .classic),
         OrbStyle(id: "star",    name: "Star",    unlock: .free,        kind: .star),
@@ -62,10 +63,10 @@ struct OrbStyle: Identifiable, Equatable {
         OrbStyle(id: "heart",   name: "Heart",   unlock: .stars(80),   kind: .heart),
         OrbStyle(id: "comet",   name: "Comet",   unlock: .stars(110),  kind: .comet),
         OrbStyle(id: "diamond", name: "Diamond", unlock: .stars(150),  kind: .diamond),
-        OrbStyle(id: "firefly", name: "Firefly", unlock: .stars(200),  kind: .firefly),
-        OrbStyle(id: "flame",   name: "Flame",   unlock: .stars(260),  kind: .flame),
-        OrbStyle(id: "rainbow", name: "Rainbow", unlock: .stars(330),  kind: .rainbow),
-        OrbStyle(id: "cloud",   name: "Cloud",   unlock: .stars(420),  kind: .cloud),
+        OrbStyle(id: "firefly", name: "Firefly", unlock: .stars(220),  kind: .firefly),
+        OrbStyle(id: "flame",   name: "Flame",   unlock: .stars(320),  kind: .flame),
+        OrbStyle(id: "rainbow", name: "Rainbow", unlock: .stars(450),  kind: .rainbow),
+        OrbStyle(id: "cloud",   name: "Cloud",   unlock: .stars(620),  kind: .cloud),
         OrbStyle(id: "photo",   name: "Photo",   unlock: .premium,     kind: .photo),
         OrbStyle(id: "champion", name: "Champion", unlock: .champion,  kind: .champion)
     ]
