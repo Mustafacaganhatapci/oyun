@@ -114,6 +114,13 @@ final class AudioEngine {
         engine.connect(musicMixer, to: engine.mainMixerNode, format: format)
         engine.connect(sfxMixer, to: engine.mainMixerNode, format: format)
 
+        // Ayarlar burada YENİDEN uygulanır. SettingsStore açılışta kayıtlı
+        // tercihi yazıyor ama o an mikserler henüz motora bağlı değil ve
+        // outputVolume kayboluyordu: müziği kapatıp uygulamayı yeniden açan
+        // oyuncu, anahtar "kapalı" görünürken müziği duyuyordu.
+        musicMixer.outputVolume = musicEnabled ? 1 : 0
+        sfxMixer.outputVolume = sfxEnabled ? 1 : 0
+
         let pad = AVAudioSourceNode { [weak self] _, _, frameCount, audioBufferList -> OSStatus in
             guard let self else { return noErr }
             let ablPointer = UnsafeMutableAudioBufferListPointer(audioBufferList)

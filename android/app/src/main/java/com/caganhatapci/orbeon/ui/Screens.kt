@@ -1159,14 +1159,47 @@ private fun MenuLogo(theme: Theme, t: Float) {
 
         drawCircle(theme.ring, r, c, style = Stroke(width = size.minDimension * 0.037f))
         drawArc(
-            theme.hazard, -125f, 94f, false,
+            theme.hazard, ARC_START, ARC_SWEEP, false,
             topLeft = box.topLeft, size = Size(box.width, box.height),
             style = Stroke(width = size.minDimension * 0.083f, cap = StrokeCap.Round)
         )
-        val a = ((t / 9f) * 2f * PI.toFloat()) + (PI / 2).toFloat()
-        drawCircle(theme.orb, size.minDimension * 0.078f,
-                   Offset(c.x + cos(a) * r, c.y + sin(a) * r))
+
+        val degrees = (t / 9f) * 360f + 90f
+        val a = degrees * PI.toFloat() / 180f
+        val p = Offset(c.x + cos(a) * r, c.y + sin(a) * r)
+        val orbR = size.minDimension * 0.078f
+
+        // Küre kırmızı yayın üstünden geçerken yanar, çıkınca beyaza döner:
+        // logo, oyunun tek kuralını dokuz saniyede anlatıyor.
+        val heat = hazardHeat(degrees)
+        if (heat > 0f) {
+            drawCircle(theme.hazard.copy(alpha = heat * 0.35f), orbR * (1f + heat), p)
+        }
+        drawCircle(theme.orb, orbR, p)
+        if (heat > 0f) drawCircle(theme.hazard.copy(alpha = heat), orbR, p)
     }
+}
+
+private const val ARC_START = -125f
+private const val ARC_SWEEP = 94f
+
+/** Kürenin yaya ne kadar girdiği (0 = uzak, 1 = tam üstünde). */
+private fun hazardHeat(orbDegrees: Float): Float {
+    fun norm(a: Float): Float {
+        val m = a % 360f
+        return if (m < 0f) m + 360f else m
+    }
+    fun gap(a: Float, b: Float): Float {
+        val d = kotlin.math.abs(a - b) % 360f
+        return kotlin.math.min(d, 360f - d)
+    }
+    val orb = norm(orbDegrees)
+    val start = norm(ARC_START)
+    val end = norm(ARC_START + ARC_SWEEP)
+    val inside = if (start <= end) orb in start..end else orb >= start || orb <= end
+    if (inside) return 1f
+    val fade = 16f
+    return kotlin.math.max(0f, 1f - kotlin.math.min(gap(orb, start), gap(orb, end)) / fade)
 }
 
 /**

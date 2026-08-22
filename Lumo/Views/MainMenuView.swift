@@ -10,7 +10,6 @@ struct MainMenuView: View {
     @EnvironmentObject private var missions: MissionStore
     @EnvironmentObject private var leaderboard: LeaderboardService
 
-    @State private var orbPulse = false
     @State private var showMissions = false
     @State private var claimedFlash: Int?
     @State private var championAward: (rank: Int, stars: Int)?
@@ -304,40 +303,84 @@ struct MainMenuView: View {
 
     private static let medals = ["🥇", "🥈", "🥉"]
 
+    /// Halkanın yarıçapı ve kırmızı yayın yeri — hem çizim hem de kürenin
+    /// "yay üstünde mi" hesabı aynı sayıları kullansın diye tek yerde.
+    private static let logoRadius = 48.0
+    private static let logoArcFrom = 0.06        // Circle().trim başlangıcı
+    private static let logoArcTo = 0.32
+    private static let logoArcRotation = -125.0  // yayın çember üstündeki yeri
+    private static let logoPeriod = 9.0          // bir tur kaç saniye
+
     /// Marka işareti oyunun kendisi: nötr bir halka, üstünde tek kırmızı yay,
-    /// çemberin üstünde oturan beyaz küre. Yani logo, oyunun bir karesi —
-    /// parıltısı ve gradyanı olan eski küre, içerinin mat diline uymuyordu.
-    ///
-    /// Küre halkanın çevresinde ağır ağır dönüyor: duran bir işaret yerine
-    /// oyunun tek fiilini (yörüngede dolanmak) gösteriyor.
+    /// çemberin üstünde dolanan beyaz küre. Yani logo, oyunun bir karesi.
     private var logo: some View {
-        ZStack {
+        // Konum her karede saatten hesaplanır. Eskiden tek bir rotationEffect'e
+        // bağlı örtük animasyon vardı; ana ekranın yerleşimi oynadığında
+        // (yıldız hedefi tek satırdan iki satıra geçince) SwiftUI o animasyonu
+        // yeniden başlatıyor ve küre alt noktada aşağı kayıyordu.
+        TimelineView(.animation) { context in
+            let t = context.date.timeIntervalSinceReferenceDate
+            let turn = (t / Self.logoPeriod).truncatingRemainder(dividingBy: 1)
+            logoMark(rotation: turn * 360)
+        }
+        .frame(width: 116, height: 116)
+    }
+
+    private func logoMark(rotation: Double) -> some View {
+        // 0° = alt nokta; oradan saat yönünde döner
+        let angle = (rotation + 90) * .pi / 180
+        let x = Self.logoRadius * cos(angle)
+        let y = Self.logoRadius * sin(angle)
+        let heat = hazardHeat(rotation: rotation)
+
+        return ZStack {
             Circle()
                 .strokeBorder(settings.theme.ring.color, lineWidth: 4)
                 .frame(width: 96, height: 96)
 
             Circle()
-                .trim(from: 0.06, to: 0.32)
+                .trim(from: Self.logoArcFrom, to: Self.logoArcTo)
                 .stroke(settings.theme.hazard.color,
                         style: StrokeStyle(lineWidth: 9, lineCap: .round))
                 .frame(width: 96, height: 96)
-                .rotationEffect(.degrees(-125))
+                .rotationEffect(.degrees(Self.logoArcRotation))
 
-            Circle()
-                .fill(settings.theme.orb.color)
-                .frame(width: 17, height: 17)
-                .offset(y: 48)
-                .rotationEffect(.degrees(orbPulse ? 335 : -25))
-                // Süregiden animasyon YALNIZCA küreye bağlı. Kapsayıcıya
-                // bağlıyken repeatForever, işaretin konum değişimlerini de
-                // yakalıyordu: ana ekran yerleşimi oturduğunda (yıldız hedefi
-                // tek satırdan iki satıra geçtiğinde) logo aşağı yukarı
-                // süzülüyordu.
-                .animation(.linear(duration: 9).repeatForever(autoreverses: false),
-                           value: orbPulse)
+            // Küre kırmızı yayın üstünden geçerken yanar, çıkınca beyaza döner:
+            // logo, oyunun tek kuralını bir turda anlatıyor.
+            ZStack {
+                Circle().fill(settings.theme.orb.color)
+                Circle().fill(settings.theme.hazard.color).opacity(heat)
+            }
+            .frame(width: 17, height: 17)
+            .shadow(color: settings.theme.hazard.color.opacity(heat * 0.9),
+                    radius: CGFloat(9 * heat))
+            .offset(x: CGFloat(x), y: CGFloat(y))
         }
-        .frame(width: 110, height: 110)
-        .onAppear { orbPulse = true }
+    }
+
+    /// Kürenin yaya ne kadar girdiği (0 = uzak, 1 = tam üstünde).
+    /// Uçlarda yumuşak geçiş var; sert renk sıçraması ucuz duruyordu.
+    private func hazardHeat(rotation: Double) -> Double {
+        func norm(_ a: Double) -> Double {
+            let m = a.truncatingRemainder(dividingBy: 360)
+            return m < 0 ? m + 360 : m
+        }
+        func gap(_ a: Double, _ b: Double) -> Double {
+            let d = abs(a - b).truncatingRemainder(dividingBy: 360)
+            return min(d, 360 - d)
+        }
+
+        let orb = norm(rotation + 90)
+        let start = norm(Self.logoArcFrom * 360 + Self.logoArcRotation)
+        let end = norm(Self.logoArcTo * 360 + Self.logoArcRotation)
+
+        let inside = start <= end
+            ? (orb >= start && orb <= end)
+            : (orb >= start || orb <= end)
+        if inside { return 1 }
+
+        let fade = 16.0
+        return max(0, 1 - min(gap(orb, start), gap(orb, end)) / fade)
     }
 
     /// Günlük ödül + görevler — menüde tek satır, panel açılır kapanır
