@@ -10,7 +10,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -113,6 +117,8 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
     var extraLives by remember { mutableIntStateOf(0) }
     // Yıldız eşiği geçilip açılan, henüz gösterilmemiş karakter
     var orbReveal by remember { mutableStateOf<OrbStyle?>(null) }
+    // Sonsuz modda yeniden başlat onayı (skor sıfırdan büyükken sorulur)
+    var confirmRestart by remember { mutableStateOf(false) }
     var bonusRemaining by remember { mutableIntStateOf(0) }
     var timeRemaining by remember { mutableIntStateOf(-1) }
     var tutorialHops by remember { mutableIntStateOf(0) }
@@ -223,6 +229,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             is GameEvent.EndlessScore -> endlessScore = event.score
             is GameEvent.ExtraLifeUsed -> {
                 extraLives = event.remaining
+                app.audio.playLifeLost()
                 app.haptics.fail()
             }
             is GameEvent.EndlessGameOver -> {
@@ -327,8 +334,21 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                 timeRemaining = timeRemaining,
                 extraLives = extraLives,
                 theme = theme,
-                onPause = { overlay = Overlay.Paused }
+                onPause = { overlay = Overlay.Paused },
+                onRestart = {
+                    app.audio.playTap()
+                    // Skor varken yanlış dokunuş turu silmesin — önce sor
+                    if (endlessScore > 0) confirmRestart = true else restart()
+                }
             )
+
+            if (confirmRestart) {
+                ConfirmRestartDialog(
+                    theme = theme,
+                    onConfirm = { confirmRestart = false; restart() },
+                    onDismiss = { confirmRestart = false }
+                )
+            }
 
             orbReveal?.let { style ->
                 OrbRevealOverlay(style, theme, onEquip = {
@@ -451,7 +471,8 @@ private fun GameHud(
     timeRemaining: Int,
     extraLives: Int,
     theme: Theme,
-    onPause: () -> Unit
+    onPause: () -> Unit,
+    onRestart: () -> Unit
 ) {
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Row(
@@ -459,7 +480,22 @@ private fun GameHud(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BackButton(onClick = onPause)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                BackButton(onClick = onPause)
+                // Sonsuz modda turu bırakıp anında yenisine başlamak için
+                if (playMode == PlayMode.Endless) {
+                    Box(
+                        Modifier
+                            .padding(start = 8.dp)
+                            .size(44.dp)
+                            .background(Color.White.copy(alpha = 0.10f), CircleShape)
+                            .clickable(onClick = onRestart),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Filled.Refresh, null, tint = Color.White)
+                    }
+                }
+            }
 
             Text(
                 when (playMode) {
@@ -656,6 +692,19 @@ private fun PauseOverlay(theme: Theme, onResume: () -> Unit, onRestart: () -> Un
         GlowButton(stringResource(R.string.resume), theme.accent, prominent = true, onClick = onResume)
         GlowButton(stringResource(R.string.restart), theme.ring, onClick = onRestart)
         GlowButton(stringResource(R.string.main_menu), Color.White.copy(alpha = 0.7f), onClick = onMenu)
+    }
+}
+
+/** Sonsuz modda "yeniden başlat" onayı — iyi giden bir tur kazara silinmesin. */
+@Composable
+private fun ConfirmRestartDialog(theme: Theme, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    OverlayScrim {
+        Text(stringResource(R.string.restart_run_title), color = Color.White,
+            fontSize = 24.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Text(stringResource(R.string.restart_run_body), color = Color.White.copy(alpha = 0.75f),
+            fontSize = 15.sp, textAlign = TextAlign.Center)
+        GlowButton(stringResource(R.string.restart), theme.hazard, prominent = true, onClick = onConfirm)
+        GlowButton(stringResource(R.string.keep_playing), Color.White.copy(alpha = 0.7f), onClick = onDismiss)
     }
 }
 

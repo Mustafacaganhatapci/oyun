@@ -3,8 +3,9 @@ package com.caganhatapci.orbeon.services
 import android.app.Activity
 import android.content.Context
 import android.media.AudioAttributes
+import android.media.AudioFormat
 import android.media.AudioManager
-import android.media.ToneGenerator
+import android.media.AudioTrack
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -19,7 +20,10 @@ import com.google.android.ump.ConsentDebugSettings
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
+import kotlin.math.PI
+import kotlin.math.exp
 import kotlin.math.min
+import kotlin.math.sin
 
 /**
  * GDPR onayı (Google UMP). Avrupa'daki kullanıcılara onay formunu gösterir.
@@ -91,60 +95,161 @@ object ReviewPrompt {
 
 /**
  * Orbeon'un tüm sesi koddan üretilir — hiç ses dosyası yoktur.
- * ToneGenerator kısa, tiz tonlar için yeterlidir ve APK'yı büyütmez.
+ *
+ * Eskiden ToneGenerator kullanıyorduk ama onun ton listesi sabit frekanslıdır:
+ * kombo bir yerden sonra tizleşemiyor, "atlama sesi sabit kaldı" diye
+ * duyuluyordu. Artık iOS'taki gibi kendi PCM tamponlarımızı sentezliyoruz —
+ * pentatonik dizi üç oktava kadar çıkıyor ve tepeye varınca son beş nota
+ * dönerek yükselme hissi sürüyor.
  */
 class AudioEngine(context: Context) {
-    /**
-     * TEK bir ToneGenerator, çalarken gelen ikinci tonu yutuyor: hızlı bir
-     * komboda atlayışların sesi düşüyor ve ses "tıkanmış" gibi duyuluyordu.
-     * Küçük bir havuz, üst üste binen sesleri ayrı üreticilere dağıtıyor.
-     */
-    private val tones = mutableListOf<ToneGenerator>()
-    /** Her üreticinin ne zaman boşalacağı (ms) — boş olanı seçmek için */
-    private val freeAt = LongArray(4)
+    private val sampleRate = 44100
+
+    /** A minör pentatonik, üç oktav — kombo yükseldikçe sırayla çıkılır. */
+    private val pluckScale = doubleArrayOf(
+        220.0, 261.63, 293.66, 329.63, 392.0,
+        440.0, 523.25, 587.33, 659.25, 783.99,
+        880.0, 1046.50, 1174.66, 1318.51, 1567.98, 1760.0
+    )
+    /** Dizi bittiğinde tekrarlanan tepe nota sayısı */
+    private val pluckTopCycle = 5
+
+    private val plucks: List<ShortArray> by lazy { pluckScale.map { pluck(it) } }
+    private val collectBuf: ShortArray by lazy { pluck(1046.50, 0.16) }
+    private val tapBuf: ShortArray by lazy { pluck(587.33, 0.08, 0.35) }
+    private val winBuf: ShortArray by lazy { chord(doubleArrayOf(523.25, 659.25, 783.99), 0.55) }
+    private val failBuf: ShortArray by lazy { sweep(330.0, 110.0, 0.5) }
+    /** Can eksilme sesi ölümden ayrı: düşen ikili + boğuk bir vuruş */
+    private val lifeLostBuf: ShortArray by lazy { lifeLost() }
+
+    /** Üst üste binen sesler için küçük bir AudioTrack havuzu */
+    private val voices = arrayOfNulls<AudioTrack>(8)
+    private val freeAt = LongArray(8)
     var soundEnabled = true
     var musicEnabled = true
 
-    init {
-        repeat(4) {
-            runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, 70) }
-                .getOrNull()?.let { tones.add(it) }
-        }
-    }
+    private val attrs = AudioAttributes.Builder()
+        .setUsage(AudioAttributes.USAGE_GAME)
+        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+        .build()
+    private val format = AudioFormat.Builder()
+        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+        .setSampleRate(sampleRate)
+        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+        .build()
 
-    private fun play(type: Int, ms: Int) {
-        if (!soundEnabled || tones.isEmpty()) return
+    private fun play(buf: ShortArray) {
+        if (!soundEnabled || buf.isEmpty()) return
         val now = System.currentTimeMillis()
-        // Boş üretici varsa onu kullan; yoksa en erken bitecek olanı ödünç al
-        var i = (0 until tones.size).firstOrNull { freeAt[it] <= now }
-        if (i == null) {
-            i = (0 until tones.size).minByOrNull { freeAt[it] } ?: 0
-            runCatching { tones[i].stopTone() }
-        }
+        val ms = buf.size * 1000L / sampleRate
+        var i = voices.indices.firstOrNull { freeAt[it] <= now }
+        if (i == null) i = voices.indices.minByOrNull { freeAt[it] } ?: 0
         freeAt[i] = now + ms
-        runCatching { tones[i].startTone(type, ms) }
+        runCatching {
+            voices[i]?.let { it.stop(); it.release() }
+            val track = AudioTrack(
+                attrs, format, buf.size * 2,
+                AudioTrack.MODE_STATIC, AudioManager.AUDIO_SESSION_ID_GENERATE
+            )
+            track.write(buf, 0, buf.size)
+            track.play()
+            voices[i] = track
+        }
     }
 
     /** Kombo yükseldikçe ton tizleşir — ilerleme kulakla da hissedilir. */
     fun playHop(combo: Int) {
-        val types = listOf(
-            ToneGenerator.TONE_PROP_BEEP,
-            ToneGenerator.TONE_DTMF_1, ToneGenerator.TONE_DTMF_3,
-            ToneGenerator.TONE_DTMF_5, ToneGenerator.TONE_DTMF_7,
-            ToneGenerator.TONE_DTMF_9
-        )
-        play(types[min(combo, types.size - 1)], 60)
+        val count = plucks.size
+        var index = (combo - 1).coerceAtLeast(0)
+        if (index >= count) {
+            val cycle = min(pluckTopCycle, count)
+            index = count - cycle + (index - count) % cycle
+        }
+        play(plucks[index])
     }
 
-    fun playCollect() = play(ToneGenerator.TONE_PROP_ACK, 70)
-    fun playWin() = play(ToneGenerator.TONE_PROP_BEEP2, 220)
-    fun playFail() = play(ToneGenerator.TONE_SUP_ERROR, 200)
-    fun playTap() = play(ToneGenerator.TONE_PROP_BEEP, 40)
+    fun playCollect() = play(collectBuf)
+    fun playWin() = play(winBuf)
+    fun playFail() = play(failBuf)
+    fun playLifeLost() = play(lifeLostBuf)
+    fun playTap() = play(tapBuf)
 
     fun release() {
-        tones.forEach { runCatching { it.release() } }
-        tones.clear()
+        voices.indices.forEach { i ->
+            runCatching { voices[i]?.stop(); voices[i]?.release() }
+            voices[i] = null
+        }
     }
+
+    // MARK: sentez
+
+    /** Yumuşak inişli tek nota (iOS'taki pluck'ın karşılığı) */
+    private fun pluck(freq: Double, seconds: Double = 0.22, gain: Double = 0.5): ShortArray {
+        val n = (sampleRate * seconds).toInt()
+        val out = ShortArray(n)
+        for (i in 0 until n) {
+            val t = i.toDouble() / sampleRate
+            val env = exp(-t * 9.0) * fadeIn(i, n)
+            val s = sin(2.0 * PI * freq * t) + 0.25 * sin(4.0 * PI * freq * t)
+            out[i] = clip(s * env * gain)
+        }
+        return out
+    }
+
+    private fun chord(freqs: DoubleArray, seconds: Double): ShortArray {
+        val n = (sampleRate * seconds).toInt()
+        val out = ShortArray(n)
+        for (i in 0 until n) {
+            val t = i.toDouble() / sampleRate
+            val env = exp(-t * 3.2) * fadeIn(i, n)
+            var s = 0.0
+            freqs.forEach { s += sin(2.0 * PI * it * t) }
+            out[i] = clip(s / freqs.size * env * 0.55)
+        }
+        return out
+    }
+
+    private fun sweep(from: Double, to: Double, seconds: Double): ShortArray {
+        val n = (sampleRate * seconds).toInt()
+        val out = ShortArray(n)
+        var phase = 0.0
+        for (i in 0 until n) {
+            val p = i.toDouble() / n
+            val f = from + (to - from) * p
+            phase += 2.0 * PI * f / sampleRate
+            val env = (1.0 - p) * fadeIn(i, n)
+            out[i] = clip(sin(phase) * env * 0.5)
+        }
+        return out
+    }
+
+    /** Ölüm sesinden ayrışsın diye: E5→B4 düşen ikili + 110 Hz boğuk vuruş */
+    private fun lifeLost(): ShortArray {
+        val seconds = 0.42
+        val n = (sampleRate * seconds).toInt()
+        val out = ShortArray(n)
+        for (i in 0 until n) {
+            val t = i.toDouble() / sampleRate
+            var s = 0.0
+            if (t < 0.16) s += sin(2.0 * PI * 659.25 * t) * exp(-t * 12.0)
+            if (t >= 0.10) {
+                val u = t - 0.10
+                s += sin(2.0 * PI * 493.88 * u) * exp(-u * 9.0)
+            }
+            s += sin(2.0 * PI * 110.0 * t) * exp(-t * 6.0) * 0.6
+            out[i] = clip(s * 0.42 * fadeIn(i, n))
+        }
+        return out
+    }
+
+    /** İlk milisaniyelerde tık sesi olmasın diye kısa bir açılış rampası */
+    private fun fadeIn(i: Int, n: Int): Double {
+        val ramp = 64
+        return if (i < ramp) i.toDouble() / ramp else 1.0
+    }
+
+    private fun clip(v: Double): Short =
+        (v.coerceIn(-1.0, 1.0) * Short.MAX_VALUE).toInt().toShort()
 }
 
 /** Dokunsal geri bildirim. */

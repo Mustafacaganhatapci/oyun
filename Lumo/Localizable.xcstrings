@@ -2247,47 +2247,6 @@
         }
       }
     },
-    "Enjoying the game?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enjoying the game?"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Oyunu beğendin mi?"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gefällt dir das Spiel?"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¿Disfrutando el juego?"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le jeu te plaît ?"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ゲームは楽しい？"
-          }
-        }
-      }
-    },
     "Enter Endless Mode": {
       "extractionState": "manual",
       "localizations": {
@@ -2923,47 +2882,6 @@
         }
       }
     },
-    "Go Premium to remove all ads forever, unlock 8 exclusive themes and put your own photo in the orb.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Go Premium to remove all ads forever, unlock 8 exclusive themes and put your own photo in the orb."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Premium ile tüm reklamları sonsuza dek kaldır, 8 özel temayı aç ve kürenin içine kendi fotoğrafını koy."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hol dir Premium: alle Werbung für immer weg, 8 exklusive Themes und dein eigenes Foto in der Kugel."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hazte Premium para quitar todos los anuncios para siempre, desbloquear 8 temas exclusivos y poner tu foto en el orbe."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Passe à Premium pour supprimer toutes les pubs à jamais, débloquer 8 thèmes exclusifs et mettre ta photo dans l'orbe."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プレミアムで広告を永久に削除、限定テーマ8種を解放、オーブに自分の写真を入れよう。"
-          }
-        }
-      }
-    },
     "Great! Tap again to hop to the next ring.": {
       "extractionState": "manual",
       "localizations": {
@@ -3275,6 +3193,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Geçersiz kod"
+          }
+        }
+      }
+    },
+    "Keep playing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep playing"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devam et"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiterspielen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seguir jugando"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "続ける"
           }
         }
       }
@@ -4697,6 +4656,47 @@
         }
       }
     },
+    "Premium removes every ad forever, hands you an extra life each endless run, 8 exclusive themes and your own photo in the orb.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium removes every ad forever, hands you an extra life each endless run, 8 exclusive themes and your own photo in the orb."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium bütün reklamları temelli kaldırır: her sonsuz turda bir can hakkı, 8 özel tema ve kürenin içinde kendi fotoğrafın."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium entfernt jede Werbung für immer: ein Extraleben pro Endlos-Runde, 8 exklusive Designs und dein eigenes Foto in der Kugel."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium elimina todos los anuncios para siempre: una vida extra en cada partida infinita, 8 temas exclusivos y tu propia foto en la esfera."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium supprime toutes les pubs pour de bon : une vie supplémentaire à chaque partie infinie, 8 thèmes exclusifs et ta photo dans la sphère."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレミアムなら広告を永久に非表示。エンドレスごとに残機1、限定テーマ8種、オーブに自分の写真も。"
+          }
+        }
+      }
+    },
     "Premium ✓": {
       "shouldTranslate": false
     },
@@ -4976,6 +4976,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yeniden Başla"
+          }
+        }
+      }
+    },
+    "Restart the run?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart the run?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turu yeniden başlat?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Runde neu starten?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Reiniciar la partida?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recommencer la partie ?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最初からやり直す？"
           }
         }
       }
@@ -6340,6 +6381,47 @@
         }
       }
     },
+    "This run's score will be lost.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This run's score will be lost."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu turdaki skorun silinecek."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Punktzahl dieser Runde geht verloren."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se perderá la puntuación de esta partida."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le score de cette partie sera perdu."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このプレイのスコアは失われます。"
+          }
+        }
+      }
+    },
     "This week · %@ left": {
       "extractionState": "manual",
       "localizations": {
@@ -6406,6 +6488,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bahşiş Kavanozu"
+          }
+        }
+      }
+    },
+    "Tired of the ads?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tired of the ads?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reklamlardan sıkıldın mı?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genug von der Werbung?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Cansado de los anuncios?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marre des pubs ?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "広告にうんざり？"
           }
         }
       }

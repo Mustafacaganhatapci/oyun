@@ -81,8 +81,8 @@
     <string name="save">Speichern</string>
     <string name="world_ranking">Weltrangliste</string>
     <string name="ranking_unavailable">Rangliste ist gerade nicht verfügbar.</string>
-    <string name="nudge_premium_title">Gefällt dir das Spiel?</string>
-    <string name="nudge_premium_body">Hol dir Premium: keine Werbung mehr und 8 exklusive Themes.</string>
+    <string name="nudge_premium_title">Genug von der Werbung?</string>
+    <string name="nudge_premium_body">Premium entfernt jede Werbung für immer: ein Extraleben pro Endlos-Runde und 8 exklusive Designs.</string>
     <string name="nudge_support_title">Magst du das Spiel?</string>
     <string name="nudge_support_body">Werbung hält Orbeon kostenlos. Wenn es dir gefällt, spendier dem Entwickler einen Kaffee ☕️</string>
     <string name="buy_a_coffee">Einen Kaffee spendieren</string>
@@ -154,4 +154,7 @@
     <string name="unlocks_with_stars">Öffnet sich beim Sternesammeln ★</string>
     <string name="characters_unlock_note">Neue Figuren öffnen sich beim Sternesammeln.</string>
     <string name="all_characters_unlocked">Alle Figuren freigeschaltet</string>
+    <string name="restart_run_title">Runde neu starten?</string>
+    <string name="restart_run_body">Die Punktzahl dieser Runde geht verloren.</string>
+    <string name="keep_playing">Weiterspielen</string>
 </resources>

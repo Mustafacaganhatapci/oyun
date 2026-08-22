@@ -81,8 +81,8 @@
     <string name="save">Save</string>
     <string name="world_ranking">World Ranking</string>
     <string name="ranking_unavailable">Ranking is unavailable right now.</string>
-    <string name="nudge_premium_title">Enjoying the game?</string>
-    <string name="nudge_premium_body">Go Premium to remove all ads forever and unlock 8 exclusive themes.</string>
+    <string name="nudge_premium_title">Tired of the ads?</string>
+    <string name="nudge_premium_body">Premium removes every ad forever, hands you an extra life each endless run and 8 exclusive themes.</string>
     <string name="nudge_support_title">Love the game?</string>
     <string name="nudge_support_body">Ads keep Orbeon free. If you\'re enjoying it, you can buy the developer a coffee ☕️</string>
     <string name="buy_a_coffee">Buy a coffee</string>
@@ -154,4 +154,7 @@
     <string name="unlocks_with_stars">Unlocks as you collect stars ★</string>
     <string name="characters_unlock_note">New characters unlock as you collect stars.</string>
     <string name="all_characters_unlocked">All characters unlocked</string>
+    <string name="restart_run_title">Restart the run?</string>
+    <string name="restart_run_body">This run\'s score will be lost.</string>
+    <string name="keep_playing">Keep playing</string>
 </resources>

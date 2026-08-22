@@ -81,8 +81,8 @@
     <string name="save">保存</string>
     <string name="world_ranking">世界ランキング</string>
     <string name="ranking_unavailable">ランキングは現在利用できません。</string>
-    <string name="nudge_premium_title">ゲームは楽しい？</string>
-    <string name="nudge_premium_body">プレミアムで広告を永久に削除、限定テーマ8種も解放。</string>
+    <string name="nudge_premium_title">広告にうんざり？</string>
+    <string name="nudge_premium_body">プレミアムなら広告を永久に非表示。エンドレスごとに残機1、限定テーマ8種も。</string>
     <string name="nudge_support_title">ゲームが好き？</string>
     <string name="nudge_support_body">広告のおかげでOrbeonは無料です。気に入ったら開発者にコーヒーをどうぞ ☕️</string>
     <string name="buy_a_coffee">コーヒーをおごる</string>
@@ -154,4 +154,7 @@
     <string name="unlocks_with_stars">星を集めると解放 ★</string>
     <string name="characters_unlock_note">星を集めると新しいキャラクターが解放されます。</string>
     <string name="all_characters_unlocked">全キャラクター解放</string>
+    <string name="restart_run_title">最初からやり直す？</string>
+    <string name="restart_run_body">このプレイのスコアは失われます。</string>
+    <string name="keep_playing">続ける</string>
 </resources>

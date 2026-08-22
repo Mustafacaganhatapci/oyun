@@ -81,8 +81,8 @@
     <string name="save">Kaydet</string>
     <string name="world_ranking">Dünya Sıralaması</string>
     <string name="ranking_unavailable">Sıralama şu an kullanılamıyor.</string>
-    <string name="nudge_premium_title">Oyunu beğendin mi?</string>
-    <string name="nudge_premium_body">Premium\'a geç: tüm reklamlar sonsuza dek kalksın, 8 özel tema açılsın.</string>
+    <string name="nudge_premium_title">Reklamlardan sıkıldın mı?</string>
+    <string name="nudge_premium_body">Premium bütün reklamları temelli kaldırır: her sonsuz turda bir can hakkı ve 8 özel tema.</string>
     <string name="nudge_support_title">Oyunu sevdin mi?</string>
     <string name="nudge_support_body">Orbeon reklamlar sayesinde ücretsiz. Beğendiysen geliştiriciye bir kahve ısmarlayabilirsin ☕️</string>
     <string name="buy_a_coffee">Bir kahve ısmarla</string>
@@ -154,4 +154,7 @@
     <string name="unlocks_with_stars">Yıldız topladıkça açılır ★</string>
     <string name="characters_unlock_note">Yeni karakterler yıldız topladıkça açılır.</string>
     <string name="all_characters_unlocked">Tüm karakterler açıldı</string>
+    <string name="restart_run_title">Turu yeniden başlat?</string>
+    <string name="restart_run_body">Bu turdaki skorun silinecek.</string>
+    <string name="keep_playing">Devam et</string>
 </resources>

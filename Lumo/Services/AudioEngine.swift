@@ -42,12 +42,20 @@ final class AudioEngine {
     ]
 
     /// A minör pentatonik, iki oktav — kombo perdeleri
+    /// A minör pentatonik, üç oktav. Eskiden iki oktav vardı ve 11. atlayıştan
+    /// sonra perde tavan yapıp aynı notada donuyordu: uzun bir kombo ödül gibi
+    /// değil, takılmış gibi duyuluyordu.
     private let pluckScale: [Double] = [220, 261.63, 293.66, 329.63, 392,
-                                        440, 523.25, 587.33, 659.26, 784, 880]
+                                        440, 523.25, 587.33, 659.26, 784,
+                                        880, 1046.50, 1174.66, 1318.51, 1567.98, 1760]
+    /// Dizinin sonuna gelindiğinde son kaç nota dolaşılsın. Daha tizi kulağı
+    /// tırmalıyor; tepede dönmek en azından HAREKETLİ kalıyor.
+    private let pluckTopCycle = 5
 
     private var pluckBuffers: [AVAudioPCMBuffer] = []
     private var collectBuffer: AVAudioPCMBuffer?
     private var failBuffer: AVAudioPCMBuffer?
+    private var lifeLostBuffer: AVAudioPCMBuffer?
     private var winBuffer: AVAudioPCMBuffer?
 
     var musicEnabled = true { didSet { musicMixer.outputVolume = musicEnabled ? 1 : 0 } }
@@ -215,11 +223,18 @@ final class AudioEngine {
 
     func playHop(combo: Int) {
         guard sfxEnabled, !pluckBuffers.isEmpty else { return }
-        let index = min(max(combo - 1, 0), pluckBuffers.count - 1)
+        let count = pluckBuffers.count
+        var index = max(combo - 1, 0)
+        if index >= count {
+            // Dizinin tepesine gelindi: son birkaç notada dön, sabitlenme
+            let cycle = min(pluckTopCycle, count)
+            index = count - cycle + (index - count) % cycle
+        }
         play(pluckBuffers[index])
     }
 
     func playCollect() { if let b = collectBuffer { play(b) } }
+    func playLifeLost() { if let b = lifeLostBuffer { play(b) } }
     func playFail() { if let b = failBuffer { play(b) } }
     func playWin() { if let b = winBuffer { play(b) } }
     func playTap() {
@@ -255,6 +270,7 @@ final class AudioEngine {
         pluckBuffers = pluckScale.map { makePluck(freq: $0, duration: 0.45, volume: 0.5) }
         collectBuffer = makeSparkle()
         failBuffer = makeFail()
+        lifeLostBuffer = makeLifeLost()
         winBuffer = makeWinArpeggio()
     }
 
@@ -300,6 +316,30 @@ final class AudioEngine {
             let freq = 340.0 - 190.0 * (t / 0.35)
             let s = sin(2 * .pi * freq * t) * 0.6 + sin(2 * .pi * freq * 0.5 * t) * 0.3
             data[i] = Float(s * env * 0.45)
+        }
+        return buffer
+    }
+
+    /// Can eksildi: iki notalık aşağı düşen ikili + kısa bir "kalp atışı"
+    /// gümbürtüsü. Ölüm sesi gibi bitmiyor (tur devam ediyor) ama kazanma
+    /// sesi gibi de değil — bir şey KAYBEDİLDİĞİ duyuluyor.
+    private func makeLifeLost() -> AVAudioPCMBuffer {
+        let (buffer, data, n) = makeBuffer(duration: 0.5)
+        let notes: [(Double, Double)] = [(659.26, 0.0), (493.88, 0.13)]   // E5 → B4
+        for (f, offset) in notes {
+            let start = Int(offset * sampleRate)
+            for i in 0..<Int(0.34 * sampleRate) where start + i < n {
+                let t = Double(i) / sampleRate
+                let env = exp(-t * 11)
+                let s = sin(2 * .pi * f * t) * 0.55 + sin(2 * .pi * f * 2 * t) * 0.12
+                data[start + i] += Float(s * env * 0.42)
+            }
+        }
+        // Altta yumuşak bir vuruş: kaybın ağırlığı
+        for i in 0..<Int(0.26 * sampleRate) where i < n {
+            let t = Double(i) / sampleRate
+            let env = exp(-t * 14)
+            data[i] += Float(sin(2 * .pi * 110 * t) * env * 0.30)
         }
         return buffer
     }

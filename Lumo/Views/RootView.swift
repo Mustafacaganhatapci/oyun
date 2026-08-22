@@ -124,11 +124,11 @@ private struct NudgeView: View {
     private var icon: String { kind == .premium ? "crown.fill" : "cup.and.saucer.fill" }
     private var accent: Color { settings.theme.lumen.color }
     private var title: LocalizedStringKey {
-        kind == .premium ? "Enjoying the game?" : "Love the game?"
+        kind == .premium ? "Tired of the ads?" : "Love the game?"
     }
     private var body_: LocalizedStringKey {
         kind == .premium
-            ? "Go Premium to remove all ads forever, unlock 8 exclusive themes and put your own photo in the orb."
+            ? "Premium removes every ad forever, hands you an extra life each endless run, 8 exclusive themes and your own photo in the orb."
             : "Ads keep Orbeon free. If you're enjoying it, you can buy the developer a coffee ☕️"
     }
 

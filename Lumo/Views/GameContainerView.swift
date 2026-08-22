@@ -59,6 +59,8 @@ struct GameContainerView: View {
     @State private var levelIntroVisible = false  // bölüm başındaki "Level X — Zorluk" kartı
     /// Yıldız eşiği geçilip açılan, henüz gösterilmemiş karakter
     @State private var orbReveal: OrbStyle?
+    /// Sonsuz modda yeniden başlat onayı (skor sıfırdan büyükken sorulur)
+    @State private var confirmRestart = false
 
     /// 3/3 yıldız için rastgele seçilen tebrik başlıkları (yerelleştirme anahtarları)
     private static let celebrations = ["Bravo!", "Perfect!", "Flawless!", "Spectacular!", "Legendary!"]
@@ -173,6 +175,12 @@ struct GameContainerView: View {
             // Bölüm değişti (görünüm sabit kaldı, kaplama hep mount'ta):
             // sahneyi yenile — siyah kaplama beyaz ilk kareyi örter.
             .onChange(of: playMode) { _, _ in rebuildForLevelChange() }
+            .confirmationDialog("Restart the run?", isPresented: $confirmRestart, titleVisibility: .visible) {
+                Button("Restart", role: .destructive) { restart() }
+                Button("Keep playing", role: .cancel) { }
+            } message: {
+                Text("This run's score will be lost.")
+            }
         }
         .ignoresSafeArea()
     }
@@ -365,8 +373,8 @@ struct GameContainerView: View {
 
         case .extraLifeUsed(let remaining):
             extraLives = remaining
-            AudioEngine.shared.playWin()
-            Haptics.shared.win()
+            AudioEngine.shared.playLifeLost()
+            Haptics.shared.fail()
 
         case .endlessGameOver(let score):
             progress.recordEndless(score: score)
@@ -383,7 +391,7 @@ struct GameContainerView: View {
 
     private var hud: some View {
         VStack {
-            HStack {
+            HStack(spacing: 8) {
                 Button {
                     if overlay == .none { overlay = .paused }
                 } label: {
@@ -392,6 +400,22 @@ struct GameContainerView: View {
                         .foregroundStyle(.white.opacity(0.85))
                         .frame(width: 42, height: 42)
                         .background(Circle().fill(.white.opacity(0.12)))
+                }
+
+                // Sonsuz modda hızlı yeniden başlat: turu bırakıp anında yeni
+                // tura geçmek için. Skor varken yanlışlıkla basılmasın diye onay
+                // sorar; 0'ken doğrudan yeniden başlar.
+                if playMode == .endless {
+                    Button {
+                        AudioEngine.shared.playTap()
+                        if endlessScore > 0 { confirmRestart = true } else { restart() }
+                    } label: {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.85))
+                            .frame(width: 42, height: 42)
+                            .background(Circle().fill(.white.opacity(0.12)))
+                    }
                 }
 
                 Spacer()

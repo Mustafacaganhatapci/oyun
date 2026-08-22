@@ -81,8 +81,8 @@
     <string name="save">Guardar</string>
     <string name="world_ranking">Ranking mundial</string>
     <string name="ranking_unavailable">El ranking no está disponible ahora.</string>
-    <string name="nudge_premium_title">¿Te gusta el juego?</string>
-    <string name="nudge_premium_body">Hazte Premium: sin anuncios para siempre y 8 temas exclusivos.</string>
+    <string name="nudge_premium_title">¿Cansado de los anuncios?</string>
+    <string name="nudge_premium_body">Premium elimina todos los anuncios para siempre: una vida extra en cada partida infinita y 8 temas exclusivos.</string>
     <string name="nudge_support_title">¿Te encanta el juego?</string>
     <string name="nudge_support_body">Los anuncios mantienen Orbeon gratis. Si te gusta, invita a un café al desarrollador ☕️</string>
     <string name="buy_a_coffee">Invitar a un café</string>
@@ -154,4 +154,7 @@
     <string name="unlocks_with_stars">Se desbloquean al reunir estrellas ★</string>
     <string name="characters_unlock_note">Los nuevos personajes se desbloquean al reunir estrellas.</string>
     <string name="all_characters_unlocked">Todos los personajes desbloqueados</string>
+    <string name="restart_run_title">¿Reiniciar la partida?</string>
+    <string name="restart_run_body">Se perderá la puntuación de esta partida.</string>
+    <string name="keep_playing">Seguir jugando</string>
 </resources>
