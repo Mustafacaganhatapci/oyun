@@ -26,29 +26,25 @@ struct OfflineNoticeView: View {
                     .font(.system(size: 40))
                     .foregroundStyle(.white.opacity(0.75))
 
-                Text("Playing offline?")
+                Text("Playing offline")
                     .font(.system(.title2, design: .rounded).bold())
                     .foregroundStyle(.white)
 
-                Text("No problem — Orbeon works fully offline. The campaign, endless mode and your stars all keep going; only the weekly board needs a connection. And with no connection there are no ads, so feel free to keep playing exactly like this.")
-                    .font(.system(.subheadline, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.8))
-                    .multilineTextAlignment(.center)
-
-                // Fiyat mağazadan gelir (çevrimdışıysa son bilinen fiyattan).
-                // Hiç bilinmiyorsa fiyatsız cümleye düşeriz — koda sabit bir
+                // Tek cümle. Uzun bir açıklama, oyuncuyu savunmaya çeken bir
+                // "yakalandın" notu gibi okunuyordu; kısası daha dostça.
+                // Fiyat mağazadan gelir (çevrimdışıysa son bilinen fiyattan);
+                // hiç bilinmiyorsa fiyatsız cümleye düşeriz — koda sabit bir
                 // rakam yazmayız, kampanya ya da bölge değişince yanlış olur.
-                if let price = store.premiumPriceText {
-                    Text("If you ever want it, Premium is \(price): no ads online either, an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb.")
-                        .font(.system(.footnote, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.6))
-                        .multilineTextAlignment(.center)
-                } else {
-                    Text("If you ever want it, Premium removes the ads online too, and adds an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb.")
-                        .font(.system(.footnote, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.6))
-                        .multilineTextAlignment(.center)
+                Group {
+                    if let price = store.premiumPriceText {
+                        Text("No problem, keep playing ad-free. Premium is \(price) anytime.")
+                    } else {
+                        Text("No problem, keep playing ad-free. Premium is there anytime.")
+                    }
                 }
+                .font(.system(.subheadline, design: .rounded))
+                .foregroundStyle(.white.opacity(0.8))
+                .multilineTextAlignment(.center)
 
                 Text("Have fun!")
                     .font(.system(.subheadline, design: .rounded).bold())

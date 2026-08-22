@@ -600,6 +600,8 @@ fun ShopScreen(onBack: () -> Unit) {
                             fontSize = 26.sp, fontWeight = FontWeight.Bold)
                         listOf(
                             R.string.benefit_no_ads,
+                            R.string.benefit_sounds,
+                            R.string.benefit_extra_life,
                             R.string.benefit_themes,
                             R.string.benefit_photo,
                             R.string.benefit_support

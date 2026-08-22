@@ -3215,88 +3215,6 @@
         }
       }
     },
-    "If you ever want it, Premium is %@: no ads online either, an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "If you ever want it, Premium is %@: no ads online either, an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Canın isterse Premium sadece %@: çevrimiçiyken de reklam yok, her sonsuz turda bir can hakkı, 8 özel tema, kendi kaydettiğin sesler ve kürenin içinde fotoğrafın."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Falls du magst: Premium kostet %@ — auch online keine Werbung, ein Extraleben pro Endlos-Runde, 8 exklusive Designs, deine eigenen Aufnahmen und dein Foto in der Kugel."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si alguna vez te apetece, Premium cuesta %@: tampoco hay anuncios con conexión, una vida extra en cada partida infinita, 8 temas exclusivos, tus propias grabaciones y tu foto en la esfera."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si un jour ça te tente, Premium coûte %@ : plus de pubs en ligne non plus, une vie supplémentaire à chaque partie infinie, 8 thèmes exclusifs, tes propres enregistrements et ta photo dans la sphère."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "もし気が向いたら、プレミアムは%@です。オンラインでも広告なし、エンドレスごとに残機1、限定テーマ8種、自分で録音した効果音、オーブに自分の写真も。"
-          }
-        }
-      }
-    },
-    "If you ever want it, Premium removes the ads online too, and adds an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "If you ever want it, Premium removes the ads online too, and adds an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Canın isterse Premium çevrimiçiyken de reklamları kaldırır; üstüne her sonsuz turda bir can hakkı, 8 özel tema, kendi kaydettiğin sesler ve kürenin içinde fotoğrafın."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Falls du magst: Premium entfernt die Werbung auch online und bringt ein Extraleben pro Endlos-Runde, 8 exklusive Designs, deine eigenen Aufnahmen und dein Foto in der Kugel."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si alguna vez te apetece, Premium también quita los anuncios con conexión y añade una vida extra en cada partida infinita, 8 temas exclusivos, tus propias grabaciones y tu foto en la esfera."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si un jour ça te tente, Premium supprime aussi les pubs en ligne et ajoute une vie supplémentaire à chaque partie infinie, 8 thèmes exclusifs, tes propres enregistrements et ta photo dans la sphère."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "もし気が向いたら、プレミアムはオンラインでも広告を消し、エンドレスごとに残機1、限定テーマ8種、自分で録音した効果音、オーブに自分の写真を追加します。"
-          }
-        }
-      }
-    },
     "If you love the game, you can buy the developer a coffee ☕️": {
       "extractionState": "manual",
       "localizations": {
@@ -4447,43 +4365,84 @@
         }
       }
     },
-    "No problem — Orbeon works fully offline. The campaign, endless mode and your stars all keep going; only the weekly board needs a connection. And with no connection there are no ads, so feel free to keep playing exactly like this.": {
+    "No problem, keep playing ad-free. Premium is %@ anytime.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No problem — Orbeon works fully offline. The campaign, endless mode and your stars all keep going; only the weekly board needs a connection. And with no connection there are no ads, so feel free to keep playing exactly like this."
+            "value": "No problem, keep playing ad-free. Premium is %@ anytime."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sorun değil — Orbeon çevrimdışı tam çalışır. Bölümler, sonsuz mod ve yıldızların yerli yerinde; yalnızca haftalık sıralama bağlantı ister. Bağlantı yokken reklam da çıkmaz, yani istersen böyle oynamaya devam et."
+            "value": "Sorun değil, reklamsız devam et. Premium %@, istersen."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kein Problem — Orbeon läuft komplett offline. Kampagne, Endlosmodus und deine Sterne bleiben; nur die Wochenrangliste braucht eine Verbindung. Ohne Verbindung gibt es auch keine Werbung, also spiel ruhig genau so weiter."
+            "value": "Kein Problem, spiel werbefrei weiter. Premium: %@, wann du willst."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "No pasa nada: Orbeon funciona completamente sin conexión. La campaña, el modo infinito y tus estrellas siguen igual; solo la tabla semanal necesita conexión. Y sin conexión no hay anuncios, así que puedes seguir jugando justo así."
+            "value": "Sin problema, sigue jugando sin anuncios. Premium: %@ cuando quieras."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aucun souci — Orbeon fonctionne entièrement hors ligne. La campagne, le mode infini et tes étoiles continuent ; seul le classement hebdomadaire a besoin d’une connexion. Et sans connexion, il n’y a aucune pub : tu peux continuer exactement comme ça."
+            "value": "Pas de souci, continue sans pub. Premium : %@ quand tu veux."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "大丈夫です。Orbeonはオフラインでも完全に動きます。キャンペーンもエンドレスも星もそのまま。接続が必要なのは週間ランキングだけです。オフラインなら広告も出ないので、このまま遊んでもらって構いません。"
+            "value": "大丈夫、広告なしで続けてください。プレミアムは%@です。"
+          }
+        }
+      }
+    },
+    "No problem, keep playing ad-free. Premium is there anytime.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No problem, keep playing ad-free. Premium is there anytime."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sorun değil, reklamsız devam et. Premium hep burada."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Problem, spiel werbefrei weiter. Premium wartet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin problema, sigue jugando sin anuncios. Premium te espera."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas de souci, continue sans pub. Premium reste dispo."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大丈夫、広告なしで続けてください。プレミアムはいつでも。"
           }
         }
       }
@@ -4700,6 +4659,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Şimdi kesik çizgili kapıya ulaş — bölümü bitir!"
+          }
+        }
+      }
+    },
+    "One extra life in every endless run": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One extra life in every endless run"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her sonsuz turda bir can hakkı"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Extraleben in jeder Endlos-Runde"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una vida extra en cada partida infinita"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une vie supplémentaire à chaque partie infinie"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンドレスごとに残機1"
           }
         }
       }
@@ -5025,43 +5025,43 @@
         }
       }
     },
-    "Playing offline?": {
+    "Playing offline": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Playing offline?"
+            "value": "Playing offline"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Çevrimdışı mı oynuyorsun?"
+            "value": "Çevrimdışı oynuyorsun"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Offline unterwegs?"
+            "value": "Offline unterwegs"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "¿Jugando sin conexión?"
+            "value": "Jugando sin conexión"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tu joues hors ligne ?"
+            "value": "Tu joues hors ligne"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "オフラインでプレイ中？"
+            "value": "オフラインでプレイ中"
           }
         }
       }
@@ -5486,6 +5486,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "ジャンプ・ミス・残機減少・クリアの効果音を自分の声で録音。ジャンプ音はコンボに合わせて内蔵音と同じように高くなります。録音は端末の外に出ません。"
+          }
+        }
+      }
+    },
+    "Record your own sounds — the hop rises with your combo": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record your own sounds — the hop rises with your combo"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kendi seslerini kaydet — atlayış komboyla incelir"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimm eigene Sounds auf — der Sprung steigt mit dem Combo"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Graba tus propios sonidos: el salto sube con tu combo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistre tes propres sons — le saut monte avec le combo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自分の効果音を録音 — ジャンプ音はコンボで高くなる"
           }
         }
       }

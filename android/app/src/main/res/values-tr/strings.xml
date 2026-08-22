@@ -171,9 +171,10 @@
     <string name="sfx_life_lost_hint">Bir can hakkı harcandığında çalar.</string>
     <string name="sfx_death_hint">Küre kaybedildiğinde çalar.</string>
     <string name="sfx_level_complete_hint">Bölüm bitirildiğinde çalar.</string>
-    <string name="offline_title">Çevrimdışı mı oynuyorsun?</string>
-    <string name="offline_body">Sorun değil — Orbeon çevrimdışı tam çalışır. Bölümler, sonsuz mod ve yıldızların yerli yerinde; yalnızca haftalık sıralama bağlantı ister. Bağlantı yokken reklam da çıkmaz, yani istersen böyle oynamaya devam et.</string>
-    <string name="offline_premium_priced">Canın isterse Premium sadece %1$s: çevrimiçiyken de reklam yok, her sonsuz turda bir can hakkı, 8 özel tema, kendi kaydettiğin sesler ve kürenin içinde fotoğrafın.</string>
-    <string name="offline_premium">Canın isterse Premium çevrimiçiyken de reklamları kaldırır; üstüne her sonsuz turda bir can hakkı, 8 özel tema, kendi kaydettiğin sesler ve kürenin içinde fotoğrafın.</string>
+    <string name="offline_title">Çevrimdışı oynuyorsun</string>
+    <string name="offline_premium_priced">Sorun değil, reklamsız devam et. Premium %1$s, istersen.</string>
+    <string name="offline_premium">Sorun değil, reklamsız devam et. Premium hep burada.</string>
     <string name="have_fun">İyi oyunlar!</string>
+    <string name="benefit_sounds">Kendi seslerini kaydet — atlayış komboyla incelir</string>
+    <string name="benefit_extra_life">Her sonsuz turda bir can hakkı</string>
 </resources>

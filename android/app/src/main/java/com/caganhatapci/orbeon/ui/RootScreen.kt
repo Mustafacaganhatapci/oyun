@@ -288,14 +288,12 @@ private fun OfflineNoticeOverlay(theme: Theme, onPremium: () -> Unit, onClose: (
                 stringResource(R.string.offline_title),
                 color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold
             )
-            Text(
-                stringResource(R.string.offline_body),
-                color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, textAlign = TextAlign.Center
-            )
+            // Tek cümle. Uzun bir açıklama, oyuncuyu savunmaya çeken bir
+            // "yakalandın" notu gibi okunuyordu; kısası daha dostça.
             Text(
                 if (price != null) stringResource(R.string.offline_premium_priced, price)
                 else stringResource(R.string.offline_premium),
-                color = Color.White.copy(alpha = 0.6f), fontSize = 12.sp, textAlign = TextAlign.Center
+                color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, textAlign = TextAlign.Center
             )
             Text(
                 stringResource(R.string.have_fun),

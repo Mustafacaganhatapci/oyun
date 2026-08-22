@@ -545,6 +545,8 @@ struct ShopView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 benefit("rectangle.slash", "All ads removed forever")
+                benefit("mic.fill", "Record your own sounds — the hop rises with your combo")
+                benefit("heart.circle.fill", "One extra life in every endless run")
                 benefit("paintpalette.fill", "8 exclusive themes — Neon, Carbon, Royal, Sakura and more")
                 benefit("circle.hexagongrid.circle", "Your own photo inside the orb")
                 benefit("heart.fill", "Direct support for an independent developer")

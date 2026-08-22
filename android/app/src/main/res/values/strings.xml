@@ -171,9 +171,10 @@
     <string name="sfx_life_lost_hint">Plays when an extra life is spent.</string>
     <string name="sfx_death_hint">Plays when the orb is lost.</string>
     <string name="sfx_level_complete_hint">Plays when a level is finished.</string>
-    <string name="offline_title">Playing offline?</string>
-    <string name="offline_body">No problem — Orbeon works fully offline. The campaign, endless mode and your stars all keep going; only the weekly board needs a connection. And with no connection there are no ads, so feel free to keep playing exactly like this.</string>
-    <string name="offline_premium_priced">If you ever want it, Premium is %1$s: no ads online either, an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb.</string>
-    <string name="offline_premium">If you ever want it, Premium removes the ads online too, and adds an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb.</string>
+    <string name="offline_title">Playing offline</string>
+    <string name="offline_premium_priced">No problem, keep playing ad-free. Premium is %1$s anytime.</string>
+    <string name="offline_premium">No problem, keep playing ad-free. Premium is there anytime.</string>
     <string name="have_fun">Have fun!</string>
+    <string name="benefit_sounds">Record your own sounds — the hop rises with your combo</string>
+    <string name="benefit_extra_life">One extra life in every endless run</string>
 </resources>
