@@ -55,6 +55,7 @@ import com.caganhatapci.orbeon.LocalAppState
 import com.caganhatapci.orbeon.R
 import com.caganhatapci.orbeon.model.LevelLibrary
 import com.caganhatapci.orbeon.services.AdsManager
+import com.caganhatapci.orbeon.services.OfflineNotice
 import com.caganhatapci.orbeon.store.TutorialStore
 import com.caganhatapci.orbeon.theme.Theme
 import kotlinx.coroutines.delay
@@ -77,6 +78,7 @@ fun RootScreen() {
 
     var route by remember { mutableStateOf<Route>(Route.Menu) }
     var splashDone by remember { mutableStateOf(false) }
+    var showOfflineNotice by remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         when (val r = route) {
@@ -118,9 +120,35 @@ fun RootScreen() {
             )
         }
 
+        // İnterneti kapalı oynayana bir kez çıkan nazik not (yalnızca menüde)
+        if (showOfflineNotice) {
+            OfflineNoticeOverlay(
+                theme = theme,
+                onPremium = {
+                    OfflineNotice.markShown(activity)
+                    showOfflineNotice = false
+                    route = Route.Shop
+                },
+                onClose = {
+                    OfflineNotice.markShown(activity)
+                    showOfflineNotice = false
+                }
+            )
+        }
+
         // Açılış imzası — yalnızca uygulama başlarken bir kez
         AnimatedVisibility(!splashDone, exit = fadeOut()) {
             SplashScreen(theme)
+        }
+    }
+
+    // Not bir turu asla bölmez: yalnızca menüdeyken ve açılış bittikten sonra
+    LaunchedEffect(route, splashDone, app.connectivity.isOnline, app.billing.isPremium) {
+        if (splashDone && route == Route.Menu && !showOfflineNotice) {
+            showOfflineNotice = OfflineNotice.shouldShow(
+                activity, app.connectivity.isOnline,
+                app.billing.isPremium, app.progress.totalStars
+            )
         }
     }
 
@@ -233,6 +261,57 @@ private fun SplashScreen(theme: Theme) {
  * buradan doğrudan yapılır — reklamı yeni izlemiş oyuncuyu ayrıca mağazaya
  * yollamak teklifi soğutuyordu.
  */
+@Composable
+private fun OfflineNoticeOverlay(theme: Theme, onPremium: () -> Unit, onClose: () -> Unit) {
+    val app = LocalAppState.current
+    // Fiyat mağazadan gelir (çevrimdışıysa son bilinen fiyattan). Hiç
+    // bilinmiyorsa fiyatsız cümleye düşeriz — koda sabit bir rakam yazmayız.
+    val price = app.billing.premiumPriceText
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.72f))
+            .clickable(onClick = onClose),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            Modifier
+                .padding(horizontal = 30.dp)
+                .background(Color.Black.copy(alpha = 0.9f), RoundedCornerShape(28.dp))
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text("📴", fontSize = 34.sp)
+            Text(
+                stringResource(R.string.offline_title),
+                color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold
+            )
+            Text(
+                stringResource(R.string.offline_body),
+                color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, textAlign = TextAlign.Center
+            )
+            Text(
+                if (price != null) stringResource(R.string.offline_premium_priced, price)
+                else stringResource(R.string.offline_premium),
+                color = Color.White.copy(alpha = 0.6f), fontSize = 12.sp, textAlign = TextAlign.Center
+            )
+            Text(
+                stringResource(R.string.have_fun),
+                color = theme.lumen, fontSize = 15.sp, fontWeight = FontWeight.Bold
+            )
+            GlowButton(stringResource(R.string.keep_playing), theme.accent, prominent = true,
+                onClick = onClose)
+            Text(
+                stringResource(R.string.see_premium),
+                color = Color.White.copy(alpha = 0.55f), fontSize = 13.sp,
+                modifier = Modifier.clickable(onClick = onPremium)
+            )
+        }
+    }
+}
+
 @Composable
 private fun NudgeOverlay(
     kind: AdsManager.Nudge,

@@ -90,6 +90,11 @@ final class StoreManager: ObservableObject {
                 }
                 return product
             }
+            // Fiyatı önbelleğe al: çevrimdışı açılışta StoreKit ürün döndüremez
+            // ama "premium ne kadar?" sorusuna yine de doğru yanıt verebilelim.
+            if let premium = loaded.first(where: { $0.id == Self.premiumID }) {
+                UserDefaults.standard.set(premium.displayPrice, forKey: Self.priceCacheKey)
+            }
             // Console.app'te "Orbeon" ile filtrele: kaç ürün geldi görebilirsin.
             // 0 ise ürünler App Store Connect'te hazır değil / sözleşme aktif değil.
             os_log(.info, "StoreKit: %d ürün yüklendi (%{public}@)",
@@ -223,5 +228,15 @@ final class StoreManager: ObservableObject {
     }
 
     var premiumProduct: Product? { products.first { $0.id == Self.premiumID } }
+
+    private static let priceCacheKey = "lumo.store.premiumPrice"
+
+    /// Premium'un gösterilecek fiyatı. Çevrimdışıyken StoreKit ürün
+    /// döndüremediği için son bilinen fiyat kullanılır; hiç bilinmiyorsa nil
+    /// döner ve arayüz fiyatsız metne geçer (asla sabit bir rakam yazmayız).
+    var premiumPriceText: String? {
+        premiumProduct?.displayPrice
+            ?? UserDefaults.standard.string(forKey: Self.priceCacheKey)
+    }
     var tipProducts: [Product] { products.filter { $0.id != Self.premiumID } }
 }

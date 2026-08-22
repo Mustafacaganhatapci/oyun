@@ -45,6 +45,7 @@ class BillingManager(private val context: Context) {
         const val PROMO_FAIL_BONUS_STARS = 100
 
         private const val TAG = "Orbeon.Billing"
+        private const val KEY_PREMIUM_PRICE = "billing.premiumPrice"
     }
 
     enum class Status { SUCCESS, PENDING, FAILED, RESTORED, NOTHING_TO_RESTORE }
@@ -68,6 +69,15 @@ class BillingManager(private val context: Context) {
     private var promoBonusGranted = false
 
     val premiumProduct: ProductDetails? get() = products.firstOrNull { it.productId == PREMIUM_ID }
+
+    /**
+     * Premium'un gösterilecek fiyatı. Çevrimdışıyken Play ürün döndüremediği
+     * için son bilinen fiyat kullanılır; hiç bilinmiyorsa null döner ve arayüz
+     * fiyatsız metne geçer (asla sabit bir rakam yazmayız).
+     */
+    val premiumPriceText: String?
+        get() = premiumProduct?.oneTimePurchaseOfferDetails?.formattedPrice
+            ?: p.getString(KEY_PREMIUM_PRICE, null)
     val tipProducts: List<ProductDetails> get() = products.filter { it.productId != PREMIUM_ID }
 
     private val client: BillingClient = BillingClient.newBuilder(context)
@@ -135,6 +145,11 @@ class BillingManager(private val context: Context) {
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                 // Sabit sırada göster: premium, küçük bahşiş, büyük bahşiş
                 products = ids.mapNotNull { id -> list.firstOrNull { it.productId == id } }
+                // Fiyatı önbelleğe al: çevrimdışıyken Play ürün döndüremez ama
+                // "premium ne kadar?" sorusuna yine de doğru yanıt verebilelim.
+                premiumProduct?.oneTimePurchaseOfferDetails?.formattedPrice?.let {
+                    p.edit().putString(KEY_PREMIUM_PRICE, it).apply()
+                }
             } else {
                 Log.e(TAG, "Ürünler yüklenemedi: ${result.debugMessage}")
                 products = emptyList()

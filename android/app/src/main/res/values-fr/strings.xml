@@ -171,4 +171,9 @@
     <string name="sfx_life_lost_hint">Se déclenche quand une vie supplémentaire est utilisée.</string>
     <string name="sfx_death_hint">Se déclenche quand la sphère est perdue.</string>
     <string name="sfx_level_complete_hint">Se déclenche quand un niveau est terminé.</string>
+    <string name="offline_title">Tu joues hors ligne ?</string>
+    <string name="offline_body">Aucun souci — Orbeon fonctionne entièrement hors ligne. La campagne, le mode infini et tes étoiles continuent ; seul le classement hebdomadaire a besoin d’une connexion. Et sans connexion, il n’y a aucune pub : tu peux continuer exactement comme ça.</string>
+    <string name="offline_premium_priced">Si un jour ça te tente, Premium coûte %1$s : plus de pubs en ligne non plus, une vie supplémentaire à chaque partie infinie, 8 thèmes exclusifs, tes propres enregistrements et ta photo dans la sphère.</string>
+    <string name="offline_premium">Si un jour ça te tente, Premium supprime aussi les pubs en ligne et ajoute une vie supplémentaire à chaque partie infinie, 8 thèmes exclusifs, tes propres enregistrements et ta photo dans la sphère.</string>
+    <string name="have_fun">Bon jeu !</string>
 </resources>

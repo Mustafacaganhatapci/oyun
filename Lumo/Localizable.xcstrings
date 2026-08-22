@@ -3063,6 +3063,47 @@
         }
       }
     },
+    "Have fun!": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Have fun!"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İyi oyunlar!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viel Spaß!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Que te diviertas!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bon jeu !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "それでは、よいプレイを！"
+          }
+        }
+      }
+    },
     "Heart": {
       "extractionState": "manual",
       "localizations": {
@@ -3170,6 +3211,88 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nasıl oynanır"
+          }
+        }
+      }
+    },
+    "If you ever want it, Premium is %@: no ads online either, an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If you ever want it, Premium is %@: no ads online either, an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canın isterse Premium sadece %@: çevrimiçiyken de reklam yok, her sonsuz turda bir can hakkı, 8 özel tema, kendi kaydettiğin sesler ve kürenin içinde fotoğrafın."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Falls du magst: Premium kostet %@ — auch online keine Werbung, ein Extraleben pro Endlos-Runde, 8 exklusive Designs, deine eigenen Aufnahmen und dein Foto in der Kugel."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si alguna vez te apetece, Premium cuesta %@: tampoco hay anuncios con conexión, una vida extra en cada partida infinita, 8 temas exclusivos, tus propias grabaciones y tu foto en la esfera."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si un jour ça te tente, Premium coûte %@ : plus de pubs en ligne non plus, une vie supplémentaire à chaque partie infinie, 8 thèmes exclusifs, tes propres enregistrements et ta photo dans la sphère."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "もし気が向いたら、プレミアムは%@です。オンラインでも広告なし、エンドレスごとに残機1、限定テーマ8種、自分で録音した効果音、オーブに自分の写真も。"
+          }
+        }
+      }
+    },
+    "If you ever want it, Premium removes the ads online too, and adds an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If you ever want it, Premium removes the ads online too, and adds an extra life every endless run, 8 exclusive themes, your own recorded sounds and your photo in the orb."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canın isterse Premium çevrimiçiyken de reklamları kaldırır; üstüne her sonsuz turda bir can hakkı, 8 özel tema, kendi kaydettiğin sesler ve kürenin içinde fotoğrafın."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Falls du magst: Premium entfernt die Werbung auch online und bringt ein Extraleben pro Endlos-Runde, 8 exklusive Designs, deine eigenen Aufnahmen und dein Foto in der Kugel."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si alguna vez te apetece, Premium también quita los anuncios con conexión y añade una vida extra en cada partida infinita, 8 temas exclusivos, tus propias grabaciones y tu foto en la esfera."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si un jour ça te tente, Premium supprime aussi les pubs en ligne et ajoute une vie supplémentaire à chaque partie infinie, 8 thèmes exclusifs, tes propres enregistrements et ta photo dans la sphère."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "もし気が向いたら、プレミアムはオンラインでも広告を消し、エンドレスごとに残機1、限定テーマ8種、自分で録音した効果音、オーブに自分の写真を追加します。"
           }
         }
       }
@@ -4324,6 +4447,47 @@
         }
       }
     },
+    "No problem — Orbeon works fully offline. The campaign, endless mode and your stars all keep going; only the weekly board needs a connection. And with no connection there are no ads, so feel free to keep playing exactly like this.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No problem — Orbeon works fully offline. The campaign, endless mode and your stars all keep going; only the weekly board needs a connection. And with no connection there are no ads, so feel free to keep playing exactly like this."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sorun değil — Orbeon çevrimdışı tam çalışır. Bölümler, sonsuz mod ve yıldızların yerli yerinde; yalnızca haftalık sıralama bağlantı ister. Bağlantı yokken reklam da çıkmaz, yani istersen böyle oynamaya devam et."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Problem — Orbeon läuft komplett offline. Kampagne, Endlosmodus und deine Sterne bleiben; nur die Wochenrangliste braucht eine Verbindung. Ohne Verbindung gibt es auch keine Werbung, also spiel ruhig genau so weiter."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No pasa nada: Orbeon funciona completamente sin conexión. La campaña, el modo infinito y tus estrellas siguen igual; solo la tabla semanal necesita conexión. Y sin conexión no hay anuncios, así que puedes seguir jugando justo así."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun souci — Orbeon fonctionne entièrement hors ligne. La campagne, le mode infini et tes étoiles continuent ; seul le classement hebdomadaire a besoin d’une connexion. Et sans connexion, il n’y a aucune pub : tu peux continuer exactement comme ça."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大丈夫です。Orbeonはオフラインでも完全に動きます。キャンペーンもエンドレスも星もそのまま。接続が必要なのは週間ランキングだけです。オフラインなら広告も出ないので、このまま遊んでもらって構いません。"
+          }
+        }
+      }
+    },
     "No purchase gives a gameplay advantage. There is no pay-to-win in Orbeon.": {
       "extractionState": "manual",
       "localizations": {
@@ -4857,6 +5021,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tekrar Oyna"
+          }
+        }
+      }
+    },
+    "Playing offline?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playing offline?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çevrimdışı mı oynuyorsun?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline unterwegs?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Jugando sin conexión?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu joues hors ligne ?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オフラインでプレイ中？"
           }
         }
       }
@@ -5776,7 +5981,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Premium'a Bak"
+            "value": "Premium’a bak"
           }
         },
         "de": {

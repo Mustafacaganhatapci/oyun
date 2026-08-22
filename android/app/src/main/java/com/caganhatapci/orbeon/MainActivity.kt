@@ -15,6 +15,7 @@ import com.caganhatapci.orbeon.services.AdsManager
 import com.caganhatapci.orbeon.services.AudioEngine
 import com.caganhatapci.orbeon.services.BillingManager
 import com.caganhatapci.orbeon.services.ConsentManager
+import com.caganhatapci.orbeon.services.Connectivity
 import com.caganhatapci.orbeon.services.CustomSoundStore
 import com.caganhatapci.orbeon.services.Haptics
 import com.caganhatapci.orbeon.services.LeaderboardService
@@ -40,7 +41,8 @@ class AppState(
     val leaderboard: LeaderboardService,
     val audio: AudioEngine,
     val haptics: Haptics,
-    val customSounds: CustomSoundStore
+    val customSounds: CustomSoundStore,
+    val connectivity: Connectivity
 )
 
 val LocalAppState = staticCompositionLocalOf<AppState> { error("AppState sağlanmadı") }
@@ -68,7 +70,8 @@ class MainActivity : ComponentActivity() {
             leaderboard = LeaderboardService(),
             audio = AudioEngine(this),
             haptics = Haptics(this),
-            customSounds = CustomSoundStore(this)
+            customSounds = CustomSoundStore(this),
+            connectivity = Connectivity(this)
         )
 
         state.audio.soundEnabled = state.settings.soundOn

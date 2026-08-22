@@ -6,7 +6,12 @@ import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -338,4 +343,63 @@ class Haptics(context: Context) {
     fun collect() = buzz(18, 90)
     fun fail() = buzz(120, 200)
     fun win() = buzz(60, 160)
+}
+
+/**
+ * Ağ durumu. Oyunun hiçbir yerinde oynanışı engellemez — Orbeon çevrimdışı
+ * tam çalışır. Yalnızca "reklam görmüyorsun, çünkü bağlantın yok" gibi
+ * durumları doğru anlatabilmek için izlenir.
+ */
+class Connectivity(context: Context) {
+    var isOnline by mutableStateOf(true)
+        private set
+
+    private val manager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+
+    init {
+        refresh()
+        runCatching {
+            manager?.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) = post { refresh() }
+                override fun onLost(network: Network) = post { refresh() }
+                override fun onCapabilitiesChanged(
+                    network: Network, caps: NetworkCapabilities
+                ) = post { refresh() }
+            })
+        }
+    }
+
+    private fun post(block: () -> Unit) {
+        if (Looper.myLooper() == Looper.getMainLooper()) block()
+        else Handler(Looper.getMainLooper()).post(block)
+    }
+
+    private fun refresh() {
+        val caps = runCatching { manager?.getNetworkCapabilities(manager.activeNetwork) }.getOrNull()
+        isOnline = caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true &&
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+    }
+}
+
+/**
+ * İnterneti kapalı oynayana çıkan notun zamanlaması: çevrimdışı, premium değil
+ * ve son gösterimden bu yana en az bir hafta geçmişse. Oyuncuyu her açılışta
+ * karşılamaz.
+ */
+object OfflineNotice {
+    private const val KEY = "offlineNoticeAt"
+    private const val INTERVAL = 7L * 24 * 3600 * 1000
+
+    fun shouldShow(context: Context, isOnline: Boolean, isPremium: Boolean, totalStars: Int): Boolean {
+        if (isOnline || isPremium) return false
+        // Yeni başlayan oyuncuyu ilk dakikasında satın almayla karşılamayalım
+        if (totalStars < 3) return false
+        val last = prefs(context).getLong(KEY, 0L)
+        return System.currentTimeMillis() - last > INTERVAL
+    }
+
+    fun markShown(context: Context) {
+        prefs(context).edit().putLong(KEY, System.currentTimeMillis()).apply()
+    }
 }

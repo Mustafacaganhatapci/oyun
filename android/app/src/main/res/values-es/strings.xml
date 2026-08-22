@@ -171,4 +171,9 @@
     <string name="sfx_life_lost_hint">Suena cuando se gasta una vida extra.</string>
     <string name="sfx_death_hint">Suena cuando se pierde la esfera.</string>
     <string name="sfx_level_complete_hint">Suena al completar un nivel.</string>
+    <string name="offline_title">¿Jugando sin conexión?</string>
+    <string name="offline_body">No pasa nada: Orbeon funciona completamente sin conexión. La campaña, el modo infinito y tus estrellas siguen igual; solo la tabla semanal necesita conexión. Y sin conexión no hay anuncios, así que puedes seguir jugando justo así.</string>
+    <string name="offline_premium_priced">Si alguna vez te apetece, Premium cuesta %1$s: tampoco hay anuncios con conexión, una vida extra en cada partida infinita, 8 temas exclusivos, tus propias grabaciones y tu foto en la esfera.</string>
+    <string name="offline_premium">Si alguna vez te apetece, Premium también quita los anuncios con conexión y añade una vida extra en cada partida infinita, 8 temas exclusivos, tus propias grabaciones y tu foto en la esfera.</string>
+    <string name="have_fun">¡Que te diviertas!</string>
 </resources>

@@ -9,8 +9,11 @@ struct RootView: View {
     @EnvironmentObject private var tutorial: TutorialStore
     @EnvironmentObject private var player: PlayerStore
     @EnvironmentObject private var store: StoreManager
+    @EnvironmentObject private var progress: ProgressStore
+    @ObservedObject private var net = Connectivity.shared
 
     @State private var splashDone = false
+    @State private var showOfflineNotice = false
 
     var body: some View {
         ZStack {
@@ -78,6 +81,23 @@ struct RootView: View {
                 .zIndex(150)
             }
 
+            // İnterneti kapalı oynayana bir kez çıkan nazik not (menüde)
+            if showOfflineNotice {
+                OfflineNoticeView(
+                    onPremium: {
+                        OfflineNotice.markShown()
+                        showOfflineNotice = false
+                        app.route = .shop
+                    },
+                    onClose: {
+                        OfflineNotice.markShown()
+                        showOfflineNotice = false
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(160)
+            }
+
             // Açılış imzası — yalnızca uygulama başlarken bir kez
             if !splashDone {
                 SplashView {
@@ -97,10 +117,24 @@ struct RootView: View {
         .background(WindowBackgroundFixer())
         // Premium'un kendi kaydettiği sesler: abonelik durumu değiştikçe motora
         // yüklenir ya da boşaltılır (kayıtlar diskte kalır).
+        .animation(.easeInOut(duration: 0.3), value: showOfflineNotice)
         .onAppear { CustomSoundStore.shared.premiumActive = store.isPremium }
         .onChange(of: store.isPremium) { _, isPremium in
             CustomSoundStore.shared.premiumActive = isPremium
         }
+        // Not yalnızca menüde ve oyun dışıyken çıkar; bir turu asla bölmez.
+        .onChange(of: app.route) { _, _ in evaluateOfflineNotice() }
+        .onChange(of: net.isOnline) { _, _ in evaluateOfflineNotice() }
+        .onChange(of: splashDone) { _, _ in evaluateOfflineNotice() }
+    }
+
+    private func evaluateOfflineNotice() {
+        guard splashDone, app.route == .menu, !showOfflineNotice else { return }
+        showOfflineNotice = OfflineNotice.shouldShow(
+            isOnline: net.isOnline,
+            isPremium: store.isPremium,
+            totalStars: progress.totalStars
+        )
     }
 
     /// Açılıştan sonraki ilk yönlendirme. Ad önce sorulur — sıralamaya sonradan

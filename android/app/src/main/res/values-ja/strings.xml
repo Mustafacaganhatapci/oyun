@@ -171,4 +171,9 @@
     <string name="sfx_life_lost_hint">残機を1つ使ったときに鳴ります。</string>
     <string name="sfx_death_hint">オーブを失ったときに鳴ります。</string>
     <string name="sfx_level_complete_hint">レベルをクリアしたときに鳴ります。</string>
+    <string name="offline_title">オフラインでプレイ中？</string>
+    <string name="offline_body">大丈夫です。Orbeonはオフラインでも完全に動きます。キャンペーンもエンドレスも星もそのまま。接続が必要なのは週間ランキングだけです。オフラインなら広告も出ないので、このまま遊んでもらって構いません。</string>
+    <string name="offline_premium_priced">もし気が向いたら、プレミアムは%1$sです。オンラインでも広告なし、エンドレスごとに残機1、限定テーマ8種、自分で録音した効果音、オーブに自分の写真も。</string>
+    <string name="offline_premium">もし気が向いたら、プレミアムはオンラインでも広告を消し、エンドレスごとに残機1、限定テーマ8種、自分で録音した効果音、オーブに自分の写真を追加します。</string>
+    <string name="have_fun">それでは、よいプレイを！</string>
 </resources>

@@ -171,4 +171,9 @@
     <string name="sfx_life_lost_hint">Ertönt, wenn ein Extraleben verbraucht wird.</string>
     <string name="sfx_death_hint">Ertönt, wenn die Kugel verloren geht.</string>
     <string name="sfx_level_complete_hint">Ertönt, wenn ein Level geschafft ist.</string>
+    <string name="offline_title">Offline unterwegs?</string>
+    <string name="offline_body">Kein Problem — Orbeon läuft komplett offline. Kampagne, Endlosmodus und deine Sterne bleiben; nur die Wochenrangliste braucht eine Verbindung. Ohne Verbindung gibt es auch keine Werbung, also spiel ruhig genau so weiter.</string>
+    <string name="offline_premium_priced">Falls du magst: Premium kostet %1$s — auch online keine Werbung, ein Extraleben pro Endlos-Runde, 8 exklusive Designs, deine eigenen Aufnahmen und dein Foto in der Kugel.</string>
+    <string name="offline_premium">Falls du magst: Premium entfernt die Werbung auch online und bringt ein Extraleben pro Endlos-Runde, 8 exklusive Designs, deine eigenen Aufnahmen und dein Foto in der Kugel.</string>
+    <string name="have_fun">Viel Spaß!</string>
 </resources>
