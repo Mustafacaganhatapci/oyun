@@ -157,4 +157,18 @@
     <string name="restart_run_title">Turu yeniden başlat?</string>
     <string name="restart_run_body">Bu turdaki skorun silinecek.</string>
     <string name="keep_playing">Devam et</string>
+    <string name="custom_sounds_title">Kendi Seslerin</string>
+    <string name="custom_sounds_body">Atlayış, ölüm, can eksilme ve bölüm bitirme seslerini kendi sesinle kaydet. Atlayış sesi, hazır melodideki gibi kombo yükseldikçe incelir. Kayıtlar cihazından çıkmaz.</string>
+    <string name="custom_sounds_use">Kayıtlarımı kullan</string>
+    <string name="custom_sounds_mic_denied">Mikrofon izni kapalı. Kayıt için Android ayarlarından aç.</string>
+    <string name="recording_now">Kaydediliyor…</string>
+    <string name="premium_badge">PREMIUM</string>
+    <string name="sfx_hop">Atlayış</string>
+    <string name="sfx_life_lost">Can eksilme</string>
+    <string name="sfx_death">Ölüm</string>
+    <string name="sfx_level_complete">Bölüm bitti</string>
+    <string name="sfx_hop_hint">Kombo büyüdükçe incelir.</string>
+    <string name="sfx_life_lost_hint">Bir can hakkı harcandığında çalar.</string>
+    <string name="sfx_death_hint">Küre kaybedildiğinde çalar.</string>
+    <string name="sfx_level_complete_hint">Bölüm bitirildiğinde çalar.</string>
 </resources>

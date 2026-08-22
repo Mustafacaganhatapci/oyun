@@ -157,4 +157,18 @@
     <string name="restart_run_title">最初からやり直す？</string>
     <string name="restart_run_body">このプレイのスコアは失われます。</string>
     <string name="keep_playing">続ける</string>
+    <string name="custom_sounds_title">自分の効果音</string>
+    <string name="custom_sounds_body">ジャンプ・ミス・残機減少・クリアの効果音を自分の声で録音。ジャンプ音はコンボに合わせて内蔵音と同じように高くなります。録音は端末の外に出ません。</string>
+    <string name="custom_sounds_use">録音を使う</string>
+    <string name="custom_sounds_mic_denied">マイクへのアクセスがオフです。録音するにはAndroidの設定でオンにしてください。</string>
+    <string name="recording_now">録音中…</string>
+    <string name="premium_badge">プレミアム</string>
+    <string name="sfx_hop">ジャンプ</string>
+    <string name="sfx_life_lost">残機減少</string>
+    <string name="sfx_death">ミス</string>
+    <string name="sfx_level_complete">クリア</string>
+    <string name="sfx_hop_hint">コンボが伸びるほど高くなります。</string>
+    <string name="sfx_life_lost_hint">残機を1つ使ったときに鳴ります。</string>
+    <string name="sfx_death_hint">オーブを失ったときに鳴ります。</string>
+    <string name="sfx_level_complete_hint">レベルをクリアしたときに鳴ります。</string>
 </resources>

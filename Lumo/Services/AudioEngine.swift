@@ -58,6 +58,10 @@ final class AudioEngine {
     private var lifeLostBuffer: AVAudioPCMBuffer?
     private var winBuffer: AVAudioPCMBuffer?
 
+    /// Premium oyuncunun kendi kaydettiği sesler. Doluysa sentetik olanın
+    /// yerine geçer; boş bırakılan yuvalar sentetik kalmaya devam eder.
+    private var custom = CustomSoundSet()
+
     var musicEnabled = true { didSet { musicMixer.outputVolume = musicEnabled ? 1 : 0 } }
     var sfxEnabled = true { didSet { sfxMixer.outputVolume = sfxEnabled ? 1 : 0 } }
 
@@ -222,21 +226,76 @@ final class AudioEngine {
     // MARK: Efekt tetikleyicileri
 
     func playHop(combo: Int) {
-        guard sfxEnabled, !pluckBuffers.isEmpty else { return }
-        let count = pluckBuffers.count
+        let ladder = custom.hopLadder.isEmpty ? pluckBuffers : custom.hopLadder
+        guard sfxEnabled, !ladder.isEmpty else { return }
+        let count = ladder.count
         var index = max(combo - 1, 0)
         if index >= count {
             // Dizinin tepesine gelindi: son birkaç notada dön, sabitlenme
             let cycle = min(pluckTopCycle, count)
             index = count - cycle + (index - count) % cycle
         }
-        play(pluckBuffers[index])
+        play(ladder[index])
     }
 
     func playCollect() { if let b = collectBuffer { play(b) } }
-    func playLifeLost() { if let b = lifeLostBuffer { play(b) } }
-    func playFail() { if let b = failBuffer { play(b) } }
-    func playWin() { if let b = winBuffer { play(b) } }
+    func playLifeLost() { if let b = custom.lifeLost ?? lifeLostBuffer { play(b) } }
+    func playFail() { if let b = custom.fail ?? failBuffer { play(b) } }
+    func playWin() { if let b = custom.win ?? winBuffer { play(b) } }
+
+    // MARK: Premium — kendi sesin
+
+    /// Ayarlardaki "dinle" düğmesi: ses kapalı olsa bile duyulsun ki oyuncu
+    /// kaydını denetleyebilsin.
+    func playPreview(_ buffer: AVAudioPCMBuffer) {
+        guard started, !sfxPlayers.isEmpty else { return }
+        let duration = Double(buffer.frameLength) / sampleRate
+        // Efektler kapalıysa mikser susturulmuş olur; dinletme boyunca açılır
+        if !sfxEnabled {
+            sfxMixer.outputVolume = 1
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration + 0.1) { [weak self] in
+                guard let self, !self.sfxEnabled else { return }
+                self.sfxMixer.outputVolume = 0
+            }
+        }
+        let now = CFAbsoluteTimeGetCurrent()
+        let index = sfxFreeAt.firstIndex(where: { $0 <= now }) ?? 0
+        sfxFreeAt[index] = now + duration
+        sfxPlayers[index].scheduleBuffer(buffer, at: nil, options: .interrupts)
+    }
+
+    func applyCustomSounds(_ set: CustomSoundSet) { custom = set }
+
+    func clearCustomSounds() { custom = CustomSoundSet() }
+
+    /// Bir kaydı pentatonik dizinin perde oranlarında yeniden örnekler.
+    /// Örnekleme hızını değiştirmek sesi hem inceltir hem kısaltır — bant
+    /// hızlandırma etkisi; kombo yükseldikçe oyuncunun kendi "hop"u tizleşir.
+    func pitchLadder(from buffer: AVAudioPCMBuffer) -> [AVAudioPCMBuffer] {
+        guard let base = pluckScale.first, base > 0 else { return [] }
+        return pluckScale.compactMap { resample(buffer, ratio: $0 / base) }
+    }
+
+    /// Doğrusal aradeğerlemeli yeniden örnekleme. ratio > 1 = daha hızlı/tiz.
+    private func resample(_ buffer: AVAudioPCMBuffer, ratio: Double) -> AVAudioPCMBuffer? {
+        guard let src = buffer.floatChannelData?[0] else { return nil }
+        let n = Int(buffer.frameLength)
+        guard n > 1 else { return nil }
+        if abs(ratio - 1) < 0.0001 { return buffer }
+        let outCount = max(2, Int(Double(n) / ratio))
+        guard let out = AVAudioPCMBuffer(pcmFormat: format,
+                                         frameCapacity: AVAudioFrameCount(outCount)),
+              let dst = out.floatChannelData?[0] else { return nil }
+        out.frameLength = AVAudioFrameCount(outCount)
+        for i in 0..<outCount {
+            let pos = Double(i) * ratio
+            let i0 = Int(pos)
+            if i0 >= n - 1 { dst[i] = src[n - 1]; continue }
+            let frac = Float(pos - Double(i0))
+            dst[i] = src[i0] * (1 - frac) + src[i0 + 1] * frac
+        }
+        return out
+    }
     func playTap() {
         guard let b = pluckBuffers.first else { return }
         play(b)

@@ -68,6 +68,7 @@ import com.caganhatapci.orbeon.model.LevelLibrary
 import com.caganhatapci.orbeon.model.OrbStyle
 import com.caganhatapci.orbeon.services.AdsManager
 import com.caganhatapci.orbeon.services.BillingManager
+import com.caganhatapci.orbeon.services.CustomSoundSlot
 import com.caganhatapci.orbeon.services.LeaderboardService
 import com.caganhatapci.orbeon.store.MissionStore
 import com.caganhatapci.orbeon.store.OrbPhotoStore
@@ -848,9 +849,147 @@ fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Uni
                     PhotoOrbCard(theme, frameTime)
                 }
 
+                // Premium: kendi kaydettiğin efekt sesleri
+                CustomSoundsCard(theme, onShop)
+
                 GlowButton(stringResource(R.string.how_to_play), theme.ring) { onTutorial() }
             }
         }
+    }
+}
+
+/**
+ * Premium: oyuncu kendi sesini kaydeder, oyun onu sentetik efektin yerine
+ * çalar. "Hop" ayrıca komboyla hızlandırılıp inceltilir.
+ */
+@Composable
+private fun CustomSoundsCard(theme: Theme, onShop: () -> Unit) {
+    val app = LocalAppState.current
+    val sounds = app.customSounds
+    var pendingSlot by remember { mutableStateOf<CustomSoundSlot?>(null) }
+    var micDenied by remember { mutableStateOf(false) }
+
+    val permission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        micDenied = !granted
+        val slot = pendingSlot
+        pendingSlot = null
+        if (granted && slot != null) sounds.startRecording(slot)
+    }
+
+    Card {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.custom_sounds_title), color = Color.White,
+                    fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                if (!app.billing.isPremium) {
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.premium_badge), color = theme.lumen,
+                        fontSize = 10.sp, fontWeight = FontWeight.Black,
+                        modifier = Modifier
+                            .background(theme.lumen.copy(alpha = 0.18f), RoundedCornerShape(8.dp))
+                            .padding(horizontal = 7.dp, vertical = 3.dp))
+                }
+            }
+            Text(stringResource(R.string.custom_sounds_body),
+                color = Color.White.copy(alpha = 0.5f), fontSize = 12.sp)
+
+            if (!app.billing.isPremium) {
+                GlowButton(stringResource(R.string.go_premium), theme.lumen) {
+                    app.audio.playTap(); onShop()
+                }
+            } else {
+                ToggleRow(stringResource(R.string.custom_sounds_use), sounds.enabled) {
+                    sounds.updateEnabled(it)
+                }
+                CustomSoundSlot.entries.forEach { slot ->
+                    CustomSoundRow(
+                        slot = slot,
+                        theme = theme,
+                        recording = sounds.recording == slot,
+                        has = sounds.recorded.contains(slot),
+                        onRecord = {
+                            if (sounds.recording == slot) {
+                                sounds.stopRecording()
+                            } else if (sounds.hasMicPermission()) {
+                                app.audio.playTap(); sounds.startRecording(slot)
+                            } else {
+                                pendingSlot = slot
+                                permission.launch(android.Manifest.permission.RECORD_AUDIO)
+                            }
+                        },
+                        onPreview = { sounds.preview(slot, app.audio) },
+                        onDelete = { app.audio.playTap(); sounds.delete(slot) }
+                    )
+                }
+                if (micDenied) {
+                    Text(stringResource(R.string.custom_sounds_mic_denied),
+                        color = theme.hazard, fontSize = 12.sp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CustomSoundRow(
+    slot: CustomSoundSlot,
+    theme: Theme,
+    recording: Boolean,
+    has: Boolean,
+    onRecord: () -> Unit,
+    onPreview: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val title = when (slot) {
+        CustomSoundSlot.HOP -> R.string.sfx_hop
+        CustomSoundSlot.LIFE_LOST -> R.string.sfx_life_lost
+        CustomSoundSlot.FAIL -> R.string.sfx_death
+        CustomSoundSlot.WIN -> R.string.sfx_level_complete
+    }
+    val hint = when (slot) {
+        CustomSoundSlot.HOP -> R.string.sfx_hop_hint
+        CustomSoundSlot.LIFE_LOST -> R.string.sfx_life_lost_hint
+        CustomSoundSlot.FAIL -> R.string.sfx_death_hint
+        CustomSoundSlot.WIN -> R.string.sfx_level_complete_hint
+    }
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(stringResource(title), color = Color.White, fontSize = 15.sp)
+            Text(
+                if (recording) stringResource(R.string.recording_now) else stringResource(hint),
+                color = if (recording) theme.hazard else Color.White.copy(alpha = 0.45f),
+                fontSize = 11.sp
+            )
+        }
+        if (has && !recording) {
+            SmallCircleButton("▶") { onPreview() }
+            Spacer(Modifier.width(6.dp))
+            SmallCircleButton("✕") { onDelete() }
+            Spacer(Modifier.width(6.dp))
+        }
+        SmallCircleButton(
+            if (recording) "■" else "●",
+            tint = if (recording) theme.hazard else Color.White,
+            onClick = onRecord
+        )
+    }
+}
+
+@Composable
+private fun SmallCircleButton(label: String, tint: Color = Color.White, onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(34.dp)
+            .background(Color.White.copy(alpha = 0.10f), CircleShape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(label, color = tint.copy(alpha = 0.9f), fontSize = 13.sp, fontWeight = FontWeight.Bold)
     }
 }
 

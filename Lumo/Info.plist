@@ -24,6 +24,8 @@
 	<string>ca-app-pub-2696377554654488~9123400876</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Premium players can record their own sound effects — a hop, a fail, a fanfare. The recordings stay on your device and are never uploaded.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Orbeon stays free thanks to ads. Allowing this lets us show ads that fit you better. It never affects gameplay.</string>
 	<key>SKAdNetworkItems</key>

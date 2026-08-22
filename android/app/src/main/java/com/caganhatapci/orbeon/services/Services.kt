@@ -159,20 +159,82 @@ class AudioEngine(context: Context) {
 
     /** Kombo yükseldikçe ton tizleşir — ilerleme kulakla da hissedilir. */
     fun playHop(combo: Int) {
-        val count = plucks.size
+        val ladder = if (customHop.isEmpty()) plucks else customHop
+        if (ladder.isEmpty()) return
+        val count = ladder.size
         var index = (combo - 1).coerceAtLeast(0)
         if (index >= count) {
             val cycle = min(pluckTopCycle, count)
             index = count - cycle + (index - count) % cycle
         }
-        play(plucks[index])
+        play(ladder[index])
     }
 
     fun playCollect() = play(collectBuf)
-    fun playWin() = play(winBuf)
-    fun playFail() = play(failBuf)
-    fun playLifeLost() = play(lifeLostBuf)
+    fun playWin() = play(customWin ?: winBuf)
+    fun playFail() = play(customFail ?: failBuf)
+    fun playLifeLost() = play(customLifeLost ?: lifeLostBuf)
     fun playTap() = play(tapBuf)
+
+    // MARK: Premium — kendi sesin
+
+    /** Premium oyuncunun kendi kayıtları; boş yuvalar sentetik kalır. */
+    private var customHop: List<ShortArray> = emptyList()
+    private var customLifeLost: ShortArray? = null
+    private var customFail: ShortArray? = null
+    private var customWin: ShortArray? = null
+
+    fun applyCustomSounds(
+        hop: List<ShortArray>,
+        lifeLost: ShortArray?,
+        fail: ShortArray?,
+        win: ShortArray?
+    ) {
+        customHop = hop
+        customLifeLost = lifeLost
+        customFail = fail
+        customWin = win
+    }
+
+    fun clearCustomSounds() {
+        customHop = emptyList()
+        customLifeLost = null
+        customFail = null
+        customWin = null
+    }
+
+    /** Ayarlardaki "dinle" düğmesi: ses kapalıyken bile duyulsun */
+    fun playPreview(buf: ShortArray) {
+        val was = soundEnabled
+        soundEnabled = true
+        play(buf)
+        soundEnabled = was
+    }
+
+    /**
+     * Bir kaydı pentatonik dizinin perde oranlarında yeniden örnekler.
+     * Örnekleme hızını değiştirmek sesi hem inceltir hem kısaltır — bant
+     * hızlandırma etkisi; kombo yükseldikçe oyuncunun kendi sesi tizleşir.
+     */
+    fun pitchLadder(source: ShortArray): List<ShortArray> {
+        val base = pluckScale.first()
+        return pluckScale.map { resample(source, it / base) }
+    }
+
+    /** Doğrusal aradeğerlemeli yeniden örnekleme. ratio > 1 = daha hızlı/tiz. */
+    private fun resample(src: ShortArray, ratio: Double): ShortArray {
+        if (src.size < 2 || kotlin.math.abs(ratio - 1.0) < 0.0001) return src
+        val n = (src.size / ratio).toInt().coerceAtLeast(2)
+        val out = ShortArray(n)
+        for (i in 0 until n) {
+            val pos = i * ratio
+            val i0 = pos.toInt()
+            if (i0 >= src.size - 1) { out[i] = src[src.size - 1]; continue }
+            val frac = pos - i0
+            out[i] = (src[i0] * (1 - frac) + src[i0 + 1] * frac).toInt().toShort()
+        }
+        return out
+    }
 
     fun release() {
         voices.indices.forEach { i ->

@@ -8,6 +8,7 @@ struct RootView: View {
     @EnvironmentObject private var ads: AdsManager
     @EnvironmentObject private var tutorial: TutorialStore
     @EnvironmentObject private var player: PlayerStore
+    @EnvironmentObject private var store: StoreManager
 
     @State private var splashDone = false
 
@@ -94,6 +95,12 @@ struct RootView: View {
         // Pencere/kök görünüm arka planını siyaha sabitler: bölüm geçişinde
         // SpriteKit sahnesi yeniden kurulurken bir karelik BEYAZ parlama olmasın
         .background(WindowBackgroundFixer())
+        // Premium'un kendi kaydettiği sesler: abonelik durumu değiştikçe motora
+        // yüklenir ya da boşaltılır (kayıtlar diskte kalır).
+        .onAppear { CustomSoundStore.shared.premiumActive = store.isPremium }
+        .onChange(of: store.isPremium) { _, isPremium in
+            CustomSoundStore.shared.premiumActive = isPremium
+        }
     }
 
     /// Açılıştan sonraki ilk yönlendirme. Ad önce sorulur — sıralamaya sonradan

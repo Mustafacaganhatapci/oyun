@@ -157,4 +157,18 @@
     <string name="restart_run_title">Recommencer la partie ?</string>
     <string name="restart_run_body">Le score de cette partie sera perdu.</string>
     <string name="keep_playing">Continuer</string>
+    <string name="custom_sounds_title">Tes propres sons</string>
+    <string name="custom_sounds_body">Enregistre tes propres sons de saut, de mort, de vie perdue et de niveau terminé. Le saut monte dans les aigus avec ton combo, comme celui d’origine. Les enregistrements ne quittent jamais ton appareil.</string>
+    <string name="custom_sounds_use">Utiliser mes enregistrements</string>
+    <string name="custom_sounds_mic_denied">L’accès au micro est désactivé. Active-le dans les réglages Android pour enregistrer.</string>
+    <string name="recording_now">Enregistrement…</string>
+    <string name="premium_badge">PREMIUM</string>
+    <string name="sfx_hop">Saut</string>
+    <string name="sfx_life_lost">Vie perdue</string>
+    <string name="sfx_death">Mort</string>
+    <string name="sfx_level_complete">Niveau terminé</string>
+    <string name="sfx_hop_hint">Monte dans les aigus quand ton combo grandit.</string>
+    <string name="sfx_life_lost_hint">Se déclenche quand une vie supplémentaire est utilisée.</string>
+    <string name="sfx_death_hint">Se déclenche quand la sphère est perdue.</string>
+    <string name="sfx_level_complete_hint">Se déclenche quand un niveau est terminé.</string>
 </resources>

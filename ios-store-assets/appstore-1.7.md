@@ -70,7 +70,13 @@ Bu sürüm baştan aşağı bir görünüm yenilemesi.
 • Karakterler artık satın alınmıyor: yıldız eşiği geçilince kendiliğinden
   açılıyor ve açıldığı anda kutlama ekranı çıkıyor.
 • Renk körlüğü modu eklendi.
-• Premium oyunculara sonsuz modda tur başına bir can hakkı.
+• Premium oyunculara sonsuz modda tur başına bir can hakkı — ve artık kendi
+  seslerini kaydedebiliyorlar: atlayış, ölüm, can eksilme ve bölüm bitirme.
+  Atlayış sesi hazır melodideki gibi kombo yükseldikçe inceliyor. Kayıtlar
+  cihazdan çıkmıyor.
+• Uzun kombolarda atlayış sesi artık tavan yapmıyor; dizi üç oktava çıktı.
+• Can eksilmesinin kendine ait bir sesi oldu.
+• Sonsuz moda sol üstten yeniden başlatma düğmesi eklendi.
 • Hız turunda kapı, yıldızların hepsi toplanmadan açılmıyor.
 • Sonsuz modda boşluğa atılan küre artık gecikmeden ölüyor; 0 skor
   sıralamaya yazılmıyor.
@@ -144,7 +150,13 @@ This release is a full visual overhaul.
 • Characters are no longer bought. They unlock on their own when you cross a
   star threshold, with a reveal screen the moment it happens.
 • Colorblind mode added.
-• Premium players get one extra life per endless run.
+• Premium players get one extra life per endless run — and can now record
+  their own sounds for the hop, death, life lost and level complete. The hop
+  rises in pitch with your combo, just like the built-in one. Recordings never
+  leave the device.
+• The hop no longer tops out on long combos; the scale now spans three octaves.
+• Losing a life has its own sound.
+• Endless mode gets a restart button in the top left.
 • In Speed Run the gate no longer opens before every star is collected.
 • An orb thrown into empty space in endless mode now dies without the delay,
   and a score of 0 is no longer written to the leaderboard.
@@ -218,7 +230,13 @@ Esta versión renueva por completo el aspecto del juego.
 • Los personajes ya no se compran: se desbloquean solos al cruzar una meta de
   estrellas, con una pantalla de celebración en ese mismo momento.
 • Añadido el modo daltónico.
-• Los jugadores premium tienen una vida extra por partida en el modo infinito.
+• Los jugadores premium tienen una vida extra por partida en el modo infinito
+  y ahora pueden grabar sus propios sonidos: salto, muerte, vida perdida y
+  nivel completado. El salto sube de tono con el combo, igual que el original.
+  Las grabaciones nunca salen del dispositivo.
+• El salto ya no se estanca en combos largos: la escala abarca tres octavas.
+• Perder una vida tiene su propio sonido.
+• El modo infinito estrena un botón de reinicio arriba a la izquierda.
 • En Contrarreloj la puerta ya no se abre sin recoger todas las estrellas.
 • En el modo infinito, la esfera lanzada al vacío ya no tarda en morir, y una
   puntuación de 0 no se registra en la clasificación.

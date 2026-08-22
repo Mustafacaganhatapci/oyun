@@ -157,4 +157,18 @@
     <string name="restart_run_title">Runde neu starten?</string>
     <string name="restart_run_body">Die Punktzahl dieser Runde geht verloren.</string>
     <string name="keep_playing">Weiterspielen</string>
+    <string name="custom_sounds_title">Deine eigenen Sounds</string>
+    <string name="custom_sounds_body">Nimm deine eigenen Sounds für Sprung, Tod, Lebensverlust und Levelabschluss auf. Der Sprungsound wird mit steigendem Combo höher — genau wie der eingebaute. Aufnahmen verlassen dein Gerät nie.</string>
+    <string name="custom_sounds_use">Meine Aufnahmen verwenden</string>
+    <string name="custom_sounds_mic_denied">Mikrofonzugriff ist aus. Aktiviere ihn in den Android-Einstellungen, um aufzunehmen.</string>
+    <string name="recording_now">Nimmt auf…</string>
+    <string name="premium_badge">PREMIUM</string>
+    <string name="sfx_hop">Sprung</string>
+    <string name="sfx_life_lost">Leben verloren</string>
+    <string name="sfx_death">Tod</string>
+    <string name="sfx_level_complete">Level geschafft</string>
+    <string name="sfx_hop_hint">Wird mit wachsendem Combo höher.</string>
+    <string name="sfx_life_lost_hint">Ertönt, wenn ein Extraleben verbraucht wird.</string>
+    <string name="sfx_death_hint">Ertönt, wenn die Kugel verloren geht.</string>
+    <string name="sfx_level_complete_hint">Ertönt, wenn ein Level geschafft ist.</string>
 </resources>

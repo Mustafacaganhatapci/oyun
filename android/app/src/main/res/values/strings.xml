@@ -157,4 +157,18 @@
     <string name="restart_run_title">Restart the run?</string>
     <string name="restart_run_body">This run\'s score will be lost.</string>
     <string name="keep_playing">Keep playing</string>
+    <string name="custom_sounds_title">Your Own Sounds</string>
+    <string name="custom_sounds_body">Record your own hop, death, life-lost and level-complete sounds. The hop rises in pitch with your combo, just like the built-in one. Recordings never leave your device.</string>
+    <string name="custom_sounds_use">Use my recordings</string>
+    <string name="custom_sounds_mic_denied">Microphone access is off. Turn it on in Android settings to record.</string>
+    <string name="recording_now">Recording…</string>
+    <string name="premium_badge">PREMIUM</string>
+    <string name="sfx_hop">Hop</string>
+    <string name="sfx_life_lost">Life lost</string>
+    <string name="sfx_death">Death</string>
+    <string name="sfx_level_complete">Level complete</string>
+    <string name="sfx_hop_hint">Rises in pitch as your combo grows.</string>
+    <string name="sfx_life_lost_hint">Plays when an extra life is spent.</string>
+    <string name="sfx_death_hint">Plays when the orb is lost.</string>
+    <string name="sfx_level_complete_hint">Plays when a level is finished.</string>
 </resources>

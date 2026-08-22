@@ -157,4 +157,18 @@
     <string name="restart_run_title">¿Reiniciar la partida?</string>
     <string name="restart_run_body">Se perderá la puntuación de esta partida.</string>
     <string name="keep_playing">Seguir jugando</string>
+    <string name="custom_sounds_title">Tus propios sonidos</string>
+    <string name="custom_sounds_body">Graba tus propios sonidos de salto, muerte, vida perdida y nivel completado. El salto sube de tono con tu combo, igual que el original. Las grabaciones nunca salen de tu dispositivo.</string>
+    <string name="custom_sounds_use">Usar mis grabaciones</string>
+    <string name="custom_sounds_mic_denied">El acceso al micrófono está desactivado. Actívalo en los ajustes de Android para grabar.</string>
+    <string name="recording_now">Grabando…</string>
+    <string name="premium_badge">PREMIUM</string>
+    <string name="sfx_hop">Salto</string>
+    <string name="sfx_life_lost">Vida perdida</string>
+    <string name="sfx_death">Muerte</string>
+    <string name="sfx_level_complete">Nivel completado</string>
+    <string name="sfx_hop_hint">Sube de tono según crece tu combo.</string>
+    <string name="sfx_life_lost_hint">Suena cuando se gasta una vida extra.</string>
+    <string name="sfx_death_hint">Suena cuando se pierde la esfera.</string>
+    <string name="sfx_level_complete_hint">Suena al completar un nivel.</string>
 </resources>

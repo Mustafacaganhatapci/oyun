@@ -15,6 +15,7 @@ import com.caganhatapci.orbeon.services.AdsManager
 import com.caganhatapci.orbeon.services.AudioEngine
 import com.caganhatapci.orbeon.services.BillingManager
 import com.caganhatapci.orbeon.services.ConsentManager
+import com.caganhatapci.orbeon.services.CustomSoundStore
 import com.caganhatapci.orbeon.services.Haptics
 import com.caganhatapci.orbeon.services.LeaderboardService
 import com.caganhatapci.orbeon.store.DailyRewardStore
@@ -38,7 +39,8 @@ class AppState(
     val consent: ConsentManager,
     val leaderboard: LeaderboardService,
     val audio: AudioEngine,
-    val haptics: Haptics
+    val haptics: Haptics,
+    val customSounds: CustomSoundStore
 )
 
 val LocalAppState = staticCompositionLocalOf<AppState> { error("AppState sağlanmadı") }
@@ -65,13 +67,18 @@ class MainActivity : ComponentActivity() {
             consent = ConsentManager(this),
             leaderboard = LeaderboardService(),
             audio = AudioEngine(this),
-            haptics = Haptics(this)
+            haptics = Haptics(this),
+            customSounds = CustomSoundStore(this)
         )
 
         state.audio.soundEnabled = state.settings.soundOn
         state.audio.musicEnabled = state.settings.musicOn
         state.haptics.enabled = state.settings.hapticsOn
         state.leaderboard.configureIfPossible()
+
+        // Premium'un kendi kaydettiği sesler motora yüklenir (yoksa sentetik kalır)
+        state.customSounds.premiumActive = state.billing.isPremium
+        state.customSounds.applyToEngine(state.audio)
 
         // GDPR onayı önce; reklamlar ancak ondan sonra anlamlı
         state.consent.requestIfNeeded(this, state.billing.isPremium) {
@@ -94,6 +101,9 @@ class MainActivity : ComponentActivity() {
         state.daily.refresh()
         state.missions.reloadForToday()
         state.billing.refreshEntitlements()
+        // Abonelik durumu değişmiş olabilir: kendi seslerin buna göre açılır/kapanır
+        state.customSounds.premiumActive = state.billing.isPremium
+        state.customSounds.applyToEngine(state.audio)
     }
 
     override fun onDestroy() {
