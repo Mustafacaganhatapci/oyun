@@ -711,6 +711,10 @@ struct CharacterPreview: View {
     let kind: OrbStyle.Kind
     let theme: Theme
 
+    /// Oyundaki karşılıklarıyla birebir aynı iki sabit renk
+    private static let fireflyGlow = Color(red: 0.75, green: 1.0, blue: 0.4)
+    private static let championGold = Color(red: 1.0, green: 0.82, blue: 0.35)
+
     var body: some View {
         ZStack {
             Circle()
@@ -732,7 +736,11 @@ struct CharacterPreview: View {
                 .foregroundStyle(theme.lumen.color).shadow(color: theme.lumen.color, radius: 6)
         case .crystal:
             Image(systemName: "hexagon.fill").font(.system(size: 18))
-                .foregroundStyle(theme.gate.color).shadow(color: theme.gate.color, radius: 6)
+                .foregroundStyle(theme.gate.opacity(0.85))
+                .overlay {
+                    Image(systemName: "hexagon").font(.system(size: 18))
+                        .foregroundStyle(.white)
+                }
         case .comet:
             HStack(spacing: 0) {
                 Capsule().fill(LinearGradient(colors: [.clear, theme.accent.color],
@@ -748,11 +756,25 @@ struct CharacterPreview: View {
         case .ring:
             Circle().strokeBorder(theme.orb.color, lineWidth: 3).frame(width: 18, height: 18)
         case .diamond:
-            Image(systemName: "suit.diamond.fill").font(.system(size: 18)).foregroundStyle(theme.accent.color)
+            // Oyundaki hâli 45° döndürülmüş bir kare; kart maçası değil
+            Rectangle()
+                .fill(theme.accent.color)
+                .overlay(Rectangle().strokeBorder(.white, lineWidth: 1.2))
+                .frame(width: 14, height: 14)
+                .rotationEffect(.degrees(45))
         case .flame:
-            Image(systemName: "flame.fill").font(.system(size: 18)).foregroundStyle(theme.hazard.color)
+            ZStack {
+                Image(systemName: "flame.fill").font(.system(size: 19))
+                    .foregroundStyle(theme.hazard.color)
+                Image(systemName: "flame.fill").font(.system(size: 10))
+                    .foregroundStyle(theme.lumen.color)
+                    .offset(y: 3)
+            }
         case .pixel:
-            RoundedRectangle(cornerRadius: 2).fill(theme.gate.color).frame(width: 15, height: 15)
+            RoundedRectangle(cornerRadius: 2)
+                .fill(theme.gate.color)
+                .overlay(RoundedRectangle(cornerRadius: 2).strokeBorder(.white, lineWidth: 1))
+                .frame(width: 15, height: 15)
         case .photo:
             if let image = OrbPhotoStore.load() {
                 Image(uiImage: image).resizable().scaledToFill()
@@ -769,16 +791,32 @@ struct CharacterPreview: View {
             Image(systemName: "heart.fill").font(.system(size: 18))
                 .foregroundStyle(Color.pink).shadow(color: .pink, radius: 6)
         case .firefly:
-            Image(systemName: "sparkle").font(.system(size: 18))
-                .foregroundStyle(Color(red: 0.75, green: 1.0, blue: 0.4))
-                .shadow(color: Color(red: 0.75, green: 1.0, blue: 0.4), radius: 6)
+            // Oyundaki hâli: koyu gövde, altında yanıp sönen yeşil kuyruk
+            ZStack {
+                Circle().fill(Color(red: 0.16, green: 0.12, blue: 0.08))
+                    .frame(width: 13, height: 13)
+                Circle().fill(Self.fireflyGlow)
+                    .frame(width: 8, height: 8)
+                    .shadow(color: Self.fireflyGlow, radius: 5)
+                    .offset(y: 7)
+            }
         case .cloud:
-            Image(systemName: "cloud.fill").font(.system(size: 18))
-                .foregroundStyle(.white)
+            // Oyundaki hâli üç beyaz yumak; tek bulut ikonu değil
+            ZStack {
+                Circle().fill(.white).frame(width: 11, height: 11).offset(x: -6, y: 2)
+                Circle().fill(.white).frame(width: 9, height: 9).offset(x: 7, y: 2)
+                Circle().fill(.white).frame(width: 14, height: 14).offset(y: -2)
+            }
         case .champion:
-            Image(systemName: "crown.fill").font(.system(size: 18))
-                .foregroundStyle(Color(red: 1.0, green: 0.82, blue: 0.35))
-                .shadow(color: Color(red: 1.0, green: 0.82, blue: 0.35), radius: 7)
+            ZStack {
+                Circle()
+                    .strokeBorder(style: StrokeStyle(lineWidth: 1.5, dash: [4, 5]))
+                    .foregroundStyle(Self.championGold.opacity(0.85))
+                    .frame(width: 32, height: 32)
+                Image(systemName: "crown.fill").font(.system(size: 16))
+                    .foregroundStyle(Self.championGold)
+                    .shadow(color: Self.championGold, radius: 6)
+            }
         }
     }
 }

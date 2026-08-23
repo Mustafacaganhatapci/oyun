@@ -321,13 +321,26 @@ final class GameScene: SKScene {
             orbCore = core
 
         case .flame:
-            let core = SKShapeNode(circleOfRadius: orbRadius)
+            // Adı "Alev" ama eskiden yalnızca nabız atan kırmızı bir toptu:
+            // ne adına ne de mağazadaki önizlemesine benziyordu.
+            let core = SKShapeNode(path: Self.flamePath(radius: orbRadius * 1.15))
             core.fillColor = theme.hazard.uiColor
             core.strokeColor = .clear
             core.run(.repeatForever(.sequence([
-                .scale(to: 1.2, duration: 0.35), .scale(to: 0.85, duration: 0.35)
+                .scaleX(to: 0.90, y: 1.14, duration: 0.32),
+                .scaleX(to: 1.08, y: 0.92, duration: 0.32)
             ])))
             container.addChild(core)
+
+            let inner = SKShapeNode(path: Self.flamePath(radius: orbRadius * 0.6))
+            inner.fillColor = theme.lumen.uiColor
+            inner.strokeColor = .clear
+            inner.position = CGPoint(x: 0, y: -orbRadius * 0.15)
+            inner.run(.repeatForever(.sequence([
+                .scaleX(to: 1.10, y: 0.90, duration: 0.26),
+                .scaleX(to: 0.92, y: 1.12, duration: 0.26)
+            ])))
+            container.addChild(inner)
             orbCore = core
 
         case .pixel:
@@ -1618,6 +1631,23 @@ final class GameScene: SKScene {
         path.addCurve(to: CGPoint(x: 0, y: -s * 0.8),
                       control1: CGPoint(x: s, y: -s * 0.2),
                       control2: CGPoint(x: s * 0.4, y: -s * 1.3))
+        path.closeSubpath()
+        return path
+    }
+
+    /// Alev: yukarı sivrilen damla. Yuvarlak tabanı + kıvrımlı ucu.
+    static func flamePath(radius r: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        let baseY = -r * 0.15
+        path.move(to: CGPoint(x: 0, y: r * 1.55))
+        path.addCurve(to: CGPoint(x: r, y: baseY),
+                      control1: CGPoint(x: r * 0.5, y: r * 0.9),
+                      control2: CGPoint(x: r, y: r * 0.55))
+        path.addArc(center: CGPoint(x: 0, y: baseY), radius: r,
+                    startAngle: 0, endAngle: .pi, clockwise: true)
+        path.addCurve(to: CGPoint(x: 0, y: r * 1.55),
+                      control1: CGPoint(x: -r, y: r * 0.55),
+                      control2: CGPoint(x: -r * 0.5, y: r * 0.9))
         path.closeSubpath()
         return path
     }

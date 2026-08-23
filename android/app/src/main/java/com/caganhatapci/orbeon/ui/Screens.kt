@@ -1180,7 +1180,7 @@ private fun MenuLogo(theme: Theme, t: Float) {
     }
 }
 
-private const val ARC_START = -125f
+private const val ARC_START = -103f
 private const val ARC_SWEEP = 94f
 
 /** Kürenin yaya ne kadar girdiği (0 = uzak, 1 = tam üstünde). */

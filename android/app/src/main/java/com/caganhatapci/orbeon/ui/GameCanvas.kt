@@ -326,8 +326,15 @@ private fun DrawScope.drawOrb(
         }
 
         OrbStyle.Kind.FLAME -> {
-            val s = 1.02f + 0.18f * sin(t * (PI / 0.35).toFloat())
-            drawCircle(theme.hazard, r * s, c)
+            // Adı "Alev" ama eskiden yalnızca nabız atan kırmızı bir toptu:
+            // ne adına ne de mağazadaki önizlemesine benziyordu.
+            val w = 1f + 0.09f * sin(t * (PI / 0.32).toFloat())
+            drawPath(flamePath(c, r * 1.15f, w, 2f - w), theme.hazard)
+            val iw = 1f - 0.09f * sin(t * (PI / 0.26).toFloat())
+            drawPath(
+                flamePath(Offset(c.x, c.y + r * 0.15f), r * 0.6f, iw, 2f - iw),
+                theme.lumen
+            )
         }
 
         OrbStyle.Kind.PIXEL -> {
@@ -465,6 +472,32 @@ private fun heartPath(c: Offset, s: Float): Path {
     path.arcTo(Rect(c.x - s, c.y - s * 0.85f, c.x, c.y + s * 0.15f), 180f, 180f, false)
     path.arcTo(Rect(c.x, c.y - s * 0.85f, c.x + s, c.y + s * 0.15f), 180f, 180f, false)
     path.cubicTo(c.x + s, c.y + s * 0.2f, c.x + s * 0.4f, c.y + s * 1.3f, c.x, c.y + s * 0.8f)
+    path.close()
+    return path
+}
+
+/**
+ * Alev: yukarı sivrilen damla. sx/sy, iOS'taki scaleX/scaleY salınımının
+ * karşılığı — alev yanarken enine/boyuna hafifçe oynar.
+ * (Compose'da y aşağı arttığı için iOS'un tersine işaretler çevrilir.)
+ */
+private fun flamePath(c: Offset, r: Float, sx: Float, sy: Float): Path {
+    val rx = r * sx
+    val ry = r * sy
+    val baseY = c.y + ry * 0.15f
+    val path = Path()
+    path.moveTo(c.x, c.y - ry * 1.55f)
+    path.cubicTo(
+        c.x + rx * 0.5f, c.y - ry * 0.9f,
+        c.x + rx, c.y - ry * 0.55f,
+        c.x + rx, baseY
+    )
+    path.arcTo(Rect(c.x - rx, baseY - ry, c.x + rx, baseY + ry), 0f, 180f, false)
+    path.cubicTo(
+        c.x - rx, c.y - ry * 0.55f,
+        c.x - rx * 0.5f, c.y - ry * 0.9f,
+        c.x, c.y - ry * 1.55f
+    )
     path.close()
     return path
 }

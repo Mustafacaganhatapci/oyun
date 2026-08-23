@@ -303,64 +303,73 @@ struct MainMenuView: View {
 
     private static let medals = ["🥇", "🥈", "🥉"]
 
-    /// Halkanın yarıçapı ve kırmızı yayın yeri — hem çizim hem de kürenin
-    /// "yay üstünde mi" hesabı aynı sayıları kullansın diye tek yerde.
-    private static let logoRadius = 48.0
-    private static let logoArcFrom = 0.06        // Circle().trim başlangıcı
-    private static let logoArcTo = 0.32
-    private static let logoArcRotation = -125.0  // yayın çember üstündeki yeri
-    private static let logoPeriod = 9.0          // bir tur kaç saniye
+    /// Yayın çember üstündeki yeri — hem çizim hem de kürenin "yay üstünde mi"
+    /// hesabı aynı sayıları kullansın diye tek yerde. (Android'de de aynı.)
+    private static let logoArcStart = -103.0
+    private static let logoArcSweep = 94.0
+    private static let logoPeriod = 9.0     // bir tur kaç saniye
+    private static let logoSize = 126.0
 
     /// Marka işareti oyunun kendisi: nötr bir halka, üstünde tek kırmızı yay,
     /// çemberin üstünde dolanan beyaz küre. Yani logo, oyunun bir karesi.
+    ///
+    /// Canvas ile ÇİZİLİYOR, view ağacıyla kurulmuyor. Küre bir görünüm olduğu
+    /// sürece SwiftUI onun konumunu animasyona uygun sayıyor: menünün yerleşimi
+    /// oynadığında (yıldız hedefi tek satırdan iki satıra geçince) ya da tur
+    /// 360°'den 0°'ye dönerken, üstteki herhangi bir örtük animasyon araya girip
+    /// küreyi alt noktada kaydırıyordu. Canvas'ta böyle bir ara değer yok.
     private var logo: some View {
-        // Konum her karede saatten hesaplanır. Eskiden tek bir rotationEffect'e
-        // bağlı örtük animasyon vardı; ana ekranın yerleşimi oynadığında
-        // (yıldız hedefi tek satırdan iki satıra geçince) SwiftUI o animasyonu
-        // yeniden başlatıyor ve küre alt noktada aşağı kayıyordu.
         TimelineView(.animation) { context in
             let t = context.date.timeIntervalSinceReferenceDate
             let turn = (t / Self.logoPeriod).truncatingRemainder(dividingBy: 1)
-            logoMark(rotation: turn * 360)
+            logoCanvas(degrees: turn * 360)
         }
-        .frame(width: 116, height: 116)
+        .frame(width: Self.logoSize, height: Self.logoSize)
     }
 
-    private func logoMark(rotation: Double) -> some View {
-        // 0° = alt nokta; oradan saat yönünde döner
-        let angle = (rotation + 90) * .pi / 180
-        let x = Self.logoRadius * cos(angle)
-        let y = Self.logoRadius * sin(angle)
-        let heat = hazardHeat(rotation: rotation)
+    private func logoCanvas(degrees: Double) -> some View {
+        let ring = settings.theme.ring.color
+        let hazard = settings.theme.hazard.color
+        let orb = settings.theme.orb.color
+        let heat = hazardHeat(degrees: degrees)
 
-        return ZStack {
-            Circle()
-                .strokeBorder(settings.theme.ring.color, lineWidth: 4)
-                .frame(width: 96, height: 96)
+        return Canvas { ctx, size in
+            let c = CGPoint(x: size.width / 2, y: size.height / 2)
+            let r = size.width * 0.373
+            let box = CGRect(x: c.x - r, y: c.y - r, width: r * 2, height: r * 2)
 
-            Circle()
-                .trim(from: Self.logoArcFrom, to: Self.logoArcTo)
-                .stroke(settings.theme.hazard.color,
-                        style: StrokeStyle(lineWidth: 9, lineCap: .round))
-                .frame(width: 96, height: 96)
-                .rotationEffect(.degrees(Self.logoArcRotation))
+            ctx.stroke(Path(ellipseIn: box), with: .color(ring), lineWidth: 4)
+
+            var arc = Path()
+            arc.addArc(center: c, radius: r,
+                       startAngle: .degrees(Self.logoArcStart),
+                       endAngle: .degrees(Self.logoArcStart + Self.logoArcSweep),
+                       clockwise: false)
+            ctx.stroke(arc, with: .color(hazard),
+                       style: StrokeStyle(lineWidth: 9, lineCap: .round))
+
+            // 0° = alt nokta; oradan saat yönünde döner
+            let a = (degrees + 90) * .pi / 180
+            let p = CGPoint(x: c.x + cos(a) * r, y: c.y + sin(a) * r)
+            let orbR = 8.5
 
             // Küre kırmızı yayın üstünden geçerken yanar, çıkınca beyaza döner:
             // logo, oyunun tek kuralını bir turda anlatıyor.
-            ZStack {
-                Circle().fill(settings.theme.orb.color)
-                Circle().fill(settings.theme.hazard.color).opacity(heat)
+            if heat > 0 {
+                let g = orbR * (1 + heat * 0.7)
+                ctx.fill(Path(ellipseIn: CGRect(x: p.x - g, y: p.y - g, width: g * 2, height: g * 2)),
+                         with: .color(hazard.opacity(heat * 0.35)))
             }
-            .frame(width: 17, height: 17)
-            .shadow(color: settings.theme.hazard.color.opacity(heat * 0.9),
-                    radius: CGFloat(9 * heat))
-            .offset(x: CGFloat(x), y: CGFloat(y))
+            let dot = Path(ellipseIn: CGRect(x: p.x - orbR, y: p.y - orbR,
+                                             width: orbR * 2, height: orbR * 2))
+            ctx.fill(dot, with: .color(orb))
+            if heat > 0 { ctx.fill(dot, with: .color(hazard.opacity(heat))) }
         }
     }
 
     /// Kürenin yaya ne kadar girdiği (0 = uzak, 1 = tam üstünde).
     /// Uçlarda yumuşak geçiş var; sert renk sıçraması ucuz duruyordu.
-    private func hazardHeat(rotation: Double) -> Double {
+    private func hazardHeat(degrees: Double) -> Double {
         func norm(_ a: Double) -> Double {
             let m = a.truncatingRemainder(dividingBy: 360)
             return m < 0 ? m + 360 : m
@@ -370,9 +379,9 @@ struct MainMenuView: View {
             return min(d, 360 - d)
         }
 
-        let orb = norm(rotation + 90)
-        let start = norm(Self.logoArcFrom * 360 + Self.logoArcRotation)
-        let end = norm(Self.logoArcTo * 360 + Self.logoArcRotation)
+        let orb = norm(degrees + 90)
+        let start = norm(Self.logoArcStart)
+        let end = norm(Self.logoArcStart + Self.logoArcSweep)
 
         let inside = start <= end
             ? (orb >= start && orb <= end)
