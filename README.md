@@ -168,6 +168,25 @@ SDK'yı ekleyince gerçek test reklamları görünür. Yayın öncesi kendi kiml
 - [ ] AdMob kimliklerini gerçek değerlerle değiştir
 - [ ] Gizlilik politikası URL'i (reklam SDK'sı eklenince gerekli)
 
+## 📄 app-ads.txt (AdMob uygulama doğrulaması)
+
+`app-ads.txt` depo kökünde duruyor. AdMob'un "Uygulamayı doğrula" adımı için
+**yayın alan adının kökünden** sunulması gerekir — alt klasör kabul edilmez:
+
+```
+https://<alan-adin>/app-ads.txt      ✅
+https://<alan-adin>/privacy/app-ads.txt   ❌
+```
+
+Doğrulamanın geçmesi için iki şey birden gerekir:
+
+1. Bu dosya alan adının kökünde yayında olacak.
+2. **App Store girişindeki "Developer Website" (Marketing URL) tam olarak aynı
+   alan adını gösterecek.** AdMob geliştirici sitesini App Store sayfasından
+   okuyor; orada site yoksa dosya doğru olsa bile doğrulama başarısız olur.
+
+Aynı satır Google Play tarafı için de geçerlidir; tek dosya iki mağazaya yeter.
+
 ## 🏆 Neden akılda kalır?
 
 - **Tek cümlelik oynanış**: "Dokun, fırla, tutun." Öğrenmesi 5 saniye, ustalaşması haftalar.
