@@ -544,6 +544,47 @@
         }
       }
     },
+    "All audio is created on your device — nothing is streamed or uploaded.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All audio is created on your device — nothing is streamed or uploaded."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bütün sesler cihazında üretilir — hiçbir şey aktarılmaz, hiçbir şey yüklenmez."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der gesamte Ton entsteht auf deinem Gerät — nichts wird gestreamt oder hochgeladen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todo el audio se crea en tu dispositivo: nada se transmite ni se sube."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout le son est créé sur ton appareil — rien n’est diffusé ni envoyé."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音はすべて端末上で生成されます。配信もアップロードもありません。"
+          }
+        }
+      }
+    },
     "All characters unlocked": {
       "extractionState": "manual",
       "localizations": {
@@ -575,41 +616,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tüm karakterler açıldı"
-          }
-        }
-      }
-    },
-    "All music and sounds are synthesized in real time on your device.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle Musik und Sounds werden in Echtzeit auf deinem Gerät erzeugt."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toda la música y los sonidos se sintetizan en tiempo real en tu dispositivo."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toute la musique et les sons sont synthétisés en temps réel sur ton appareil."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべての音楽とサウンドは端末上でリアルタイムに合成されます。"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tüm müzik ve sesler cihazında gerçek zamanlı sentezlenir."
           }
         }
       }
@@ -7452,37 +7458,43 @@
         }
       }
     },
-    "Version 1.0": {
+    "Version": {
       "extractionState": "manual",
       "localizations": {
-        "de": {
+        "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Version 1.0"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Versión 1.0"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Version 1.0"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バージョン 1.0"
+            "value": "Version"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sürüm 1.0"
+            "value": "Sürüm"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バージョン"
           }
         }
       }

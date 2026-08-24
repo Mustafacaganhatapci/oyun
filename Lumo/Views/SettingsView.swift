@@ -11,6 +11,12 @@ struct SettingsView: View {
 
     @State private var photoItem: PhotosPickerItem?
 
+    /// Info.plist'ten okunur — sürüm yükseltirken burayı düzeltmek unutulmasın
+    private static var appVersion: String {
+        let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        return "\(String(localized: "Version")) \(short ?? "—")"
+    }
+
     /// Bir küre stili şu an kuşanılabilir mi?
     /// Premium yalnızca premium'a özel stilleri (foto küre) açar;
     /// yıldızlı karakterler herkes için yıldız biriktirerek alınır.
@@ -160,10 +166,12 @@ struct SettingsView: View {
                             .font(.system(.headline, design: .rounded).bold())
                             .foregroundStyle(.white.opacity(0.8))
                             .kerning(2)
-                        Text("Version 1.0")
+                        // Sürüm elle yazılıydı ve 1.0'da kalmıştı; artık
+                        // derlemenin kendi numarasını gösteriyor.
+                        Text(verbatim: "\(Self.appVersion)")
                             .font(.system(.footnote, design: .rounded))
                             .foregroundStyle(.white.opacity(0.4))
-                        Text("All music and sounds are synthesized in real time on your device.")
+                        Text("All audio is created on your device — nothing is streamed or uploaded.")
                             .font(.system(.caption, design: .rounded))
                             .foregroundStyle(.white.opacity(0.35))
                             .multilineTextAlignment(.center)
