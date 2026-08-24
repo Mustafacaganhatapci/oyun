@@ -132,8 +132,19 @@ final class LeaderboardService: ObservableObject {
         #endif
     }
 
-    /// Oyuncunun en iyi sonucunu küresel tabloya yazar
+    /// Oyuncunun BU TURDA yaptığı sonucu küresel tabloya yazar
     func submit(mode: LeaderboardMode, value: Double, username: String, playerID: String) {
+        // Sonsuz modda 0, "oynadım" değil "ilk halkadan atlayamadım" demek.
+        // Tabloyu sıfırlarla doldurmanın kimseye faydası yok; hız turunda ise
+        // düşük değer İYİ olduğu için aynı eşik uygulanamaz.
+        guard !(mode == .endless && value < 1) else {
+            leaderboardLog("GÖNDERİLMEDİ: sonsuz modda 0 skor tabloya yazılmaz")
+            return
+        }
+        // Firebase'e gitmese bile (çevrimdışı, ad henüz girilmemiş) bu haftanın
+        // sonucunu yerelde tut — sıralama ekranı açıldığında yeniden denenir.
+        rememberWeekly(mode, value)
+
         // Sessizce çıkmak, "yazma denendi ama reddedildi" ile "yazma hiç
         // denenmedi" durumlarını ayırt edilemez kılıyordu.
         guard isAvailable else {
@@ -144,13 +155,6 @@ final class LeaderboardService: ObservableObject {
             leaderboardLog("GÖNDERİLMEDİ: kullanıcı adı boş — skor \(value) yazılmadı", isError: true)
             return
         }
-        // Sonsuz modda 0, "oynadım" değil "ilk halkadan atlayamadım" demek.
-        // Tabloyu sıfırlarla doldurmanın kimseye faydası yok; hız turunda ise
-        // düşük değer İYİ olduğu için aynı eşik uygulanamaz.
-        guard !(mode == .endless && value < 1) else {
-            leaderboardLog("GÖNDERİLMEDİ: sonsuz modda 0 skor tabloya yazılmaz")
-            return
-        }
         #if canImport(FirebaseCore)
         let week = currentWeek
         Task {
@@ -158,6 +162,43 @@ final class LeaderboardService: ObservableObject {
                                         username: username, playerID: playerID)
         }
         #endif
+    }
+
+    // MARK: Bu haftanın kendi sonucu
+    //
+    // Haftalık tabloya YALNIZCA bu hafta yapılan sonuç yazılır. Eskiden sıralama
+    // ekranı her açılışında oyuncunun TÜM ZAMANLARIN rekorunu gönderiyordu:
+    // hafta sıfırlandığı anda o rekor taze haftaya düşüyor ve oyuncu o hafta ne
+    // yaparsa yapsın tabloda hep eski rakamı görüyordu — üstelik onu geçmeden
+    // hiçbir yeni skoru da yazılamıyordu.
+    //
+    // Anahtar hafta numarasını içerdiği için yeni hafta kendiliğinden boş başlar;
+    // eski haftaların değerleri okunmaz.
+    private func weeklyKey(_ mode: LeaderboardMode) -> String {
+        "lumo.weeklyBest.\(mode.base).w\(currentWeek)"
+    }
+
+    /// Bu hafta yapılmış en iyi sonuç — hiç oynanmadıysa nil
+    func weeklyBest(_ mode: LeaderboardMode) -> Double? {
+        let key = weeklyKey(mode)
+        guard UserDefaults.standard.object(forKey: key) != nil else { return nil }
+        return UserDefaults.standard.double(forKey: key)
+    }
+
+    private func rememberWeekly(_ mode: LeaderboardMode, _ value: Double) {
+        if let existing = weeklyBest(mode) {
+            let better = mode == .endless ? value > existing : value < existing
+            guard better else { return }
+        }
+        UserDefaults.standard.set(value, forKey: weeklyKey(mode))
+    }
+
+    /// Sıralama ekranı açılınca çağrılır: bu haftaki sonuç bir sebeple
+    /// (çevrimdışıydı, ad sonradan girildi) yazılamadıysa yeniden dener.
+    /// Genel rekor ASLA gönderilmez.
+    func resubmitWeeklyBest(mode: LeaderboardMode, username: String, playerID: String) {
+        guard let best = weeklyBest(mode) else { return }
+        submit(mode: mode, value: best, username: username, playerID: playerID)
     }
 
     /// Şampiyonluk ödülü: sıraya göre yıldız. Şampiyon küresi üçüne de verilir.

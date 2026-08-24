@@ -170,15 +170,17 @@ struct WorldRankingView: View {
         }
     }
 
-    /// Kendi en iyi skorunu gönder + tabloyu getir
+    /// Tabloyu getir. Buradan GENEL REKOR gönderilmez: tablo haftalık, gönderim
+    /// de tur bitiminde yapılır. Eskiden her açılışta tüm zamanların rekoru
+    /// gönderiliyordu ve hafta sıfırlanır sıfırlanmaz o rekor taze haftaya
+    /// düşüyordu — oyuncu ne yaparsa yapsın tabloda hep eski rakamını görüyordu.
+    /// Yalnızca BU HAFTA yapılmış ama yazılamamış bir sonuç varsa yeniden denenir.
     private func load() {
         guard leaderboard.isAvailable else { return }
         if player.hasUsername {
-            let best: Double = mode == .endless ? Double(progress.endlessBest) : progress.speedrunBest
-            if best > 0 {
-                leaderboard.submit(mode: mode, value: best,
-                                   username: player.username, playerID: player.playerID)
-            }
+            leaderboard.resubmitWeeklyBest(mode: mode,
+                                           username: player.username,
+                                           playerID: player.playerID)
         }
         leaderboard.refresh(mode: mode, myPlayerID: player.playerID)
     }
