@@ -11,6 +11,7 @@ struct ShopView: View {
 
     @State private var codeInput = ""
     @State private var codeState: CodeState = .idle
+    @State private var checkingCode = false
     @FocusState private var codeFocused: Bool
     @State private var shimmer = false
     @State private var crownPulse = false
@@ -174,27 +175,41 @@ struct ShopView: View {
 
                 Button {
                     codeFocused = false
-                    if store.redeem(code: codeInput) {
-                        codeState = .success
-                        AudioEngine.shared.playWin()
-                        Haptics.shared.win()
-                    } else if store.recordFailedPromoAttempt() {
-                        progress.grantBonusStars(StoreManager.promoFailBonusStars)
-                        codeState = .bonusGranted
-                        AudioEngine.shared.playWin()
-                        Haptics.shared.win()
-                    } else {
-                        codeState = .failure
-                        AudioEngine.shared.playFail()
+                    // Kod artık Firestore'a da sorulduğu için anında dönmüyor;
+                    // beklerken düğmenin yerinde bir çember dönüyor.
+                    checkingCode = true
+                    Task {
+                        let accepted = await store.redeem(code: codeInput)
+                        checkingCode = false
+                        if accepted {
+                            codeState = .success
+                            AudioEngine.shared.playWin()
+                            Haptics.shared.win()
+                        } else if store.recordFailedPromoAttempt() {
+                            progress.grantBonusStars(StoreManager.promoFailBonusStars)
+                            codeState = .bonusGranted
+                            AudioEngine.shared.playWin()
+                            Haptics.shared.win()
+                        } else {
+                            codeState = .failure
+                            AudioEngine.shared.playFail()
+                        }
                     }
                 } label: {
-                    Text("Redeem")
-                        .font(.system(.subheadline, design: .rounded).bold())
-                        .foregroundStyle(.black)
-                        .padding(.horizontal, 16).padding(.vertical, 10)
-                        .background(Capsule().fill(settings.theme.accent.color))
+                    Group {
+                        if checkingCode {
+                            ProgressView().tint(.black)
+                        } else {
+                            Text("Redeem")
+                                .font(.system(.subheadline, design: .rounded).bold())
+                                .foregroundStyle(.black)
+                        }
+                    }
+                    .frame(minWidth: 64)
+                    .padding(.horizontal, 16).padding(.vertical, 10)
+                    .background(Capsule().fill(settings.theme.accent.color))
                 }
-                .disabled(codeInput.isEmpty)
+                .disabled(codeInput.isEmpty || checkingCode)
                 .opacity(codeInput.isEmpty ? 0.5 : 1)
             }
 

@@ -304,6 +304,61 @@ enum FirebaseBridge {
         }
     }
 
+    /// Firestore'daki `promoCodes` koleksiyonundan bir kodu kullanır.
+    ///
+    /// Belge kimliği kodun küçük harfli hâli. Alanlar:
+    ///   active   (bool)   — false ise kod kapalı
+    ///   maxUses  (int)    — 0 ya da yok: sınırsız
+    ///   uses     (int)    — kaç kez kullanıldı (biz artırırız)
+    ///   note     (string) — kimin için verildiği, yalnızca senin için
+    ///
+    /// İşlem (transaction) içinde okunup artırılır: aynı anda iki kişi son
+    /// hakkı kullanamaz. Aynı oyuncu kodu tekrar girerse hak harcanmaz —
+    /// telefon değiştiren biri kodunu yeniden kullanabilsin diye.
+    ///
+    /// true = kabul, false = geçersiz/bitmiş, nil = ağ hatası (çağıran yerel
+    /// listeye düşer)
+    static func redeemPromoCode(_ code: String, playerID: String) async -> Bool? {
+        let db = Firestore.firestore()
+        let doc = db.collection("promoCodes").document(code)
+        do {
+            let result = try await db.runTransaction { transaction, errorPointer -> Any? in
+                do {
+                    let snapshot = try transaction.getDocument(doc)
+                    guard snapshot.exists, let data = snapshot.data() else { return false }
+                    if let active = data["active"] as? Bool, !active { return false }
+
+                    // Bu oyuncu daha önce kullandıysa hak düşmez
+                    var redeemers = data["redeemedBy"] as? [String] ?? []
+                    if redeemers.contains(playerID) { return true }
+
+                    let uses = data["uses"] as? Int ?? 0
+                    let maxUses = data["maxUses"] as? Int ?? 0
+                    if maxUses > 0, uses >= maxUses { return false }
+
+                    // Liste sınırsız büyümesin: son 50 kullanan tutulur
+                    redeemers.append(playerID)
+                    if redeemers.count > 50 { redeemers.removeFirst(redeemers.count - 50) }
+
+                    transaction.updateData([
+                        "uses": uses + 1,
+                        "redeemedBy": redeemers,
+                        "lastRedeemedAt": FieldValue.serverTimestamp()
+                    ], forDocument: doc)
+                    return true
+                } catch let error as NSError {
+                    errorPointer?.pointee = error
+                    return nil
+                }
+            }
+            return result as? Bool
+        } catch {
+            leaderboardLog("KOD OKUNAMADI promoCodes/\(code): \(error.localizedDescription)",
+                           isError: true)
+            return nil
+        }
+    }
+
     static func submit(mode: LeaderboardMode, week: Int, value: Double,
                        username: String, playerID: String) async {
         let db = Firestore.firestore()
@@ -365,6 +420,7 @@ enum FirebaseBridge {
         if FirebaseApp.app() == nil { FirebaseApp.configure() }
     }
     static func claimUsername(_ name: String, playerID: String) async -> Bool? { nil }
+    static func redeemPromoCode(_ code: String, playerID: String) async -> Bool? { nil }
     static func submit(mode: LeaderboardMode, week: Int, value: Double,
                        username: String, playerID: String) async {}
     static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] { [] }

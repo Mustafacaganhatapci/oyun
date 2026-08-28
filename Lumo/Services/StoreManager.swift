@@ -120,14 +120,38 @@ final class StoreManager: ObservableObject {
     }
 
     /// Tanıdık kodunu dener. Geçerliyse premium'u kalıcı açar ve true döner.
-    @discardableResult
-    func redeem(code: String) -> Bool {
+    ///
+    /// Kodu önce koda gömülü listede, sonra Firestore'daki `promoCodes`
+    /// koleksiyonunda arar.
+    ///
+    /// Gömülü liste sürüm gönderilmeden değiştirilemiyordu: birine kod vermek
+    /// için yeni derleme çıkmak gerekiyordu. Firestore tarafı konsoldan anında
+    /// yönetiliyor — kaç kez kullanılacağını, açık mı kapalı mı olduğunu sen
+    /// belirliyorsun.
+    func redeem(code: String) async -> Bool {
         let normalized = code.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard Self.promoCodes.contains(normalized) else { return false }
+        guard !normalized.isEmpty else { return false }
+
+        // Gömülü liste önce: çevrimdışıyken de çalışsın
+        if Self.promoCodes.contains(normalized) {
+            grantPromo()
+            return true
+        }
+        #if canImport(FirebaseCore)
+        let playerID = UserDefaults.standard.string(forKey: "lumo.player.id") ?? "anonymous"
+        if let accepted = await FirebaseBridge.redeemPromoCode(normalized, playerID: playerID),
+           accepted {
+            grantPromo()
+            return true
+        }
+        #endif
+        return false
+    }
+
+    private func grantPromo() {
         promoGranted = true
         UserDefaults.standard.set(true, forKey: "lumo.store.promo")
         recomputePremium()
-        return true
     }
 
     /// Yanlış kod girildiğinde çağrılır. Eşiği aşan İLK denemede (bir kereye

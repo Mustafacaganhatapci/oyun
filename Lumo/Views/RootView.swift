@@ -98,6 +98,17 @@ struct RootView: View {
                 .zIndex(160)
             }
 
+            // Satın alma sırasında ekranı kaplayan bekleme katmanı. Eskiden
+            // yalnızca düğme soluyordu; App Store sayfası açılana kadar geçen
+            // 1-2 saniyede hiçbir şey olmuyormuş gibi görünüyor, oyuncu üst
+            // üste basıp uygulamadan çıkıyordu. Kök görünümde durduğu için
+            // hem mağazayı hem reklam sonrası teklif kartını kapsıyor.
+            if store.purchaseInProgress {
+                purchaseBlocker
+                    .transition(.opacity)
+                    .zIndex(180)
+            }
+
             // Açılış imzası — yalnızca uygulama başlarken bir kez
             if !splashDone {
                 SplashView {
@@ -118,6 +129,7 @@ struct RootView: View {
         // Premium'un kendi kaydettiği sesler: abonelik durumu değiştikçe motora
         // yüklenir ya da boşaltılır (kayıtlar diskte kalır).
         .animation(.easeInOut(duration: 0.3), value: showOfflineNotice)
+        .animation(.easeInOut(duration: 0.2), value: store.purchaseInProgress)
         .onAppear { CustomSoundStore.shared.premiumActive = store.isPremium }
         .onChange(of: store.isPremium) { _, isPremium in
             CustomSoundStore.shared.premiumActive = isPremium
@@ -126,6 +138,28 @@ struct RootView: View {
         .onChange(of: app.route) { _, _ in evaluateOfflineNotice() }
         .onChange(of: net.isOnline) { _, _ in evaluateOfflineNotice() }
         .onChange(of: splashDone) { _, _ in evaluateOfflineNotice() }
+    }
+
+    /// Dokunuşu yutar: bekleme sürerken alttaki düğmelere ikinci kez basılamaz
+    private var purchaseBlocker: some View {
+        ZStack {
+            Color.black.opacity(0.55).ignoresSafeArea()
+            VStack(spacing: 14) {
+                ProgressView()
+                    .controlSize(.large)
+                    .tint(.white)
+                Text("Contacting the App Store…")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.9))
+            }
+            .padding(28)
+            .background {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(.black.opacity(0.75))
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { }
     }
 
     private func evaluateOfflineNotice() {

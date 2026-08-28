@@ -242,14 +242,31 @@ class BillingManager(private val context: Context) {
         }
     }
 
-    /** Tanıdık kodunu dener. Geçerliyse premium'u kalıcı açar ve true döner. */
-    fun redeem(code: String): Boolean {
+    /**
+     * Tanıdık kodunu dener. Geçerliyse premium'u kalıcı açar.
+     *
+     * Önce koda gömülü listeye bakar (çevrimdışı da çalışsın), sonra
+     * Firestore'daki `promoCodes` koleksiyonuna sorar. İkincisi konsoldan
+     * anında yönetiliyor: kod vermek için yeni sürüm çıkmak gerekmiyor.
+     */
+    fun redeem(code: String, playerId: String, onResult: (Boolean) -> Unit) {
         val normalized = code.trim().lowercase()
-        if (!PROMO_CODES.contains(normalized)) return false
+        if (normalized.isEmpty()) { onResult(false); return }
+        if (PROMO_CODES.contains(normalized)) {
+            grantPromo()
+            onResult(true)
+            return
+        }
+        PromoCodes.redeem(normalized, playerId) { accepted ->
+            if (accepted) grantPromo()
+            onResult(accepted)
+        }
+    }
+
+    private fun grantPromo() {
         promoGranted = true
         p.edit().putBoolean("store.promo", true).apply()
         recomputePremium()
-        return true
     }
 
     /**

@@ -468,6 +468,7 @@ fun ShopScreen(onBack: () -> Unit) {
     val scroll = rememberScrollState()
     var codeInput by remember { mutableStateOf("") }
     var codeState by remember { mutableStateOf(0) }   // 0 boş, 1 başarılı, 2 hatalı, 3 teselli
+    var checkingCode by remember { mutableStateOf(false) }
     var starsJustEarned by remember { mutableStateOf(false) }
     val frameTime = rememberFrameTime()
 
@@ -660,16 +661,22 @@ fun ShopScreen(onBack: () -> Unit) {
                                     color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.Bold,
                                     modifier = Modifier
                                         .background(theme.accent, RoundedCornerShape(20.dp))
-                                        .clickable(enabled = codeInput.isNotEmpty()) {
-                                            codeState = when {
-                                                app.billing.redeem(codeInput) -> {
-                                                    app.audio.playWin(); app.haptics.win(); 1
+                                        // Kod artık Firestore'a da sorulduğu için
+                                        // anında dönmüyor; sonuç geri çağrımla gelir
+                                        .clickable(enabled = codeInput.isNotEmpty() && !checkingCode) {
+                                            checkingCode = true
+                                            app.billing.redeem(codeInput, app.player.playerId) { accepted ->
+                                                checkingCode = false
+                                                codeState = when {
+                                                    accepted -> {
+                                                        app.audio.playWin(); app.haptics.win(); 1
+                                                    }
+                                                    app.billing.recordFailedPromoAttempt() -> {
+                                                        app.progress.grantBonusStars(BillingManager.PROMO_FAIL_BONUS_STARS)
+                                                        app.audio.playWin(); 3
+                                                    }
+                                                    else -> { app.audio.playFail(); 2 }
                                                 }
-                                                app.billing.recordFailedPromoAttempt() -> {
-                                                    app.progress.grantBonusStars(BillingManager.PROMO_FAIL_BONUS_STARS)
-                                                    app.audio.playWin(); 3
-                                                }
-                                                else -> { app.audio.playFail(); 2 }
                                             }
                                         }
                                         .padding(horizontal = 16.dp, vertical = 10.dp)

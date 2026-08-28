@@ -4,18 +4,37 @@
 // Yayınlandığını Rules sekmesinin üstündeki "Last published" tarihinden
 // doğrula; yayınlanma birkaç saniye sürebiliyor.
 //
-// Bilerek sade tutuldu. Önceki sürüm koleksiyon adını düzenli ifadeyle
-// süzüyordu ve sahada hem okuma hem yazma "Missing or insufficient
-// permissions" ile reddedildi. Sıralama tablosunda korunacak bir sır yok:
-// tablo zaten herkese açık, yazan taraf da anonim de olsa kimliği doğrulanmış
-// bir oturum. Kuralın anlaşılır olması, kılı kırk yarmasından daha değerli.
+// Bilerek sade tutuldu. Sıralama tablosunda korunacak bir sır yok: tablo zaten
+// herkese açık, yazan taraf da anonim de olsa kimliği doğrulanmış bir oturum.
+// Kuralın anlaşılır olması, kılı kırk yarmasından daha değerli.
+//
+// Tek istisna promosyon kodları. Onlar da istemciden okunmak zorunda (kodu
+// doğrulayan uygulamanın kendisi), ama LİSTELENEBİLİR olmamalı: kimliğini
+// bildiğin tek bir kodu sorabilirsin, koleksiyonun tamamını çekemezsin.
 
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Tüm koleksiyonlar (haftalık sıralama tabloları ve `usernames`):
+    // Premium kodları. `get` açık — uygulama girilen kodu böyle doğruluyor.
+    // `list` KAPALI: aksi hâlde meraklı biri bütün kodları tek istekte
+    // indirip kendine premium açardı.
+    //
+    // Güncelleme yalnızca sayacı ilerletmek için; kodun kendisini (active,
+    // maxUses) istemci değiştiremez, onları konsoldan sen yönetirsin.
+    match /promoCodes/{code} {
+      allow get: if true;
+      allow list: if false;
+      allow create, delete: if false;
+      allow update: if request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['uses', 'redeemedBy', 'lastRedeemedAt'])
+        && request.resource.data.active == resource.data.active
+        && request.resource.data.get('maxUses', 0) == resource.data.get('maxUses', 0);
+    }
+
+    // Kalan her şey (haftalık sıralama tabloları ve `usernames`):
     //   • okuma herkese açık — tablo zaten kamuya görünür
     //   • yazma yalnızca oturum açmış istemcilere (uygulama anonim giriş yapar)
     match /{document=**} {

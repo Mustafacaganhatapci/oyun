@@ -168,6 +168,31 @@ SDK'yı ekleyince gerçek test reklamları görünür. Yayın öncesi kendi kiml
 - [ ] AdMob kimliklerini gerçek değerlerle değiştir
 - [ ] Gizlilik politikası URL'i (reklam SDK'sı eklenince gerekli)
 
+## 🎟️ Premium kodu verme
+
+Kodlar iki yerden okunuyor: `StoreManager.promoCodes` (koda gömülü, çevrimdışı
+da çalışır) ve Firestore'daki **`promoCodes`** koleksiyonu. İkincisi konsoldan
+anında yönetilir, yeni sürüm göndermeye gerek yok.
+
+Yeni kod vermek için Firebase Console → Firestore Database → `promoCodes`
+koleksiyonunda **belge kimliği kodun küçük harfli hâli** olacak şekilde belge
+aç (örn. `kanka2026`) ve şu alanları koy:
+
+| Alan | Tür | Ne işe yarar |
+|---|---|---|
+| `active` | boolean | `false` yaparsan kod anında kapanır |
+| `maxUses` | number | Kaç kişi kullanabilir. `0` ya da hiç yazmazsan sınırsız |
+| `uses` | number | `0` ile başlat, uygulama kendisi artırır |
+| `note` | string | Kimin için verildiği — yalnızca senin göreceğin not |
+
+Uygulama kodu bir işlem (transaction) içinde okuyup sayacı artırıyor, yani iki
+kişi aynı anda son hakkı kullanamıyor. Aynı oyuncu kodu tekrar girerse hak
+düşmüyor (telefon değiştirene kolaylık).
+
+Güvenlik kuralları `promoCodes` için `get`'e izin verip `list`'i kapatıyor:
+kimliğini bildiğin tek bir kodu sorabilirsin, koleksiyonun tamamını çekemezsin.
+`firestore.rules` dosyasını yayınlamayı unutma.
+
 ## 📄 app-ads.txt (AdMob uygulama doğrulaması)
 
 `app-ads.txt` depo kökünde duruyor. AdMob'un "Uygulamayı doğrula" adımı için
