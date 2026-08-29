@@ -63,53 +63,43 @@ Reklamlar isteğe bağlıdır ve oynanışa karışmaz. Hiçbir satın alma oyun
 kolaylaştırmaz — Orbeon'da pay-to-win yoktur.
 
 ### Yenilikler (2.0)
-Bu sürüm oyunun hem sesini hem görünüşünü baştan ele alıyor.
+Bu sürümde en büyük yenilik: premium oyuncular oyunun seslerini kendi
+sesleriyle değiştirebiliyor.
 
-**Kendi seslerin — Premium**
-• Atlayış, ölüm, can eksilme ve bölüm bitirme seslerini kendi sesinle
-  kaydedebilirsin. Atlayış kaydı, hazır melodideki gibi kombo yükseldikçe
-  incelir: oyunun ezgisini artık sen söylüyorsun.
-• Kayıtlar cihazından çıkmaz, hiçbir yere yüklenmez. İstediğin an dinler,
-  siler ya da hepsini tek anahtarla kapatırsın.
+KENDİ SESLERİN (PREMIUM)
+• Atlayış, ölüm, can eksilme ve bölüm bitirme sesini kaydet.
+• Atlayış kaydın komboyla birlikte inceliyor.
+• Kayıtlar telefonunda kalıyor.
 
-**Ses**
-• Uzun komboda atlayış sesi artık tavan yapmıyor; dizi üç oktava çıktı.
-• Can eksilmesinin kendine ait bir sesi oldu, ölüm sesiyle karışmıyor.
-• Hızlı serilerde üst üste binen sesler birbirini kesmiyordu; ses motoru
-  yeniden yazıldı.
+SES
+• Uzun komboda atlayış sesi artık tavan yapmıyor, üç oktav çıkıyor.
+• Can eksilmesinin ayrı bir sesi var.
+• Hızlı seride sesler birbirini kesiyordu, düzeldi.
 
-**Yeni görsel dil**
-• Halkalar, zemin ve küre nötr griye çekildi; ekranın en parlak şeyi artık
-  hedef kapısı, tek doygun rengi de tehlike kırmızısı. Parıltılar kalktı —
-  uzun oturumlarda göz çok daha az yoruluyor.
-• Kapı, tehlike ve yıldız renkleri bütün temalarda aynı. Tema değiştirmek
-  oyunun dilini değiştirmiyor, yalnızca zeminin tonunu.
-• Yeni logo ve uygulama ikonu: bir halka, tek kırmızı yay ve çemberin
-  üstünde dolanan küre — yayın üstünden geçerken yanıyor. Açılış ekranı da
-  bu işaretle yeniden kuruldu.
-• "Alev" karakteri gerçekten alev oldu; karakter önizlemeleri artık oyunda
-  gördüğün şeyin aynısını gösteriyor.
+GÖRÜNÜM
+• Halkalar, zemin ve küre nötr griye çekildi. Tek doygun renk tehlike kırmızısı.
+• Kapı, tehlike ve yıldız renkleri bütün temalarda aynı.
+• Yeni logo ve uygulama ikonu.
+• Alev karakteri gerçekten alev oldu.
 
-**Oynanış**
-• Tehlike yayları ilk turda yakmıyor ve bunu ÖNCEDEN gösteriyor. Yayın
-  üstündeki yeşil kaplama tur boyunca iki ucundan eriyor.
-• Kampanya 257 bölüme, toplam 806 yıldıza çıktı.
-• Karakterler artık satın alınmıyor: yıldız eşiği geçilince kendiliğinden
-  açılıyor ve açıldığı anda kutlama ekranı çıkıyor.
-• Renk körlüğü modu eklendi.
-• Premium oyunculara sonsuz modda tur başına bir can hakkı.
-• Sonsuz moda sol üstten yeniden başlatma düğmesi eklendi.
-• Hız turunda kapı, yıldızların hepsi toplanmadan açılmıyor.
+OYNANIŞ
+• Tehlike yayları ilk turda yakmıyor. Üstündeki yeşil eriyerek ne zaman
+  silahlanacağını gösteriyor.
+• Kampanya 257 bölüm, 806 yıldız.
+• Karakterler satın alınmıyor, yıldız eşiğinde kendiliğinden açılıyor.
+• Renk körlüğü modu.
+• Premium'a sonsuz modda tur başına bir can.
+• Sonsuz modda yeniden başlat düğmesi.
+• Hız turunda kapı, yıldızlar toplanmadan açılmıyor.
+• Bahşiş bırakan premium'u da alıyor.
 
-**Düzeltmeler**
-• Haftalık sıralama yenilendiğinde eski rekorun taze haftaya taşınıyor ve o
-  hafta ne yaparsan yap tabloda o rakam kalıyordu.
-• Sonsuz modda boşluğa atılan küre gecikmeden ölüyor; 0 skor sıralamaya
-  yazılmıyor.
-• Müziği kapatıp uygulamayı yeniden açınca ayar kapalı görünürken müzik
-  çalmaya devam ediyordu.
+DÜZELTMELER
+• Hafta yenilenince eski rekorun yeni haftaya taşınıyordu.
+• Satın alırken bekleme göstergesi yoktu.
+• Müzik kapalıyken uygulamayı açınca çalmaya devam ediyordu.
+• Sonsuz modda boşluğa atılan küre geç ölüyordu.
 • Açık kapının üstünde beklerken bölüm bitmiyordu.
-• Süresiz bölümlerde 0'da donmuş bir sayaç görünüyordu.
+• Süresiz bölümlerde 0'da donmuş sayaç görünüyordu.
 
 ---
 
@@ -166,54 +156,44 @@ Ads are optional and never interrupt a run. No purchase makes the game easier
 — there is no pay-to-win in Orbeon.
 
 ### What's New (2.0)
-This release reworks both how the game sounds and how it looks.
+The headline this time: premium players can replace the game's sounds with
+their own voice.
 
-**Your own sounds — Premium**
-• Record the hop, the death, the life lost and the level complete in your own
-  voice. The hop recording rises in pitch with your combo exactly like the
-  built-in one, so the melody of the game becomes yours.
-• Recordings never leave your device. Play them back, delete them, or switch
-  them all off with one toggle.
+YOUR OWN SOUNDS (PREMIUM)
+• Record the hop, the death, the life lost and the level complete.
+• Your hop recording rises in pitch with your combo.
+• Recordings stay on your phone.
 
-**Audio**
-• The hop no longer tops out on a long combo; the scale now spans three
-  octaves.
-• Losing a life has its own sound and no longer shares one with dying.
-• Overlapping sounds cut each other off during fast streaks — the audio
-  engine was rebuilt.
+AUDIO
+• The hop no longer tops out on a long combo. Three octaves now.
+• Losing a life has its own sound.
+• Sounds cut each other off during fast streaks. Fixed.
 
-**A new visual language**
-• Rings, background and orb are pulled to neutral grey; the brightest thing on
-  screen is now the target gate, and the only saturated colour is the hazard
-  red. The glow is gone — far easier on the eyes over a long session.
-• Gate, hazard and star colours are identical across every theme. Changing
-  theme no longer changes the language of the game, only the tone of the
-  background.
-• New logo and app icon: a ring, one red arc, and the orb travelling around
-  the circle — it burns as it crosses the arc. The splash screen was rebuilt
-  around the same mark.
-• The Flame character is actually a flame now, and every character preview
-  shows exactly what you play with.
+LOOK
+• Rings, background and orb pulled to neutral grey. The only saturated colour
+  is the hazard red.
+• Gate, hazard and star colours are the same in every theme.
+• New logo and app icon.
+• The Flame character is actually a flame now.
 
-**Gameplay**
-• Hazard arcs don't burn on the first lap, and they show it IN ADVANCE. The
-  green cover on the arc melts away from both ends as the lap runs down.
-• The campaign grew to 257 levels and 806 stars.
-• Characters are no longer bought. They unlock on their own when you cross a
-  star threshold, with a reveal screen the moment it happens.
-• Colorblind mode added.
-• Premium players get one extra life per endless run.
-• Endless mode gets a restart button in the top left.
-• In Speed Run the gate no longer opens before every star is collected.
+GAMEPLAY
+• Hazard arcs don't burn on the first lap. The green cover melts away to show
+  when the arc goes live.
+• 257 levels, 806 stars.
+• Characters aren't bought any more. They unlock at star thresholds.
+• Colorblind mode.
+• Premium gets one extra life per endless run.
+• Restart button in endless mode.
+• In Speed Run the gate stays shut until every star is collected.
+• Leaving a tip now includes premium.
 
-**Fixes**
-• When the weekly board reset, your old record carried into the fresh week and
-  stayed there no matter what you scored.
-• An orb thrown into empty space in endless mode now dies without the delay,
-  and a score of 0 is no longer written to the leaderboard.
-• Music kept playing after a relaunch even with the setting switched off.
+FIXES
+• When the week reset, your old record carried over into the new one.
+• No loading indicator during a purchase.
+• Music kept playing after a relaunch with the setting off.
+• An orb thrown into empty space in endless mode died too late.
 • The level didn't end while you waited on an open gate.
-• A countdown frozen at 0 appeared on levels that have no time limit.
+• A countdown frozen at 0 on levels with no time limit.
 
 ---
 
@@ -272,51 +252,42 @@ Los anuncios son opcionales y nunca interrumpen una partida. Ninguna compra
 facilita el juego: en Orbeon no hay pay-to-win.
 
 ### Novedades (2.0)
-Esta versión renueva tanto el sonido como el aspecto del juego.
+Lo más importante esta vez: los jugadores premium pueden sustituir los sonidos
+del juego por su propia voz.
 
-**Tus propios sonidos — Premium**
-• Graba con tu voz el salto, la muerte, la vida perdida y el nivel completado.
-  La grabación del salto sube de tono con tu combo igual que la original, así
-  que la melodía del juego pasa a ser tuya.
-• Las grabaciones nunca salen de tu dispositivo. Puedes escucharlas,
-  borrarlas o desactivarlas todas con un solo interruptor.
+TUS PROPIOS SONIDOS (PREMIUM)
+• Graba el salto, la muerte, la vida perdida y el nivel completado.
+• Tu grabación del salto sube de tono con el combo.
+• Las grabaciones se quedan en tu teléfono.
 
-**Sonido**
-• El salto ya no se estanca en combos largos: la escala abarca tres octavas.
-• Perder una vida tiene su propio sonido y ya no se confunde con el de morir.
-• Los sonidos se cortaban entre sí en las rachas rápidas; se ha reescrito el
-  motor de audio.
+SONIDO
+• El salto ya no se estanca en combos largos. Ahora son tres octavas.
+• Perder una vida tiene su propio sonido.
+• Los sonidos se cortaban entre sí en las rachas rápidas. Arreglado.
 
-**Nuevo lenguaje visual**
-• Anillos, fondo y esfera pasan a un gris neutro; lo más luminoso de la
-  pantalla es ahora la puerta objetivo y el único color saturado es el rojo del
-  peligro. Se han eliminado los brillos: la vista se cansa mucho menos en
-  partidas largas.
-• Los colores de puerta, peligro y estrella son idénticos en todos los temas.
-  Cambiar de tema ya no cambia el lenguaje del juego, solo el tono del fondo.
-• Nuevo logotipo e icono: un anillo, un solo arco rojo y la esfera recorriendo
-  el círculo, que se enciende al cruzar el arco. La pantalla de inicio se ha
-  rehecho con esa misma marca.
-• El personaje Llama es ahora una llama de verdad, y cada vista previa muestra
-  exactamente lo que verás en el juego.
+ASPECTO
+• Anillos, fondo y esfera en gris neutro. El único color saturado es el rojo
+  del peligro.
+• Los colores de puerta, peligro y estrella son iguales en todos los temas.
+• Nuevo logotipo e icono.
+• El personaje Llama es ahora una llama de verdad.
 
-**Jugabilidad**
-• Los arcos de peligro no queman en la primera vuelta, y lo muestran DE
-  ANTEMANO: la capa verde se consume por ambos extremos.
-• La campaña crece hasta 257 niveles y 806 estrellas.
-• Los personajes ya no se compran: se desbloquean solos al cruzar una meta de
-  estrellas, con una pantalla de celebración en ese mismo momento.
-• Añadido el modo daltónico.
-• Los jugadores premium tienen una vida extra por partida en el modo infinito.
-• El modo infinito estrena un botón de reinicio arriba a la izquierda.
-• En Contrarreloj la puerta ya no se abre sin recoger todas las estrellas.
+JUGABILIDAD
+• Los arcos de peligro no queman en la primera vuelta. La capa verde se
+  consume y muestra cuándo se arma el arco.
+• 257 niveles, 806 estrellas.
+• Los personajes ya no se compran. Se desbloquean al alcanzar metas de
+  estrellas.
+• Modo daltónico.
+• Premium incluye una vida extra en cada partida infinita.
+• Botón de reinicio en el modo infinito.
+• En Contrarreloj la puerta no se abre sin recoger todas las estrellas.
+• Dejar una propina ahora incluye premium.
 
-**Correcciones**
-• Al reiniciarse la tabla semanal, tu récord antiguo pasaba a la semana nueva y
-  se quedaba ahí hicieras la puntuación que hicieras.
-• En el modo infinito, la esfera lanzada al vacío ya no tarda en morir, y una
-  puntuación de 0 no se registra en la clasificación.
-• La música seguía sonando tras reabrir la app aunque el ajuste estuviera
-  desactivado.
+CORRECCIONES
+• Al reiniciarse la semana, tu récord antiguo pasaba a la nueva.
+• No había indicador de carga durante una compra.
+• La música seguía sonando tras reabrir la app con el ajuste desactivado.
+• En el modo infinito, la esfera lanzada al vacío tardaba en morir.
 • El nivel no terminaba mientras esperabas sobre una puerta abierta.
 • Aparecía una cuenta atrás congelada en 0 en niveles sin tiempo.
