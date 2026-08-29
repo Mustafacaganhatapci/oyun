@@ -98,6 +98,17 @@ struct RootView: View {
                 .zIndex(160)
             }
 
+            // Satın alma sonrası adına seslenen teşekkür kartı
+            if let thanks = store.thankYou {
+                ThankYouView(isTip: thanks.isTip,
+                             username: player.username,
+                             theme: settings.theme) {
+                    store.thankYou = nil
+                }
+                .transition(.opacity)
+                .zIndex(190)
+            }
+
             // Satın alma sırasında ekranı kaplayan bekleme katmanı. Eskiden
             // yalnızca düğme soluyordu; App Store sayfası açılana kadar geçen
             // 1-2 saniyede hiçbir şey olmuyormuş gibi görünüyor, oyuncu üst
@@ -130,6 +141,7 @@ struct RootView: View {
         // yüklenir ya da boşaltılır (kayıtlar diskte kalır).
         .animation(.easeInOut(duration: 0.3), value: showOfflineNotice)
         .animation(.easeInOut(duration: 0.2), value: store.purchaseInProgress)
+        .animation(.easeInOut(duration: 0.3), value: store.thankYou)
         .onAppear { CustomSoundStore.shared.premiumActive = store.isPremium }
         .onChange(of: store.isPremium) { _, isPremium in
             CustomSoundStore.shared.premiumActive = isPremium

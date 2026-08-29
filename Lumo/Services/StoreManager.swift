@@ -45,6 +45,10 @@ final class StoreManager: ObservableObject {
     enum StatusMessage: Equatable { case success, pending, failed, restored, nothingToRestore }
     @Published var statusMessage: StatusMessage?
 
+    /// Satın alma sonrası kişiye özel teşekkür kartı
+    struct ThankYou: Equatable { let isTip: Bool }
+    @Published var thankYou: ThankYou?
+
     private var entitled = false        // gerçek IAP satın alması var mı
     private var promoGranted = false    // kodla açıldı mı
     private var promoFailCount = 0
@@ -237,18 +241,46 @@ final class StoreManager: ObservableObject {
         case Self.premiumID:
             entitled = transaction.revocationDate == nil
             recomputePremium()
+            if transaction.revocationDate == nil {
+                record(productID: transaction.productID)
+                thankYou = .init(isTip: false)
+            }
         case Self.tipSmallID, Self.tipSmallLegacyID, Self.tipBigID:
+            // Bahşiş bırakan da premium alır. Parasını oyunu desteklemek için
+            // veren birine "bu da ayrıca satılıyor" demek nezaketsizlik olurdu.
             isSupporter = true
             UserDefaults.standard.set(true, forKey: "lumo.store.supporter")
+            recomputePremium()
+            record(productID: transaction.productID)
+            thankYou = .init(isTip: true)
         default:
             break
         }
     }
 
-    /// premium = gerçek satın alma VEYA tanıdık kodu
+    /// premium = gerçek satın alma VEYA tanıdık kodu VEYA bahşiş
     private func recomputePremium() {
-        isPremium = entitled || promoGranted
+        isPremium = entitled || promoGranted || isSupporter
         UserDefaults.standard.set(entitled, forKey: "lumo.store.premiumCache")
+    }
+
+    // MARK: Destekçi kaydı
+    //
+    // Kim ne aldı bilinsin ki sonradan hediye premium/kod gönderilebilsin.
+    // Kayıt Firestore'daki `supporters` koleksiyonuna gider; kurallar okumayı
+    // istemciye KAPATIR, yalnızca konsoldan görünür.
+
+    private func record(productID: String) {
+        #if canImport(FirebaseCore)
+        let defaults = UserDefaults.standard
+        let playerID = defaults.string(forKey: "lumo.player.id") ?? "anonymous"
+        let username = defaults.string(forKey: "lumo.player.username") ?? ""
+        let price = products.first { $0.id == productID }?.displayPrice ?? ""
+        Task {
+            await FirebaseBridge.recordSupporter(playerID: playerID, username: username,
+                                                 productID: productID, price: price)
+        }
+        #endif
     }
 
     var premiumProduct: Product? { products.first { $0.id == Self.premiumID } }

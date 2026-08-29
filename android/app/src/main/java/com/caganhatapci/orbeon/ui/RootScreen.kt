@@ -120,6 +120,15 @@ fun RootScreen() {
             )
         }
 
+        // Satın alma sonrası adına seslenen teşekkür kartı
+        app.billing.thankYou?.let { thanks ->
+            ThankYouOverlay(
+                isTip = thanks.isTip,
+                username = app.player.username,
+                theme = theme
+            ) { app.billing.thankYou = null }
+        }
+
         // İnterneti kapalı oynayana bir kez çıkan nazik not (yalnızca menüde)
         if (showOfflineNotice) {
             OfflineNoticeOverlay(
@@ -261,6 +270,51 @@ private fun SplashScreen(theme: Theme) {
  * buradan doğrudan yapılır — reklamı yeni izlemiş oyuncuyu ayrıca mağazaya
  * yollamak teklifi soğutuyordu.
  */
+@Composable
+private fun ThankYouOverlay(
+    isTip: Boolean,
+    username: String,
+    theme: Theme,
+    onClose: () -> Unit
+) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.8f))
+            .clickable(onClick = onClose),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            Modifier
+                .padding(horizontal = 30.dp)
+                .background(Color.Black.copy(alpha = 0.92f), RoundedCornerShape(28.dp))
+                .padding(26.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Text(if (isTip) "❤️" else "👑", fontSize = 44.sp)
+            // Adı varsa ona seslen; yoksa ad istemeyi seçmiş biri demektir
+            Text(
+                if (username.isEmpty()) stringResource(R.string.thanks_plain)
+                else stringResource(R.string.thanks_named, username),
+                color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                stringResource(if (isTip) R.string.thanks_tip_body else R.string.thanks_premium_body),
+                color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp,
+                textAlign = TextAlign.Center
+            )
+            if (isTip) {
+                Text(stringResource(R.string.premium_unlocked), color = theme.gate,
+                    fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            }
+            GlowButton(stringResource(R.string.back_to_game), theme.accent,
+                prominent = true, onClick = onClose)
+        }
+    }
+}
+
 @Composable
 private fun OfflineNoticeOverlay(theme: Theme, onPremium: () -> Unit, onClose: () -> Unit) {
     val app = LocalAppState.current

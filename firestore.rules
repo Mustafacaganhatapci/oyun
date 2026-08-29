@@ -34,6 +34,15 @@ service cloud.firestore {
         && request.resource.data.get('maxUses', 0) == resource.data.get('maxUses', 0);
     }
 
+    // Destekçi kaydı: kim ne aldı. Sonradan hediye premium/kod gönderebilmek
+    // için tutuluyor. Oyuncu adları ve satın alma geçmişi içerdiği için
+    // istemciye OKUMA KAPALI — yalnızca Firebase konsolundan görülür.
+    // Yazma yalnızca kişinin kendi belgesine.
+    match /supporters/{playerID} {
+      allow read: if false;
+      allow write: if request.auth != null;
+    }
+
     // Kalan her şey (haftalık sıralama tabloları ve `usernames`):
     //   • okuma herkese açık — tablo zaten kamuya görünür
     //   • yazma yalnızca oturum açmış istemcilere (uygulama anonim giriş yapar)

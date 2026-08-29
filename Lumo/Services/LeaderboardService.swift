@@ -304,6 +304,31 @@ enum FirebaseBridge {
         }
     }
 
+    /// Destekçi kaydı: kim, hangi adla, ne aldı.
+    ///
+    /// Amacı muhasebe değil — sonradan o kişilere hediye premium ya da kod
+    /// gönderebilmek. Belge kimliği playerID; ürünler diziye eklenir, aynı
+    /// kişi ikinci kez alırsa satır çoğalmaz.
+    static func recordSupporter(playerID: String, username: String,
+                                productID: String, price: String) async {
+        let db = Firestore.firestore()
+        let doc = db.collection("supporters").document(playerID)
+        var data: [String: Any] = [
+            "products": FieldValue.arrayUnion([productID]),
+            "lastPurchaseAt": FieldValue.serverTimestamp(),
+            "purchaseCount": FieldValue.increment(Int64(1))
+        ]
+        if !username.isEmpty { data["username"] = username }
+        if !price.isEmpty { data["lastPrice"] = price }
+        do {
+            try await doc.setData(data, merge: true)
+            leaderboardLog("DESTEKÇİ KAYDEDİLDİ supporters/\(playerID) ← \(productID)")
+        } catch {
+            leaderboardLog("DESTEKÇİ YAZILAMADI supporters/\(playerID): \(error.localizedDescription)",
+                           isError: true)
+        }
+    }
+
     /// Firestore'daki `promoCodes` koleksiyonundan bir kodu kullanır.
     ///
     /// Belge kimliği kodun küçük harfli hâli. Alanlar:
@@ -421,6 +446,8 @@ enum FirebaseBridge {
     }
     static func claimUsername(_ name: String, playerID: String) async -> Bool? { nil }
     static func redeemPromoCode(_ code: String, playerID: String) async -> Bool? { nil }
+    static func recordSupporter(playerID: String, username: String,
+                                productID: String, price: String) async {}
     static func submit(mode: LeaderboardMode, week: Int, value: Double,
                        username: String, playerID: String) async {}
     static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] { [] }

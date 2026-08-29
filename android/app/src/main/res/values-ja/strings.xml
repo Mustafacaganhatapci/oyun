@@ -177,4 +177,10 @@
     <string name="have_fun">それでは、よいプレイを！</string>
     <string name="benefit_sounds">自分の効果音を録音 — ジャンプ音はコンボで高くなる</string>
     <string name="benefit_extra_life">エンドレスごとに残機1</string>
+    <string name="thanks_plain">ありがとう！</string>
+    <string name="thanks_named">%1$sさん、ありがとう！</string>
+    <string name="thanks_tip_body">Orbeonは一人で作っています。こうして支えてくれる人がいるから、次のアップデートを書く意味があります。プレミアムもお渡しします。</string>
+    <string name="thanks_premium_body">今日から広告はオフです。Orbeonは一人で作っていて、これは次のレベル・キャラクター・音楽にそのまま使わせてもらいます。</string>
+    <string name="premium_unlocked">プレミアム解放</string>
+    <string name="back_to_game">ゲームに戻る</string>
 </resources>

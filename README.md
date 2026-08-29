@@ -193,6 +193,27 @@ Güvenlik kuralları `promoCodes` için `get`'e izin verip `list`'i kapatıyor:
 kimliğini bildiğin tek bir kodu sorabilirsin, koleksiyonun tamamını çekemezsin.
 `firestore.rules` dosyasını yayınlamayı unutma.
 
+## 💛 Destekçiler
+
+Her satın alma Firestore'daki **`supporters`** koleksiyonuna yazılır. Amaç
+muhasebe değil: kimin desteklediğini bilip sonradan hediye premium ya da kod
+gönderebilmek.
+
+Belge kimliği `playerID`, alanlar: `username`, `products` (aldığı ürünler),
+`purchaseCount`, `lastPrice`, `lastPurchaseAt`.
+
+Güvenlik kuralları bu koleksiyonda **okumayı istemciye kapatır** — oyuncu adı
+ve satın alma geçmişi yalnızca Firebase konsolundan görünür.
+
+Bahşiş bırakan da premium alır (`recomputePremium` içinde `isSupporter` de
+sayılıyor): parasını oyunu desteklemek için veren birine "bu ayrıca satılıyor"
+demek nezaketsizlik olurdu.
+
+> **Not:** Bu koleksiyon satın alma kaydını kullanıcı adıyla ilişkilendiriyor.
+> App Store gizlilik etiketinde **Purchases → Linked to You**, Play Data Safety
+> tarafında da satın alma geçmişi beyanı gerekir. Beyan etmezsen inceleme
+> reddedilebilir.
+
 ## 📄 app-ads.txt (AdMob uygulama doğrulaması)
 
 `app-ads.txt` depo kökünde duruyor. AdMob'un "Uygulamayı doğrula" adımı için

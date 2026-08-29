@@ -177,4 +177,10 @@
     <string name="have_fun">Have fun!</string>
     <string name="benefit_sounds">Record your own sounds — the hop rises with your combo</string>
     <string name="benefit_extra_life">One extra life in every endless run</string>
+    <string name="thanks_plain">Thank you!</string>
+    <string name="thanks_named">Thank you, %1$s!</string>
+    <string name="thanks_tip_body">I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well, consider it the least I can do.</string>
+    <string name="thanks_premium_body">The ads are off from today. I make Orbeon on my own, and this goes straight into the next levels, characters and music.</string>
+    <string name="premium_unlocked">Premium unlocked</string>
+    <string name="back_to_game">Back to the game</string>
 </resources>

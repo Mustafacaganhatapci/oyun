@@ -177,4 +177,10 @@
     <string name="have_fun">İyi oyunlar!</string>
     <string name="benefit_sounds">Kendi seslerini kaydet — atlayış komboyla incelir</string>
     <string name="benefit_extra_life">Her sonsuz turda bir can hakkı</string>
+    <string name="thanks_plain">Teşekkür ederim!</string>
+    <string name="thanks_named">Teşekkür ederim %1$s!</string>
+    <string name="thanks_tip_body">Orbeon\'u tek başıma yapıyorum. Senin gibi birinin destek olması, bir sonraki güncellemeyi yazmaya değdiğini hatırlatıyor. Premium\'u da açtım, en azından bu kadarını yapayım.</string>
+    <string name="thanks_premium_body">Reklamlar bugünden itibaren kapalı. Orbeon\'u tek başıma yapıyorum; bu destek doğrudan yeni bölümlere, karakterlere ve müziğe gidiyor.</string>
+    <string name="premium_unlocked">Premium açıldı</string>
+    <string name="back_to_game">Oyuna dön</string>
 </resources>

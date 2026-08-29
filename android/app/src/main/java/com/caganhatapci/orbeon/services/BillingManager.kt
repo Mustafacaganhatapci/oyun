@@ -50,6 +50,11 @@ class BillingManager(private val context: Context) {
 
     enum class Status { SUCCESS, PENDING, FAILED, RESTORED, NOTHING_TO_RESTORE }
 
+    /** Satın alma sonrası kişiye özel teşekkür kartı */
+    data class ThankYou(val isTip: Boolean)
+
+    var thankYou by mutableStateOf<ThankYou?>(null)
+
     var isPremium by mutableStateOf(false)
         private set
     var isSupporter by mutableStateOf(false)
@@ -223,6 +228,8 @@ class BillingManager(private val context: Context) {
             purchase.products.contains(PREMIUM_ID) -> {
                 entitled = true
                 recomputePremium()
+                record(PREMIUM_ID)
+                thankYou = ThankYou(isTip = false)
                 if (!purchase.isAcknowledged) {
                     val params = AcknowledgePurchaseParams.newBuilder()
                         .setPurchaseToken(purchase.purchaseToken)
@@ -231,8 +238,14 @@ class BillingManager(private val context: Context) {
                 }
             }
             else -> {
+                // Bahşiş bırakan da premium alır. Parasını oyunu desteklemek
+                // için veren birine "bu da ayrıca satılıyor" demek
+                // nezaketsizlik olurdu.
                 isSupporter = true
                 p.edit().putBoolean("store.supporter", true).apply()
+                recomputePremium()
+                record(purchase.products.firstOrNull() ?: TIP_SMALL_ID)
+                thankYou = ThankYou(isTip = true)
                 // Bahşişler tüketilebilir: tekrar tekrar verilebilmeli
                 val params = ConsumeParams.newBuilder()
                     .setPurchaseToken(purchase.purchaseToken)
@@ -283,8 +296,26 @@ class BillingManager(private val context: Context) {
     }
 
     /** premium = gerçek satın alma VEYA tanıdık kodu */
+    /** premium = gerçek satın alma VEYA tanıdık kodu VEYA bahşiş */
     private fun recomputePremium() {
-        isPremium = entitled || promoGranted
+        isPremium = entitled || promoGranted || isSupporter
         p.edit().putBoolean("store.premiumCache", entitled).apply()
+    }
+
+    // MARK: Destekçi kaydı
+    //
+    // Kim ne aldı bilinsin ki sonradan hediye premium/kod gönderilebilsin.
+    // Kayıt Firestore'daki `supporters` koleksiyonuna gider; kurallar okumayı
+    // istemciye KAPATIR, yalnızca konsoldan görünür.
+
+    private fun record(productId: String) {
+        val price = products.firstOrNull { it.productId == productId }
+            ?.oneTimePurchaseOfferDetails?.formattedPrice ?: ""
+        Supporters.record(
+            playerId = p.getString("player.id", null) ?: "anonymous",
+            username = p.getString("player.username", null) ?: "",
+            productId = productId,
+            price = price
+        )
     }
 }

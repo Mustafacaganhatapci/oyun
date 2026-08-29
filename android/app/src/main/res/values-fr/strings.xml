@@ -177,4 +177,10 @@
     <string name="have_fun">Bon jeu !</string>
     <string name="benefit_sounds">Enregistre tes propres sons — le saut monte avec le combo</string>
     <string name="benefit_extra_life">Une vie supplémentaire à chaque partie infinie</string>
+    <string name="thanks_plain">Merci !</string>
+    <string name="thanks_named">Merci, %1$s !</string>
+    <string name="thanks_tip_body">Je fais Orbeon tout seul, et savoir que quelqu\'un a choisi de participer, c\'est ce qui donne envie d\'écrire la prochaine mise à jour. Premium est à toi aussi.</string>
+    <string name="thanks_premium_body">Fini les pubs à partir d\'aujourd\'hui. Je fais Orbeon tout seul, et ça part directement dans les prochains niveaux, les personnages et la musique.</string>
+    <string name="premium_unlocked">Premium débloqué</string>
+    <string name="back_to_game">Retour au jeu</string>
 </resources>

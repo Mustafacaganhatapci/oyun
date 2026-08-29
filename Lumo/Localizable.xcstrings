@@ -690,6 +690,47 @@
         }
       }
     },
+    "Back to the game": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to the game"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oyuna dön"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurück zum Spiel"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volver al juego"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retour au jeu"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲームに戻る"
+          }
+        }
+      }
+    },
     "Backgrounds": {
       "extractionState": "manual",
       "localizations": {
@@ -3262,6 +3303,47 @@
         }
       }
     },
+    "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orbeon'u tek başıma yapıyorum. Senin gibi birinin destek olması, bir sonraki güncellemeyi yazmaya değdiğini hatırlatıyor. Premium'u da açtım, en azından bu kadarını yapayım."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ich mache Orbeon allein, und dass jemand freiwillig etwas dalässt, ist der Grund, warum sich das nächste Update lohnt. Premium gehört jetzt auch dir — das Mindeste, was ich tun kann."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hago Orbeon yo solo, y que alguien decida aportar algo es lo que hace que valga la pena escribir la siguiente actualización. Premium también es tuyo: es lo mínimo que puedo hacer."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je fais Orbeon tout seul, et savoir que quelqu'un a choisi de participer, c'est ce qui donne envie d'écrire la prochaine mise à jour. Premium est à toi aussi, c'est la moindre des choses."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orbeonは一人で作っています。こうして支えてくれる人がいるから、次のアップデートを書く意味があります。プレミアムもお渡しします。せめてものお礼です。"
+          }
+        }
+      }
+    },
     "If you love the game, you can buy the developer a coffee ☕️": {
       "extractionState": "manual",
       "localizations": {
@@ -5318,6 +5400,47 @@
         }
       }
     },
+    "Premium unlocked": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium unlocked"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium açıldı"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium freigeschaltet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium desbloqueado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium débloqué"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレミアム解放"
+          }
+        }
+      }
+    },
     "Premium ✓": {
       "shouldTranslate": false
     },
@@ -6746,6 +6869,47 @@
         }
       }
     },
+    "Thank you!": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thank you!"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teşekkür ederim!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Danke!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Gracias!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merci !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ありがとう！"
+          }
+        }
+      }
+    },
     "Thank you! Premium is active": {
       "extractionState": "manual",
       "localizations": {
@@ -6777,6 +6941,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Teşekkürler! Premium aktif"
+          }
+        }
+      }
+    },
+    "Thank you, %@!": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thank you, %@!"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teşekkür ederim %@!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Danke, %@!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Gracias, %@!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merci, %@ !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@さん、ありがとう！"
           }
         }
       }
@@ -6847,6 +7052,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bu ad alınmış — başka bir tane seç"
+          }
+        }
+      }
+    },
+    "The ads are off from today. I make Orbeon on my own, and this goes straight into the next levels, characters and music.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The ads are off from today. I make Orbeon on my own, and this goes straight into the next levels, characters and music."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reklamlar bugünden itibaren kapalı. Orbeon'u tek başıma yapıyorum; bu destek doğrudan yeni bölümlere, karakterlere ve müziğe gidiyor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ab heute keine Werbung mehr. Ich mache Orbeon allein, und das hier fließt direkt in die nächsten Level, Charaktere und die Musik."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los anuncios se acabaron desde hoy. Hago Orbeon yo solo, y esto va directo a los próximos niveles, personajes y la música."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fini les pubs à partir d'aujourd'hui. Je fais Orbeon tout seul, et ça part directement dans les prochains niveaux, les personnages et la musique."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日から広告はオフです。Orbeonは一人で作っていて、これは次のレベル・キャラクター・音楽にそのまま使わせてもらいます。"
           }
         }
       }
