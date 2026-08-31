@@ -64,7 +64,10 @@ sealed class Route {
     data object Menu : Route()
     data object Levels : Route()
     data class Game(val mode: PlayMode) : Route()
-    data object Shop : Route()
+    /** Karakterler, arka planlar, foto küre — sahip olduklarını düzenlediğin yer */
+    data object Personalize : Route()
+    /** Yalnızca premium teklifi: faydalar, fiyat, kod, bahşiş */
+    data object Premium : Route()
     data object Settings : Route()
     data object Username : Route()
     data object Ranking : Route()
@@ -87,7 +90,8 @@ fun RootScreen() {
                 onLevels = { route = Route.Levels },
                 onEndless = { route = Route.Game(PlayMode.Endless) },
                 onSpeedrun = { route = Route.Game(PlayMode.Speedrun) },
-                onShop = { route = Route.Shop },
+                onPersonalize = { route = Route.Personalize },
+                onPremium = { route = Route.Premium },
                 onSettings = { route = Route.Settings },
                 onRanking = { route = if (app.player.hasUsername) Route.Ranking else Route.Username }
             )
@@ -100,10 +104,14 @@ fun RootScreen() {
                 onExit = { route = Route.Menu },
                 onReplay = { route = Route.Game(it) }
             )
-            Route.Shop -> ShopScreen(onBack = { route = Route.Menu })
+            Route.Personalize -> PersonalizeScreen(
+                onBack = { route = Route.Menu },
+                onPremium = { route = Route.Premium }
+            )
+            Route.Premium -> PremiumScreen(onBack = { route = Route.Menu })
             Route.Settings -> SettingsScreen(
                 onBack = { route = Route.Menu },
-                onShop = { route = Route.Shop },
+                onPremium = { route = Route.Premium },
                 onTutorial = { route = Route.Game(PlayMode.LevelPlay(LevelLibrary.TUTORIAL_ID)) }
             )
             Route.Username -> UsernameScreen(onDone = { route = Route.Ranking }, onBack = { route = Route.Menu })
@@ -115,7 +123,7 @@ fun RootScreen() {
             NudgeOverlay(
                 kind = kind,
                 theme = theme,
-                onSeeAll = { app.ads.dismissNudge(); route = Route.Shop },
+                onSeeAll = { app.ads.dismissNudge(); route = Route.Premium },
                 onClose = { app.ads.dismissNudge() }
             )
         }
@@ -136,7 +144,7 @@ fun RootScreen() {
                 onPremium = {
                     OfflineNotice.markShown(activity)
                     showOfflineNotice = false
-                    route = Route.Shop
+                    route = Route.Premium
                 },
                 onClose = {
                     OfflineNotice.markShown(activity)

@@ -287,43 +287,43 @@
         }
       }
     },
-    "8 exclusive themes — Neon, Carbon, Royal, Sakura and more": {
+    "8 exclusive themes": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "8 exclusive themes — Neon, Carbon, Royal, Sakura and more"
+            "value": "8 exclusive themes"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "8 özel tema — Neon, Karbon, Kraliyet, Sakura ve daha fazlası"
+            "value": "8 özel tema"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "8 exklusive Themes — Neon, Karbon, Royal, Sakura und mehr"
+            "value": "8 exklusive Designs"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "8 temas exclusivos — Neón, Carbono, Real, Sakura y más"
+            "value": "8 temas exclusivos"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "8 thèmes exclusifs — Néon, Carbone, Royal, Sakura et plus"
+            "value": "8 thèmes exclusifs"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "限定テーマ8種 — ネオン、カーボン、ロイヤル、さくら ほか"
+            "value": "限定テーマ8種"
           }
         }
       }
@@ -651,6 +651,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tüm hakları saklıdır"
+          }
+        }
+      }
+    },
+    "An extra life in every endless run": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An extra life in every endless run"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her sonsuz turda bir can hakkı"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Extraleben in jeder Endlos-Runde"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una vida extra en cada partida infinita"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une vie supplémentaire à chaque partie infinie"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンドレスごとに残機1"
           }
         }
       }
@@ -4249,41 +4290,6 @@
         }
       }
     },
-    "New characters unlock as you collect stars.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neue Figuren öffnen sich beim Sternesammeln."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los nuevos personajes se desbloquean al reunir estrellas."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "De nouveaux personnages se débloquent avec les étoiles."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "星を集めると新しいキャラクターが解放されます。"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yeni karakterler yıldız topladıkça açılır."
-          }
-        }
-      }
-    },
     "Next Level": {
       "extractionState": "manual",
       "localizations": {
@@ -4792,82 +4798,6 @@
         }
       }
     },
-    "One extra life in every endless run": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "One extra life in every endless run"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Her sonsuz turda bir can hakkı"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ein Extraleben in jeder Endlos-Runde"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Una vida extra en cada partida infinita"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Une vie supplémentaire à chaque partie infinie"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "エンドレスごとに残機1"
-          }
-        }
-      }
-    },
-    "Orb Style": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Orb-Stil"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estilo del orbe"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Style de l'orbe"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "オーブのスタイル"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Küre Stili"
-          }
-        }
-      }
-    },
     "PREMIUM": {
       "extractionState": "manual",
       "localizations": {
@@ -5010,6 +4940,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mükemmel! Kırmızı yayı geçtin."
+          }
+        }
+      }
+    },
+    "Personalize": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personalize"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kişiselleştir"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anpassen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personalizar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personnaliser"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カスタマイズ"
           }
         }
       }
@@ -5656,47 +5627,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "ジャンプ・ミス・残機減少・クリアの効果音を自分の声で録音。ジャンプ音はコンボに合わせて内蔵音と同じように高くなります。録音は端末の外に出ません。"
-          }
-        }
-      }
-    },
-    "Record your own sounds — the hop rises with your combo": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Record your own sounds — the hop rises with your combo"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kendi seslerini kaydet — atlayış komboyla incelir"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nimm eigene Sounds auf — der Sprung steigt mit dem Combo"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Graba tus propios sonidos: el salto sube con tu combo"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enregistre tes propres sons — le saut monte avec le combo"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "自分の効果音を録音 — ジャンプ音はコンボで高くなる"
           }
         }
       }
@@ -6357,41 +6287,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ayarlar"
-          }
-        }
-      }
-    },
-    "Shop": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shop"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tienda"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Boutique"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ショップ"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mağaza"
           }
         }
       }
@@ -8389,6 +8284,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "オーブの中にあなたの写真を"
+          }
+        }
+      }
+    },
+    "Your own recorded sounds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your own recorded sounds"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kendi kaydettiğin sesler"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine eigenen Aufnahmen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tus propias grabaciones"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tes propres enregistrements"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自分で録音した効果音"
           }
         }
       }

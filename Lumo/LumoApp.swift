@@ -71,7 +71,11 @@ enum Route: Equatable {
     case game(Int)
     case endless
     case speedrun
-    case shop
+    /// Karakterler, arka planlar, fotoğraflı küre — sahip olduklarını
+    /// düzenlediğin yer. Satın alma burada değil.
+    case personalize
+    /// Yalnızca premium teklifi: faydalar, fiyat, kod, bahşiş.
+    case premium
     case settings
     case username
     case ranking

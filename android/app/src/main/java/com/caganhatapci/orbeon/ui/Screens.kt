@@ -101,7 +101,8 @@ private fun ScreenHeader(title: String, onBack: () -> Unit, trailing: @Composabl
 @Composable
 fun MainMenuScreen(
     onPlay: () -> Unit, onLevels: () -> Unit, onEndless: () -> Unit,
-    onSpeedrun: () -> Unit, onShop: () -> Unit, onSettings: () -> Unit, onRanking: () -> Unit
+    onSpeedrun: () -> Unit, onPersonalize: () -> Unit, onPremium: () -> Unit,
+    onSettings: () -> Unit, onRanking: () -> Unit
 ) {
     val app = LocalAppState.current
     val theme = app.settings.theme
@@ -148,8 +149,15 @@ fun MainMenuScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PremiumBadge(theme, app.billing.isPremium) { app.audio.playTap(); onShop() }
+                PremiumBadge(theme, app.billing.isPremium) { app.audio.playTap(); onPremium() }
                 Spacer(Modifier.weight(1f))
+                // Karakterler, arka planlar, foto küre — hepsi tek yerde
+                Box(
+                    Modifier.size(44.dp)
+                        .background(Color.White.copy(alpha = 0.1f), CircleShape)
+                        .clickable { app.audio.playTap(); onPersonalize() },
+                    contentAlignment = Alignment.Center
+                ) { Text("◈", color = Color.White.copy(alpha = 0.75f), fontSize = 18.sp) }
                 Box(
                     Modifier.size(44.dp)
                         .background(Color.White.copy(alpha = 0.1f), CircleShape)
@@ -458,37 +466,32 @@ fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
     }
 }
 
-// MARK: Mağaza
+// MARK: Kişiselleştir ve premium
 
+/**
+ * Sahip olduklarını düzenlediğin ekran: karakterler, arka planlar, foto küre.
+ * Burada hiçbir şey satılmıyor.
+ *
+ * Eskiden bunlar premium teklifiyle aynı sayfadaydı ve hangisinin yıldızla,
+ * hangisinin parayla açıldığı birbirine karışıyordu.
+ */
 @Composable
-fun ShopScreen(onBack: () -> Unit) {
+fun PersonalizeScreen(onBack: () -> Unit, onPremium: () -> Unit) {
     val app = LocalAppState.current
     val activity = LocalActivity.current
     val theme = app.settings.theme
-    val scroll = rememberScrollState()
-    var codeInput by remember { mutableStateOf("") }
-    var codeState by remember { mutableStateOf(0) }   // 0 boş, 1 başarılı, 2 hatalı, 3 teselli
-    var checkingCode by remember { mutableStateOf(false) }
     var starsJustEarned by remember { mutableStateOf(false) }
     val frameTime = rememberFrameTime()
 
-    // Premium zaten alınmışsa yukarıda kal; değilse teklifi görsün diye kaydır
-    LaunchedEffect(Unit) {
-        if (!app.billing.isPremium) {
-            kotlinx.coroutines.delay(350)
-            scroll.animateScrollTo(520)
-        }
-    }
-
     ThemeBackground(theme) {
         Column(Modifier.fillMaxSize()) {
-            ScreenHeader(stringResource(R.string.shop), onBack) {
+            ScreenHeader(stringResource(R.string.personalize), onBack) {
                 Text("★ ${app.progress.totalStars}", color = theme.lumen,
                     fontSize = 13.sp, fontWeight = FontWeight.Bold)
             }
 
             Column(
-                Modifier.verticalScroll(scroll).padding(horizontal = 20.dp),
+                Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 // Ödüllü reklamla bedava yıldız
@@ -543,6 +546,11 @@ fun ShopScreen(onBack: () -> Unit) {
                     }
                 }
 
+                // Foto küre: premium'sa fotoğraf seç + kuşan
+                if (app.billing.isPremium) {
+                    PhotoOrbCard(theme, frameTime)
+                }
+
                 // Arka planlar — ayarlardan buraya taşındı: sekizi premium'a
                 // dahil olduğu için asıl yeri satın alma ekranı
                 Card {
@@ -560,7 +568,7 @@ fun ShopScreen(onBack: () -> Unit) {
                                     )
                                     .clickable {
                                         app.audio.playTap()
-                                        // Kilitli tema = premium teklifi; kart aşağıda
+                                        // Kilitli tema = premium teklifi; doğrudan o ekrana
                                         if (!locked) {
                                             app.settings.themeId = t.id; app.settings.persist()
                                         }
@@ -583,6 +591,39 @@ fun ShopScreen(onBack: () -> Unit) {
                     }
                 }
 
+                // Premium'a giden tek yol burada: kilitli tema ya da foto küre
+                if (!app.billing.isPremium) {
+                    GlowButton(stringResource(R.string.see_premium), theme.lumen) {
+                        app.audio.playTap(); onPremium()
+                    }
+                }
+
+                Spacer(Modifier.height(40.dp))
+            }
+        }
+    }
+}
+
+/**
+ * Premium teklifi — tek işi olan tek ekran.
+ */
+@Composable
+fun PremiumScreen(onBack: () -> Unit) {
+    val app = LocalAppState.current
+    val activity = LocalActivity.current
+    val theme = app.settings.theme
+    var codeInput by remember { mutableStateOf("") }
+    var codeState by remember { mutableStateOf(0) }   // 0 boş, 1 başarılı, 2 hatalı, 3 teselli
+    var checkingCode by remember { mutableStateOf(false) }
+
+    ThemeBackground(theme) {
+        Column(Modifier.fillMaxSize()) {
+            ScreenHeader(stringResource(R.string.orbeon_premium), onBack)
+
+            Column(
+                Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
                 // Premium kartı. Premium alındıysa gösterilmiyor: parası
                 // ödenmiş bir şeyin fiyatını her açılışta göstermenin anlamı
                 // yok, ekranı da uzatıyordu.
@@ -722,6 +763,7 @@ fun ShopScreen(onBack: () -> Unit) {
                     }
                 }
 
+
                 app.billing.statusMessage?.let { status ->
                     Text(
                         stringResource(
@@ -742,6 +784,7 @@ fun ShopScreen(onBack: () -> Unit) {
                         modifier = Modifier.fillMaxWidth().clickable { app.billing.statusMessage = null }
                     )
                 }
+
 
                 Text(
                     stringResource(R.string.restore_purchases),
@@ -814,10 +857,9 @@ private fun CharacterRow(style: OrbStyle, theme: Theme, t: Float) {
 // MARK: Ayarlar
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Unit) {
+fun SettingsScreen(onBack: () -> Unit, onPremium: () -> Unit, onTutorial: () -> Unit) {
     val app = LocalAppState.current
     val theme = app.settings.theme
-    val frameTime = rememberFrameTime()
 
     ThemeBackground(theme) {
         Column(Modifier.fillMaxSize()) {
@@ -847,19 +889,8 @@ fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Uni
                     }
                 }
 
-                // Mağaza ana menüden kaldırıldı (menü kalabalıktı); arka
-                // planlar, bahşiş ve premium oraya taşındı
-                GlowButton(stringResource(R.string.shop), theme.lumen) {
-                    app.audio.playTap(); onShop()
-                }
-
-                // Foto küre: premium'sa fotoğraf seç + kuşan (iOS'taki photo orb)
-                if (app.billing.isPremium) {
-                    PhotoOrbCard(theme, frameTime)
-                }
-
                 // Premium: kendi kaydettiğin efekt sesleri
-                CustomSoundsCard(theme, onShop)
+                CustomSoundsCard(theme, onPremium)
 
                 GlowButton(stringResource(R.string.how_to_play), theme.ring) { onTutorial() }
             }
@@ -872,7 +903,7 @@ fun SettingsScreen(onBack: () -> Unit, onShop: () -> Unit, onTutorial: () -> Uni
  * çalar. "Hop" ayrıca komboyla hızlandırılıp inceltilir.
  */
 @Composable
-private fun CustomSoundsCard(theme: Theme, onShop: () -> Unit) {
+private fun CustomSoundsCard(theme: Theme, onPremium: () -> Unit) {
     val app = LocalAppState.current
     val sounds = app.customSounds
     var pendingSlot by remember { mutableStateOf<CustomSoundSlot?>(null) }
@@ -906,7 +937,7 @@ private fun CustomSoundsCard(theme: Theme, onShop: () -> Unit) {
 
             if (!app.billing.isPremium) {
                 GlowButton(stringResource(R.string.go_premium), theme.lumen) {
-                    app.audio.playTap(); onShop()
+                    app.audio.playTap(); onPremium()
                 }
             } else {
                 ToggleRow(stringResource(R.string.custom_sounds_use), sounds.enabled) {

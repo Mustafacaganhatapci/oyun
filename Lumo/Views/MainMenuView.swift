@@ -27,6 +27,17 @@ struct MainMenuView: View {
                 HStack(spacing: 8) {
                     premiumBadge
                     Spacer()
+                    // Karakterler, arka planlar, foto küre — hepsi tek yerde
+                    Button {
+                        AudioEngine.shared.playTap()
+                        app.route = .personalize
+                    } label: {
+                        Image(systemName: "circle.hexagongrid.fill")
+                            .font(.system(size: 17, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.75))
+                            .frame(width: 44, height: 44)
+                            .background(Circle().fill(.white.opacity(0.1)))
+                    }
                     Button {
                         AudioEngine.shared.playTap()
                         player.hasUsername ? (app.route = .ranking) : app.openUsername()
@@ -181,7 +192,7 @@ struct MainMenuView: View {
     private var premiumBadge: some View {
         Button {
             AudioEngine.shared.playTap()
-            app.route = .shop
+            app.route = .premium
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: "crown.fill")

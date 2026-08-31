@@ -1,5 +1,4 @@
 import SwiftUI
-import PhotosUI
 
 struct SettingsView: View {
     @EnvironmentObject private var app: AppModel
@@ -9,25 +8,10 @@ struct SettingsView: View {
     @EnvironmentObject private var tutorial: TutorialStore
     @ObservedObject private var sounds = CustomSoundStore.shared
 
-    @State private var photoItem: PhotosPickerItem?
-
     /// Info.plist'ten okunur — sürüm yükseltirken burayı düzeltmek unutulmasın
     private static var appVersion: String {
         let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         return "\(String(localized: "Version")) \(short ?? "—")"
-    }
-
-    /// Bir küre stili şu an kuşanılabilir mi?
-    /// Premium yalnızca premium'a özel stilleri (foto küre) açar;
-    /// yıldızlı karakterler herkes için yıldız biriktirerek alınır.
-    private func isAvailable(_ style: OrbStyle) -> Bool {
-        switch style.unlock {
-        case .free: return true
-        // Şampiyon küresi de kazanıldıysa kuşanılabilir; premium ya da yıldız
-        // onu açmaz, tek yolu haftalık ilk üçe girmek.
-        case .stars, .champion: return progress.isOrbUnlocked(style)
-        case .premium: return store.isPremium
-        }
     }
 
     var body: some View {
@@ -67,80 +51,6 @@ struct SettingsView: View {
                             .fill(.white.opacity(0.06))
                     }
                     .padding(.horizontal, 20)
-
-                    // Mağaza ana menüden kaldırıldı (menü kalabalıktı);
-                    // arka planlar, bahşiş ve premium oraya taşındı
-                    Button {
-                        AudioEngine.shared.playTap()
-                        app.route = .shop
-                    } label: {
-                        Label("Shop", systemImage: "bag.fill")
-                    }
-                    .buttonStyle(GlowButtonStyle(color: settings.theme.lumen.color))
-                    .padding(.horizontal, 20)
-
-                    // Küre stilleri — oyuncunun "karakteri"
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Orb Style")
-                            .font(.system(.headline, design: .rounded).bold())
-                            .foregroundStyle(.white.opacity(0.9))
-                            .padding(.horizontal, 24)
-
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 14) {
-                                ForEach(OrbStyle.all) { style in
-                                    let available = isAvailable(style)
-                                    OrbSwatch(style: style,
-                                              theme: settings.theme,
-                                              selected: settings.orbStyleID == style.id,
-                                              locked: !available,
-                                              photoVersion: settings.orbPhotoVersion) {
-                                        if available {
-                                            AudioEngine.shared.playTap()
-                                            settings.orbStyleID = style.id
-                                        } else {
-                                            // Kilitli: mağazada yıldızla/premium ile alınır
-                                            app.route = .shop
-                                        }
-                                    }
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                        }
-
-                        Text("New characters unlock as you collect stars.")
-                            .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.4))
-                            .padding(.horizontal, 24)
-
-                        // Fotoğraflı küre seçiliyse fotoğraf seçme düğmesi
-                        if settings.orbStyleID == "photo", store.isPremium {
-                            PhotosPicker(selection: $photoItem, matching: .images) {
-                                Label(OrbPhotoStore.exists ? "Change Photo" : "Choose Photo",
-                                      systemImage: "photo.circle.fill")
-                                    .font(.system(.subheadline, design: .rounded).bold())
-                                    .foregroundStyle(.white)
-                                    .padding(.horizontal, 18)
-                                    .padding(.vertical, 10)
-                                    .background(Capsule().fill(settings.theme.accent.opacity(0.3)))
-                            }
-                            .padding(.horizontal, 24)
-                            .onChange(of: photoItem) { _, item in
-                                guard let item else { return }
-                                Task {
-                                    if let data = try? await item.loadTransferable(type: Data.self),
-                                       let image = UIImage(data: data) {
-                                        OrbPhotoStore.save(image)
-                                        settings.orbPhotoVersion += 1
-                                    }
-                                }
-                            }
-                            Text("Your photo stays on your device only.")
-                                .font(.system(.caption, design: .rounded))
-                                .foregroundStyle(.white.opacity(0.4))
-                                .padding(.horizontal, 24)
-                        }
-                    }
 
                     // Premium: kendi seslerin
                     customSoundsSection
@@ -238,7 +148,7 @@ struct SettingsView: View {
             } else {
                 Button {
                     AudioEngine.shared.playTap()
-                    app.route = .shop
+                    app.route = .premium
                 } label: {
                     Label("Go Premium", systemImage: "crown.fill")
                 }
@@ -318,184 +228,5 @@ struct SettingsView: View {
         .tint(settings.theme.accent.color)
         .padding(.horizontal, 20)
         .padding(.vertical, 10)
-    }
-}
-
-private struct OrbSwatch: View {
-    let style: OrbStyle
-    let theme: Theme
-    let selected: Bool
-    let locked: Bool
-    let photoVersion: Int
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
-                ZStack {
-                    Circle()
-                        .fill(LinearGradient(colors: [theme.bgTop.color, theme.bgBottom.color],
-                                             startPoint: .top, endPoint: .bottom))
-                        .frame(width: 72, height: 72)
-
-                    // Kilitli karakter BULANIK: ne kazanacağını merak etsin,
-                    // ama ne olduğunu görmesin
-                    orbPreview
-                        .blur(radius: locked ? 8 : 0)
-
-                    if locked {
-                        Color.black.opacity(0.35).clipShape(Circle()).frame(width: 72, height: 72)
-                        Image(systemName: "lock.fill")
-                            .foregroundStyle(.white.opacity(0.85))
-                    }
-                }
-                .overlay {
-                    Circle()
-                        .strokeBorder(selected ? theme.accent.color : .white.opacity(0.15),
-                                      lineWidth: selected ? 2.5 : 1)
-                }
-
-                HStack(spacing: 3) {
-                    if style.isPremium {
-                        Image(systemName: "crown.fill")
-                            .font(.system(size: 9))
-                            .foregroundStyle(theme.lumen.color)
-                    }
-                    Text(locked ? "???" : style.localizedName)
-                        .font(.system(.caption, design: .rounded).bold())
-                        .foregroundStyle(selected ? .white : .white.opacity(0.6))
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var orbPreview: some View {
-        switch style.kind {
-        case .classic:
-            Circle().fill(theme.orb.color).frame(width: 18, height: 18)
-                .shadow(color: theme.accent.color, radius: 8)
-        case .star:
-            Image(systemName: "star.fill")
-                .font(.system(size: 20))
-                .foregroundStyle(theme.lumen.color)
-                .shadow(color: theme.lumen.color, radius: 8)
-        case .crystal:
-            Image(systemName: "hexagon.fill")
-                .font(.system(size: 20))
-                .foregroundStyle(theme.gate.color)
-                .shadow(color: theme.gate.color, radius: 8)
-        case .comet:
-            HStack(spacing: 0) {
-                Capsule().fill(LinearGradient(colors: [.clear, theme.accent.color],
-                                              startPoint: .leading, endPoint: .trailing))
-                    .frame(width: 22, height: 5)
-                Circle().fill(.white).frame(width: 13, height: 13)
-            }
-            .shadow(color: theme.accent.color, radius: 8)
-        case .rainbow:
-            Circle()
-                .fill(AngularGradient(colors: [.red, .yellow, .green, .cyan, .purple, .red], center: .center))
-                .frame(width: 18, height: 18)
-                .shadow(color: .white.opacity(0.6), radius: 8)
-        case .ring:
-            Circle().strokeBorder(theme.orb.color, lineWidth: 3)
-                .frame(width: 20, height: 20).shadow(color: theme.orb.color, radius: 6)
-        case .diamond:
-            Image(systemName: "suit.diamond.fill").font(.system(size: 20))
-                .foregroundStyle(theme.accent.color).shadow(color: theme.accent.color, radius: 8)
-        case .flame:
-            Image(systemName: "flame.fill").font(.system(size: 20))
-                .foregroundStyle(theme.hazard.color).shadow(color: theme.hazard.color, radius: 8)
-        case .pixel:
-            RoundedRectangle(cornerRadius: 2).fill(theme.gate.color)
-                .frame(width: 17, height: 17).shadow(color: theme.gate.color, radius: 6)
-        case .bubble:
-            Circle().strokeBorder(.white.opacity(0.85), lineWidth: 1.5)
-                .background(Circle().fill(.white.opacity(0.25)))
-                .frame(width: 20, height: 20)
-                .shadow(color: .white.opacity(0.6), radius: 6)
-        case .heart:
-            Image(systemName: "heart.fill").font(.system(size: 20))
-                .foregroundStyle(Color.pink).shadow(color: .pink, radius: 8)
-        case .firefly:
-            Image(systemName: "sparkle").font(.system(size: 20))
-                .foregroundStyle(Color(red: 0.75, green: 1.0, blue: 0.4))
-                .shadow(color: Color(red: 0.75, green: 1.0, blue: 0.4), radius: 8)
-        case .cloud:
-            Image(systemName: "cloud.fill").font(.system(size: 20))
-                .foregroundStyle(.white).shadow(color: .white.opacity(0.7), radius: 6)
-        case .champion:
-            Image(systemName: "crown.fill").font(.system(size: 20))
-                .foregroundStyle(Color(red: 1.0, green: 0.82, blue: 0.35))
-                .shadow(color: Color(red: 1.0, green: 0.82, blue: 0.35), radius: 8)
-        case .photo:
-            if photoVersion >= 0, let image = OrbPhotoStore.load() {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 26, height: 26)
-                    .clipShape(Circle())
-                    .overlay(Circle().strokeBorder(.white, lineWidth: 1.5))
-            } else {
-                Image(systemName: "person.crop.circle.badge.plus")
-                    .font(.system(size: 20))
-                    .foregroundStyle(.white.opacity(0.8))
-            }
-        }
-    }
-}
-
-/// Arka plan kartı. Mağaza da kullanıyor (temalar oraya taşındı), bu yüzden
-/// dosyaya özel değil.
-struct ThemeSwatch: View {
-    let theme: Theme
-    let selected: Bool
-    let locked: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .fill(LinearGradient(colors: [theme.bgTop.color, theme.bgBottom.color],
-                                             startPoint: .top, endPoint: .bottom))
-                        .frame(width: 84, height: 110)
-
-                    Circle()
-                        .strokeBorder(theme.ring.color, lineWidth: 2.5)
-                        .frame(width: 34, height: 34)
-                    Circle()
-                        .fill(theme.orb.color)
-                        .frame(width: 9, height: 9)
-                        .offset(x: 17)
-                        .shadow(color: theme.accent.color, radius: 4)
-
-                    if locked {
-                        Color.black.opacity(0.45)
-                            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                        Image(systemName: "lock.fill")
-                            .foregroundStyle(.white.opacity(0.85))
-                    }
-                }
-                .overlay {
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .strokeBorder(selected ? theme.accent.color : .white.opacity(0.15),
-                                      lineWidth: selected ? 2.5 : 1)
-                }
-
-                HStack(spacing: 3) {
-                    if theme.isPremium {
-                        Image(systemName: "crown.fill")
-                            .font(.system(size: 9))
-                            .foregroundStyle(theme.lumen.color)
-                    }
-                    Text(theme.localizedName)
-                        .font(.system(.caption, design: .rounded).bold())
-                        .foregroundStyle(selected ? .white : .white.opacity(0.6))
-                }
-            }
-        }
     }
 }

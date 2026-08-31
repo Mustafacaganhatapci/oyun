@@ -41,8 +41,11 @@ struct RootView: View {
                 GameContainerView(playMode: .speedrun)
                     .id("speedrun")
                     .transition(.identity)
-            case .shop:
-                ShopView()
+            case .personalize:
+                PersonalizeView()
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+            case .premium:
+                PremiumView()
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             case .settings:
                 SettingsView()
@@ -74,7 +77,7 @@ struct RootView: View {
             if let kind = ads.nudge {
                 NudgeView(
                     kind: kind,
-                    onAction: { ads.dismissNudge(); app.route = .shop },
+                    onAction: { ads.dismissNudge(); app.route = .premium },
                     onClose: { ads.dismissNudge() }
                 )
                 .transition(.opacity)
@@ -87,7 +90,7 @@ struct RootView: View {
                     onPremium: {
                         OfflineNotice.markShown()
                         showOfflineNotice = false
-                        app.route = .shop
+                        app.route = .premium
                     },
                     onClose: {
                         OfflineNotice.markShown()
