@@ -27,10 +27,13 @@ service cloud.firestore {
       allow get: if true;
       allow list: if false;
       allow create, delete: if false;
+      //
+      // Alanlara `get` ile erişilir: `active` ya da `maxUses` yazılmamış bir
+      // belgede doğrudan erişim kuralı hataya düşürüp kodu reddediyordu.
       allow update: if request.auth != null
         && request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(['uses', 'redeemedBy', 'lastRedeemedAt'])
-        && request.resource.data.active == resource.data.active
+        && request.resource.data.get('active', true) == resource.data.get('active', true)
         && request.resource.data.get('maxUses', 0) == resource.data.get('maxUses', 0);
     }
 
