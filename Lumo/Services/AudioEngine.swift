@@ -48,10 +48,6 @@ final class AudioEngine {
     private let pluckScale: [Double] = [220, 261.63, 293.66, 329.63, 392,
                                         440, 523.25, 587.33, 659.26, 784,
                                         880, 1046.50, 1174.66, 1318.51, 1567.98, 1760]
-    /// Dizinin sonuna gelindiğinde son kaç nota dolaşılsın. Daha tizi kulağı
-    /// tırmalıyor; tepede dönmek en azından HAREKETLİ kalıyor.
-    private let pluckTopCycle = 5
-
     private var pluckBuffers: [AVAudioPCMBuffer] = []
     private var collectBuffer: AVAudioPCMBuffer?
     private var failBuffer: AVAudioPCMBuffer?
@@ -232,17 +228,22 @@ final class AudioEngine {
 
     // MARK: Efekt tetikleyicileri
 
+    /// Kombo boyunca perde önce yükselir, tepeye varınca aynı yoldan yavaşça
+    /// iner ve tekrar çıkar. Eskiden tepede son beş nota dönüyordu; yükseliş
+    /// bitince ses tıkanmış gibi duyuluyordu. Üçgen dalga hem hiç durmuyor hem
+    /// de inişi duyulacak kadar kademeli.
     func playHop(combo: Int) {
         let ladder = custom.hopLadder.isEmpty ? pluckBuffers : custom.hopLadder
         guard sfxEnabled, !ladder.isEmpty else { return }
-        let count = ladder.count
-        var index = max(combo - 1, 0)
-        if index >= count {
-            // Dizinin tepesine gelindi: son birkaç notada dön, sabitlenme
-            let cycle = min(pluckTopCycle, count)
-            index = count - cycle + (index - count) % cycle
-        }
-        play(ladder[index])
+        play(ladder[Self.ladderIndex(combo: combo, count: ladder.count)])
+    }
+
+    /// 0 → tavan → 1 → tavan … (uçlar tekrarlanmadan)
+    static func ladderIndex(combo: Int, count: Int) -> Int {
+        guard count > 1 else { return 0 }
+        let period = (count - 1) * 2
+        let p = max(combo - 1, 0) % period
+        return p < count ? p : period - p
     }
 
     func playCollect() { if let b = collectBuffer { play(b) } }

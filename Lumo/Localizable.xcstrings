@@ -544,47 +544,6 @@
         }
       }
     },
-    "All audio is created on your device — nothing is streamed or uploaded.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All audio is created on your device — nothing is streamed or uploaded."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bütün sesler cihazında üretilir — hiçbir şey aktarılmaz, hiçbir şey yüklenmez."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der gesamte Ton entsteht auf deinem Gerät — nichts wird gestreamt oder hochgeladen."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Todo el audio se crea en tu dispositivo: nada se transmite ni se sube."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tout le son est créé sur ton appareil — rien n’est diffusé ni envoyé."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "音はすべて端末上で生成されます。配信もアップロードもありません。"
-          }
-        }
-      }
-    },
     "All characters unlocked": {
       "extractionState": "manual",
       "localizations": {
@@ -2361,6 +2320,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "ミス"
+          }
+        }
+      }
+    },
+    "Designed and built by Axium Dynamics. All rights reserved.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Designed and built by Axium Dynamics. All rights reserved."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Axium Dynamics tarafından tasarlanmış ve üretilmiştir. Tüm hakları saklıdır."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entworfen und entwickelt von Axium Dynamics. Alle Rechte vorbehalten."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diseñado y desarrollado por Axium Dynamics. Todos los derechos reservados."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conçu et développé par Axium Dynamics. Tous droits réservés."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Axium Dynamics が設計・開発。無断転載を禁じます。"
           }
         }
       }
@@ -5742,6 +5742,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "プレミアムはまもなくApp Storeに登場。コードをお持ちなら下に入力してください。"
+          }
+        }
+      }
+    },
+    "Premium lets you record your own game sounds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium lets you record your own game sounds"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium'la oyunun seslerini kendi sesinle kaydedebilirsin"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit Premium kannst du die Spielsounds selbst aufnehmen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Con Premium puedes grabar los sonidos del juego con tu voz"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avec Premium, tu peux enregistrer les sons du jeu toi-même"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレミアムなら効果音を自分で録音できます"
           }
         }
       }
