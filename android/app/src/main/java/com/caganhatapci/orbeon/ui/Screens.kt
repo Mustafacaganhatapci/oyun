@@ -1292,7 +1292,12 @@ fun CharacterPreview(kind: OrbStyle.Kind, theme: Theme, t: Float, modifier: Modi
             OrbStyle.Kind.RAINBOW -> drawCircle(Color.hsv((t * 90f).mod(360f), 0.7f, 1f), 8f, c)
             OrbStyle.Kind.RING -> drawCircle(theme.orb, 9f, c, style = Stroke(width = 3f))
             OrbStyle.Kind.DIAMOND -> rotate(t * 35f, pivot = c) { drawPath(miniPoly(c, 4, 10f), theme.accent) }
-            OrbStyle.Kind.FLAME -> drawCircle(theme.hazard, 8f * (1f + 0.15f * sin(t * 9f)), c)
+            OrbStyle.Kind.FLAME -> {
+                // Oyundaki hâli gerçek bir alev; önizleme de öyle olsun
+                val w = 1f + 0.09f * sin(t * 9f)
+                drawPath(flamePath(c, 10f, w, 2f - w), theme.hazard)
+                drawPath(flamePath(Offset(c.x, c.y + 1.5f), 5f, 1f, 1f), theme.lumen)
+            }
             OrbStyle.Kind.PIXEL -> drawRect(theme.gate,
                 topLeft = Offset(c.x - 7f, c.y - 7f),
                 size = androidx.compose.ui.geometry.Size(14f, 14f))
@@ -1306,7 +1311,31 @@ fun CharacterPreview(kind: OrbStyle.Kind, theme: Theme, t: Float, modifier: Modi
                 val blink = 0.2f + 0.8f * ((sin(t * 4f) + 1f) / 2f)
                 drawCircle(Color(0xFFBFFF66).copy(alpha = blink), 4f, Offset(c.x, c.y + 7f))
             }
-            OrbStyle.Kind.CLOUD -> {
+            OrbStyle.Kind.MOON -> {
+                // Hilal: daireden ikinci bir daire katman maskesiyle çıkarılır
+                val layer = Rect(c.x - 20f, c.y - 20f, c.x + 20f, c.y + 20f)
+                drawContext.canvas.saveLayer(layer, androidx.compose.ui.graphics.Paint())
+                drawCircle(theme.orb, 9f, c)
+                drawCircle(Color.Transparent, 8f, Offset(c.x + 5f, c.y - 1.5f),
+                    blendMode = androidx.compose.ui.graphics.BlendMode.Clear)
+                drawContext.canvas.restore()
+            }
+            OrbStyle.Kind.ATOM -> {
+                drawOval(theme.accent.copy(alpha = 0.55f),
+                    topLeft = Offset(c.x - 13f, c.y - 5f),
+                    size = androidx.compose.ui.geometry.Size(26f, 10f),
+                    style = Stroke(width = 1.2f))
+                drawCircle(theme.orb, 5.5f, c)
+                drawCircle(theme.accent, 2.6f,
+                    Offset(c.x + cos(t * 3.9f) * 13f, c.y + sin(t * 3.9f) * 5f))
+            }
+            OrbStyle.Kind.NOVA -> {
+                rotate(t * 32f, pivot = c) {
+                    drawPath(miniStar(c, 13f), theme.lumen.copy(alpha = 0.35f))
+                }
+                drawCircle(Color.White, 6f, c)
+            }
+        OrbStyle.Kind.CLOUD -> {
                 val puff = Color.White.copy(alpha = 0.95f)
                 drawCircle(puff, 6f, Offset(c.x - 6f, c.y + 1f))
                 drawCircle(puff, 8f, c)

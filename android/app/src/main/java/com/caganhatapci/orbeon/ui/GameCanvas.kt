@@ -390,6 +390,49 @@ private fun DrawScope.drawOrb(
             drawCircle(puff, r * 0.8f, Offset(c.x + r * 0.6f, c.y + r * 0.1f))
         }
 
+        OrbStyle.Kind.MOON -> {
+            // Hilal: dolu daireden ikinci bir daire "ısırılıyor". Isıran daire
+            // zemin rengiyle boyanmıyor, katman maskesiyle çıkarılıyor ki tema
+            // değişince hilal bozulmasın.
+            val mr = r * 1.15f
+            val layer = Rect(c.x - mr * 2, c.y - mr * 2, c.x + mr * 2, c.y + mr * 2)
+            drawContext.canvas.saveLayer(layer, androidx.compose.ui.graphics.Paint())
+            drawCircle(theme.orb, mr, c)
+            drawCircle(
+                Color.Transparent, r * 1.0f,
+                Offset(c.x + r * 0.62f, c.y - r * 0.16f),
+                blendMode = androidx.compose.ui.graphics.BlendMode.Clear
+            )
+            drawContext.canvas.restore()
+        }
+
+        OrbStyle.Kind.ATOM -> {
+            // Elektron kendi yörüngesinde dönüyor: oyunun yaptığı şeyin küçüğü
+            val orbitR = r * 1.5f
+            drawOval(
+                theme.accent.copy(alpha = 0.55f),
+                topLeft = Offset(c.x - orbitR, c.y - orbitR * 0.4f),
+                size = Size(orbitR * 2, orbitR * 0.8f),
+                style = Stroke(width = 1.5f * den)
+            )
+            drawCircle(theme.orb, r * 0.62f, c)
+            val a = t * 3.9f
+            drawCircle(
+                theme.accent, r * 0.3f,
+                Offset(c.x + cos(a) * orbitR, c.y + sin(a) * orbitR * 0.4f)
+            )
+        }
+
+        OrbStyle.Kind.NOVA -> {
+            // Bütün yıldızları toplayanın küresi: patlayan bir yıldız
+            val pulse = 1.05f + 0.13f * sin(t * (PI / 1.1).toFloat())
+            rotate(t * 32f, c) {
+                drawPath(starPath(c, r * 2.0f * pulse), theme.lumen.copy(alpha = 0.35f))
+            }
+            drawCircle(Color.White, r * 0.85f, c)
+            drawCircle(theme.lumen, r * 0.85f, c, style = Stroke(width = 1.5f * den))
+        }
+
         OrbStyle.Kind.PHOTO -> {
             if (photo != null) {
                 val pr = r * 1.6f
@@ -481,7 +524,7 @@ private fun heartPath(c: Offset, s: Float): Path {
  * karşılığı — alev yanarken enine/boyuna hafifçe oynar.
  * (Compose'da y aşağı arttığı için iOS'un tersine işaretler çevrilir.)
  */
-private fun flamePath(c: Offset, r: Float, sx: Float, sy: Float): Path {
+internal fun flamePath(c: Offset, r: Float, sx: Float, sy: Float): Path {
     val rx = r * sx
     val ry = r * sy
     val baseY = c.y + ry * 0.15f

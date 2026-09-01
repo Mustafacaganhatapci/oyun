@@ -25,7 +25,8 @@ data class OrbStyle(
 ) {
     enum class Kind {
         CLASSIC, STAR, CRYSTAL, COMET, RAINBOW, RING,
-        DIAMOND, FLAME, PIXEL, PHOTO, BUBBLE, HEART, FIREFLY, CLOUD
+        DIAMOND, FLAME, PIXEL, PHOTO, BUBBLE, HEART, FIREFLY, CLOUD,
+        MOON, ATOM, NOVA
     }
 
     val isPremium: Boolean get() = unlock is OrbUnlock.Premium
@@ -51,6 +52,10 @@ data class OrbStyle(
             OrbStyle("flame",   R.string.orb_flame,   OrbUnlock.Stars(320),  Kind.FLAME),
             OrbStyle("rainbow", R.string.orb_rainbow, OrbUnlock.Stars(450),  Kind.RAINBOW),
             OrbStyle("cloud",   R.string.orb_cloud,   OrbUnlock.Stars(620),  Kind.CLOUD),
+            // 620'den sonra 186 yıldız ödülsüz kalıyordu
+            OrbStyle("moon",    R.string.orb_moon,    OrbUnlock.Stars(690),  Kind.MOON),
+            OrbStyle("atom",    R.string.orb_atom,    OrbUnlock.Stars(750),  Kind.ATOM),
+            OrbStyle("nova",    R.string.orb_nova,    OrbUnlock.Stars(806),  Kind.NOVA),
             OrbStyle("photo",   R.string.orb_photo,   OrbUnlock.Premium,     Kind.PHOTO)
         )
 

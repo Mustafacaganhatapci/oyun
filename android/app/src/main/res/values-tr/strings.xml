@@ -184,4 +184,7 @@
     <string name="premium_unlocked">Premium açıldı</string>
     <string name="back_to_game">Oyuna dön</string>
     <string name="personalize">Kişiselleştir</string>
+    <string name="orb_moon">Ay</string>
+    <string name="orb_atom">Atom</string>
+    <string name="orb_nova">Nova</string>
 </resources>

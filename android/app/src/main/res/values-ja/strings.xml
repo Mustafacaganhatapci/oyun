@@ -184,4 +184,7 @@
     <string name="premium_unlocked">プレミアム解放</string>
     <string name="back_to_game">ゲームに戻る</string>
     <string name="personalize">カスタマイズ</string>
+    <string name="orb_moon">月</string>
+    <string name="orb_atom">アトム</string>
+    <string name="orb_nova">ノヴァ</string>
 </resources>

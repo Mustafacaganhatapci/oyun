@@ -184,4 +184,7 @@
     <string name="premium_unlocked">Premium unlocked</string>
     <string name="back_to_game">Back to the game</string>
     <string name="personalize">Personalize</string>
+    <string name="orb_moon">Moon</string>
+    <string name="orb_atom">Atom</string>
+    <string name="orb_nova">Nova</string>
 </resources>
