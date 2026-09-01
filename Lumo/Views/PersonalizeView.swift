@@ -195,9 +195,13 @@ struct PersonalizeView: View {
     private var photoOrbRow: some View {
         let style = OrbStyle.style(id: "photo")
         let selected = settings.orbStyleID == style.id
+        // Tema kapanışların DIŞINDA bir kez okunur. SettingsStore @MainActor;
+        // PhotosPicker'ın etiket kapanışı içinden okunduğunda derleyici onu
+        // aktörden kaçan bir erişim sayıyor.
+        let theme = settings.theme
         return VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 14) {
-                CharacterPreview(kind: style.kind, theme: settings.theme)
+                CharacterPreview(kind: style.kind, theme: theme)
                     .frame(width: 46, height: 46)
                     .id(settings.orbPhotoVersion)
 
@@ -221,7 +225,7 @@ struct PersonalizeView: View {
                         .foregroundStyle(selected ? .white.opacity(0.5) : .black)
                         .padding(.horizontal, 14).padding(.vertical, 8)
                         .background(Capsule().fill(selected ? .white.opacity(0.12)
-                                                            : settings.theme.lumen.color))
+                                                            : theme.lumen.color))
                 }
                 .disabled(selected)
             }
@@ -233,7 +237,7 @@ struct PersonalizeView: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 18)
                     .padding(.vertical, 10)
-                    .background(Capsule().fill(settings.theme.accent.opacity(0.3)))
+                    .background(Capsule().fill(theme.accent.opacity(0.3)))
             }
             .onChange(of: photoItem) { _, item in
                 guard let item else { return }
@@ -468,6 +472,59 @@ struct CharacterPreview: View {
                 Image(systemName: "crown.fill").font(.system(size: 16))
                     .foregroundStyle(Self.championGold)
                     .shadow(color: Self.championGold, radius: 6)
+            }
+        }
+    }
+}
+
+/// Arka plan kartı. Ayarlar'dan Kişiselleştir ekranına taşındı.
+struct ThemeSwatch: View {
+    let theme: Theme
+    let selected: Bool
+    let locked: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(LinearGradient(colors: [theme.bgTop.color, theme.bgBottom.color],
+                                             startPoint: .top, endPoint: .bottom))
+                        .frame(width: 84, height: 110)
+
+                    Circle()
+                        .strokeBorder(theme.ring.color, lineWidth: 2.5)
+                        .frame(width: 34, height: 34)
+                    Circle()
+                        .fill(theme.orb.color)
+                        .frame(width: 9, height: 9)
+                        .offset(x: 17)
+                        .shadow(color: theme.accent.color, radius: 4)
+
+                    if locked {
+                        Color.black.opacity(0.45)
+                            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        Image(systemName: "lock.fill")
+                            .foregroundStyle(.white.opacity(0.85))
+                    }
+                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .strokeBorder(selected ? theme.accent.color : .white.opacity(0.15),
+                                      lineWidth: selected ? 2.5 : 1)
+                }
+
+                HStack(spacing: 3) {
+                    if theme.isPremium {
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 9))
+                            .foregroundStyle(theme.lumen.color)
+                    }
+                    Text(theme.localizedName)
+                        .font(.system(.caption, design: .rounded).bold())
+                        .foregroundStyle(selected ? .white : .white.opacity(0.6))
+                }
             }
         }
     }
