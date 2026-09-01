@@ -32,6 +32,11 @@ struct OrbStyle: Identifiable, Equatable {
         case heart      // kalp atışı gibi nabız atan kalp
         case firefly    // yanıp sönen kuyruklu ateşböceği
         case cloud      // yumuşakça sallanan küçük bulut
+        case moon       // hilal
+        case atom       // çekirdek + çevresinde dolanan elektron
+        /// Kampanyadaki BÜTÜN yıldızları toplayanın küresi. Eşiği 806, yani
+        /// tam not; bu yüzden patlayan bir yıldız gibi görünüyor.
+        case nova
         /// Haftanın şampiyonu: altın bir taç, çevresinde dönen defne halkası.
         /// Kasten diğerlerinden çok farklı — köşeli silueti ve altın parıltısı
         /// uzaktan bile "bu oyuncu zirveye çıkmış" diye okunuyor.
@@ -67,6 +72,12 @@ struct OrbStyle: Identifiable, Equatable {
         OrbStyle(id: "flame",   name: "Flame",   unlock: .stars(320),  kind: .flame),
         OrbStyle(id: "rainbow", name: "Rainbow", unlock: .stars(450),  kind: .rainbow),
         OrbStyle(id: "cloud",   name: "Cloud",   unlock: .stars(620),  kind: .cloud),
+        // 620'den sonra 186 yıldız ödülsüz kalıyordu: kampanyayı bitirmeye
+        // yakın oynayanlar toplamaya devam edip karşılığında hiçbir şey
+        // görmüyordu. Son üç eşik o boşluğu dolduruyor.
+        OrbStyle(id: "moon",    name: "Moon",    unlock: .stars(690),  kind: .moon),
+        OrbStyle(id: "atom",    name: "Atom",    unlock: .stars(750),  kind: .atom),
+        OrbStyle(id: "nova",    name: "Nova",    unlock: .stars(806),  kind: .nova),
         OrbStyle(id: "photo",   name: "Photo",   unlock: .premium,     kind: .photo),
         OrbStyle(id: "champion", name: "Champion", unlock: .champion,  kind: .champion)
     ]

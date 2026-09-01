@@ -304,6 +304,31 @@ enum FirebaseBridge {
         }
     }
 
+    /// Oyuncunun ayarlardan yazdığı görüş/öneri.
+    ///
+    /// Belge kimliği rastgele; aynı kişi birden çok kez yazabilsin diye
+    /// playerID kullanılmıyor. Kurallar okumayı istemciye kapatır.
+    static func sendFeedback(message: String, playerID: String, username: String,
+                             version: String) async -> Bool {
+        let db = Firestore.firestore()
+        var data: [String: Any] = [
+            "message": message,
+            "playerID": playerID,
+            "platform": "iOS",
+            "version": version,
+            "sentAt": FieldValue.serverTimestamp()
+        ]
+        if !username.isEmpty { data["username"] = username }
+        do {
+            _ = try await db.collection("feedback").addDocument(data: data)
+            leaderboardLog("GÖRÜŞ GÖNDERİLDİ (\(message.count) karakter)")
+            return true
+        } catch {
+            leaderboardLog("GÖRÜŞ GÖNDERİLEMEDİ: \(error.localizedDescription)", isError: true)
+            return false
+        }
+    }
+
     /// Destekçi kaydı: kim, hangi adla, ne aldı.
     ///
     /// Amacı muhasebe değil — sonradan o kişilere hediye premium ya da kod
@@ -448,6 +473,8 @@ enum FirebaseBridge {
     static func redeemPromoCode(_ code: String, playerID: String) async -> Bool? { nil }
     static func recordSupporter(playerID: String, username: String,
                                 productID: String, price: String) async {}
+    static func sendFeedback(message: String, playerID: String, username: String,
+                             version: String) async -> Bool { false }
     static func submit(mode: LeaderboardMode, week: Int, value: Double,
                        username: String, playerID: String) async {}
     static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] { [] }

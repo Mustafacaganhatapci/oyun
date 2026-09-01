@@ -6,7 +6,13 @@ struct SettingsView: View {
     @EnvironmentObject private var store: StoreManager
     @EnvironmentObject private var progress: ProgressStore
     @EnvironmentObject private var tutorial: TutorialStore
+    @EnvironmentObject private var player: PlayerStore
     @ObservedObject private var sounds = CustomSoundStore.shared
+
+    @State private var feedback = ""
+    @State private var sendingFeedback = false
+    @State private var feedbackSent = false
+    @FocusState private var feedbackFocused: Bool
 
     /// Info.plist'ten okunur — sürüm yükseltirken burayı düzeltmek unutulmasın
     private static var appVersion: String {
@@ -55,6 +61,9 @@ struct SettingsView: View {
                     // Premium: kendi seslerin
                     customSoundsSection
 
+                    // Görüş ve öneri
+                    feedbackSection
+
                     // Öğreticiyi baştan izlemek isteyenler için
                     Button {
                         AudioEngine.shared.playTap()
@@ -92,6 +101,104 @@ struct SettingsView: View {
                 .padding(.top, 20)
             }
         }
+    }
+
+    /// Oyuncunun doğrudan yazabileceği tek yer. Mağaza yorumu bize ulaşmıyor,
+    /// e-posta da kimsenin açmak istediği bir şey değil.
+    private var feedbackSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "bubble.left.and.text.bubble.right.fill")
+                    .foregroundStyle(settings.theme.accent.color)
+                Text("Feedback")
+                    .font(.system(.headline, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.9))
+            }
+
+            Text("Something broken, something missing, an idea? Write it here and it comes straight to me.")
+                .font(.system(.caption, design: .rounded))
+                .foregroundStyle(.white.opacity(0.5))
+
+            ZStack(alignment: .topLeading) {
+                if feedback.isEmpty {
+                    Text("Your message…")
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.3))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 12)
+                }
+                TextEditor(text: $feedback)
+                    .focused($feedbackFocused)
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(.white)
+                    .scrollContentBackground(.hidden)
+                    .frame(height: 96)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 5)
+            }
+            .background {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(.white.opacity(0.07))
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(.white.opacity(0.14), lineWidth: 1)
+            }
+
+            HStack {
+                // 1000 karakterde kesiliyor: gönderilen metin doğrudan
+                // Firestore belgesine gidiyor, sınırsız bırakmak doğru olmaz
+                Text(verbatim: "\(feedback.count)/1000")
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(.white.opacity(feedback.count > 1000 ? 0.9 : 0.35))
+                Spacer()
+                Button {
+                    feedbackFocused = false
+                    sendingFeedback = true
+                    Task {
+                        let ok = await Feedback.send(message: feedback,
+                                                     playerID: player.playerID,
+                                                     username: player.username)
+                        sendingFeedback = false
+                        if ok {
+                            feedback = ""
+                            feedbackSent = true
+                            AudioEngine.shared.playWin()
+                            Haptics.shared.win()
+                        }
+                    }
+                } label: {
+                    if sendingFeedback {
+                        ProgressView().tint(.black)
+                            .frame(width: 60, height: 18)
+                    } else {
+                        Text("Send")
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundStyle(.black)
+                            .frame(width: 60, height: 18)
+                    }
+                }
+                .padding(.horizontal, 12).padding(.vertical, 9)
+                .background(Capsule().fill(settings.theme.accent.color))
+                .disabled(!canSendFeedback)
+                .opacity(canSendFeedback ? 1 : 0.4)
+            }
+
+            if feedbackSent {
+                Label("Thanks — I read every one of these.", systemImage: "checkmark.circle.fill")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.gate.color)
+            }
+        }
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(.white.opacity(0.06))
+        }
+        .padding(.horizontal, 20)
+    }
+
+    private var canSendFeedback: Bool {
+        let trimmed = feedback.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.count >= 4 && trimmed.count <= 1000 && !sendingFeedback
     }
 
     // MARK: Premium — kendi kaydettiğin sesler

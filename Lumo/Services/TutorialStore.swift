@@ -37,6 +37,8 @@ enum TutorialHint: String, CaseIterable, Identifiable {
     case gate       // bitiş kapısı
     case timed      // süreli bölüm
     case bounds     // ileri bölümlerde kaçırmak = elenmek
+    case bonus      // bonus turu: kapı yok, tehlike yok, süre var
+    case modes      // 10. bölümde açılan sonsuz mod ve hız turu
 
     var id: String { rawValue }
 
@@ -49,16 +51,20 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .gate:   return "The gate"
         case .timed:  return "Beat the clock!"
         case .bounds: return "Careful now!"
+        case .bonus:  return "Bonus round"
+        case .modes:  return "Two new modes"
         }
     }
     var bodyKey: String {
         switch self {
         case .launch: return "The orb orbits a ring. Tap anywhere to launch it toward the next ring."
-        case .hazard: return "Red arcs hurt. Time your tap so the orb isn't touching them."
+        case .hazard: return "The arc starts green: on your first lap it can't hurt you. The green melts away from both ends, and once it's gone the arc turns red and burns. Leave before that."
         case .moving: return "Some rings drift back and forth. Wait for the right moment."
         case .gate:   return "Reach the dashed turquoise gate to finish the level."
         case .timed:  return "This level is timed! Reach the gate before the countdown hits zero."
         case .bounds: return "From this level on, if the orb flies off the screen, you lose the attempt."
+        case .bonus:  return "No gate and nothing that can hurt you here. Just grab as many stars as you can before the clock runs out."
+        case .modes:  return "Endless Mode and Speed Run are open. Both go on the weekly board, and it resets every Monday — see if you can take a place in the top three."
         }
     }
     var systemImage: String {
@@ -69,6 +75,8 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .gate:   return "flag.checkered"
         case .timed:  return "timer"
         case .bounds: return "xmark.octagon.fill"
+        case .bonus:  return "sparkles"
+        case .modes:  return "trophy.fill"
         }
     }
 }

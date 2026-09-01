@@ -398,6 +398,74 @@ final class GameScene: SKScene {
             container.addChild(tail)
             orbCore = body
 
+        case .moon:
+            // Hilal: dolu daireden ikinci bir daire "ısırılıyor". Isıran daire
+            // zemin rengiyle değil, üstteki daireyi maskeleyerek yapılıyor ki
+            // arka plan teması değişince hilal bozulmasın.
+            let crop = SKCropNode()
+            let mask = SKShapeNode(circleOfRadius: orbRadius * 1.15)
+            mask.fillColor = .white
+            mask.strokeColor = .clear
+            let bite = SKShapeNode(circleOfRadius: orbRadius * 1.0)
+            bite.fillColor = .black
+            bite.strokeColor = .clear
+            bite.blendMode = .subtract
+            bite.position = CGPoint(x: orbRadius * 0.62, y: orbRadius * 0.16)
+            mask.addChild(bite)
+            crop.maskNode = mask
+            let disc = SKShapeNode(circleOfRadius: orbRadius * 1.15)
+            disc.fillColor = theme.orb.uiColor
+            disc.strokeColor = .clear
+            crop.addChild(disc)
+            container.addChild(crop)
+            orbCore = disc
+
+        case .atom:
+            let nucleus = SKShapeNode(circleOfRadius: orbRadius * 0.62)
+            nucleus.fillColor = theme.orb.uiColor
+            nucleus.strokeColor = .clear
+            container.addChild(nucleus)
+
+            // Elektron kendi yörüngesinde dönüyor: oyunun yaptığı şeyin küçüğü
+            let orbitR = orbRadius * 1.5
+            let ring = SKShapeNode(ellipseOf: CGSize(width: orbitR * 2, height: orbitR * 0.8))
+            ring.fillColor = .clear
+            ring.strokeColor = theme.accent.uiColor.withAlphaComponent(0.55)
+            ring.lineWidth = 1.5
+            container.addChild(ring)
+
+            let pivot = SKNode()
+            let electron = SKShapeNode(circleOfRadius: orbRadius * 0.3)
+            electron.fillColor = theme.accent.uiColor
+            electron.strokeColor = .clear
+            electron.glowWidth = 2
+            electron.position = CGPoint(x: orbitR, y: 0)
+            pivot.addChild(electron)
+            pivot.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: 1.6)))
+            pivot.yScale = 0.4
+            container.addChild(pivot)
+            orbCore = nucleus
+
+        case .nova:
+            // Bütün yıldızları toplayanın küresi: patlayan bir yıldız
+            let burst = SKShapeNode(path: Self.starPath(radius: orbRadius * 2.0))
+            burst.fillColor = theme.lumen.uiColor.withAlphaComponent(0.35)
+            burst.strokeColor = .clear
+            burst.glowWidth = 4
+            burst.run(.repeatForever(.sequence([
+                .group([.scale(to: 1.18, duration: 1.1), .rotate(byAngle: .pi / 5, duration: 1.1)]),
+                .group([.scale(to: 0.92, duration: 1.1), .rotate(byAngle: .pi / 5, duration: 1.1)])
+            ])))
+            container.addChild(burst)
+
+            let core = SKShapeNode(circleOfRadius: orbRadius * 0.85)
+            core.fillColor = .white
+            core.strokeColor = theme.lumen.uiColor
+            core.lineWidth = 1.5
+            core.glowWidth = 4
+            container.addChild(core)
+            orbCore = core
+
         case .cloud:
             let puffColor = UIColor.white.withAlphaComponent(0.95)
             let puff1 = SKShapeNode(circleOfRadius: orbRadius * 0.85)

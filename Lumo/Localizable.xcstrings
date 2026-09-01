@@ -696,6 +696,47 @@
         }
       }
     },
+    "Atom": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atom"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atom"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atom"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Átomo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atome"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アトム"
+          }
+        }
+      }
+    },
     "Aurora": {
       "extractionState": "manual",
       "localizations": {
@@ -947,6 +988,47 @@
         }
       }
     },
+    "Bonus round": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bonus round"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bonus turu"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bonusrunde"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ronda extra"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tour bonus"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ボーナスラウンド"
+          }
+        }
+      }
+    },
     "Bonus!": {
       "extractionState": "manual",
       "localizations": {
@@ -978,6 +1060,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bonus!"
+          }
+        }
+      }
+    },
+    "Both go on the weekly board, and it resets every Monday. See if you can take a place in the top three.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Both go on the weekly board, and it resets every Monday. See if you can take a place in the top three."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İkisi de haftalık tabloya yazılıyor, tablo her pazartesi sıfırlanıyor. Bakalım ilk üçe girebilecek misin."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beide zählen für die Wochenrangliste, die jeden Montag zurückgesetzt wird. Mal sehen, ob du es in die Top 3 schaffst."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los dos entran en la tabla semanal, que se reinicia cada lunes. A ver si logras entrar en el top 3."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les deux comptent pour le classement hebdomadaire, remis à zéro chaque lundi. On verra si tu entres dans le top 3."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "どちらも週間ランキングに載り、毎週月曜にリセットされます。トップ3に入れるか試してみてください。"
           }
         }
       }
@@ -1512,6 +1635,47 @@
         }
       }
     },
+    "Climb as high as you can. The rings get smaller and faster.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Climb as high as you can. The rings get smaller and faster."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne kadar yükselebilirsen. Halkalar küçülüyor ve hızlanıyor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steig so hoch du kannst. Die Ringe werden kleiner und schneller."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sube todo lo que puedas. Los anillos se hacen más pequeños y rápidos."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monte aussi haut que possible. Les anneaux rétrécissent et accélèrent."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "どこまで高く登れるか。リングは小さく、速くなります。"
+          }
+        }
+      }
+    },
     "Close": {
       "extractionState": "manual",
       "localizations": {
@@ -1765,47 +1929,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "40 lümen topla"
-          }
-        }
-      }
-    },
-    "Collect the yellow stars and reach the green gate ✨": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Collect the yellow stars and reach the green gate ✨"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sarı yıldızları topla ve yeşil kapıya ulaş ✨"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sammle die gelben Sterne und erreiche das grüne Tor ✨"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recoge las estrellas amarillas y llega a la puerta verde ✨"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Récupère les étoiles jaunes et atteins la porte verte ✨"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "黄色い星を集めて緑のゲートを目指そう ✨"
           }
         }
       }
@@ -2417,6 +2540,47 @@
         }
       }
     },
+    "Endless Mode and Speed Run are open. Both go on the weekly board, and it resets every Monday — see if you can take a place in the top three.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endless Mode and Speed Run are open. Both go on the weekly board, and it resets every Monday — see if you can take a place in the top three."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonsuz mod ve hız turu açıldı. İkisi de haftalık tabloya yazılıyor, tablo her pazartesi sıfırlanıyor. Bakalım ilk üçe girebilecek misin."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endlosmodus und Speed Run sind offen. Beide zählen für die Wochenrangliste, die jeden Montag zurückgesetzt wird. Mal sehen, ob du es in die Top 3 schaffst."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se han abierto el modo infinito y contrarreloj. Los dos entran en la tabla semanal, que se reinicia cada lunes. A ver si logras entrar en el top 3."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le mode infini et le contre-la-montre sont ouverts. Les deux comptent pour le classement hebdomadaire, remis à zéro chaque lundi. On verra si tu entres dans le top 3."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンドレスモードとスピードランが解放されました。どちらも週間ランキングに載り、毎週月曜にリセットされます。トップ3に入れるか試してみてください。"
+          }
+        }
+      }
+    },
     "Enter Endless Mode": {
       "extractionState": "manual",
       "localizations": {
@@ -2592,6 +2756,47 @@
         }
       }
     },
+    "Feedback": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feedback"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görüş ve öneri"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feedback"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comentarios"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retours"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ご意見"
+          }
+        }
+      }
+    },
     "Finish 3 levels": {
       "extractionState": "manual",
       "localizations": {
@@ -2728,6 +2933,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ateşböceği"
+          }
+        }
+      }
+    },
+    "Five levels, one clock. Fastest time wins.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Five levels, one clock. Fastest time wins."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beş bölüm, tek kronometre. En hızlı süre kazanır."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fünf Level, eine Uhr. Die schnellste Zeit gewinnt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cinco niveles, un cronómetro. Gana el tiempo más rápido."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cinq niveaux, un chrono. Le meilleur temps gagne."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5レベル、時計はひとつ。最速タイムが勝ちます。"
           }
         }
       }
@@ -3309,6 +3555,47 @@
         }
       }
     },
+    "Hop as often as you like. There's no limit and no hurry": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hop as often as you like. There's no limit and no hurry"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İstediğin kadar atla. Sınır da yok, acele de yok"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spring so oft du willst. Kein Limit, keine Eile"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salta tantas veces como quieras. Ni límite ni prisa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saute autant que tu veux. Ni limite ni précipitation"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好きなだけ跳んでいい。回数制限も時間制限もありません"
+          }
+        }
+      }
+    },
     "How to play": {
       "extractionState": "manual",
       "localizations": {
@@ -3534,6 +3821,18 @@
     "Later": {
       "extractionState": "manual",
       "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonra"
+          }
+        },
         "de": {
           "stringUnit": {
             "state": "translated",
@@ -3543,7 +3842,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Más tarde"
+            "value": "Luego"
           }
         },
         "fr": {
@@ -3556,12 +3855,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "あとで"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sonra"
           }
         }
       }
@@ -4045,6 +4338,47 @@
         }
       }
     },
+    "Moon": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moon"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ay"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mond"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Luna"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lune"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月"
+          }
+        }
+      }
+    },
     "Moving rings": {
       "extractionState": "manual",
       "localizations": {
@@ -4465,6 +4799,47 @@
         }
       }
     },
+    "No gate and nothing that can hurt you here. Just grab as many stars as you can before the clock runs out.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No gate and nothing that can hurt you here. Just grab as many stars as you can before the clock runs out."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Burada kapı da yok, sana zarar verecek bir şey de. Süre dolmadan toplayabildiğin kadar yıldız topla."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hier gibt es kein Tor und nichts, was dir schaden kann. Sammle einfach so viele Sterne wie möglich, bevor die Zeit abläuft."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aquí no hay puerta ni nada que pueda hacerte daño. Solo recoge todas las estrellas que puedas antes de que se acabe el tiempo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ici, pas de porte et rien qui puisse te blesser. Ramasse simplement le plus d'étoiles possible avant la fin du temps."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ここにはゲートも、あなたを傷つけるものもありません。時間切れまでに星をできるだけ集めてください。"
+          }
+        }
+      }
+    },
     "No previous purchases found on this Apple Account": {
       "extractionState": "manual",
       "localizations": {
@@ -4759,6 +5134,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "あとで"
+          }
+        }
+      }
+    },
+    "Nova": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nova"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nova"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nova"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nova"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nova"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ノヴァ"
           }
         }
       }
@@ -5590,6 +6006,47 @@
         }
       }
     },
+    "Reach the green gate to finish the level": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reach the green gate to finish the level"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bölümü bitirmek için yeşil kapıya ulaş"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erreiche das grüne Tor, um das Level zu beenden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Llega a la puerta verde para terminar el nivel"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atteins la porte verte pour terminer le niveau"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "緑のゲートに着くとレベルクリアです"
+          }
+        }
+      }
+    },
     "Record your own hop, death, life-lost and level-complete sounds. The hop rises in pitch with your combo, just like the built-in one. Recordings never leave your device.": {
       "extractionState": "manual",
       "localizations": {
@@ -5668,41 +6125,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "録音中…"
-          }
-        }
-      }
-    },
-    "Red arcs hurt. Time your tap so the orb isn't touching them.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rote Bögen sind gefährlich. Tippe so, dass die Kugel sie nicht berührt."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los arcos rojos hacen daño. Calcula tu toque para que el orbe no los toque."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Les arcs rouges sont dangereux. Touchez au bon moment pour que l'orbe ne les touche pas."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "赤いアークは危険。オーブが触れないようにタイミングよくタップ。"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kırmızı yaylar zarar verir. Küre onlara değmeyecek şekilde zamanla dokun."
           }
         }
       }
@@ -6256,6 +6678,47 @@
         }
       }
     },
+    "Send": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gönder"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envoyer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "送信"
+          }
+        }
+      }
+    },
     "Settings": {
       "extractionState": "manual",
       "localizations": {
@@ -6398,6 +6861,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bazı halkalar ileri geri hareket eder. Doğru anı bekle."
+          }
+        }
+      }
+    },
+    "Something broken, something missing, an idea? Write it here and it comes straight to me.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something broken, something missing, an idea? Write it here and it comes straight to me."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bozuk bir şey mi var, eksik mi buldun, aklına bir fikir mi geldi? Buraya yaz, doğrudan bana ulaşıyor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etwas kaputt, etwas fehlt, eine Idee? Schreib es hier hin, es kommt direkt bei mir an."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Algo roto, algo que falta, una idea? Escríbelo aquí y me llega directamente."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un bug, un manque, une idée ? Écris-le ici, ça m'arrive directement."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不具合、足りないもの、思いついたこと。ここに書いてもらえれば直接届きます。"
           }
         }
       }
@@ -6881,6 +7385,47 @@
         }
       }
     },
+    "Thanks — I read every one of these.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanks — I read every one of these."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teşekkürler, hepsini tek tek okuyorum."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Danke — ich lese wirklich jede einzelne."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gracias, las leo todas una por una."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merci, je les lis toutes, une par une."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ありがとうございます。すべて目を通しています。"
+          }
+        }
+      }
+    },
     "That code wasn't right, but here — 100 stars on the house!": {
       "extractionState": "manual",
       "localizations": {
@@ -6988,6 +7533,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "今日から広告はオフです。Orbeonは一人で作っていて、これは次のレベル・キャラクター・音楽にそのまま使わせてもらいます。"
+          }
+        }
+      }
+    },
+    "The arc starts green: on your first lap it can't hurt you. The green melts away from both ends, and once it's gone the arc turns red and burns. Leave before that.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The arc starts green: on your first lap it can't hurt you. The green melts away from both ends, and once it's gone the arc turns red and burns. Leave before that."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yay yeşil başlar: ilk turda sana bir şey olmaz. Yeşil iki ucundan erir, bittiği an yay kırmızıya döner ve yakar. Ondan önce oradan ayrıl."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Bogen startet grün: In der ersten Runde kann er dir nichts anhaben. Das Grün schmilzt von beiden Enden weg, und sobald es weg ist, wird der Bogen rot und brennt. Verschwinde vorher."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El arco empieza verde: en la primera vuelta no puede hacerte nada. El verde se consume por ambos extremos y, en cuanto se acaba, el arco se pone rojo y quema. Vete antes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'arc commence en vert : au premier tour il ne peut rien te faire. Le vert se consume par les deux bouts, et dès qu'il a disparu l'arc devient rouge et brûle. Pars avant."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "弧は緑から始まります。最初の1周は当たっても平気です。緑は両端から溶けていき、なくなった瞬間に赤くなって燃えます。その前に離れてください。"
           }
         }
       }
@@ -7494,6 +8080,88 @@
         }
       }
     },
+    "Try Endless Mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try Endless Mode"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonsuz modu dene"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endlosmodus testen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probar modo infinito"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Essayer le mode infini"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンドレスを試す"
+          }
+        }
+      }
+    },
+    "Two new modes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two new modes"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İki yeni mod"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zwei neue Modi"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dos modos nuevos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deux nouveaux modes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しいモードが2つ"
+          }
+        }
+      }
+    },
     "Unlocks as you collect stars ★": {
       "extractionState": "manual",
       "localizations": {
@@ -7961,6 +8629,47 @@
         }
       }
     },
+    "Yellow stars unlock new characters. Skip them now if you want, the level stays open": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yellow stars unlock new characters. Skip them now if you want, the level stays open"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sarı yıldızlar yeni karakterler açıyor. İstemezsen şimdi toplama, bölüm açık kalıyor"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelbe Sterne schalten neue Charaktere frei. Lass sie ruhig liegen, das Level bleibt offen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las estrellas amarillas desbloquean personajes. Puedes dejarlas, el nivel sigue disponible"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les étoiles jaunes débloquent des personnages. Tu peux les laisser, le niveau reste ouvert"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "黄色い星は新しいキャラを解放します。今は取らなくても、レベルはいつでも戻れます"
+          }
+        }
+      }
+    },
     "You finished 1st on last week's board.": {
       "extractionState": "manual",
       "localizations": {
@@ -8208,6 +8917,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "En iyin"
+          }
+        }
+      }
+    },
+    "Your message…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your message…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mesajın…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Nachricht…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu mensaje…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ton message…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メッセージ…"
           }
         }
       }

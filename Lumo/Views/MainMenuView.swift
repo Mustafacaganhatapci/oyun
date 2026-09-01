@@ -9,8 +9,11 @@ struct MainMenuView: View {
     @EnvironmentObject private var daily: DailyRewardStore
     @EnvironmentObject private var missions: MissionStore
     @EnvironmentObject private var leaderboard: LeaderboardService
+    @EnvironmentObject private var tutorial: TutorialStore
 
     @State private var showMissions = false
+    /// 10. bölüm bitince "iki yeni mod açıldı" duyurusu — bir kez
+    @State private var showModesUnlocked = false
     @State private var claimedFlash: Int?
     @State private var championAward: (rank: Int, stars: Int)?
     /// Yıldız eşiği geçilip açılan, henüz gösterilmemiş karakter
@@ -122,13 +125,29 @@ struct MainMenuView: View {
             leaderboard.refresh(mode: .endless, myPlayerID: player.playerID)
             Task { await claimChampionRewardIfEarned() }
             orbReveal = progress.pendingOrbReveal()
+            // 10. bölüm bitti: sonsuz mod ve hız turu açıldı. Düğmeler burada
+            // olduğu için duyuru da burada; bitiş ekranında söylense oyuncu
+            // nereye bakacağını bilmeden kapatıyordu.
+            if progress.endlessUnlocked, tutorial.shouldShow(.modes) {
+                showModesUnlocked = true
+            }
         }
         .onChange(of: progress.totalStars) { _, _ in
             // Günlük ödül, görev ve şampiyonluk yıldızları da eşik geçirebilir
             if orbReveal == nil { orbReveal = progress.pendingOrbReveal() }
         }
+        .animation(.easeInOut(duration: 0.3), value: showModesUnlocked)
         .overlay {
-            if let award = championAward {
+            if showModesUnlocked {
+                ModesUnlockedView(theme: settings.theme) {
+                    tutorial.markShown(.modes)
+                    showModesUnlocked = false
+                } onPlay: {
+                    tutorial.markShown(.modes)
+                    showModesUnlocked = false
+                    app.route = .endless
+                }
+            } else if let award = championAward {
                 ChampionAwardView(rank: award.rank, stars: award.stars,
                                   theme: settings.theme) { championAward = nil }
             } else if let style = orbReveal {

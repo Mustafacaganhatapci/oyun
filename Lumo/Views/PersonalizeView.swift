@@ -456,6 +456,25 @@ struct CharacterPreview: View {
                     .shadow(color: Self.fireflyGlow, radius: 5)
                     .offset(y: 7)
             }
+        case .moon:
+            Image(systemName: "moon.fill").font(.system(size: 19))
+                .foregroundStyle(theme.orb.color)
+        case .atom:
+            ZStack {
+                Ellipse()
+                    .strokeBorder(theme.accent.opacity(0.55), lineWidth: 1.2)
+                    .frame(width: 30, height: 12)
+                Circle().fill(theme.orb.color).frame(width: 11, height: 11)
+                Circle().fill(theme.accent.color).frame(width: 5, height: 5)
+                    .offset(x: 15)
+            }
+        case .nova:
+            ZStack {
+                Image(systemName: "star.fill").font(.system(size: 26))
+                    .foregroundStyle(theme.lumen.opacity(0.35))
+                Circle().fill(.white).frame(width: 12, height: 12)
+                    .shadow(color: theme.lumen.color, radius: 5)
+            }
         case .cloud:
             // Oyundaki hâli üç beyaz yumak; tek bulut ikonu değil
             ZStack {

@@ -27,10 +27,12 @@ struct GameContainerView: View {
         case movingIntro, movingTiming                  // hareketli halka
         case timedIntro                                 // süreli bölüm tanıtımı
         case boundsIntro                                // "kaçırmak artık elenmek" tanıtımı
+        case bonusIntro                                 // bonus turu ne demek
     }
     @State private var coach: CoachStep?
     private var coachIsBlocking: Bool {
-        coach == .hazardIntro || coach == .movingIntro || coach == .timedIntro || coach == .boundsIntro
+        coach == .hazardIntro || coach == .movingIntro || coach == .timedIntro
+            || coach == .boundsIntro || coach == .bonusIntro
     }
 
     private enum Overlay: Equatable {
@@ -856,7 +858,12 @@ struct GameContainerView: View {
     /// dokunuş ipucu sahnenin kendi içindedir.)
     private func startCoachIfNeeded() {
         guard case .level(let id) = playMode else { return }
-        if !LevelLibrary.isForgiving(id), tutorial.shouldShow(.bounds) {
+        if LevelLibrary.isBonus(id), tutorial.shouldShow(.bonus) {
+            // Bonus turu hiçbir yerde anlatılmıyordu: kapıyı arayan oyuncu
+            // süre dolana kadar ne yapacağını bilmiyordu.
+            scene?.coachFrozen = true
+            coach = .bonusIntro
+        } else if !LevelLibrary.isForgiving(id), tutorial.shouldShow(.bounds) {
             // İlk katı bölüm: artık ekrandan çıkmak = elenmek — bir kez tanıt
             scene?.coachFrozen = true
             coach = .boundsIntro
@@ -894,6 +901,10 @@ struct GameContainerView: View {
         case .movingIntro:
             scene?.coachFrozen = false
             coach = .movingTiming
+        case .bonusIntro:
+            scene?.coachFrozen = false
+            coach = nil
+            tutorial.markShown(.bonus)
         case .timedIntro:
             scene?.coachFrozen = false
             coach = nil
@@ -917,6 +928,7 @@ struct GameContainerView: View {
         let color: Color
         switch step {
         case .hazardIntro: hint = .hazard; color = settings.theme.hazard.color
+        case .bonusIntro:  hint = .bonus;  color = settings.theme.lumen.color
         case .timedIntro:  hint = .timed;  color = settings.theme.lumen.color
         case .boundsIntro: hint = .bounds; color = settings.theme.hazard.color
         default:           hint = .moving; color = settings.theme.accent.color
@@ -1043,9 +1055,15 @@ struct GameContainerView: View {
     /// Antrenman bölümünde altta beliren, adım adım yönlendiren yazı.
     /// Engellemez (dokunuşları oyuna geçirir); atlayış sayısına göre değişir.
     private var tutorialCaption: some View {
-        let text: LocalizedStringKey = tutorialHops == 0
-            ? "Tap anywhere — launch the orb toward the next ring"
-            : "Collect the yellow stars and reach the green gate ✨"
+        // Dört adım. Eskiden ikiydi ve iki şeyi hiç söylemiyordu: atlayış
+        // sayısının serbest olduğunu, sarı yıldızların ne işe yaradığını.
+        let text: LocalizedStringKey
+        switch tutorialHops {
+        case 0:  text = "Tap anywhere — launch the orb toward the next ring"
+        case 1:  text = "Hop as often as you like. There's no limit and no hurry"
+        case 2:  text = "Yellow stars unlock new characters. Skip them now if you want, the level stays open"
+        default: text = "Reach the green gate to finish the level"
+        }
         return VStack {
             Spacer()
             Text(text)
