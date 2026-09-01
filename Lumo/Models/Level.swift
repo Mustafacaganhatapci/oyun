@@ -73,6 +73,8 @@ struct SplitMix64: RandomNumberGenerator {
     mutating func cg(in range: ClosedRange<CGFloat>) -> CGFloat {
         CGFloat.random(in: range, using: &self)
     }
+    /// 0..<1 — sıralama doldurmaları bunu kullanıyor
+    mutating func unit() -> Double { Double(next() >> 11) / Double(1 << 53) }
 }
 
 // MARK: - Bölüm kütüphanesi

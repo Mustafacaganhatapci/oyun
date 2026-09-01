@@ -46,6 +46,13 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    // Ayar belgeleri (sıralama doldurmaları vb.). Uygulama okur, yalnızca
+    // konsoldan değiştirilir.
+    match /config/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Oyuncuların ayarlardan yazdığı görüş ve öneriler.
     // Yalnızca YAZILIR: istemci ne okuyabilir ne değiştirebilir; başkalarının
     // yazdıklarını görmek kimsenin işi değil.

@@ -168,6 +168,40 @@ SDK'yı ekleyince gerçek test reklamları görünür. Yayın öncesi kendi kiml
 - [ ] AdMob kimliklerini gerçek değerlerle değiştir
 - [ ] Gizlilik politikası URL'i (reklam SDK'sı eklenince gerekli)
 
+## 📊 Sıralama doldurmaları
+
+Pazartesi sabahı haftalık tablo bomboş açılıyor ve boş bir sıralamaya kimse
+oynamıyor. `LeaderboardSeed` ilk 50'de boş kalan yerlere Türkçe ve yabancı
+adlarla doldurma kayıtları ekliyor.
+
+**Nasıl çalışıyor:** her doldurmanın adı, skoru ve GÖRÜNME ANI hafta
+numarasından türetiliyor — hepsi aynı anda belirmiyor, hafta boyunca sızıyor.
+Belge kimliği `bot_w<hafta>_<sıra>` olduğu için iki cihaz aynı anda yazsa bile
+tabloda tek satır oluyor. Konsolda `seed: true` alanından tanınırlar.
+
+**Gerçek oyunculara dokunulmuyor:**
+- Şampiyonluk ödülü sıralaması doldurmaları saymaz; kimse sahte bir adın
+  arkasında kalıp yıldızını kaybetmez.
+- Gerçek oyuncular çoğaldıkça doldurmalar listeden düşer, gerçek olan hep kalır.
+
+**Ayarlar** Firestore'da `config/leaderboard` belgesinden. Belge yoksa koddaki
+varsayılanlar çalışır.
+
+| Alan | Tür | Varsayılan | Ne yapar |
+|---|---|---|---|
+| `botsEnabled` | boolean | `true` | `false` yaparsan yeni doldurma yazılmaz |
+| `botTarget` | int64 | `50` | İlk kaç sıra dolu tutulsun (en çok 50) |
+| `botEndlessBest` | int64 | `33` | En iyi doldurmanın skoru |
+| `botEndlessWorst` | int64 | `6` | En kötüsü |
+| `botSpeedrunBest` | double | `52` | Hız turunda en iyi süre (saniye) |
+| `botSpeedrunWorst` | double | `145` | En kötü süre |
+
+Skorlar iki uç arasında karesel dağılıyor: yüksek skorlar seyrek, çoğunluk
+alt bantta — gerçek bir tabloya benzesin diye.
+
+Yazılmış doldurmaları silmek istersen o haftanın koleksiyonundan `bot_` ile
+başlayan belgeleri sil; `botsEnabled` false ise geri gelmezler.
+
 ## 🎟️ Premium kodu verme
 
 Kodlar iki yerden okunuyor: `StoreManager.promoCodes` (koda gömülü, çevrimdışı

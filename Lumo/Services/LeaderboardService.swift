@@ -74,6 +74,13 @@ final class LeaderboardService: ObservableObject {
     /// Bu haftanın numarası — okuma ve yazma bunun üzerinden yapılır
     var currentWeek: Int { Self.weekIndex() }
 
+    /// Bu haftanın başlangıç anı (Unix saniye)
+    var weekStart: TimeInterval { Self.weekAnchor + Double(currentWeek) * Self.weekLength }
+    static var weekSpan: TimeInterval { weekLength }
+
+    /// Firestore'dan okunan doldurma ayarları (bir kez, uygulama ömrü boyunca)
+    private var seedConfig: LeaderboardSeed.Config?
+
     /// Sıralamanın sıfırlanmasına kalan süre
     var timeUntilReset: TimeInterval {
         let nextStart = Self.weekAnchor + Double(currentWeek + 1) * Self.weekLength
@@ -217,7 +224,10 @@ final class LeaderboardService: ObservableObject {
         let week = currentWeek - 1
         guard week >= 0 else { return nil }
         #if canImport(FirebaseCore)
+        // Doldurmalar ELENİR: ödül sıralaması yalnızca gerçek oyunculardan
+        // hesaplanır, kimse sahte bir adın arkasında kalıp yıldızını kaybetmez.
         let top = await FirebaseBridge.fetchTop(mode: .endless, week: week, myPlayerID: playerID)
+            .filter { !LeaderboardSeed.isSeed($0.id) }
         guard let index = top.prefix(3).firstIndex(where: { $0.id == playerID }) else { return nil }
         return (week, index + 1)
         #else
@@ -225,22 +235,89 @@ final class LeaderboardService: ObservableObject {
         #endif
     }
 
-    /// Bu haftanın ilk 50 sonucunu getirir
+    /// Bu haftanın ilk 50 sonucunu getirir. Tablo yarım kalmışsa, zamanı gelmiş
+    /// doldurmaları yazıp yeniden okur.
     func refresh(mode: LeaderboardMode, myPlayerID: String) {
         guard isAvailable else { return }
         #if canImport(FirebaseCore)
         isLoading = true
         let week = currentWeek
+        let start = weekStart
         Task {
-            let entries = await FirebaseBridge.fetchTop(mode: mode, week: week, myPlayerID: myPlayerID)
+            var entries = await FirebaseBridge.fetchTop(mode: mode, week: week, myPlayerID: myPlayerID)
+
+            if let added = await seedIfNeeded(mode: mode, week: week, start: start,
+                                              existing: entries), added > 0 {
+                entries = await FirebaseBridge.fetchTop(mode: mode, week: week, myPlayerID: myPlayerID)
+            }
+
+            let shown = Self.trimSeeds(entries, target: await self.loadSeedConfig().target)
             await MainActor.run {
                 switch mode {
-                case .endless: self.endlessEntries = entries
-                case .speedrun: self.speedrunEntries = entries
+                case .endless: self.endlessEntries = shown
+                case .speedrun: self.speedrunEntries = shown
                 }
                 self.isLoading = false
             }
         }
+        #endif
+    }
+
+    /// Gerçek oyuncular çoğaldıkça doldurmalar listeden düşer.
+    ///
+    /// Yazılan bir doldurma tabloda kalıcı; hafta ilerledikçe gerçek oyuncular
+    /// birikince ilk 50'yi doldurmalarla paylaşmak zorunda kalıyorlardı. Gerçek
+    /// olanların hepsi HER ZAMAN kalır, doldurmalar yalnızca boş yere girer ve
+    /// yerden taşan en zayıfları gösterilmez.
+    static func trimSeeds(_ entries: [LeaderboardEntry], target: Int) -> [LeaderboardEntry] {
+        let realCount = entries.filter { !LeaderboardSeed.isSeed($0.id) }.count
+        let room = max(0, target - realCount)
+        guard entries.count - realCount > room else { return entries }
+
+        var kept = 0
+        return entries.filter { entry in
+            guard LeaderboardSeed.isSeed(entry.id) else { return true }
+            kept += 1
+            return kept <= room
+        }
+    }
+
+    /// Eksik doldurmaları yazar, kaç tane yazdığını döner.
+    ///
+    /// Belge kimlikleri hafta ve sıradan türetildiği için aynı doldurmayı iki
+    /// cihaz yazsa bile tabloda tek satır olur. Bir seferde en çok 6 tane
+    /// yazılır; bir oyuncunun tek açılışında ona yazma yapmanın anlamı yok.
+    private func seedIfNeeded(mode: LeaderboardMode, week: Int, start: TimeInterval,
+                              existing: [LeaderboardEntry]) async -> Int? {
+        #if canImport(FirebaseCore)
+        let config = await loadSeedConfig()
+        guard config.enabled else { return 0 }
+
+        let real = existing.filter { !LeaderboardSeed.isSeed($0.id) }.count
+        let room = config.target - real
+        guard room > 0 else { return 0 }
+
+        let present = Set(existing.map(\.id))
+        let due = LeaderboardSeed.due(week: week, mode: mode, config: config,
+                                      weekStart: start, weekLength: Self.weekSpan)
+            .filter { !present.contains($0.id) }
+            .prefix(min(room, 6))
+        guard !due.isEmpty else { return 0 }
+
+        return await FirebaseBridge.writeSeeds(Array(due), mode: mode, week: week)
+        #else
+        return 0
+        #endif
+    }
+
+    private func loadSeedConfig() async -> LeaderboardSeed.Config {
+        if let seedConfig { return seedConfig }
+        #if canImport(FirebaseCore)
+        let loaded = await FirebaseBridge.fetchSeedConfig()
+        seedConfig = loaded
+        return loaded
+        #else
+        return .default
         #endif
     }
 }
@@ -435,6 +512,50 @@ enum FirebaseBridge {
         }
     }
 
+    /// `config/leaderboard` — doldurma ayarları. Belge yoksa koddaki
+    /// varsayılanlar kullanılır; yani Firestore'a hiç dokunmadan da çalışır.
+    static func fetchSeedConfig() async -> LeaderboardSeed.Config {
+        var config = LeaderboardSeed.Config.default
+        let db = Firestore.firestore()
+        guard let snap = try? await db.collection("config").document("leaderboard").getDocument(),
+              let data = snap.data() else { return config }
+        if let v = data["botsEnabled"] as? Bool { config.enabled = v }
+        if let v = data["botTarget"] as? Int { config.target = max(0, min(50, v)) }
+        if let v = data["botEndlessBest"] as? Int { config.endlessBest = v }
+        if let v = data["botEndlessWorst"] as? Int { config.endlessWorst = v }
+        if let v = data["botSpeedrunBest"] as? Double { config.speedrunBest = v }
+        if let v = data["botSpeedrunWorst"] as? Double { config.speedrunWorst = v }
+        if config.endlessBest < config.endlessWorst {
+            swap(&config.endlessBest, &config.endlessWorst)
+        }
+        return config
+    }
+
+    /// Doldurmaları yazar. `merge: false` DEĞİL — var olanın üstüne yazmayız;
+    /// belge zaten varsa dokunulmaz, çünkü yalnızca eksik olanlar gönderilir.
+    static func writeSeeds(_ seeds: [(id: String, name: String, value: Double)],
+                           mode: LeaderboardMode, week: Int) async -> Int {
+        let db = Firestore.firestore()
+        let collection = db.collection(mode.collection(week: week))
+        var written = 0
+        for seed in seeds {
+            do {
+                try await collection.document(seed.id).setData([
+                    "username": seed.name,
+                    "value": seed.value,
+                    "seed": true,
+                    "updatedAt": FieldValue.serverTimestamp()
+                ])
+                written += 1
+            } catch {
+                leaderboardLog("DOLDURMA YAZILAMADI \(seed.id): \(error.localizedDescription)",
+                               isError: true)
+            }
+        }
+        if written > 0 { leaderboardLog("DOLDURMA \(written) kayıt → \(mode.collection(week: week))") }
+        return written
+    }
+
     static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] {
         let db = Firestore.firestore()
         let descending = (mode == .endless)   // endless: yüksek üstte, speedrun: düşük üstte
@@ -478,6 +599,9 @@ enum FirebaseBridge {
     static func submit(mode: LeaderboardMode, week: Int, value: Double,
                        username: String, playerID: String) async {}
     static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] { [] }
+    static func fetchSeedConfig() async -> LeaderboardSeed.Config { .default }
+    static func writeSeeds(_ seeds: [(id: String, name: String, value: Double)],
+                           mode: LeaderboardMode, week: Int) async -> Int { 0 }
 }
 #endif
 #endif
