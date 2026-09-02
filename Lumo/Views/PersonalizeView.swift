@@ -33,8 +33,10 @@ struct PersonalizeView: View {
                     Text("\(progress.totalStars)")
                         .font(.system(.subheadline, design: .rounded).bold())
                         .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .fixedSize()
                 }
-                .frame(minWidth: 44)
+                .frame(minWidth: 44, alignment: .trailing)
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)

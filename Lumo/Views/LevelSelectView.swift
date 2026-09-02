@@ -20,6 +20,10 @@ struct LevelSelectView: View {
                     .font(.system(.title2, design: .rounded).bold())
                     .foregroundStyle(.white)
                 Spacer()
+                // Genişlik SABİT 44'tü. Toplam üç haneye çıkınca ("806") sayı
+                // yıldızın yanına sığmayıp altına kayıyor, sayaç iki satır
+                // olup köşeye yapışıyordu. Alt sınır 44 (geri düğmesiyle
+                // simetri), üstü serbest; satır da tek.
                 HStack(spacing: 4) {
                     Image(systemName: "star.fill")
                         .font(.footnote)
@@ -27,8 +31,10 @@ struct LevelSelectView: View {
                     Text("\(progress.totalStars)")
                         .font(.system(.subheadline, design: .rounded).bold())
                         .foregroundStyle(.white.opacity(0.85))
+                        .lineLimit(1)
+                        .fixedSize()
                 }
-                .frame(width: 44)
+                .frame(minWidth: 44, alignment: .trailing)
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)
