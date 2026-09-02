@@ -76,47 +76,143 @@ struct WorldRankingView: View {
         .padding(.top, 12)
     }
 
+    /// Bir rütbe kümesi ve içindeki satırlar
+    private struct RankGroup: Identifiable {
+        let rank: Rank
+        var rows: [Row]
+        var id: Int { rank.rawValue }
+
+        struct Row: Identifiable {
+            let place: Int              // tablodaki genel sıra (0'dan)
+            let entry: LeaderboardEntry
+            var id: String { entry.id }
+        }
+    }
+
+    /// Tablo rütbelere bölünmüş hâlde. Liste zaten skora göre sıralı olduğu
+    /// için art arda gelenleri kümelemek yetiyor: küme başlığı her rütbe
+    /// değiştiğinde düşüyor, en yüksek rütbe en üstte.
+    private var groups: [RankGroup] {
+        var out: [RankGroup] = []
+        for (place, entry) in entries.enumerated() {
+            let rank = Rank.of(value: entry.value, mode: mode)
+            if out.last?.rank == rank {
+                out[out.count - 1].rows.append(.init(place: place, entry: entry))
+            } else {
+                out.append(RankGroup(rank: rank, rows: [.init(place: place, entry: entry)]))
+            }
+        }
+        return out
+    }
+
     private var list: some View {
         ScrollView {
             LazyVStack(spacing: 8) {
-                ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
-                    HStack(spacing: 14) {
-                        Text("\(index + 1)")
-                            .font(.system(.headline, design: .rounded).bold())
-                            .foregroundStyle(rankColor(index))
-                            .frame(width: 34, alignment: .center)
-
-                        Text(entry.username)
-                            .font(.system(.body, design: .rounded).bold())
-                            .foregroundStyle(entry.isMe ? settings.theme.accent.color : .white)
-                            .lineLimit(1)
-                        if entry.isMe {
-                            Text("you")
-                                .font(.system(.caption2, design: .rounded).bold())
-                                .foregroundStyle(settings.theme.accent.color)
-                                .padding(.horizontal, 6).padding(.vertical, 2)
-                                .background(Capsule().fill(settings.theme.accent.opacity(0.2)))
-                        }
-
-                        Spacer()
-
-                        Text(valueText(entry.value))
-                            .font(.system(.body, design: .rounded).bold())
-                            .monospacedDigit()
-                            .foregroundStyle(.white.opacity(0.85))
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background {
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(entry.isMe ? settings.theme.accent.opacity(0.12) : .white.opacity(0.05))
+                ForEach(groups) { group in
+                    groupHeader(group.rank, count: group.rows.count)
+                    ForEach(group.rows) { item in
+                        row(index: item.place, entry: item.entry, rank: group.rank)
                     }
                 }
+
+                ladder
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)
             .padding(.bottom, 30)
         }
+    }
+
+    private func groupHeader(_ rank: Rank, count: Int) -> some View {
+        HStack(spacing: 8) {
+            RankBadge(rank: rank, size: 14)
+            Text(rank.title)
+                .font(.system(.subheadline, design: .rounded).bold())
+                .foregroundStyle(rank.color)
+            Text(rank.rangeText(mode: mode))
+                .font(.system(.caption2, design: .rounded))
+                .foregroundStyle(.white.opacity(0.35))
+            Spacer()
+            Text("\(count)")
+                .font(.system(.caption2, design: .rounded).bold())
+                .monospacedDigit()
+                .foregroundStyle(.white.opacity(0.35))
+        }
+        .padding(.horizontal, 4)
+        .padding(.top, 14)
+        .padding(.bottom, 2)
+    }
+
+    private func row(index: Int, entry: LeaderboardEntry, rank: Rank) -> some View {
+        HStack(spacing: 14) {
+            // Rütbenin rengi satırın kenarında ince bir şerit: başlığı
+            // kaydırıp geçtiğinde de hangi kümede olduğun belli kalıyor
+            Capsule()
+                .fill(rank.color.opacity(entry.isMe ? 0.95 : 0.55))
+                .frame(width: 3, height: 22)
+
+            Text("\(index + 1)")
+                .font(.system(.headline, design: .rounded).bold())
+                .foregroundStyle(rankColor(index))
+                .frame(width: 30, alignment: .center)
+
+            Text(entry.username)
+                .font(.system(.body, design: .rounded).bold())
+                .foregroundStyle(entry.isMe ? settings.theme.accent.color : .white)
+                .lineLimit(1)
+            if entry.isMe {
+                Text("you")
+                    .font(.system(.caption2, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.accent.color)
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(Capsule().fill(settings.theme.accent.opacity(0.2)))
+            }
+
+            Spacer()
+
+            Text(valueText(entry.value))
+                .font(.system(.body, design: .rounded).bold())
+                .monospacedDigit()
+                .foregroundStyle(.white.opacity(0.85))
+        }
+        .padding(.leading, 10)
+        .padding(.trailing, 16)
+        .padding(.vertical, 12)
+        .background {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(entry.isMe ? settings.theme.accent.opacity(0.12) : .white.opacity(0.05))
+        }
+    }
+
+    /// Rütbe cetveli: aşağıdan yukarıya bütün basamaklar. Tabloda yalnızca o
+    /// an dolu olan rütbeler görünüyor; merdivenin tamamını görmeden bir
+    /// üsttekine ne kadar kaldığı bilinmiyor.
+    private var ladder: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Ranks")
+                .font(.system(.headline, design: .rounded).bold())
+                .foregroundStyle(.white.opacity(0.9))
+
+            ForEach(Rank.allCases.reversed()) { rank in
+                HStack(spacing: 10) {
+                    RankBadge(rank: rank, size: 13)
+                    Text(rank.title)
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(rank.color)
+                    Spacer()
+                    Text(rank.rangeText(mode: mode))
+                        .font(.system(.caption, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+            }
+        }
+        .padding(18)
+        .background {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(.white.opacity(0.05))
+        }
+        .padding(.top, 24)
     }
 
     private var notConnected: some View {
@@ -142,11 +238,33 @@ struct WorldRankingView: View {
                     .font(.system(size: 44, weight: .black, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(settings.theme.accent.color)
+
+                // Tablo kapalıyken de rütbe görünür: rütbe internete değil
+                // skora bağlı, öyleyse çevrimdışı oyuncudan saklanmasın
+                if let rank = localRank {
+                    HStack(spacing: 6) {
+                        RankBadge(rank: rank, size: 13)
+                        Text(rank.title)
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundStyle(rank.color)
+                    }
+                    .padding(.top, 2)
+                }
             }
             .padding(.top, 10)
             Spacer()
             Spacer()
         }
+    }
+
+    /// Cihazdaki en iyi sonucun rütbesi (hiç oynanmadıysa yok)
+    private var localRank: Rank? {
+        if mode == .endless {
+            guard progress.endlessBest > 0 else { return nil }
+            return .of(value: Double(progress.endlessBest), mode: .endless)
+        }
+        guard progress.speedrunBest > 0 else { return nil }
+        return .of(value: progress.speedrunBest, mode: .speedrun)
     }
 
     private var localBestText: String {
