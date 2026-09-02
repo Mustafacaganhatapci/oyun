@@ -286,10 +286,10 @@ final class LeaderboardService: ObservableObject {
     /// Eksik doldurmaları yazar, kaç tane yazdığını döner.
     ///
     /// Belge kimlikleri hafta ve sıradan türetildiği için aynı doldurmayı iki
-    /// cihaz yazsa bile tabloda tek satır olur. Bir seferde en çok 25 tane
-    /// yazılır; bir oyuncunun tek açılışında beş yüz yazma yapmanın anlamı yok,
-    /// tablo hafta boyunca doluyor zaten. Yirmi beş, ilk sayfanın (100 satır)
-    /// birkaç açılışta dolmasına yetiyor.
+    /// cihaz yazsa bile tabloda tek satır olur. Bir seferde en çok 50 tane
+    /// yazılır: ilk sayfa (100 satır) iki açılışta doluyor, beş yüzün tamamı
+    /// da on açılışta. Tek seferde hepsini yazmak bir oyuncuyu başkalarının
+    /// tablosunu doldurmak için bekletmek olurdu.
     ///
     /// Nüfus artık ilk 50'den çok daha büyük olduğu için hangi doldurmanın
     /// yazıldığı ilk 50'ye bakılarak anlaşılamıyor. İki koruma var:
@@ -316,7 +316,7 @@ final class LeaderboardService: ObservableObject {
         var mine = Set(UserDefaults.standard.stringArray(forKey: key) ?? [])
         let known = Set(existing.map(\.id)).union(mine)
 
-        let batch = due.filter { !known.contains($0.id) }.prefix(25)
+        let batch = due.filter { !known.contains($0.id) }.prefix(50)
         guard !batch.isEmpty else { return 0 }
 
         let written = await FirebaseBridge.writeSeeds(Array(batch), mode: mode, week: week)

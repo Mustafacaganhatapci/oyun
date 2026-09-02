@@ -176,13 +176,23 @@ enum LeaderboardSeed {
             var rng = SplitMix64(seed: UInt64(bitPattern: Int64(week &* 7919 &+ i &* 104729))
                                  ^ (mode == .endless ? 0x51ED : 0xA37F))
 
-            // Görünme anı: haftanın ilk %90'ına yayılır. Son gün kimse
-            // belirmesin — hafta biterken tabloya yeni ad düşmesi tuhaf durur.
-            let at = weekStart + Double(rng.unit()) * weekLength * 0.90
+            let inBand = i < config.target
+
+            // Görünme anı. Düz dağıtmak yanlıştı: beş yüz kişi haftaya eşit
+            // yayılınca tablo pazartesi neredeyse boş açılıyor, kalabalık ancak
+            // cuma toplanıyordu. İki hızda geliyorlar:
+            //  • İlk 50 (tabloda görünen bant) haftanın ilk %4'ünde, yani
+            //    yaklaşık altı saatte — sabah açan boş tablo görmesin.
+            //  • Geri kalanı haftanın ilk %90'ına ama KARESİYLE: yarısı ilk
+            //    bir buçuk günde, kuyruğu haftanın sonuna kadar sürüyor.
+            // Son gün kimse belirmesin — hafta biterken yeni ad düşmesi tuhaf.
+            let u = Double(rng.unit())
+            let at = inBand
+                ? weekStart + u * weekLength * 0.04
+                : weekStart + u * u * weekLength * 0.90
             guard now >= at else { continue }
 
             let t = Double(rng.unit())
-            let inBand = i < config.target
             let value: Double
             switch mode {
             case .endless:
