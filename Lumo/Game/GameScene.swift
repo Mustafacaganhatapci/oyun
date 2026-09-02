@@ -6,7 +6,9 @@ enum GameEvent {
     case attached(hasHazard: Bool, isMoving: Bool)   // öğretici koçu bu bilgiyle tetiklenir
     case collect(total: Int)
     case gateUnlocked                  // topla-bitir: son lumen toplandı, kapı açıldı
-    case fail
+    /// `willRevive`: sonsuz modda can hakkı var, tur bitmeyecek. Ses bu ana
+    /// bakarak seçilir — ölüm anında bir ses, biraz sonra ikincisi çıkmasın.
+    case fail(willRevive: Bool)
     case win(stars: Int)
     case bonusTick(remaining: Int)
     case timeTick(remaining: Int)      // süreli bölüm geri sayımı
@@ -1458,7 +1460,11 @@ final class GameScene: SKScene {
         burst(at: orbNode.position, color: theme.hazard.uiColor, count: 26)
         orbNode.isHidden = true
         shake()
-        onEvent?(.fail)
+        // Sonsuz modda can hakkı varsa tur bitmeyecek: çağıran taraf ölüm
+        // sesi yerine can eksilme sesini çalsın.
+        var willRevive = false
+        if case .endless = mode, extraLives > 0, !endlessOverSent { willRevive = true }
+        onEvent?(.fail(willRevive: willRevive))
     }
 
     private func respawn(animated: Bool) {

@@ -1169,6 +1169,47 @@
         }
       }
     },
+    "Buy a coffee, get Premium with it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy a coffee, get Premium with it."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir kahve ısmarla, Premium da senin olsun."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spendier einen Kaffee — Premium gibt's dazu."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invita a un café y llévate Premium."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offre un café, Premium vient avec."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コーヒーを1杯おごると、プレミアムも付いてきます。"
+          }
+        }
+      }
+    },
     "Carbon": {
       "extractionState": "manual",
       "localizations": {
@@ -2470,6 +2511,47 @@
         }
       }
     },
+    "Either one unlocks everything.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Either one unlocks everything."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hangisini seçersen seç, her şey açılır."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beide schalten alles frei."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cualquiera de los dos lo desbloquea todo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'un comme l'autre débloque tout."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "どちらでもすべて解放されます。"
+          }
+        }
+      }
+    },
     "Endless": {
       "extractionState": "manual",
       "localizations": {
@@ -3228,6 +3310,47 @@
         }
       }
     },
+    "Get ready…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get ready…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazır ol…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mach dich bereit…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prepárate…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prêt…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "準備して…"
+          }
+        }
+      }
+    },
     "Global ranking not connected": {
       "extractionState": "manual",
       "localizations": {
@@ -3672,37 +3795,43 @@
         }
       }
     },
-    "If you love the game, you can buy the developer a coffee ☕️": {
+    "In Personalize, under your characters.": {
       "extractionState": "manual",
       "localizations": {
-        "de": {
+        "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wenn dir das Spiel gefällt, kannst du dem Entwickler einen Kaffee spendieren ☕️"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si te gusta el juego, puedes invitar a un café al desarrollador ☕️"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si tu aimes le jeu, tu peux offrir un café au développeur ☕️"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "気に入ったら開発者にコーヒーをおごってください ☕️"
+            "value": "In Personalize, under your characters."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Oyunu sevdiysen geliştiriciye bir kahve ısmarlayabilirsin ☕️"
+            "value": "Kişiselleştir'de, karakterlerin altında."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unter „Personalisieren“, unter deinen Charakteren."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En Personalizar, debajo de tus personajes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans Personnaliser, sous tes personnages."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「カスタマイズ」のキャラクターの下にあります。"
           }
         }
       }
@@ -5705,6 +5834,47 @@
         }
       }
     },
+    "Plays when you pick up a star.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plays when you pick up a star."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldız topladığında çalar."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird abgespielt, wenn du einen Stern einsammelst."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suena cuando recoges una estrella."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se joue quand tu ramasses une étoile."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スターを取ったときに鳴ります。"
+          }
+        }
+      }
+    },
     "Premium is coming soon to the App Store. Have a code? Enter it below.": {
       "extractionState": "manual",
       "localizations": {
@@ -5742,47 +5912,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "プレミアムはまもなくApp Storeに登場。コードをお持ちなら下に入力してください。"
-          }
-        }
-      }
-    },
-    "Premium lets you record your own game sounds": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Premium lets you record your own game sounds"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Premium'la oyunun seslerini kendi sesinle kaydedebilirsin"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mit Premium kannst du die Spielsounds selbst aufnehmen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Con Premium puedes grabar los sonidos del juego con tu voz"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Avec Premium, tu peux enregistrer les sons du jeu toi-même"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プレミアムなら効果音を自分で録音できます"
           }
         }
       }
@@ -6088,43 +6217,84 @@
         }
       }
     },
-    "Record your own hop, death, life-lost and level-complete sounds. The hop rises in pitch with your combo, just like the built-in one. Recordings never leave your device.": {
+    "Record the hop, the star, the death and the rest in your own voice. Tap the microphone, wait for 3-2-1, then make the sound. The hop follows your combo up and back down. Recordings never leave your device.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Record your own hop, death, life-lost and level-complete sounds. The hop rises in pitch with your combo, just like the built-in one. Recordings never leave your device."
+            "value": "Record the hop, the star, the death and the rest in your own voice. Tap the microphone, wait for 3-2-1, then make the sound. The hop follows your combo up and back down. Recordings never leave your device."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Atlayış, ölüm, can eksilme ve bölüm bitirme seslerini kendi sesinle kaydet. Atlayış sesi, hazır melodideki gibi kombo yükseldikçe incelir. Kayıtlar cihazından çıkmaz."
+            "value": "Atlayışı, yıldızı, ölümü ve gerisini kendi sesinle kaydet. Mikrofona bas, 3-2-1'i bekle, sonra sesi çıkar. Atlayış sesi kombonla birlikte incelir ve geri kalınlaşır. Kayıtlar cihazından hiç çıkmaz."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nimm deine eigenen Sounds für Sprung, Tod, Lebensverlust und Levelabschluss auf. Der Sprungsound wird mit steigendem Combo höher — genau wie der eingebaute. Aufnahmen verlassen dein Gerät nie."
+            "value": "Nimm den Sprung, den Stern, den Tod und den Rest mit deiner eigenen Stimme auf. Tippe aufs Mikrofon, warte auf 3-2-1 und mach dann das Geräusch. Der Sprung steigt mit deiner Kombo und fällt wieder. Aufnahmen verlassen dein Gerät nie."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Graba tus propios sonidos de salto, muerte, vida perdida y nivel completado. El salto sube de tono con tu combo, igual que el original. Las grabaciones nunca salen de tu dispositivo."
+            "value": "Graba el salto, la estrella, la muerte y lo demás con tu propia voz. Toca el micrófono, espera el 3-2-1 y haz el sonido. El salto sube con tu combo y vuelve a bajar. Las grabaciones nunca salen de tu dispositivo."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enregistre tes propres sons de saut, de mort, de vie perdue et de niveau terminé. Le saut monte dans les aigus avec ton combo, comme celui d’origine. Les enregistrements ne quittent jamais ton appareil."
+            "value": "Enregistre le saut, l'étoile, la mort et le reste avec ta voix. Touche le micro, attends le 3-2-1, puis fais le son. Le saut monte avec ton combo puis redescend. Les enregistrements ne quittent jamais ton appareil."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ジャンプ・ミス・残機減少・クリアの効果音を自分の声で録音。ジャンプ音はコンボに合わせて内蔵音と同じように高くなります。録音は端末の外に出ません。"
+            "value": "ジャンプ、スター、ミスなどを自分の声で録音できます。マイクを押して3-2-1を待ち、それから声を出してください。ジャンプ音はコンボに合わせて高くなり、また低く戻ります。録音が端末の外に出ることはありません。"
+          }
+        }
+      }
+    },
+    "Record your own sounds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record your own sounds"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kendi seslerini kaydet"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eigene Sounds aufnehmen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Graba tus propios sonidos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistre tes propres sons"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自分の音を録音する"
           }
         }
       }
@@ -6493,47 +6663,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sakura"
-          }
-        }
-      }
-    },
-    "Same coffee — the café just charges for the chairs 😄": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Same coffee — the café just charges for the chairs 😄"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aynı kahve — kafe sadece sandalye parası alıyor 😄"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Derselbe Kaffee — das Café berechnet nur die Stühle extra 😄"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El mismo café — la cafetería solo cobra por las sillas 😄"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le même café — le bistrot fait juste payer les chaises 😄"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "同じコーヒー — カフェは椅子代を取ってるだけ 😄"
           }
         }
       }

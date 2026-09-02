@@ -18,7 +18,6 @@ struct PremiumView: View {
     @FocusState private var codeFocused: Bool
     @State private var shimmer = false
     @State private var crownPulse = false
-    @ObservedObject private var sounds = CustomSoundStore.shared
 
     private enum CodeState { case idle, success, failure, bonusGranted }
 
@@ -40,8 +39,10 @@ struct PremiumView: View {
                 VStack(spacing: 20) {
                     premiumCard
 
-                    // Premium alındıysa kayıt arayüzü hemen kartın altında
-                    customSoundsSection
+                    // Kayıt arayüzünün kendisi Kişiselleştir'de, kürelerin
+                    // altında duruyor — küreni, arka planını ve sesini aynı
+                    // yerden seçmek daha doğal. Buradan yalnızca yol gösterilir.
+                    if store.isPremium { soundsPointer }
 
                     if !store.isPremium { redeemSection }
 
@@ -345,9 +346,12 @@ struct PremiumView: View {
             Text("Tip Jar")
                 .font(.system(.headline, design: .rounded).bold())
                 .foregroundStyle(.white.opacity(0.9))
-            Text("If you love the game, you can buy the developer a coffee ☕️")
+            // Bahşiş de premium açıyor — en güçlü sebep bu ve doğru olduğu için
+            // söylenmemesi için sebep yok. Eskiden "istersen bir kahve ısmarla"
+            // diyordu; kibardı ama neden yapılacağını anlatmıyordu.
+            Text("Buy a coffee, get Premium with it.")
                 .font(.system(.footnote, design: .rounded))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(.white.opacity(0.6))
 
             HStack(spacing: 12) {
                 ForEach(store.tipProducts, id: \.id) { product in
@@ -387,7 +391,7 @@ struct PremiumView: View {
                 }
             }
 
-            Text("Same coffee — the café just charges for the chairs 😄")
+            Text("Either one unlocks everything.")
                 .font(.system(.caption2, design: .rounded))
                 .foregroundStyle(.white.opacity(0.4))
                 .multilineTextAlignment(.center)
@@ -405,124 +409,37 @@ struct PremiumView: View {
         }
         .padding(.horizontal, 20)
     }
-    // MARK: Kendi kaydettiğin sesler
-    //
-    // Ayarlar'dan buraya taşındı: premium'un ne verdiğini anlatan listenin
-    // hemen altında durması, "aldım ama nerede" sorusunu ortadan kaldırıyor.
-    @ViewBuilder
-    private var customSoundsSection: some View {
-        if store.isPremium {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 8) {
-                    Image(systemName: "mic.fill")
-                        .foregroundStyle(settings.theme.lumen.color)
-                    Text("Your Own Sounds")
-                        .font(.system(.headline, design: .rounded).bold())
-                        .foregroundStyle(.white.opacity(0.9))
-                }
 
-                Text("Record your own hop, death, life-lost and level-complete sounds. The hop rises in pitch with your combo, just like the built-in one. Recordings never leave your device.")
-                    .font(.system(.caption, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.5))
-
-                VStack(spacing: 4) {
-                    toggleRow("waveform", "Use my recordings", $sounds.enabled)
-                    ForEach(CustomSoundSlot.allCases) { slot in
-                        Divider().overlay(.white.opacity(0.1))
-                        soundRow(slot)
-                    }
+    /// Premium alanın kayıt arayüzüne giden yolu. Sesler Kişiselleştir'de,
+    /// kürelerin altında duruyor.
+    private var soundsPointer: some View {
+        Button {
+            AudioEngine.shared.playTap()
+            app.route = .personalize
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "mic.fill")
+                    .foregroundStyle(settings.theme.lumen.color)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Record your own sounds")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(.white)
+                    Text("In Personalize, under your characters.")
+                        .font(.system(.caption2, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.5))
                 }
-                .padding(.vertical, 8)
-                .background {
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .fill(.white.opacity(0.06))
-                }
-
-                if sounds.micDenied {
-                    Text("Microphone access is off. Turn it on in iOS Settings to record.")
-                        .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(settings.theme.hazard.color)
-                }
+                Spacer(minLength: 4)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.4))
             }
-            .padding(20)
+            .padding(16)
             .background {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .fill(.white.opacity(0.05))
             }
             .padding(.horizontal, 20)
         }
-    }
-
-    private func soundRow(_ slot: CustomSoundSlot) -> some View {
-        let isRecording = sounds.recording == slot
-        let has = sounds.hasRecording(slot)
-        return HStack(spacing: 12) {
-            Image(systemName: slot.icon)
-                .foregroundStyle(settings.theme.accent.color)
-                .frame(width: 22)
-
-            VStack(alignment: .leading, spacing: 1) {
-                Text(LocalizedStringKey(slot.title))
-                    .font(.system(.body, design: .rounded))
-                    .foregroundStyle(.white)
-                Text(LocalizedStringKey(isRecording ? "Recording…" : slot.hint))
-                    .font(.system(.caption2, design: .rounded))
-                    .foregroundStyle(isRecording
-                                     ? settings.theme.hazard.color
-                                     : .white.opacity(0.45))
-            }
-
-            Spacer(minLength: 4)
-
-            if has, !isRecording {
-                iconButton("play.fill") { sounds.preview(slot) }
-                iconButton("trash") {
-                    AudioEngine.shared.playTap()
-                    sounds.delete(slot)
-                }
-            }
-
-            iconButton(isRecording ? "stop.fill" : "mic.fill",
-                       tint: isRecording ? settings.theme.hazard.color : .white) {
-                if isRecording {
-                    sounds.stopRecording()
-                } else {
-                    AudioEngine.shared.playTap()
-                    sounds.startRecording(slot)
-                }
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 8)
-        .animation(.easeInOut(duration: 0.2), value: isRecording)
-    }
-
-    private func iconButton(_ icon: String, tint: Color = .white,
-                            action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(tint.opacity(0.9))
-                .frame(width: 34, height: 34)
-                .background(Circle().fill(.white.opacity(0.10)))
-        }
         .buttonStyle(.plain)
     }
-
-    private func toggleRow(_ icon: String, _ title: LocalizedStringKey, _ binding: Binding<Bool>) -> some View {
-        Toggle(isOn: binding) {
-            Label {
-                Text(title)
-                    .font(.system(.body, design: .rounded))
-                    .foregroundStyle(.white)
-            } icon: {
-                Image(systemName: icon)
-                    .foregroundStyle(settings.theme.accent.color)
-            }
-        }
-        .tint(settings.theme.accent.color)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 10)
-    }
-
 }

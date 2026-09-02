@@ -6,7 +6,7 @@ import Combine
 /// yükseldikçe hızlandırılıp inceltilir — sentetik pentatonik dizinin yaptığını
 /// oyuncunun kendi "hop"u yapar.
 enum CustomSoundSlot: String, CaseIterable, Identifiable {
-    case hop, lifeLost, fail, win
+    case hop, collect, lifeLost, fail, win
 
     var id: String { rawValue }
 
@@ -14,6 +14,7 @@ enum CustomSoundSlot: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .hop:      return "Hop"
+        case .collect:  return "Star"
         case .lifeLost: return "Life lost"
         case .fail:     return "Death"
         case .win:      return "Level complete"
@@ -23,6 +24,7 @@ enum CustomSoundSlot: String, CaseIterable, Identifiable {
     var hint: String {
         switch self {
         case .hop:      return "Rises in pitch as your combo grows."
+        case .collect:  return "Plays when you pick up a star."
         case .lifeLost: return "Plays when an extra life is spent."
         case .fail:     return "Plays when the orb is lost."
         case .win:      return "Plays when a level is finished."
@@ -32,6 +34,7 @@ enum CustomSoundSlot: String, CaseIterable, Identifiable {
     var icon: String {
         switch self {
         case .hop:      return "arrow.up.forward"
+        case .collect:  return "star.fill"
         case .lifeLost: return "heart.slash.fill"
         case .fail:     return "xmark.circle.fill"
         case .win:      return "flag.checkered"
@@ -40,7 +43,7 @@ enum CustomSoundSlot: String, CaseIterable, Identifiable {
 
     /// Kaydın azami süresi. "Hop" bir hece kadar olmalı; kombo hızlandığında
     /// uzun bir kayıt üst üste binip çamura dönüyor.
-    var maxDuration: TimeInterval { self == .hop ? 0.9 : 2.0 }
+    var maxDuration: TimeInterval { (self == .hop || self == .collect) ? 0.9 : 2.0 }
 }
 
 /// Kayıtları diskte tutar, oyunun ses motoruna hazır tampon olarak verir.
@@ -52,6 +55,11 @@ final class CustomSoundStore: NSObject, ObservableObject {
     @Published private(set) var recorded: Set<CustomSoundSlot> = []
     /// Şu an kayıt alınan yuva (nil = kayıt yok)
     @Published private(set) var recording: CustomSoundSlot?
+    /// Geri sayımı süren yuva. Mikrofona basar basmaz kayıt başlayınca kimse
+    /// yetişemiyordu; önce üçten geri sayıyoruz.
+    @Published private(set) var arming: CustomSoundSlot?
+    /// 3 → 2 → 1; kayıt başlayınca 0
+    @Published private(set) var countdown = 0
     /// Kayıtlar oyunda kullanılsın mı (premium bitse bile kayıtlar silinmez)
     @Published var enabled: Bool {
         didSet {
@@ -68,6 +76,9 @@ final class CustomSoundStore: NSObject, ObservableObject {
     private static let enabledKey = "customSoundsEnabled"
     private var recorder: AVAudioRecorder?
     private var stopWork: DispatchWorkItem?
+    private var countdownWork: [DispatchWorkItem] = []
+    /// Geri sayımın adım aralığı — bir metronom vuruşu kadar
+    private let tick: TimeInterval = 0.8
 
     private let sampleRate: Double = 44_100
     private lazy var format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
@@ -101,11 +112,11 @@ final class CustomSoundStore: NSObject, ObservableObject {
 
     // MARK: Kayıt
 
-    /// Mikrofon izni ister; verilirse kaydı başlatır. Süre dolunca kendiliğinden
-    /// durur — oyuncunun "dur" demeyi unutması bir yana, uzun kayıt zaten işe
-    /// yaramıyor.
+    /// Mikrofon izni ister; verilirse üçten geri sayıp kaydı başlatır. Süre
+    /// dolunca kendiliğinden durur — oyuncunun "dur" demeyi unutması bir yana,
+    /// uzun kayıt zaten işe yaramıyor.
     func startRecording(_ slot: CustomSoundSlot) {
-        guard recording == nil else { return }
+        guard recording == nil, arming == nil else { return }
         requestPermission { [weak self] granted in
             guard let self else { return }
             guard granted else {
@@ -113,8 +124,39 @@ final class CustomSoundStore: NSObject, ObservableObject {
                 return
             }
             self.micDenied = false
-            self.beginRecording(slot)
+            self.armRecording(slot)
         }
+    }
+
+    /// 3 → 2 → 1 → kayıt. Her adımda kısa bir tık çalar; ekrana bakmadan da
+    /// ne zaman başlayacağı belli olsun diye.
+    private func armRecording(_ slot: CustomSoundSlot) {
+        arming = slot
+        countdown = 3
+        AudioEngine.shared.playTap()
+        for step in 1...3 {
+            let work = DispatchWorkItem { [weak self] in
+                guard let self, self.arming == slot else { return }
+                let left = 3 - step
+                self.countdown = left
+                if left > 0 {
+                    AudioEngine.shared.playTap()
+                } else {
+                    self.arming = nil
+                    self.beginRecording(slot)
+                }
+            }
+            countdownWork.append(work)
+            DispatchQueue.main.asyncAfter(deadline: .now() + tick * Double(step), execute: work)
+        }
+    }
+
+    /// Geri sayarken vazgeçildi
+    func cancelArming() {
+        countdownWork.forEach { $0.cancel() }
+        countdownWork = []
+        arming = nil
+        countdown = 0
     }
 
     private func requestPermission(_ done: @escaping (Bool) -> Void) {
@@ -129,6 +171,8 @@ final class CustomSoundStore: NSObject, ObservableObject {
     }
 
     private func beginRecording(_ slot: CustomSoundSlot) {
+        countdownWork = []
+        countdown = 0
         // Ambient pad mikrofona sızmasın diye motor kayıt boyunca duraklatılır
         AudioEngine.shared.stop()
 
@@ -166,8 +210,12 @@ final class CustomSoundStore: NSObject, ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + slot.maxDuration + 0.15, execute: work)
     }
 
-    /// Oyuncu "dur"a bastı
+    /// Oyuncu "dur"a bastı — geri sayım sürüyorsa kayıt hiç başlamaz
     func stopRecording() {
+        if arming != nil {
+            cancelArming()
+            return
+        }
         guard recording != nil else { return }
         finishRecording()
     }
@@ -217,6 +265,7 @@ final class CustomSoundStore: NSObject, ObservableObject {
         if let hop = loadBuffer(.hop) {
             set.hopLadder = AudioEngine.shared.pitchLadder(from: hop)
         }
+        set.collect = loadBuffer(.collect)
         set.lifeLost = loadBuffer(.lifeLost)
         set.fail = loadBuffer(.fail)
         set.win = loadBuffer(.win)
@@ -286,6 +335,7 @@ final class CustomSoundStore: NSObject, ObservableObject {
 struct CustomSoundSet {
     /// Komboyla tizleşen atlayış sesleri (sentetik dizinin perde oranlarında)
     var hopLadder: [AVAudioPCMBuffer] = []
+    var collect: AVAudioPCMBuffer?
     var lifeLost: AVAudioPCMBuffer?
     var fail: AVAudioPCMBuffer?
     var win: AVAudioPCMBuffer?

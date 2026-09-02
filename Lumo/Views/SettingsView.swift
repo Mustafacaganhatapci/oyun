@@ -58,18 +58,19 @@ struct SettingsView: View {
                     }
                     .padding(.horizontal, 20)
 
-                    // Kendi seslerin premium ekranına taşındı; premium'u alıp
-                    // henüz hiç kayıt yapmamış olana yolu göster. Kayıt yapana
-                    // ya da premium'u olmayana hiçbir şey çıkmaz.
+                    // Kendi seslerin "Kişiselleştir" ekranına, kürelerin altına
+                    // taşındı; premium'u alıp henüz hiç kayıt yapmamış olana
+                    // yolu göster. Kayıt yapana ya da premium'u olmayana
+                    // hiçbir şey çıkmaz.
                     if store.isPremium, sounds.recorded.isEmpty {
                         Button {
                             AudioEngine.shared.playTap()
-                            app.route = .premium
+                            app.route = .personalize
                         } label: {
                             HStack(spacing: 10) {
                                 Image(systemName: "mic.fill")
                                     .foregroundStyle(settings.theme.lumen.color)
-                                Text("Premium lets you record your own game sounds")
+                                Text("Record your own sounds")
                                     .font(.system(.subheadline, design: .rounded))
                                     .foregroundStyle(.white.opacity(0.85))
                                     .multilineTextAlignment(.leading)

@@ -13,6 +13,7 @@ struct PersonalizeView: View {
     @EnvironmentObject private var progress: ProgressStore
     @EnvironmentObject private var ads: AdsManager
 
+    @ObservedObject private var sounds = CustomSoundStore.shared
     @State private var starsJustEarned = false
     @State private var photoItem: PhotosPickerItem?
 
@@ -43,6 +44,9 @@ struct PersonalizeView: View {
                     if !store.isPremium { freeStarsCard }
 
                     charactersSection
+
+                    // Küreni seçtikten hemen sonra sesini seçiyorsun
+                    customSoundsSection
 
                     backgroundsSection
 
@@ -359,6 +363,150 @@ struct PersonalizeView: View {
             }
         }
         .padding(.vertical, 4)
+    }
+
+    // MARK: Kendi kaydettiğin sesler
+    //
+    // Kürelerin hemen altında: küreni, arka planını ve sesini aynı ekrandan
+    // seçiyorsun. Önce ayarlardaydı, sonra premium teklifinin içindeydi;
+    // ikisinde de "aldım ama nerede" sorusu çıkıyordu.
+    @ViewBuilder
+    private var customSoundsSection: some View {
+        if store.isPremium {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 8) {
+                    Image(systemName: "mic.fill")
+                        .foregroundStyle(settings.theme.lumen.color)
+                    Text("Your Own Sounds")
+                        .font(.system(.headline, design: .rounded).bold())
+                        .foregroundStyle(.white.opacity(0.9))
+                }
+
+                Text("Record the hop, the star, the death and the rest in your own voice. Tap the microphone, wait for 3-2-1, then make the sound. The hop follows your combo up and back down. Recordings never leave your device.")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.5))
+
+                VStack(spacing: 4) {
+                    toggleRow("waveform", "Use my recordings", $sounds.enabled)
+                    ForEach(CustomSoundSlot.allCases) { slot in
+                        Divider().overlay(.white.opacity(0.1))
+                        soundRow(slot)
+                    }
+                }
+                .padding(.vertical, 8)
+                .background {
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .fill(.white.opacity(0.06))
+                }
+
+                if sounds.micDenied {
+                    Text("Microphone access is off. Turn it on in iOS Settings to record.")
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(settings.theme.hazard.color)
+                }
+            }
+            .padding(20)
+            .background {
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(.white.opacity(0.05))
+            }
+            .padding(.horizontal, 20)
+        }
+    }
+
+    private func soundRow(_ slot: CustomSoundSlot) -> some View {
+        let isRecording = sounds.recording == slot
+        // Mikrofona basınca kayıt hemen başlamıyor; üçten geri sayılıyor,
+        // satır o sırada geri sayımı gösteriyor
+        let isArming = sounds.arming == slot
+        let busy = isRecording || isArming
+        let has = sounds.hasRecording(slot)
+        let subtitle: LocalizedStringKey = {
+            if isArming { return "Get ready…" }
+            if isRecording { return "Recording…" }
+            return LocalizedStringKey(slot.hint)
+        }()
+        return HStack(spacing: 12) {
+            Image(systemName: slot.icon)
+                .foregroundStyle(settings.theme.accent.color)
+                .frame(width: 22)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(LocalizedStringKey(slot.title))
+                    .font(.system(.body, design: .rounded))
+                    .foregroundStyle(.white)
+                Text(subtitle)
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(busy
+                                     ? settings.theme.hazard.color
+                                     : .white.opacity(0.45))
+            }
+
+            Spacer(minLength: 4)
+
+            if has, !busy {
+                iconButton("play.fill") { sounds.preview(slot) }
+                iconButton("trash") {
+                    AudioEngine.shared.playTap()
+                    sounds.delete(slot)
+                }
+            }
+
+            if isArming {
+                // Geri sayım rakamı mikrofonun yerinde durur; dokunmak vazgeçer
+                Button { sounds.cancelArming() } label: {
+                    Text("\(sounds.countdown)")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(settings.theme.lumen.color)
+                        .frame(width: 34, height: 34)
+                        .background(Circle().fill(.white.opacity(0.10)))
+                        .contentTransition(.numericText())
+                }
+                .buttonStyle(.plain)
+            } else {
+                iconButton(isRecording ? "stop.fill" : "mic.fill",
+                           tint: isRecording ? settings.theme.hazard.color : .white) {
+                    if isRecording {
+                        sounds.stopRecording()
+                    } else {
+                        AudioEngine.shared.playTap()
+                        sounds.startRecording(slot)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 8)
+        .animation(.easeInOut(duration: 0.2), value: busy)
+        .animation(.easeInOut(duration: 0.2), value: sounds.countdown)
+    }
+
+    private func iconButton(_ icon: String, tint: Color = .white,
+                            action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(tint.opacity(0.9))
+                .frame(width: 34, height: 34)
+                .background(Circle().fill(.white.opacity(0.10)))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func toggleRow(_ icon: String, _ title: LocalizedStringKey, _ binding: Binding<Bool>) -> some View {
+        Toggle(isOn: binding) {
+            Label {
+                Text(title)
+                    .font(.system(.body, design: .rounded))
+                    .foregroundStyle(.white)
+            } icon: {
+                Image(systemName: icon)
+                    .foregroundStyle(settings.theme.accent.color)
+            }
+        }
+        .tint(settings.theme.accent.color)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
     }
 }
 

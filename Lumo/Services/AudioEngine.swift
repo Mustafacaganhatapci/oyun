@@ -41,13 +41,15 @@ final class AudioEngine {
         [246.94, 293.66, 392.00]   // G:  B3 D4 G4
     ]
 
-    /// A minör pentatonik, iki oktav — kombo perdeleri
-    /// A minör pentatonik, üç oktav. Eskiden iki oktav vardı ve 11. atlayıştan
-    /// sonra perde tavan yapıp aynı notada donuyordu: uzun bir kombo ödül gibi
-    /// değil, takılmış gibi duyuluyordu.
-    private let pluckScale: [Double] = [220, 261.63, 293.66, 329.63, 392,
-                                        440, 523.25, 587.33, 659.26, 784,
-                                        880, 1046.50, 1174.66, 1318.51, 1567.98, 1760]
+    /// A minör pentatonik, bir buçuk oktav — kombo perdeleri.
+    ///
+    /// Dizi bilerek KISA. Üç oktavlık uzun bir merdiven denendi: perde on altıncı
+    /// atlayışa kadar tırmandığı için bölümler bitmeden tepeye varılmıyor, iniş
+    /// hiç duyulmuyordu. Bölümlerde 5–15 halka var; sekiz notalık merdiven
+    /// sekizinci atlayışta tepeye çıkıp geri iniyor, yani orta uzunlukta bir
+    /// bölümde bile dalganın tamamı duyuluyor. Üst uç da böylece cırlak değil.
+    private let pluckScale: [Double] = [220, 261.63, 293.66, 329.63,
+                                        392, 440, 523.25, 587.33]
     private var pluckBuffers: [AVAudioPCMBuffer] = []
     private var collectBuffer: AVAudioPCMBuffer?
     private var failBuffer: AVAudioPCMBuffer?
@@ -228,10 +230,10 @@ final class AudioEngine {
 
     // MARK: Efekt tetikleyicileri
 
-    /// Kombo boyunca perde önce yükselir, tepeye varınca aynı yoldan yavaşça
-    /// iner ve tekrar çıkar. Eskiden tepede son beş nota dönüyordu; yükseliş
-    /// bitince ses tıkanmış gibi duyuluyordu. Üçgen dalga hem hiç durmuyor hem
-    /// de inişi duyulacak kadar kademeli.
+    /// Kombo boyunca perde önce yükselir, sekizinci atlayışta tepeye varır ve
+    /// aynı yoldan iner; sonra baştan. Eskiden tepede son beş nota dönüyordu,
+    /// ardından merdiven o kadar uzadı ki iniş pratikte hiç duyulmuyordu.
+    /// Üçgen dalga hem hiç durmuyor hem de bir bölüm içinde tamamlanıyor.
     func playHop(combo: Int) {
         let ladder = custom.hopLadder.isEmpty ? pluckBuffers : custom.hopLadder
         guard sfxEnabled, !ladder.isEmpty else { return }
@@ -246,7 +248,7 @@ final class AudioEngine {
         return p < count ? p : period - p
     }
 
-    func playCollect() { if let b = collectBuffer { play(b) } }
+    func playCollect() { if let b = custom.collect ?? collectBuffer { play(b) } }
     func playLifeLost() { if let b = custom.lifeLost ?? lifeLostBuffer { play(b) } }
     func playFail() { if let b = custom.fail ?? failBuffer { play(b) } }
     func playWin() { if let b = custom.win ?? winBuffer { play(b) } }

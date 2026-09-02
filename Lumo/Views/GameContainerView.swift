@@ -310,8 +310,11 @@ struct GameContainerView: View {
             AudioEngine.shared.playWin()
             Haptics.shared.win()
 
-        case .fail:
-            AudioEngine.shared.playFail()
+        case .fail(let willRevive):
+            // Ses TEK: ölüm anında çalar. Eskiden burada ölüm sesi, yarım saniye
+            // sonra da can eksilme ya da tur sonu sesi çalıyordu; sonsuz modda
+            // her ölümde iki ses üst üste biniyordu.
+            willRevive ? AudioEngine.shared.playLifeLost() : AudioEngine.shared.playFail()
             Haptics.shared.fail()
             deathsThisLevel += 1
             if case .speedrun = playMode { speedPenalty += 2 }
@@ -374,9 +377,8 @@ struct GameContainerView: View {
             endlessScore = score
 
         case .extraLifeUsed(let remaining):
+            // Sesi ve titreşimi ölüm anı çaldı; burası yalnızca sayacı günceller
             extraLives = remaining
-            AudioEngine.shared.playLifeLost()
-            Haptics.shared.fail()
 
         case .endlessGameOver(let score):
             progress.recordEndless(score: score)
@@ -384,7 +386,6 @@ struct GameContainerView: View {
                 leaderboard.submit(mode: .endless, value: Double(score),
                                    username: player.username, playerID: player.playerID)
             }
-            AudioEngine.shared.playFail()
             overlay = .endlessOver(score: score)
         }
     }
