@@ -518,6 +518,7 @@ struct CharacterPreview: View {
     /// Oyundaki karşılıklarıyla birebir aynı iki sabit renk
     private static let fireflyGlow = Color(red: 0.75, green: 1.0, blue: 0.4)
     private static let championGold = Color(red: 1.0, green: 0.82, blue: 0.35)
+    private static let ghostEye = Color(red: 0.12, green: 0.13, blue: 0.20)
 
     var body: some View {
         ZStack {
@@ -622,6 +623,51 @@ struct CharacterPreview: View {
                     .foregroundStyle(theme.lumen.opacity(0.35))
                 Circle().fill(.white).frame(width: 12, height: 12)
                     .shadow(color: theme.lumen.color, radius: 5)
+            }
+        case .planet:
+            ZStack {
+                Ellipse().strokeBorder(theme.lumen.opacity(0.8), lineWidth: 1.6)
+                    .frame(width: 28, height: 9)
+                    .rotationEffect(.degrees(-20))
+                Circle().fill(theme.orb.color).frame(width: 14, height: 14)
+                // Halkanın ÖN yarısı kürenin üstünde: gezegen halkanın içinde
+                Ellipse().trim(from: 0, to: 0.5)
+                    .stroke(theme.lumen.color, lineWidth: 1.6)
+                    .frame(width: 28, height: 9)
+                    .rotationEffect(.degrees(-20))
+            }
+        case .bolt:
+            Image(systemName: "bolt.fill").font(.system(size: 19))
+                .foregroundStyle(theme.lumen.color)
+                .shadow(color: theme.lumen.color, radius: 5)
+        case .droplet:
+            ZStack {
+                Circle().strokeBorder(theme.accent.opacity(0.5), lineWidth: 1)
+                    .frame(width: 24, height: 24)
+                Image(systemName: "drop.fill").font(.system(size: 17))
+                    .foregroundStyle(theme.accent.color)
+                    .shadow(color: theme.accent.color, radius: 4)
+            }
+        case .ghost:
+            // Kubbe gövde + dalgalı etek + iki koyu göz. Hazır bir simge yok,
+            // bulut simgesi de zaten Bulut küresinin işi.
+            ZStack {
+                VStack(spacing: -3) {
+                    UnevenRoundedRectangle(topLeadingRadius: 9, bottomLeadingRadius: 0,
+                                           bottomTrailingRadius: 0, topTrailingRadius: 9)
+                        .fill(.white.opacity(0.92))
+                        .frame(width: 18, height: 15)
+                    HStack(spacing: 0) {
+                        ForEach(0..<3, id: \.self) { _ in
+                            Circle().fill(.white.opacity(0.92)).frame(width: 6, height: 6)
+                        }
+                    }
+                }
+                HStack(spacing: 5) {
+                    Circle().fill(Self.ghostEye).frame(width: 3.5, height: 3.5)
+                    Circle().fill(Self.ghostEye).frame(width: 3.5, height: 3.5)
+                }
+                .offset(y: -4)
             }
         case .cloud:
             // Oyundaki hâli üç beyaz yumak; tek bulut ikonu değil

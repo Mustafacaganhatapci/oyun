@@ -486,6 +486,108 @@ final class GameScene: SKScene {
             ])))
             orbCore = puff2
 
+        case .planet:
+            // Halkalı gezegen. Halka arkada tam bir elips, önde alt yarısı:
+            // küre halkanın içinden geçiyormuş gibi duruyor, tek bir elips
+            // çizmek küreyi halkanın önüne yapıştırılmış gibi gösteriyordu.
+            let tilt: CGFloat = -0.35
+            let ringW = orbRadius * 3.2, ringH = orbRadius * 1.0
+
+            let backRing = SKShapeNode(ellipseOf: CGSize(width: ringW, height: ringH))
+            backRing.fillColor = .clear
+            backRing.strokeColor = theme.lumen.uiColor.withAlphaComponent(0.75)
+            backRing.lineWidth = 2.5
+            backRing.zRotation = tilt
+            container.addChild(backRing)
+
+            let core = SKShapeNode(circleOfRadius: orbRadius)
+            core.fillColor = theme.orb.uiColor
+            core.strokeColor = .clear
+            container.addChild(core)
+
+            let front = CGMutablePath()
+            let squash = CGAffineTransform(scaleX: 1, y: ringH / ringW)
+            front.addArc(center: .zero, radius: ringW / 2,
+                         startAngle: .pi, endAngle: .pi * 2,
+                         clockwise: false, transform: squash)
+            let frontRing = SKShapeNode(path: front)
+            frontRing.strokeColor = theme.lumen.uiColor
+            frontRing.lineWidth = 2.5
+            frontRing.glowWidth = 1
+            frontRing.zRotation = tilt
+            container.addChild(frontRing)
+            orbCore = core
+
+        case .bolt:
+            let bolt = SKShapeNode(path: Self.boltPath(radius: orbRadius * 1.6))
+            bolt.fillColor = theme.lumen.uiColor
+            bolt.strokeColor = .white
+            bolt.lineWidth = 1
+            bolt.glowWidth = 3
+            // Çakma: kısa parlama, uzun bekleme. Sürekli titreyen bir şimşek
+            // şimşek değil, arızalı bir ampul olurdu.
+            bolt.run(.repeatForever(.sequence([
+                .group([.fadeAlpha(to: 1.0, duration: 0.05), .scale(to: 1.16, duration: 0.05)]),
+                .group([.fadeAlpha(to: 0.75, duration: 0.09), .scale(to: 1.0, duration: 0.09)]),
+                .fadeAlpha(to: 1.0, duration: 0.06),
+                .fadeAlpha(to: 0.8, duration: 0.5),
+                .wait(forDuration: 0.7)
+            ])))
+            container.addChild(bolt)
+            orbCore = bolt
+
+        case .droplet:
+            // Damla + ondan yayılan halka: düşen damlanın suya değme anı
+            let ripple = SKShapeNode(circleOfRadius: orbRadius * 0.9)
+            ripple.fillColor = .clear
+            ripple.strokeColor = theme.accent.uiColor
+            ripple.lineWidth = 1.5
+            ripple.run(.repeatForever(.sequence([
+                .group([.scale(to: 2.1, duration: 1.3), .fadeAlpha(to: 0, duration: 1.3)]),
+                .group([.scale(to: 1.0, duration: 0), .fadeAlpha(to: 0.7, duration: 0)]),
+                .wait(forDuration: 0.5)
+            ])))
+            container.addChild(ripple)
+
+            let drop = SKShapeNode(path: Self.dropletPath(radius: orbRadius * 1.1))
+            drop.fillColor = theme.accent.uiColor
+            drop.strokeColor = UIColor.white.withAlphaComponent(0.7)
+            drop.lineWidth = 1
+            drop.glowWidth = 2
+            drop.run(.repeatForever(.sequence([
+                .scaleX(to: 0.92, y: 1.10, duration: 0.55),
+                .scaleX(to: 1.08, y: 0.92, duration: 0.55)
+            ])))
+            container.addChild(drop)
+
+            let shine = SKShapeNode(circleOfRadius: orbRadius * 0.22)
+            shine.fillColor = UIColor.white.withAlphaComponent(0.85)
+            shine.strokeColor = .clear
+            shine.position = CGPoint(x: -orbRadius * 0.33, y: -orbRadius * 0.1)
+            container.addChild(shine)
+            orbCore = drop
+
+        case .ghost:
+            let body = SKShapeNode(path: Self.ghostPath(radius: orbRadius * 1.15))
+            body.fillColor = UIColor.white.withAlphaComponent(0.92)
+            body.strokeColor = .clear
+            body.glowWidth = 2
+            // Süzülme: yukarı aşağı yumuşak salınım
+            body.run(.repeatForever(.sequence([
+                .moveBy(x: 0, y: 3.5, duration: 0.8),
+                .moveBy(x: 0, y: -3.5, duration: 0.8)
+            ])))
+            container.addChild(body)
+
+            for side in [-1.0, 1.0] as [CGFloat] {
+                let eye = SKShapeNode(circleOfRadius: orbRadius * 0.18)
+                eye.fillColor = UIColor(red: 0.12, green: 0.13, blue: 0.20, alpha: 1)
+                eye.strokeColor = .clear
+                eye.position = CGPoint(x: side * orbRadius * 0.38, y: orbRadius * 0.35)
+                body.addChild(eye)
+            }
+            orbCore = body
+
         case .champion:
             // Altın taç + çevresinde ters yönde dönen defne halkası. Köşeli
             // siluet diğer kürelerin hepsinden ayrışsın diye seçildi.
@@ -1722,6 +1824,62 @@ final class GameScene: SKScene {
         path.addCurve(to: CGPoint(x: 0, y: r * 1.55),
                       control1: CGPoint(x: -r, y: r * 0.55),
                       control2: CGPoint(x: -r * 0.5, y: r * 0.9))
+        path.closeSubpath()
+        return path
+    }
+
+    /// Şimşek: yukarıdan aşağı kırılan klasik zikzak
+    static func boltPath(radius r: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: r * 0.18, y: r))
+        path.addLine(to: CGPoint(x: -r * 0.52, y: r * 0.06))
+        path.addLine(to: CGPoint(x: -r * 0.06, y: r * 0.06))
+        path.addLine(to: CGPoint(x: -r * 0.30, y: -r))
+        path.addLine(to: CGPoint(x: r * 0.52, y: -r * 0.02))
+        path.addLine(to: CGPoint(x: r * 0.04, y: -r * 0.02))
+        path.closeSubpath()
+        return path
+    }
+
+    /// Su damlası: yuvarlak taban, sivri tepe. Alevden farkı, uçlarının
+    /// kıvrılmaması — damla simetrik durur, alev rüzgâra yatar.
+    static func dropletPath(radius r: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: 0, y: r * 1.5))
+        path.addCurve(to: CGPoint(x: r, y: -r * 0.1),
+                      control1: CGPoint(x: r * 0.42, y: r * 0.8),
+                      control2: CGPoint(x: r, y: r * 0.42))
+        path.addArc(center: CGPoint(x: 0, y: -r * 0.1), radius: r,
+                    startAngle: 0, endAngle: .pi, clockwise: true)
+        path.addCurve(to: CGPoint(x: 0, y: r * 1.5),
+                      control1: CGPoint(x: -r, y: r * 0.42),
+                      control2: CGPoint(x: -r * 0.42, y: r * 0.8))
+        path.closeSubpath()
+        return path
+    }
+
+    /// Hayalet: yukarısı kubbe, aşağısı üç dalgalı etek
+    static func ghostPath(radius r: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        let hemY = -r * 0.15               // kubbenin bittiği yükseklik
+        let footY = -r * 1.15
+        path.move(to: CGPoint(x: -r, y: hemY))
+        path.addArc(center: CGPoint(x: 0, y: hemY), radius: r,
+                    startAngle: .pi, endAngle: 0, clockwise: false)
+        path.addLine(to: CGPoint(x: r, y: footY + r * 0.30))
+        // Üç dalga: sağdan sola, aşağı yukarı
+        let step = r * 2 / 3
+        var x = r
+        var down = true
+        for _ in 0..<3 {
+            let nextX = x - step
+            let peakY = down ? footY : footY + r * 0.45
+            path.addQuadCurve(to: CGPoint(x: nextX, y: footY + r * 0.30),
+                              control: CGPoint(x: x - step / 2, y: peakY))
+            x = nextX
+            down.toggle()
+        }
+        path.addLine(to: CGPoint(x: -r, y: hemY))
         path.closeSubpath()
         return path
     }

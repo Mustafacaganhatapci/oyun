@@ -34,6 +34,10 @@ struct OrbStyle: Identifiable, Equatable {
         case cloud      // yumuşakça sallanan küçük bulut
         case moon       // hilal
         case atom       // çekirdek + çevresinde dolanan elektron
+        case planet     // halkalı gezegen: küre + eğik halka
+        case bolt       // çakan şimşek
+        case droplet    // su damlası, halka halka yayılan
+        case ghost      // süzülen hayalet
         /// Kampanyadaki BÜTÜN yıldızları toplayanın küresi. Eşiği 806, yani
         /// tam not; bu yüzden patlayan bir yıldız gibi görünüyor.
         case nova
@@ -53,7 +57,7 @@ struct OrbStyle: Identifiable, Equatable {
     var isPremium: Bool { unlock == .premium }
     var starCost: Int? { if case .stars(let n) = unlock { return n }; return nil }
 
-    // Eşikler kampanyanın TAMAMINA yayılıyor: sonuncusu 620, toplam 806.
+    // Eşikler kampanyanın TAMAMINA yayılıyor: sonuncusu 806, toplam 806.
     // Önce 420'de bitiyordu ve kampanyanın yarısından sonrası ödülsüz
     // kalıyordu — o oyuncular ana ekranda anlamsız bir "x / 806" görüyordu.
     // İlki 9'da: üç bölümü üçer yıldızla bitiren oyuncu ilk ödülünü orada
@@ -68,9 +72,16 @@ struct OrbStyle: Identifiable, Equatable {
         OrbStyle(id: "heart",   name: "Heart",   unlock: .stars(80),   kind: .heart),
         OrbStyle(id: "comet",   name: "Comet",   unlock: .stars(110),  kind: .comet),
         OrbStyle(id: "diamond", name: "Diamond", unlock: .stars(150),  kind: .diamond),
+        // Orta bölümün aralıkları 70–170 yıldıza kadar açılıyordu: oyuncu iki
+        // üç saat oynayıp hiçbir şey açmıyordu. Aradaki dört eşik uzun düzlüğü
+        // bölüyor — hiçbir aralık artık 90 yıldızdan geniş değil.
+        OrbStyle(id: "planet",  name: "Planet",  unlock: .stars(185),  kind: .planet),
         OrbStyle(id: "firefly", name: "Firefly", unlock: .stars(220),  kind: .firefly),
+        OrbStyle(id: "bolt",    name: "Bolt",    unlock: .stars(265),  kind: .bolt),
         OrbStyle(id: "flame",   name: "Flame",   unlock: .stars(320),  kind: .flame),
+        OrbStyle(id: "droplet", name: "Droplet", unlock: .stars(380),  kind: .droplet),
         OrbStyle(id: "rainbow", name: "Rainbow", unlock: .stars(450),  kind: .rainbow),
+        OrbStyle(id: "ghost",   name: "Ghost",   unlock: .stars(530),  kind: .ghost),
         OrbStyle(id: "cloud",   name: "Cloud",   unlock: .stars(620),  kind: .cloud),
         // 620'den sonra 186 yıldız ödülsüz kalıyordu: kampanyayı bitirmeye
         // yakın oynayanlar toplamaya devam edip karşılığında hiçbir şey
