@@ -9,6 +9,10 @@ struct WorldRankingView: View {
     @EnvironmentObject private var leaderboard: LeaderboardService
 
     @State private var mode: LeaderboardMode = .endless
+    /// Kaç satır isteniyor. Tablo yüz satırla açılıyor, "daha fazla göster"
+    /// her seferinde bir sayfa daha getiriyor — beş yüz kişiyi tek seferde
+    /// indirmek hem yavaş hem gereksiz, kimse beşinci yüzü açar açmaz aramıyor.
+    @State private var visibleRows = LeaderboardService.pageSize
 
     private var entries: [LeaderboardEntry] {
         mode == .endless ? leaderboard.endlessEntries : leaderboard.speedrunEntries
@@ -26,7 +30,10 @@ struct WorldRankingView: View {
             .pickerStyle(.segmented)
             .padding(.horizontal, 20)
             .padding(.top, 8)
-            .onChange(of: mode) { _, _ in load() }
+            .onChange(of: mode) { _, _ in
+                visibleRows = LeaderboardService.pageSize
+                load()
+            }
 
             // Tablo haftalık: oyuncu neye baktığını ve ne zaman sıfırlanacağını
             // bilmezse eski skorların kaybolması hata gibi görünür
@@ -115,12 +122,48 @@ struct WorldRankingView: View {
                     }
                 }
 
+                if canLoadMore { showMoreButton }
+
                 ladder
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)
             .padding(.bottom, 30)
         }
+    }
+
+    /// Getirilen satır sayısı istenene eşitse arkada daha var demektir
+    private var canLoadMore: Bool {
+        entries.count >= visibleRows && visibleRows < LeaderboardService.maxRows
+    }
+
+    private var showMoreButton: some View {
+        Button {
+            AudioEngine.shared.playTap()
+            visibleRows = min(visibleRows + LeaderboardService.pageSize, LeaderboardService.maxRows)
+            load()
+        } label: {
+            HStack(spacing: 8) {
+                if leaderboard.isLoading {
+                    ProgressView().tint(.white)
+                } else {
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12, weight: .bold))
+                }
+                Text("Show more")
+                    .font(.system(.subheadline, design: .rounded).bold())
+            }
+            .foregroundStyle(.white.opacity(0.75))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(.white.opacity(0.06))
+            }
+        }
+        .buttonStyle(.plain)
+        .disabled(leaderboard.isLoading)
+        .padding(.top, 14)
     }
 
     private func groupHeader(_ rank: Rank, count: Int) -> some View {
@@ -300,6 +343,6 @@ struct WorldRankingView: View {
                                            username: player.username,
                                            playerID: player.playerID)
         }
-        leaderboard.refresh(mode: mode, myPlayerID: player.playerID)
+        leaderboard.refresh(mode: mode, myPlayerID: player.playerID, limit: visibleRows)
     }
 }

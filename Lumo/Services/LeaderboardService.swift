@@ -226,7 +226,8 @@ final class LeaderboardService: ObservableObject {
         #if canImport(FirebaseCore)
         // Doldurmalar ELENİR: ödül sıralaması yalnızca gerçek oyunculardan
         // hesaplanır, kimse sahte bir adın arkasında kalıp yıldızını kaybetmez.
-        let top = await FirebaseBridge.fetchTop(mode: .endless, week: week, myPlayerID: playerID)
+        let top = await FirebaseBridge.fetchTop(mode: .endless, week: week,
+                                                myPlayerID: playerID, limit: 50)
             .filter { !LeaderboardSeed.isSeed($0.id) }
         guard let index = top.prefix(3).firstIndex(where: { $0.id == playerID }) else { return nil }
         return (week, index + 1)
@@ -235,23 +236,38 @@ final class LeaderboardService: ObservableObject {
         #endif
     }
 
-    /// Bu haftanın ilk 50 sonucunu getirir. Tablo yarım kalmışsa, zamanı gelmiş
-    /// doldurmaları yazıp yeniden okur.
-    func refresh(mode: LeaderboardMode, myPlayerID: String) {
+    /// Tablonun ilk sayfası kaç satır — "daha fazla göster" bunun katlarıyla
+    /// büyür. Elli satır haftanın nüfusunun onda biriydi: tablo hep aynı
+    /// yerde bitiyor, arkadaki kalabalık hiç görünmüyordu.
+    nonisolated static let pageSize = 100
+    /// Görünebilecek azami satır. Bir haftanın nüfusundan büyük olmasının
+    /// zararı yok; okuma sayısını sınırlamak için var.
+    nonisolated static let maxRows = 500
+
+    /// Bu haftanın ilk `limit` sonucunu getirir. Tablo yarım kalmışsa, zamanı
+    /// gelmiş doldurmaları yazıp yeniden okur.
+    func refresh(mode: LeaderboardMode, myPlayerID: String, limit: Int = pageSize) {
         guard isAvailable else { return }
         #if canImport(FirebaseCore)
         isLoading = true
         let week = currentWeek
         let start = weekStart
+        let rows = max(1, min(limit, Self.maxRows))
         Task {
-            var entries = await FirebaseBridge.fetchTop(mode: mode, week: week, myPlayerID: myPlayerID)
+            var entries = await FirebaseBridge.fetchTop(mode: mode, week: week,
+                                                        myPlayerID: myPlayerID, limit: rows)
 
             if let added = await seedIfNeeded(mode: mode, week: week, start: start,
                                               existing: entries), added > 0 {
-                entries = await FirebaseBridge.fetchTop(mode: mode, week: week, myPlayerID: myPlayerID)
+                entries = await FirebaseBridge.fetchTop(mode: mode, week: week,
+                                                        myPlayerID: myPlayerID, limit: rows)
             }
 
-            let shown = Self.trimSeeds(entries, target: await self.loadSeedConfig().target)
+            // Gelen ne varsa gösterilir. Eskiden doldurmalar ilk 50'ye
+            // sığmadıklarında gizleniyordu: dün tabloda duran bir ad bugün
+            // yok oluyordu ve bu, tabloyu güvenilmez yapıyordu. Artık bir
+            // satır bir kez göründüyse hafta boyunca yerinde kalıyor.
+            let shown = entries
             await MainActor.run {
                 switch mode {
                 case .endless: self.endlessEntries = shown
@@ -267,31 +283,13 @@ final class LeaderboardService: ObservableObject {
         #endif
     }
 
-    /// Gerçek oyuncular çoğaldıkça doldurmalar listeden düşer.
-    ///
-    /// Yazılan bir doldurma tabloda kalıcı; hafta ilerledikçe gerçek oyuncular
-    /// birikince ilk 50'yi doldurmalarla paylaşmak zorunda kalıyorlardı. Gerçek
-    /// olanların hepsi HER ZAMAN kalır, doldurmalar yalnızca boş yere girer ve
-    /// yerden taşan en zayıfları gösterilmez.
-    static func trimSeeds(_ entries: [LeaderboardEntry], target: Int) -> [LeaderboardEntry] {
-        let realCount = entries.filter { !LeaderboardSeed.isSeed($0.id) }.count
-        let room = max(0, target - realCount)
-        guard entries.count - realCount > room else { return entries }
-
-        var kept = 0
-        return entries.filter { entry in
-            guard LeaderboardSeed.isSeed(entry.id) else { return true }
-            kept += 1
-            return kept <= room
-        }
-    }
-
     /// Eksik doldurmaları yazar, kaç tane yazdığını döner.
     ///
     /// Belge kimlikleri hafta ve sıradan türetildiği için aynı doldurmayı iki
-    /// cihaz yazsa bile tabloda tek satır olur. Bir seferde en çok 10 tane
+    /// cihaz yazsa bile tabloda tek satır olur. Bir seferde en çok 25 tane
     /// yazılır; bir oyuncunun tek açılışında beş yüz yazma yapmanın anlamı yok,
-    /// tablo hafta boyunca doluyor zaten.
+    /// tablo hafta boyunca doluyor zaten. Yirmi beş, ilk sayfanın (100 satır)
+    /// birkaç açılışta dolmasına yetiyor.
     ///
     /// Nüfus artık ilk 50'den çok daha büyük olduğu için hangi doldurmanın
     /// yazıldığı ilk 50'ye bakılarak anlaşılamıyor. İki koruma var:
@@ -318,7 +316,7 @@ final class LeaderboardService: ObservableObject {
         var mine = Set(UserDefaults.standard.stringArray(forKey: key) ?? [])
         let known = Set(existing.map(\.id)).union(mine)
 
-        let batch = due.filter { !known.contains($0.id) }.prefix(10)
+        let batch = due.filter { !known.contains($0.id) }.prefix(25)
         guard !batch.isEmpty else { return 0 }
 
         let written = await FirebaseBridge.writeSeeds(Array(batch), mode: mode, week: week)
@@ -690,13 +688,14 @@ enum FirebaseBridge {
         }
     }
 
-    static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] {
+    static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String,
+                         limit: Int = 100) async -> [LeaderboardEntry] {
         let db = Firestore.firestore()
         let descending = (mode == .endless)   // endless: yüksek üstte, speedrun: düşük üstte
         do {
             let query = db.collection(mode.collection(week: week))
                 .order(by: "value", descending: descending)
-                .limit(to: 50)
+                .limit(to: limit)
             let snap = try await query.getDocuments()
             leaderboardLog("OKUNDU \(mode.collection(week: week)) → \(snap.documents.count) kayıt")
             return snap.documents.compactMap { doc in
@@ -732,7 +731,8 @@ enum FirebaseBridge {
                              version: String) async -> Bool { false }
     static func submit(mode: LeaderboardMode, week: Int, value: Double,
                        username: String, playerID: String) async {}
-    static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] { [] }
+    static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String,
+                         limit: Int = 100) async -> [LeaderboardEntry] { [] }
     static func fetchSeedConfig() async -> LeaderboardSeed.Config { .default }
     static func writeSeeds(_ seeds: [(id: String, name: String, value: Double)],
                            mode: LeaderboardMode, week: Int) async -> Int { 0 }
