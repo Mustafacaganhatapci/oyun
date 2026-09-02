@@ -259,6 +259,10 @@ final class LeaderboardService: ObservableObject {
                 }
                 self.isLoading = false
             }
+
+            // Temizlik tablo çizildikten SONRA: eski haftaların silinmesi
+            // oyuncuyu bekletmemeli, kimse onu görmüyor bile.
+            await self.pruneSeeds(mode: mode, week: week)
         }
         #endif
     }
@@ -285,28 +289,106 @@ final class LeaderboardService: ObservableObject {
     /// Eksik doldurmaları yazar, kaç tane yazdığını döner.
     ///
     /// Belge kimlikleri hafta ve sıradan türetildiği için aynı doldurmayı iki
-    /// cihaz yazsa bile tabloda tek satır olur. Bir seferde en çok 6 tane
-    /// yazılır; bir oyuncunun tek açılışında ona yazma yapmanın anlamı yok.
+    /// cihaz yazsa bile tabloda tek satır olur. Bir seferde en çok 10 tane
+    /// yazılır; bir oyuncunun tek açılışında beş yüz yazma yapmanın anlamı yok,
+    /// tablo hafta boyunca doluyor zaten.
+    ///
+    /// Nüfus artık ilk 50'den çok daha büyük olduğu için hangi doldurmanın
+    /// yazıldığı ilk 50'ye bakılarak anlaşılamıyor. İki koruma var:
+    ///  • Cihaz kendi yazdıklarını hatırlıyor (hafta bazlı, hafta değişince
+    ///    kendiliğinden geçersiz).
+    ///  • Yazmadan önce koleksiyondaki belge SAYISI soruluyor; başka bir cihaz
+    ///    çoktan doldurmuşsa hiç yazılmıyor. Tek bir sayım okuması, beş yüz
+    ///    gereksiz yazmadan ucuz.
     private func seedIfNeeded(mode: LeaderboardMode, week: Int, start: TimeInterval,
                               existing: [LeaderboardEntry]) async -> Int? {
         #if canImport(FirebaseCore)
         let config = await loadSeedConfig()
-        guard config.enabled else { return 0 }
+        guard config.enabled, config.population > 0 else { return 0 }
 
-        let real = existing.filter { !LeaderboardSeed.isSeed($0.id) }.count
-        let room = config.target - real
-        guard room > 0 else { return 0 }
-
-        let present = Set(existing.map(\.id))
         let due = LeaderboardSeed.due(week: week, mode: mode, config: config,
                                       weekStart: start, weekLength: Self.weekSpan)
-            .filter { !present.contains($0.id) }
-            .prefix(min(room, 6))
         guard !due.isEmpty else { return 0 }
 
-        return await FirebaseBridge.writeSeeds(Array(due), mode: mode, week: week)
+        // Koleksiyon zaten bu haftanın kotasını doldurmuşsa dokunma
+        if let present = await FirebaseBridge.documentCount(mode: mode, week: week),
+           present >= due.count { return 0 }
+
+        let key = "lumo.seedWritten.\(mode.base).w\(week)"
+        var mine = Set(UserDefaults.standard.stringArray(forKey: key) ?? [])
+        let known = Set(existing.map(\.id)).union(mine)
+
+        let batch = due.filter { !known.contains($0.id) }.prefix(10)
+        guard !batch.isEmpty else { return 0 }
+
+        let written = await FirebaseBridge.writeSeeds(Array(batch), mode: mode, week: week)
+        guard written > 0 else { return 0 }
+
+        mine.formUnion(batch.map(\.id))
+        UserDefaults.standard.set(Array(mine), forKey: key)
+        Self.forgetOldSeedKeys(before: week)
+        return written
         #else
         return 0
+        #endif
+    }
+
+    /// Geçmiş haftaların doldurma kayıtları UserDefaults'ta birikmesin: beş yüz
+    /// kimlik haftada bir eklenirse dosya şişer. Hem "ben şunları yazdım"
+    /// listeleri hem de "bu hafta temizlendi" işaretleri süpürülüyor.
+    private static func forgetOldSeedKeys(before week: Int) {
+        let defaults = UserDefaults.standard
+        for key in defaults.dictionaryRepresentation().keys
+        where key.hasPrefix("lumo.seedWritten.") || key.hasPrefix("lumo.seedPruned.") {
+            guard let range = key.range(of: ".w", options: .backwards) else { continue }
+            // ".w123" ya da ".w123.gen" — hafta numarası noktaya kadar
+            let tail = key[range.upperBound...]
+            let digits = tail.prefix { $0.isNumber }
+            guard let keyWeek = Int(digits) else { continue }
+            // Yazma listesi hafta bitince işe yaramaz; temizlik işaretleri ise
+            // temizlenen haftalar kadar (dört hafta) saklanır.
+            let keepUntil = key.hasPrefix("lumo.seedWritten.") ? week : week - 4
+            if keyWeek < keepUntil { defaults.removeObject(forKey: key) }
+        }
+    }
+
+    /// Bir oturumda aynı temizliği tekrar tekrar denememek için
+    private var prunedThisSession = Set<String>()
+
+    /// İşi biten doldurmaları siler.
+    ///
+    /// İki şey temizleniyor:
+    ///  • İki hafta ve daha eski haftaların TÜM doldurmaları. Geçen hafta
+    ///    duruyor, çünkü şampiyonluk ödülü hâlâ o tablodan hesaplanıyor.
+    ///    Gerçek oyuncuların satırlarına dokunulmuyor — geçmişleri kalıyor.
+    ///  • Bu haftanın eski kuşaktan kalmış doldurmaları; ad üretimi değişince
+    ///    iki farklı üretim yan yana durmasın.
+    ///
+    /// Silme bir seferde en çok 150 belge; kalanı bir sonraki açılışta. Bir
+    /// geçiş hiçbir şey silmezse o hafta "temiz" işaretlenir ve bir daha
+    /// sorgulanmaz — yoksa boş bir koleksiyonu her açılışta taramak,
+    /// silinecek hiçbir şey yokken bile okuma harcardı.
+    private func pruneSeeds(mode: LeaderboardMode, week: Int) async {
+        #if canImport(FirebaseCore)
+        // Bu haftanın eski kuşağı
+        await prune(mode: mode, week: week, keeping: LeaderboardSeed.prefix(week: week))
+
+        // Son üç eski hafta yeter: daha gerisi zaten temizlenmiş olur
+        for old in (week - 4)...(week - 2) where old >= 0 {
+            await prune(mode: mode, week: old, keeping: nil)
+        }
+        #endif
+    }
+
+    private func prune(mode: LeaderboardMode, week: Int, keeping prefix: String?) async {
+        #if canImport(FirebaseCore)
+        let key = "lumo.seedPruned.\(mode.base).w\(week).\(prefix == nil ? "all" : "gen")"
+        guard !prunedThisSession.contains(key),
+              !UserDefaults.standard.bool(forKey: key) else { return }
+        prunedThisSession.insert(key)
+
+        let removed = await FirebaseBridge.deleteSeeds(mode: mode, week: week, keeping: prefix)
+        if removed == 0 { UserDefaults.standard.set(true, forKey: key) }
         #endif
     }
 
@@ -521,6 +603,9 @@ enum FirebaseBridge {
               let data = snap.data() else { return config }
         if let v = data["botsEnabled"] as? Bool { config.enabled = v }
         if let v = data["botTarget"] as? Int { config.target = max(0, min(50, v)) }
+        // Haftalık toplam nüfus. Üst sınır bilerek var: konsolda yanlışlıkla
+        // yazılan bir sıfır fazlası on binlerce belge yazmasın.
+        if let v = data["botPopulation"] as? Int { config.population = max(0, min(2_000, v)) }
         if let v = data["botEndlessBest"] as? Int { config.endlessBest = v }
         if let v = data["botEndlessWorst"] as? Int { config.endlessWorst = v }
         if let v = data["botSpeedrunBest"] as? Double { config.speedrunBest = v }
@@ -554,6 +639,55 @@ enum FirebaseBridge {
         }
         if written > 0 { leaderboardLog("DOLDURMA \(written) kayıt → \(mode.collection(week: week))") }
         return written
+    }
+
+    /// Koleksiyondaki belge sayısı. Sunucu tarafı sayım: beş yüz belgeyi
+    /// indirmeden "doldu mu" sorusunu cevaplıyor. Sayım başarısızsa `nil`
+    /// döner ve çağıran yazmaya devam eder — doldurma yapmamaktansa
+    /// gereksiz yazmak yeğ.
+    static func documentCount(mode: LeaderboardMode, week: Int) async -> Int? {
+        let db = Firestore.firestore()
+        do {
+            let snap = try await db.collection(mode.collection(week: week))
+                .count.getAggregation(source: .server)
+            return snap.count.intValue
+        } catch {
+            return nil
+        }
+    }
+
+    /// Doldurmaları siler. `keeping` verilirse yalnızca o önekle BAŞLAMAYAN
+    /// doldurmalar silinir (eski kuşak temizliği); `nil` ise haftanın bütün
+    /// doldurmaları gider. Gerçek oyuncuların satırlarına hiçbir koşulda
+    /// dokunulmaz — sorgu `seed == true` ile süzülüyor, kimlikler de ayrıca
+    /// denetleniyor.
+    @discardableResult
+    static func deleteSeeds(mode: LeaderboardMode, week: Int,
+                            keeping prefix: String?, limit: Int = 150) async -> Int {
+        let db = Firestore.firestore()
+        let collection = db.collection(mode.collection(week: week))
+        do {
+            let snap = try await collection
+                .whereField("seed", isEqualTo: true)
+                .limit(to: limit)
+                .getDocuments()
+            let doomed = snap.documents.filter { doc in
+                guard LeaderboardSeed.isSeed(doc.documentID) else { return false }
+                guard let prefix else { return true }
+                return !doc.documentID.hasPrefix(prefix)
+            }
+            guard !doomed.isEmpty else { return 0 }
+
+            let batch = db.batch()
+            for doc in doomed { batch.deleteDocument(doc.reference) }
+            try await batch.commit()
+            leaderboardLog("DOLDURMA SİLİNDİ \(doomed.count) kayıt ← \(mode.collection(week: week))")
+            return doomed.count
+        } catch {
+            leaderboardLog("DOLDURMA SİLİNEMEDİ \(mode.collection(week: week)): \(error.localizedDescription)",
+                           isError: true)
+            return 0
+        }
     }
 
     static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String) async -> [LeaderboardEntry] {
@@ -602,6 +736,10 @@ enum FirebaseBridge {
     static func fetchSeedConfig() async -> LeaderboardSeed.Config { .default }
     static func writeSeeds(_ seeds: [(id: String, name: String, value: Double)],
                            mode: LeaderboardMode, week: Int) async -> Int { 0 }
+    static func documentCount(mode: LeaderboardMode, week: Int) async -> Int? { nil }
+    @discardableResult
+    static func deleteSeeds(mode: LeaderboardMode, week: Int,
+                            keeping prefix: String?, limit: Int = 150) async -> Int { 0 }
 }
 #endif
 #endif
