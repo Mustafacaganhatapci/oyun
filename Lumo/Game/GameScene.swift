@@ -13,6 +13,8 @@ enum GameEvent {
     case bonusTick(remaining: Int)
     case timeTick(remaining: Int)      // süreli bölüm geri sayımı
     case endlessScore(Int)
+    /// Sonsuz modda halka üstündeki kalp toplandı
+    case extraLifeGained(total: Int)
     case extraLifeUsed(remaining: Int)   // premium can hakkı harcandı
     case endlessGameOver(score: Int)
 }
@@ -156,6 +158,25 @@ final class GameScene: SKScene {
     private var endlessScore = 0
     private var cameraNode: SKCameraNode?
     private var endlessRNG = SplitMix64(seed: UInt64(Date().timeIntervalSince1970 * 1000))
+
+    // MARK: Sonsuz moddaki can kalpleri
+    //
+    // Yirminci halkadan sonra her sekiz halkada bir, halkanın ÜSTÜNDE duran
+    // bir kalp. Uzun bir turda tek bir hata her şeyi bitiriyordu; bu kalpler
+    // ilerlemeye bir ödül veriyor ve kaybetme korkusunu makul bir yere
+    // çekiyor. Kalp taşıyan halkaya tehlike yayı KONMUYOR: ödül veren halka
+    // aynı anda tuzak olmamalı.
+    static let endlessLifeFirstRing = 20     // bu halkadan SONRA başlar
+    static let endlessLifeEvery = 8          // 28, 36, 44 …
+    static let endlessMaxLives = 3
+
+    static func endlessRingHasLife(_ index: Int) -> Bool {
+        index > endlessLifeFirstRing
+            && (index - endlessLifeFirstRing) % endlessLifeEvery == 0
+    }
+
+    /// Henüz toplanmamış kalpler: halka sırası ve düğümü
+    private var lifePickups: [(ring: Int, node: SKShapeNode)] = []
 
     // Oynanabilir alan (HUD boşlukları)
     private var playRect: CGRect {
@@ -1071,6 +1092,7 @@ final class GameScene: SKScene {
             updateHazardTint()
             checkHazard(ring: ring, angle: angle)
             checkLumens()
+            checkLifePickups()
 
             // AÇIK kapının üstünde durmak da kazanmaktır. Kazanma yalnızca
             // `checkCapture` içinde, yani kapıya UÇARAK konulduğunda
@@ -1116,6 +1138,7 @@ final class GameScene: SKScene {
                                        y: orbNode.position.y + v.dy * CGFloat(dt))
             checkCapture()
             checkLumens()
+            checkLifePickups()
             checkBounds()
             if flightTime > maxFlightTime { missedShot() }
 
@@ -1677,7 +1700,8 @@ final class GameScene: SKScene {
                                 radius: radius,
                                 orbitSpeed: 1.8 + 1.8 * hardness + endlessRNG.cg(in: -0.2...0.2),
                                 direction: endlessRNG.cg(in: 0...1) < 0.5 ? 1 : -1)
-            if n > 8, endlessRNG.cg(in: 0...1) < 0.3 + 0.3 * hardness {
+            let carriesLife = Self.endlessRingHasLife(n)
+            if n > 8, !carriesLife, endlessRNG.cg(in: 0...1) < 0.3 + 0.3 * hardness {
                 let span = endlessRNG.cg(in: (.pi * 0.22)...(.pi * (0.3 + 0.2 * hardness)))
                 let start = endlessRNG.cg(in: 0...(2 * .pi))
                 spec.hazardArcs = [start...(start + span)]
@@ -1687,6 +1711,58 @@ final class GameScene: SKScene {
             }
             ringSpecs.append(spec)
             addRingNode(spec, index: ringSpecs.count - 1)
+            if carriesLife { addLifePickup(ring: ringSpecs.count - 1, previous: prev.center) }
+        }
+    }
+
+    /// Kalbi halkanın çemberi ÜZERİNE koyar — ortasına değil: küre çemberde
+    /// dönüyor, ortadan hiç geçmiyor. Açı bir önceki halkaya bakan taraf:
+    /// küre oradan geliyor ve halkaya o yakada tutunuyor, yani kalbi
+    /// tam turu beklemeden alıyor.
+    private func addLifePickup(ring: Int, previous: CGPoint) {
+        let spec = ringSpecs[ring]
+        let angle = atan2(previous.y - spec.center.y, previous.x - spec.center.x)
+        let point = CGPoint(x: spec.center.x + cos(angle) * spec.radius,
+                            y: spec.center.y + sin(angle) * spec.radius)
+
+        let node = SKShapeNode(path: Self.heartPath(radius: 9))
+        node.fillColor = theme.hazard.uiColor
+        node.strokeColor = .white
+        node.lineWidth = 1
+        node.glowWidth = 3
+        node.position = scenePoint(point)
+        node.zPosition = 16
+        // Kalp atışı: yıldızların yumuşak nabzından ayrışsın diye çift vuruş
+        node.run(.repeatForever(.sequence([
+            .scale(to: 1.22, duration: 0.12),
+            .scale(to: 1.0, duration: 0.16),
+            .scale(to: 1.14, duration: 0.10),
+            .scale(to: 1.0, duration: 0.18),
+            .wait(forDuration: 0.5)
+        ])))
+        addChild(node)
+        lifePickups.append((ring, node))
+    }
+
+    /// Kalp toplama. Can zaten doluysa kalp YERİNDE KALIR — "aldım ama bir şey
+    /// olmadı" hissi, alamamaktan daha kötü.
+    private func checkLifePickups() {
+        guard case .endless = mode, !lifePickups.isEmpty else { return }
+        guard extraLives < Self.endlessMaxLives else { return }
+        for i in lifePickups.indices.reversed() {
+            let node = lifePickups[i].node
+            let dx = node.position.x - orbNode.position.x
+            let dy = node.position.y - orbNode.position.y
+            guard sqrt(dx * dx + dy * dy) < collectDistance * 1.4 else { continue }
+
+            extraLives = min(extraLives + 1, Self.endlessMaxLives)
+            burst(at: node.position, color: theme.hazard.uiColor, count: 22)
+            node.run(.sequence([.group([.scale(to: 2.0, duration: 0.2),
+                                        .fadeOut(withDuration: 0.2)]),
+                                .removeFromParent()]))
+            lifePickups.remove(at: i)
+            onEvent?(.extraLifeGained(total: extraLives))
+            return
         }
     }
 

@@ -376,6 +376,12 @@ struct GameContainerView: View {
         case .endlessScore(let score):
             endlessScore = score
 
+        case .extraLifeGained(let total):
+            // Halka üstündeki kalp: yıldız sesinden ayrı bir ödül olarak duyulsun
+            extraLives = total
+            AudioEngine.shared.playWin()
+            Haptics.shared.win()
+
         case .extraLifeUsed(let remaining):
             // Sesi ve titreşimi ölüm anı çaldı; burası yalnızca sayacı günceller
             extraLives = remaining
@@ -535,8 +541,9 @@ struct GameContainerView: View {
             }
             .frame(width: 56)
         } else if playMode == .endless && extraLives > 0 {
-            // Premium oyuncular reklam izlemiyor; onun yerine tek kullanımlık
-            // bir can hakları var. Kalpten kaç tane kaldığını burada gösteriyoruz.
+            // Can hakkı iki yerden geliyor: premium tura bir tane ile başlıyor,
+            // ve 20. halkadan sonra her sekiz halkada bir halkanın üstünde bir
+            // kalp duruyor. En fazla üç. Kaç tane kaldığı burada.
             HStack(spacing: 4) {
                 Image(systemName: "heart.fill")
                     .font(.system(size: 13, weight: .bold))
