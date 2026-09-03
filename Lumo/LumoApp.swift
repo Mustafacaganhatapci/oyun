@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import UserNotifications
 
 /// Firebase'in kendi hata mesajının önerdiği kanonik başlatma noktası.
 /// Bir UIApplicationDelegate sağlamak, hem FirebaseApp.configure()'ı doğru
@@ -9,7 +10,30 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         LeaderboardService.bootstrapFirebase()
+        UNUserNotificationCenter.current().delegate = self
         return true
+    }
+
+    /// APNs belirteci geldi: FCM'e ver. Konu aboneliği bu olmadan sessizce
+    /// çalışmıyor — hata da vermiyor, bildirim de gelmiyor.
+    func application(_ application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        PushManager.shared.handleAPNsToken(deviceToken)
+    }
+
+    func application(_ application: UIApplication,
+                     didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        leaderboardLog("BİLDİRİM KAYDI BAŞARISIZ: \(error.localizedDescription)", isError: true)
+    }
+}
+
+/// Oyun açıkken gelen bildirim de görünsün. Görünmezse duyuruyu yalnızca
+/// oynamayanlar görür ki bu tam tersi olurdu.
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification) async
+        -> UNNotificationPresentationOptions {
+        [.banner, .sound]
     }
 }
 
@@ -49,6 +73,8 @@ struct LumoApp: App {
                     leaderboard.configureIfPossible()
                     // GDPR onayı + ATT izni; reklamlar bunlardan sonra anlamlı
                     consent.requestIfNeeded(isPremium: store.isPremium)
+                    // İzin İSTEMEZ: yalnızca daha önce açanın aboneliğini tazeler
+                    PushManager.shared.restoreIfEnabled()
                 }
                 .onChange(of: scenePhase) { _, phase in
                     switch phase {

@@ -8,6 +8,7 @@ struct SettingsView: View {
     @EnvironmentObject private var tutorial: TutorialStore
     @EnvironmentObject private var player: PlayerStore
     @ObservedObject private var sounds = CustomSoundStore.shared
+    @ObservedObject private var push = PushManager.shared
 
     @State private var feedback = ""
     @State private var sendingFeedback = false
@@ -50,6 +51,14 @@ struct SettingsView: View {
                             .foregroundStyle(.white.opacity(0.5))
                             .padding(.horizontal, 20)
                             .padding(.bottom, 6)
+
+                        // Bildirim izni BURADA isteniyor, açılışta değil.
+                        // Oyunu ilk açan birine sorulan izin çoğunlukla
+                        // reddediliyor ve iOS bir daha sormuyor.
+                        if PushManager.isAvailable {
+                            Divider().overlay(.white.opacity(0.1))
+                            notificationsRow
+                        }
                     }
                     .padding(.vertical, 8)
                     .background {
@@ -228,6 +237,48 @@ struct SettingsView: View {
     private var canSendFeedback: Bool {
         let trimmed = feedback.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.count >= 4 && trimmed.count <= 1000 && !sendingFeedback
+    }
+
+    /// Bildirimler. Kendi satırı var çünkü anahtar doğrudan bir ayarı değil,
+    /// iOS izin akışını tetikliyor: açarken izin kutusu çıkıyor, reddedilirse
+    /// tek yol iOS Ayarları'ndan geçiyor.
+    private var notificationsRow: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Toggle(isOn: Binding(
+                get: { push.isEnabled },
+                set: { on in Task { await push.setEnabled(on) } }
+            )) {
+                Label {
+                    Text("Notifications")
+                        .font(.system(.body, design: .rounded))
+                        .foregroundStyle(.white)
+                } icon: {
+                    Image(systemName: "bell.fill")
+                        .foregroundStyle(settings.theme.accent.color)
+                }
+            }
+            .tint(settings.theme.accent.color)
+            .disabled(push.isWorking)
+
+            if push.isDenied {
+                Button {
+                    AudioEngine.shared.playTap()
+                    push.openSystemSettings()
+                } label: {
+                    Text("Notifications are off for Orbeon. Turn them on in iOS Settings.")
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(settings.theme.hazard.color)
+                        .multilineTextAlignment(.leading)
+                }
+                .buttonStyle(.plain)
+            } else {
+                Text("New levels, new characters and a nudge before the weekly board resets. Nothing else.")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
     }
 
     private func toggleRow(_ icon: String, _ title: LocalizedStringKey, _ binding: Binding<Bool>) -> some View {

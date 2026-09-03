@@ -648,6 +648,14 @@ enum FirebaseBridge {
         return config
     }
 
+    /// `config/announcement` — ana menüdeki duyuru kartı. Belge yoksa nil.
+    static func fetchAnnouncement() async -> [String: Any]? {
+        let db = Firestore.firestore()
+        guard let snap = try? await db.collection("config").document("announcement").getDocument()
+        else { return nil }
+        return snap.data()
+    }
+
     /// Doldurmaları yazar. `merge: false` DEĞİL — var olanın üstüne yazmayız;
     /// belge zaten varsa dokunulmaz, çünkü yalnızca eksik olanlar gönderilir.
     static func writeSeeds(_ seeds: [(id: String, name: String, value: Double)],
@@ -768,6 +776,7 @@ enum FirebaseBridge {
     static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String,
                          limit: Int = 100) async -> [LeaderboardEntry] { [] }
     static func fetchSeedConfig() async -> LeaderboardSeed.Config { .default }
+    static func fetchAnnouncement() async -> [String: Any]? { nil }
     static func writeSeeds(_ seeds: [(id: String, name: String, value: Double)],
                            mode: LeaderboardMode, week: Int) async -> Int { 0 }
     static func documentCount(mode: LeaderboardMode, week: Int) async -> Int? { nil }

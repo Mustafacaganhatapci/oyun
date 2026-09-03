@@ -18,6 +18,7 @@ struct MainMenuView: View {
     @State private var championAward: (rank: Int, stars: Int)?
     /// Yıldız eşiği geçilip açılan, henüz gösterilmemiş karakter
     @State private var orbReveal: OrbStyle?
+    @ObservedObject private var announcement = Announcement.shared
 
     var body: some View {
         ZStack {
@@ -102,6 +103,14 @@ struct MainMenuView: View {
 
                         Spacer(minLength: 24)
 
+                        // Duyuru varsa günlük şeridin ÜSTÜNDE: "yeni sürüm
+                        // çıktı" haberi, günlük ödülün altında kaybolmamalı
+                        if announcement.current != nil {
+                            announcementCard
+                                .padding(.horizontal, 28)
+                                .padding(.bottom, 14)
+                        }
+
                         dailyStrip
                             .padding(.horizontal, 28)
                             .padding(.bottom, 14)
@@ -125,6 +134,7 @@ struct MainMenuView: View {
             leaderboard.refresh(mode: .endless, myPlayerID: player.playerID)
             Task { await claimChampionRewardIfEarned() }
             orbReveal = progress.pendingOrbReveal()
+            Task { await announcement.refreshIfNeeded() }
             // 10. bölüm bitti: sonsuz mod ve hız turu açıldı. Düğmeler burada
             // olduğu için duyuru da burada; bitiş ekranında söylense oyuncu
             // nereye bakacağını bilmeden kapatıyordu.
@@ -167,6 +177,61 @@ struct MainMenuView: View {
     /// söylemiyordu — kaç yıldız biriktiği değil, SIRADAKİ karaktere ne
     /// kaldığı önemli. Hepsi açıldıysa yalnızca bu söyleniyor, sayı yok.
     @ViewBuilder
+    /// Firestore'dan gelen duyuru. Metnin tamamı konsoldan yazılıyor, o yüzden
+    /// burada yerelleştirilecek bir şey yok — yalnızca düğme yazıları.
+    @ViewBuilder
+    private var announcementCard: some View {
+        if let item = announcement.current {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(settings.theme.lumen.color)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(item.title)
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundStyle(.white)
+                        Text(item.body)
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.65))
+                    }
+                    Spacer(minLength: 4)
+                    Button {
+                        AudioEngine.shared.playTap()
+                        withAnimation(.easeInOut(duration: 0.25)) { announcement.dismiss() }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.45))
+                            .frame(width: 28, height: 28)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if item.appStoreID != nil {
+                    Button {
+                        AudioEngine.shared.playTap()
+                        announcement.openStore()
+                    } label: {
+                        Text("Update")
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundStyle(settings.theme.lumen.color)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 25)
+                }
+            }
+            .multilineTextAlignment(.leading)
+            .padding(14)
+            .background {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(settings.theme.lumen.opacity(0.10))
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .strokeBorder(settings.theme.lumen.opacity(0.28), lineWidth: 1)
+            }
+        }
+    }
+
     private var starGoal: some View {
         if let goal = progress.nextOrbGoal {
             VStack(spacing: 6) {
