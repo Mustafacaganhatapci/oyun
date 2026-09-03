@@ -7,13 +7,13 @@ import Foundation
 ///
 ///  1. Hepsi aynı anda belirmez. Her birinin haftanın içinde kendi görünme anı
 ///     var; tablo hafta boyunca doluyor, tek seferde patlamıyor.
-///  2. Gerçek oyunculara dokunulmaz. Doldurmalar yalnızca ilk 50'de boş kalan
-///     yere girer, ve şampiyonluk ödülü hesabı onları hiç saymaz — kimse
-///     gerçek bir insanın yıldızını kapmaz.
-///  3. Her hafta başka insanlar. Adlar da skorlar da hafta numarasından
-///     türetiliyor; geçen haftanın listesi bu hafta tekrar etmiyor.
-///  4. İşi biten silinir. Bir haftanın doldurmaları iki hafta sonra
-///     temizleniyor — bkz. `LeaderboardService.pruneOldSeeds`.
+///  2. Gerçek oyunculara dokunulmaz. Şampiyonluk ödülü hesabı doldurmaları
+///     hiç saymaz — kimse gerçek bir insanın yıldızını kapmaz.
+///  3. Her hafta ve her modda başka insanlar. Adlar da skorlar da hafta
+///     numarasıyla moddan türetiliyor; ne geçen haftanın listesi tekrar
+///     ediyor ne de iki tablo aynı kalabalığı gösteriyor.
+///  4. İşi biten silinir. Bir haftanın doldurmaları hafta biter bitmez
+///     temizleniyor — bkz. `LeaderboardService.pruneSeeds`.
 ///
 /// Sayılar Firestore'daki `config/leaderboard` belgesinden ayarlanır; kod
 /// sabitleri yalnızca o belge yoksa kullanılır.
@@ -22,7 +22,7 @@ enum LeaderboardSeed {
     /// Doldurma belgelerinin kuşağı. Ad üretimi ya da dağılım değişince
     /// artırılır: eski kuşaktan kalan belgeler böylece tanınıp siliniyor,
     /// aynı haftada iki farklı üretimin yan yana durması engelleniyor.
-    static let generation = 2
+    static let generation = 3
 
     /// `config/leaderboard` alanları
     struct Config {
@@ -110,10 +110,16 @@ enum LeaderboardSeed {
         documentID.hasPrefix(prefix(week: week))
     }
 
-    /// Bir doldurmanın adı. Hafta ve sıradan türetilir, yani her cihaz aynı
-    /// adı üretir ve gelecek hafta liste baştan değişir.
-    static func name(week: Int, index: Int) -> String {
-        var rng = SplitMix64(seed: UInt64(bitPattern: Int64(week &* 22861 &+ index &* 48271)) ^ 0x9E37_79B9)
+    /// Bir doldurmanın adı. Hafta, sıra VE moddan türetilir; her cihaz aynı adı
+    /// üretir, gelecek hafta liste baştan değişir, ve sonsuz mod ile hız turu
+    /// birbirinden bağımsız iki kalabalık taşır.
+    ///
+    /// Mod başta hesaba katılmıyordu: iki tablo da aynı beş yüz adı gösteriyor,
+    /// modlar arasında geçiş yapan oyuncu aynı listeye bakıyordu.
+    static func name(week: Int, index: Int, mode: LeaderboardMode) -> String {
+        let modeSalt: UInt64 = mode == .endless ? 0x2C1B_A75F : 0xE95F_31D0
+        var rng = SplitMix64(seed: UInt64(bitPattern: Int64(week &* 22861 &+ index &* 48271))
+                             ^ 0x9E37_79B9 ^ modeSalt)
         let pattern = Int(rng.unit() * 100)
         let first = firstNames[Int(rng.unit() * Double(firstNames.count)) % firstNames.count]
         let handle = handles[Int(rng.unit() * Double(handles.count)) % handles.count]
@@ -158,7 +164,7 @@ enum LeaderboardSeed {
             // Çakışma olursa iki haneli bir sayı ekleniyor — "Deniz2" değil
             // "Deniz34". Sıra numarası eklemek listenin uydurma olduğunu
             // ilk bakışta ele verirdi.
-            var candidate = name(week: week, index: i)
+            var candidate = name(week: week, index: i, mode: mode)
             if used.contains(candidate) {
                 let base = candidate
                 var tag = 11 + (i &* 37) % 88

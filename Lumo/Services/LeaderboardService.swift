@@ -219,13 +219,22 @@ final class LeaderboardService: ObservableObject {
 
     /// GEÇEN haftanın ilk üçünde miyim? Değilsem nil döner.
     /// Ödülü vermek çağıranın işi — burada yalnızca sıra okunur.
+    ///
+    /// Okumadan ÖNCE geçen haftanın doldurmaları siliniyor. Yalnızca temizlik
+    /// için değil, doğruluk için: nüfus 500'e çıkınca ilk 50'yi baştan sona
+    /// doldurmalar kaplıyor, gerçek oyuncular o pencereye hiç giremiyor ve
+    /// şampiyon kimse çıkmıyordu. Silindikten sonra ilk 50 zaten yalnızca
+    /// gerçek insanlardan oluşuyor.
     func previousWeekRank(playerID: String) async -> (week: Int, rank: Int)? {
         guard isAvailable else { return nil }
         let week = currentWeek - 1
         guard week >= 0 else { return nil }
         #if canImport(FirebaseCore)
-        // Doldurmalar ELENİR: ödül sıralaması yalnızca gerçek oyunculardan
-        // hesaplanır, kimse sahte bir adın arkasında kalıp yıldızını kaybetmez.
+        await prune(mode: .endless, week: week, keeping: nil)
+
+        // Kalmış olabilecekler yine de ELENİR: ödül sıralaması yalnızca gerçek
+        // oyunculardan hesaplanır, kimse sahte bir adın arkasında kalıp
+        // yıldızını kaybetmez.
         let top = await FirebaseBridge.fetchTop(mode: .endless, week: week,
                                                 myPlayerID: playerID, limit: 50)
             .filter { !LeaderboardSeed.isSeed($0.id) }
@@ -254,6 +263,9 @@ final class LeaderboardService: ObservableObject {
         let start = weekStart
         let rows = max(1, min(limit, Self.maxRows))
         Task {
+            // Eski kuşak varsa ÖNCE gitsin: sayaç onları da sayıyor
+            await self.pruneStaleGeneration(mode: mode, week: week)
+
             var entries = await FirebaseBridge.fetchTop(mode: mode, week: week,
                                                         myPlayerID: myPlayerID, limit: rows)
 
@@ -356,37 +368,59 @@ final class LeaderboardService: ObservableObject {
     /// İşi biten doldurmaları siler.
     ///
     /// İki şey temizleniyor:
-    ///  • İki hafta ve daha eski haftaların TÜM doldurmaları. Geçen hafta
-    ///    duruyor, çünkü şampiyonluk ödülü hâlâ o tablodan hesaplanıyor.
-    ///    Gerçek oyuncuların satırlarına dokunulmuyor — geçmişleri kalıyor.
+    ///  • Geçen hafta ve daha eskisinin TÜM doldurmaları. Gerçek oyuncuların
+    ///    satırlarına dokunulmuyor — onların geçmişi kalıyor.
     ///  • Bu haftanın eski kuşaktan kalmış doldurmaları; ad üretimi değişince
     ///    iki farklı üretim yan yana durmasın.
     ///
-    /// Silme bir seferde en çok 150 belge; kalanı bir sonraki açılışta. Bir
-    /// geçiş hiçbir şey silmezse o hafta "temiz" işaretlenir ve bir daha
+    /// Silme bir seferde 150 belge, boşalana kadar en çok beş geçiş. Bir geçiş
+    /// hiçbir şey silmezse o hafta "temiz" işaretlenir ve bir daha
     /// sorgulanmaz — yoksa boş bir koleksiyonu her açılışta taramak,
     /// silinecek hiçbir şey yokken bile okuma harcardı.
     private func pruneSeeds(mode: LeaderboardMode, week: Int) async {
         #if canImport(FirebaseCore)
-        // Bu haftanın eski kuşağı
-        await prune(mode: mode, week: week, keeping: LeaderboardSeed.prefix(week: week))
-
-        // Son üç eski hafta yeter: daha gerisi zaten temizlenmiş olur
-        for old in (week - 4)...(week - 2) where old >= 0 {
+        // GEÇEN hafta dahil. Eskiden bir hafta bekletiliyordu çünkü şampiyon
+        // ödülü o tablodan okunuyor; ama ödül zaten doldurmaları saymıyor ve
+        // okuma öncesi kendi temizliğini yapıyor. Bekletmenin tek sonucu,
+        // konsolda işi bitmiş bin kaydın durması olurdu.
+        for old in (week - 4)...(week - 1) where old >= 0 {
             await prune(mode: mode, week: old, keeping: nil)
         }
         #endif
     }
 
+    /// Bu haftanın eski kuşaktan kalmış doldurmaları. YAZMADAN ÖNCE çağrılır:
+    /// sayaç eski kuşağı da saydığı için önce temizlenmezse "koleksiyon zaten
+    /// dolu" denip yeni kuşak hiç yazılmıyor, tablo birkaç açılış boyunca eski
+    /// üretimde takılı kalıyordu.
+    private func pruneStaleGeneration(mode: LeaderboardMode, week: Int) async {
+        #if canImport(FirebaseCore)
+        await prune(mode: mode, week: week, keeping: LeaderboardSeed.prefix(week: week))
+        #endif
+    }
+
     private func prune(mode: LeaderboardMode, week: Int, keeping prefix: String?) async {
         #if canImport(FirebaseCore)
-        let key = "lumo.seedPruned.\(mode.base).w\(week).\(prefix == nil ? "all" : "gen")"
+        // Kuşak numarası anahtarın içinde: üretim değişip kuşak artınca eski
+        // "temizlendi" işareti kendiliğinden geçersiz oluyor, yoksa bir kez
+        // temiz denmiş hafta yeni kuşakta bir daha hiç taranmazdı.
+        let key = prefix == nil
+            ? "lumo.seedPruned.\(mode.base).w\(week).all"
+            : "lumo.seedPruned.\(mode.base).w\(week).gen\(LeaderboardSeed.generation)"
         guard !prunedThisSession.contains(key),
               !UserDefaults.standard.bool(forKey: key) else { return }
         prunedThisSession.insert(key)
 
-        let removed = await FirebaseBridge.deleteSeeds(mode: mode, week: week, keeping: prefix)
-        if removed == 0 { UserDefaults.standard.set(true, forKey: key) }
+        // Beş yüz kaydı yüz ellişer silmek dört geçiş eder. Tek geçişle
+        // bırakılsa temizlik açılışlara yayılır ve arada eksik bir tablo
+        // gösterilirdi.
+        for _ in 0..<5 {
+            let removed = await FirebaseBridge.deleteSeeds(mode: mode, week: week, keeping: prefix)
+            if removed == 0 {
+                UserDefaults.standard.set(true, forKey: key)
+                return
+            }
+        }
         #endif
     }
 
