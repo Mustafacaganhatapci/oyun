@@ -13,6 +13,10 @@ struct WorldRankingView: View {
     /// her seferinde bir sayfa daha getiriyor — beş yüz kişiyi tek seferde
     /// indirmek hem yavaş hem gereksiz, kimse beşinci yüzü açar açmaz aramıyor.
     @State private var visibleRows = LeaderboardService.pageSize
+    /// Kısa süre parlayacak satır — "beni bul"a basınca kendi satırın
+    @State private var flashID: String?
+    /// Satırlar henüz gelmedi, geldiğinde kaydır
+    @State private var pendingJump = false
 
     private var entries: [LeaderboardEntry] {
         mode == .endless ? leaderboard.endlessEntries : leaderboard.speedrunEntries
@@ -32,6 +36,8 @@ struct WorldRankingView: View {
             .padding(.top, 8)
             .onChange(of: mode) { _, _ in
                 visibleRows = LeaderboardService.pageSize
+                flashID = nil
+                pendingJump = false
                 load()
             }
 
@@ -113,57 +119,131 @@ struct WorldRankingView: View {
     }
 
     private var list: some View {
-        ScrollView {
-            LazyVStack(spacing: 8) {
-                ForEach(groups) { group in
-                    groupHeader(group.rank, count: group.rows.count)
-                    ForEach(group.rows) { item in
-                        row(index: item.place, entry: item.entry, rank: group.rank)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 8) {
+                    ForEach(groups) { group in
+                        groupHeader(group.rank, count: group.rows.count)
+                        ForEach(group.rows) { item in
+                            row(index: item.place, entry: item.entry, rank: group.rank)
+                                .id(item.entry.id)
+                        }
                     }
+
+                    // Düğmeye basmak yerine: son satır ekrana girince bir
+                    // sayfa daha isteniyor. Beş yüz kişilik bir tabloda
+                    // "daha fazla göster"e dört kez basmak iş gibi duruyordu.
+                    if canLoadMore { loadMoreSentinel }
+
+                    ladder
                 }
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+                .padding(.bottom, 30)
+            }
+            .onChange(of: entries.count) { _, _ in
+                guard pendingJump else { return }
+                jump(with: proxy)
+            }
+            .safeAreaInset(edge: .bottom) {
+                if let rank = leaderboard.myRank(mode) {
+                    myRankPill(rank, proxy: proxy)
+                }
+            }
+        }
+    }
 
-                if canLoadMore { showMoreButton }
+    /// Listenin sonundaki görünmez tetik. Ekrana girdiği an sonraki sayfa
+    /// yükleniyor; yüklenirken küçük bir çark dönüyor ki hiçbir şey olmuyormuş
+    /// gibi durmasın.
+    private var loadMoreSentinel: some View {
+        HStack {
+            Spacer()
+            ProgressView()
+                .tint(.white.opacity(0.6))
+                .opacity(leaderboard.isLoading ? 1 : 0.35)
+            Spacer()
+        }
+        .frame(height: 44)
+        .onAppear {
+            guard !leaderboard.isLoading else { return }
+            visibleRows = min(visibleRows + LeaderboardService.pageSize,
+                              LeaderboardService.maxRows)
+            loadMore()
+        }
+    }
 
-                ladder
+    /// Ekranın altında duran "sen buradasın" şeridi. Tabloda görünen pencerenin
+    /// dışında olsan da sıranı söylüyor; dokununca oraya kadar yükleyip
+    /// satırını parlatıyor.
+    private func myRankPill(_ rank: Int, proxy: ScrollViewProxy) -> some View {
+        Button {
+            AudioEngine.shared.playTap()
+            // Sıra görünen pencerenin dışındaysa oraya kadar yükle
+            let needed = min(LeaderboardService.maxRows,
+                             ((rank + LeaderboardService.pageSize - 1)
+                              / LeaderboardService.pageSize) * LeaderboardService.pageSize)
+            if needed > visibleRows {
+                visibleRows = needed
+                pendingJump = true
+                loadMore()
+            } else {
+                jump(with: proxy)
+            }
+        } label: {
+            HStack(spacing: 10) {
+                RankBadge(rank: Rank.of(value: myValue ?? 0, mode: mode), size: 13)
+                Text("You")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .foregroundStyle(.white)
+                Text("#\(rank)")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .monospacedDigit()
+                    .foregroundStyle(settings.theme.accent.color)
+                Spacer(minLength: 8)
+                if pendingJump && leaderboard.isLoading {
+                    ProgressView().tint(.white)
+                } else {
+                    Image(systemName: "scope")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.6))
+                }
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 12)
+            .background {
+                Capsule().fill(.ultraThinMaterial)
+                Capsule().fill(settings.theme.accent.opacity(0.14))
+                Capsule().strokeBorder(settings.theme.accent.opacity(0.35), lineWidth: 1)
             }
             .padding(.horizontal, 20)
-            .padding(.top, 12)
-            .padding(.bottom, 30)
+            .padding(.bottom, 8)
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Kendi skorum — rozeti doğru renkte çizmek için
+    private var myValue: Double? {
+        entries.first(where: \.isMe)?.value ?? leaderboard.weeklyBest(mode)
+    }
+
+    /// Kendi satırıma kaydır ve kısa bir parlama bırak
+    private func jump(with proxy: ScrollViewProxy) {
+        guard let me = entries.first(where: \.isMe) else { return }
+        pendingJump = false
+        withAnimation(.easeInOut(duration: 0.45)) {
+            proxy.scrollTo(me.id, anchor: .center)
+        }
+        withAnimation(.easeOut(duration: 0.2)) { flashID = me.id }
+        // Parlama kısa: dikkati çeksin, ekranda kalmasın
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+            withAnimation(.easeInOut(duration: 0.5)) { flashID = nil }
         }
     }
 
     /// Getirilen satır sayısı istenene eşitse arkada daha var demektir
     private var canLoadMore: Bool {
         entries.count >= visibleRows && visibleRows < LeaderboardService.maxRows
-    }
-
-    private var showMoreButton: some View {
-        Button {
-            AudioEngine.shared.playTap()
-            visibleRows = min(visibleRows + LeaderboardService.pageSize, LeaderboardService.maxRows)
-            load()
-        } label: {
-            HStack(spacing: 8) {
-                if leaderboard.isLoading {
-                    ProgressView().tint(.white)
-                } else {
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 12, weight: .bold))
-                }
-                Text("Show more")
-                    .font(.system(.subheadline, design: .rounded).bold())
-            }
-            .foregroundStyle(.white.opacity(0.75))
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(.white.opacity(0.06))
-            }
-        }
-        .buttonStyle(.plain)
-        .disabled(leaderboard.isLoading)
-        .padding(.top, 14)
     }
 
     private func groupHeader(_ rank: Rank, count: Int) -> some View {
@@ -224,6 +304,16 @@ struct WorldRankingView: View {
         .background {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(entry.isMe ? settings.theme.accent.opacity(0.12) : .white.opacity(0.05))
+            // "Beni bul"dan sonraki kısa parlama. Beş yüz satırın ortasına
+            // kaydırmak tek başına yetmiyor: ekran duruyor ama hangi satır
+            // olduğu anlaşılmıyor.
+            if flashID == entry.id {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(settings.theme.accent.opacity(0.30))
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(settings.theme.accent.color, lineWidth: 1.5)
+                    .shadow(color: settings.theme.accent.opacity(0.9), radius: 8)
+            }
         }
     }
 
@@ -343,6 +433,13 @@ struct WorldRankingView: View {
                                            username: player.username,
                                            playerID: player.playerID)
         }
+        leaderboard.refresh(mode: mode, myPlayerID: player.playerID, limit: visibleRows)
+    }
+
+    /// Sonraki sayfa. `load()`'tan farkı: skor yeniden GÖNDERİLMEZ. Her sayfada
+    /// aynı sonucu tekrar yazmak boşuna yazma işlemi.
+    private func loadMore() {
+        guard leaderboard.isAvailable else { return }
         leaderboard.refresh(mode: mode, myPlayerID: player.playerID, limit: visibleRows)
     }
 }

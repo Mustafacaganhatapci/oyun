@@ -55,6 +55,10 @@ final class LeaderboardService: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var endlessEntries: [LeaderboardEntry] = []
     @Published private(set) var speedrunEntries: [LeaderboardEntry] = []
+    /// Bu haftaki kendi sıram — tabloda görünen pencerenin DIŞINDA olsam da.
+    /// 500 kişilik bir tabloda 327. olan kendini asla göremiyordu.
+    @Published private(set) var endlessMyRank: Int?
+    @Published private(set) var speedrunMyRank: Int?
 
     private var didConfigure = false
 
@@ -245,6 +249,22 @@ final class LeaderboardService: ObservableObject {
         #endif
     }
 
+    /// Kendi sıramı sunucudan sorar. Bütün tabloyu indirmeye gerek yok:
+    /// benden İYİ olanların SAYISI + 1. Tek sayım okuması, beş yüz satır değil.
+    private func refreshMyRank(mode: LeaderboardMode, week: Int, playerID: String) async {
+        #if canImport(FirebaseCore)
+        let rank = await FirebaseBridge.myRank(mode: mode, week: week, playerID: playerID)
+        switch mode {
+        case .endless: endlessMyRank = rank
+        case .speedrun: speedrunMyRank = rank
+        }
+        #endif
+    }
+
+    func myRank(_ mode: LeaderboardMode) -> Int? {
+        mode == .endless ? endlessMyRank : speedrunMyRank
+    }
+
     /// Tablonun ilk sayfası kaç satır — "daha fazla göster" bunun katlarıyla
     /// büyür. Elli satır haftanın nüfusunun onda biriydi: tablo hep aynı
     /// yerde bitiyor, arkadaki kalabalık hiç görünmüyordu.
@@ -287,6 +307,8 @@ final class LeaderboardService: ObservableObject {
                 }
                 self.isLoading = false
             }
+
+            await self.refreshMyRank(mode: mode, week: week, playerID: myPlayerID)
 
             // Temizlik tablo çizildikten SONRA: eski haftaların silinmesi
             // oyuncuyu bekletmemeli, kimse onu görmüyor bile.
@@ -648,6 +670,24 @@ enum FirebaseBridge {
         return config
     }
 
+    /// Oyuncunun bu haftaki sırası. Önce kendi satırını okur, sonra kendisinden
+    /// iyi olanları SAYAR — sıralamayı baştan sona indirmenin ucuz karşılığı.
+    /// Hiç skor göndermemişse nil.
+    static func myRank(mode: LeaderboardMode, week: Int, playerID: String) async -> Int? {
+        let db = Firestore.firestore()
+        let collection = db.collection(mode.collection(week: week))
+        guard let doc = try? await collection.document(playerID).getDocument(),
+              let value = doc.data()?["value"] as? Double else { return nil }
+        // Sonsuz modda 0 skor tabloya girmiyor; sırası da yok
+        if mode == .endless, value < 1 { return nil }
+
+        let better = mode == .endless
+            ? collection.whereField("value", isGreaterThan: value)
+            : collection.whereField("value", isLessThan: value)
+        guard let snap = try? await better.count.getAggregation(source: .server) else { return nil }
+        return snap.count.intValue + 1
+    }
+
     /// `config/announcement` — ana menüdeki duyuru kartı. Belge yoksa nil.
     static func fetchAnnouncement() async -> [String: Any]? {
         let db = Firestore.firestore()
@@ -777,6 +817,7 @@ enum FirebaseBridge {
                          limit: Int = 100) async -> [LeaderboardEntry] { [] }
     static func fetchSeedConfig() async -> LeaderboardSeed.Config { .default }
     static func fetchAnnouncement() async -> [String: Any]? { nil }
+    static func myRank(mode: LeaderboardMode, week: Int, playerID: String) async -> Int? { nil }
     static func writeSeeds(_ seeds: [(id: String, name: String, value: Double)],
                            mode: LeaderboardMode, week: Int) async -> Int { 0 }
     static func documentCount(mode: LeaderboardMode, week: Int) async -> Int? { nil }

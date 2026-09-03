@@ -32,7 +32,11 @@ enum LeaderboardSeed {
         /// Haftanın toplam doldurma nüfusu. `target` üstündekiler tablonun
         /// altında kalır: dünya kalabalık görünür ama görünen 50 satırın
         /// dengesi bozulmaz.
-        var population = 500
+        ///
+        /// 500 değil 327: yuvarlak sayı sayılmış gibi duruyor. Gerçek bir
+        /// haftanın oyuncu sayısı 500'de bitmez. Firestore'daki
+        /// `botPopulation` alanından değiştirilebilir.
+        var population = 327
         var endlessBest = 33     // ilk 50'deki en iyi doldurmanın skoru
         var endlessWorst = 6     // ilk 50'deki en kötüsü
         var speedrunBest = 52.0  // saniye — hız turunda düşük olan iyi
