@@ -22,7 +22,7 @@ enum LeaderboardSeed {
     /// Doldurma belgelerinin kuşağı. Ad üretimi ya da dağılım değişince
     /// artırılır: eski kuşaktan kalan belgeler böylece tanınıp siliniyor,
     /// aynı haftada iki farklı üretimin yan yana durması engelleniyor.
-    static let generation = 3
+    static let generation = 4
 
     /// `config/leaderboard` alanları
     struct Config {
@@ -39,8 +39,13 @@ enum LeaderboardSeed {
         var population = 327
         var endlessBest = 33     // ilk 50'deki en iyi doldurmanın skoru
         var endlessWorst = 6     // ilk 50'deki en kötüsü
-        var speedrunBest = 52.0  // saniye — hız turunda düşük olan iyi
-        var speedrunWorst = 145.0
+        // Hız turu süreleri saniye; düşük olan iyi. Eskiden en iyi doldurma
+        // 52 saniye koşuyordu — on bölümün gerçekçi tavanı 1:59 civarındayken
+        // bu, tablonun tepesini insanın giremeyeceği bir yere kapatıyordu.
+        // Şimdi en iyisi 2:12: Kuazar'a değiyor, Zirve gerçek oyuncularda
+        // kalıyor.
+        var speedrunBest = 132.0
+        var speedrunWorst = 260.0
 
         static let `default` = Config()
     }

@@ -21,9 +21,13 @@ enum Rank: Int, CaseIterable, Identifiable {
     static let endlessFloor: [Int] = [1, 8, 16, 28, 45, 70]
 
     /// Hız turunda bu rütbenin ÜST süre sınırı (saniye) — altında kalan girer.
-    /// İlk eleman sonsuz: en alt rütbeye herkes girer. Zirve, en hızlı
-    /// doldurmadan (52 sn) da hızlı olmayı gerektiriyor.
-    static let speedrunCeiling: [Double] = [.infinity, 130, 105, 85, 68, 50]
+    /// İlk eleman sonsuz: en alt rütbeye herkes girer.
+    ///
+    /// Eşikler baştan çok iyimserdi: Zirve 50 saniye istiyordu, oysa on bölümün
+    /// gerçekte inebildiği yer 1:59 civarı. Üst üç basamak kimsenin
+    /// giremeyeceği bir yerdeydi, yani hiç yokmuş gibiydi. Artık Zirve 2:05'in
+    /// altı — zor ama insan işi.
+    static let speedrunCeiling: [Double] = [.infinity, 240, 200, 170, 145, 125]
 
     /// Adlar bilerek ışığın şiddetine göre: kıvılcımdan zirveye. Hiçbiri
     /// küre stili ya da tema adıyla çakışmıyor (Nova, Comet, Aurora hepsi
