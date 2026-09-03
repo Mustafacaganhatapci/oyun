@@ -61,6 +61,10 @@ final class LeaderboardService: ObservableObject {
     @Published private(set) var speedrunMyRank: Int?
 
     private var didConfigure = false
+    /// Her `refresh` çağrısı bunu artırır. Geç gelen bir cevap, kendisinden
+    /// sonra başlamış bir isteğin sonucunu ezmesin: mod değiştirince ya da
+    /// hızlıca sayfa açınca eski cevap sonradan düşüp tabloyu geri alıyordu.
+    private var refreshToken = 0
 
     // MARK: Haftalık dönem
     //
@@ -282,6 +286,8 @@ final class LeaderboardService: ObservableObject {
         let week = currentWeek
         let start = weekStart
         let rows = max(1, min(limit, Self.maxRows))
+        refreshToken += 1
+        let token = refreshToken
         Task {
             // Eski kuşak varsa ÖNCE gitsin: sayaç onları da sayıyor
             await self.pruneStaleGeneration(mode: mode, week: week)
@@ -300,14 +306,15 @@ final class LeaderboardService: ObservableObject {
             // yok oluyordu ve bu, tabloyu güvenilmez yapıyordu. Artık bir
             // satır bir kez göründüyse hafta boyunca yerinde kalıyor.
             let shown = entries
-            await MainActor.run {
-                switch mode {
-                case .endless: self.endlessEntries = shown
-                case .speedrun: self.speedrunEntries = shown
-                }
-                self.isLoading = false
+            // Bu istek hâlâ güncel mi? Değilse sessizce çekil.
+            guard token == self.refreshToken else { return }
+            switch mode {
+            case .endless: self.endlessEntries = shown
+            case .speedrun: self.speedrunEntries = shown
             }
+            self.isLoading = false
 
+            guard token == self.refreshToken else { return }
             await self.refreshMyRank(mode: mode, week: week, playerID: myPlayerID)
 
             // Temizlik tablo çizildikten SONRA: eski haftaların silinmesi

@@ -89,30 +89,45 @@ struct WorldRankingView: View {
         .padding(.top, 12)
     }
 
-    /// Bir rütbe kümesi ve içindeki satırlar
+    /// Bir rütbe kümesi ve içindeki satırlar.
+    ///
+    /// Kimliklerin içinde MOD var. Doldurma belgeleri iki koleksiyonda da aynı
+    /// kimliği taşıyor (`bot_w87_g3_000`); mod değiştirince SwiftUI aynı
+    /// kimlikleri görüp satırları yeniden kurmuyor, eski içerikle bırakıyordu.
+    /// Ekranda hız turundan kalma satırlar sonsuz modda görünüyordu.
     private struct RankGroup: Identifiable {
         let rank: Rank
+        let modeKey: String
         var rows: [Row]
-        var id: Int { rank.rawValue }
+        var id: String { "\(modeKey)-\(rank.rawValue)" }
 
         struct Row: Identifiable {
             let place: Int              // tablodaki genel sıra (0'dan)
             let entry: LeaderboardEntry
-            var id: String { entry.id }
+            let modeKey: String
+            var id: String { "\(modeKey)-\(entry.id)" }
         }
     }
+
+    /// Kimliklerin mod öneki
+    private var modeKey: String { mode == .endless ? "e" : "s" }
+
+    /// Kaydırma çıpası — `RankGroup.Row.id` ile birebir aynı olmalı
+    private func rowID(_ entry: LeaderboardEntry) -> String { "\(modeKey)-\(entry.id)" }
 
     /// Tablo rütbelere bölünmüş hâlde. Liste zaten skora göre sıralı olduğu
     /// için art arda gelenleri kümelemek yetiyor: küme başlığı her rütbe
     /// değiştiğinde düşüyor, en yüksek rütbe en üstte.
     private var groups: [RankGroup] {
         var out: [RankGroup] = []
+        let key = modeKey
         for (place, entry) in entries.enumerated() {
             let rank = Rank.of(value: entry.value, mode: mode)
+            let row = RankGroup.Row(place: place, entry: entry, modeKey: key)
             if out.last?.rank == rank {
-                out[out.count - 1].rows.append(.init(place: place, entry: entry))
+                out[out.count - 1].rows.append(row)
             } else {
-                out.append(RankGroup(rank: rank, rows: [.init(place: place, entry: entry)]))
+                out.append(RankGroup(rank: rank, modeKey: key, rows: [row]))
             }
         }
         return out
@@ -126,7 +141,7 @@ struct WorldRankingView: View {
                         groupHeader(group.rank, count: group.rows.count)
                         ForEach(group.rows) { item in
                             row(index: item.place, entry: item.entry, rank: group.rank)
-                                .id(item.entry.id)
+                                .id(item.id)
                         }
                     }
 
@@ -151,6 +166,11 @@ struct WorldRankingView: View {
                 }
             }
         }
+        // Mod değişince kaydırma görünümü baştan kurulur. Kimlikleri ayırmak
+        // tek başına yetmiyor: liste yarı yolda kalmış bir animasyonla iki
+        // veri kümesi arasında geçiş yapıyor ve arada karışık duruyordu.
+        // Yan faydası: yeni tabloya en baştan bakıyorsun.
+        .id(modeKey)
     }
 
     /// Listenin sonundaki görünmez tetik. Ekrana girdiği an sonraki sayfa
@@ -232,9 +252,9 @@ struct WorldRankingView: View {
         guard let me = entries.first(where: \.isMe) else { return }
         pendingJump = false
         withAnimation(.easeInOut(duration: 0.45)) {
-            proxy.scrollTo(me.id, anchor: .center)
+            proxy.scrollTo(rowID(me), anchor: .center)
         }
-        withAnimation(.easeOut(duration: 0.2)) { flashID = me.id }
+        withAnimation(.easeOut(duration: 0.2)) { flashID = rowID(me) }
         // Parlama kısa: dikkati çeksin, ekranda kalmasın
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
             withAnimation(.easeInOut(duration: 0.5)) { flashID = nil }
@@ -307,7 +327,7 @@ struct WorldRankingView: View {
             // "Beni bul"dan sonraki kısa parlama. Beş yüz satırın ortasına
             // kaydırmak tek başına yetmiyor: ekran duruyor ama hangi satır
             // olduğu anlaşılmıyor.
-            if flashID == entry.id {
+            if flashID == rowID(entry) {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(settings.theme.accent.opacity(0.30))
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
