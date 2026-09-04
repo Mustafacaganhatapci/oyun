@@ -307,8 +307,11 @@ struct GameContainerView: View {
             Haptics.shared.collect()
 
         case .gateUnlocked:
-            AudioEngine.shared.playWin()
-            Haptics.shared.win()
+            // Bölüm bitirme sesi DEĞİL: kapı açılmak bölümü bitirmiyor,
+            // yalnızca yolu açıyor. İkisi aynı sesken oyuncu bitirdiğini
+            // sanıp kapıya gitmiyordu.
+            AudioEngine.shared.playGate()
+            Haptics.shared.collect()
 
         case .fail(let willRevive):
             // Ses TEK: ölüm anında çalar. Eskiden burada ölüm sesi, yarım saniye

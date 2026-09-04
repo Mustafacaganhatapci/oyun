@@ -55,6 +55,7 @@ final class AudioEngine {
     private var failBuffer: AVAudioPCMBuffer?
     private var lifeLostBuffer: AVAudioPCMBuffer?
     private var winBuffer: AVAudioPCMBuffer?
+    private var gateBuffer: AVAudioPCMBuffer?
 
     /// Premium oyuncunun kendi kaydettiği sesler. Doluysa sentetik olanın
     /// yerine geçer; boş bırakılan yuvalar sentetik kalmaya devam eder.
@@ -253,6 +254,12 @@ final class AudioEngine {
     func playFail() { if let b = custom.fail ?? failBuffer { play(b) } }
     func playWin() { if let b = custom.win ?? winBuffer { play(b) } }
 
+    /// Kapı açıldı. Bölüm bitirme sesinden AYRI: ikisi de aynı yükselen
+    /// arpej olunca "kapı açıldı" ile "bölüm bitti" aynı şey sanılıyordu.
+    /// Kendi ses kaydı da bunun yerine geçmiyor — "bölüm bitirme" yuvası
+    /// bölüm bitişi için.
+    func playGate() { if let b = gateBuffer { play(b) } }
+
     // MARK: Premium — kendi sesin
 
     /// Ayarlardaki "dinle" düğmesi: ses kapalı olsa bile duyulsun ki oyuncu
@@ -341,6 +348,7 @@ final class AudioEngine {
         failBuffer = makeFail()
         lifeLostBuffer = makeLifeLost()
         winBuffer = makeWinArpeggio()
+        gateBuffer = makeGateOpen()
     }
 
     private func makeBuffer(duration: Double) -> (AVAudioPCMBuffer, UnsafeMutablePointer<Float>, Int) {
@@ -414,6 +422,40 @@ final class AudioEngine {
     }
 
     /// Bölüm sonu: A minör pentatonik yükselen arpej
+    /// Kapının açılışı: önce kısa ve alçak bir "bırakma", ardından yavaşça
+    /// açılan bir beşli. Bitiş arpejinin dört notalı zaferi değil, tek bir
+    /// olay — bir şey açıldı. Alçak başlaması, aynı anda çalan yıldız
+    /// sesinin parlaklığıyla çakışmamasını da sağlıyor.
+    private func makeGateOpen() -> AVAudioPCMBuffer {
+        let total = 1.1
+        let (buffer, data, n) = makeBuffer(duration: total)
+
+        // 1) Mandal: 220 Hz'den 150'ye hızlı iniş, 90 ms
+        let clickFrames = Int(0.09 * sampleRate)
+        var phase = 0.0
+        for i in 0..<clickFrames where i < n {
+            let t = Double(i) / sampleRate
+            let f = 220 - 70 * (t / 0.09)
+            phase += 2 * .pi * f / sampleRate
+            let env = exp(-t * 26)
+            data[i] += Float(sin(phase) * env * 0.32)
+        }
+
+        // 2) Açılan beşli: sol + re, yumuşak girişle bloom
+        let start = Int(0.06 * sampleRate)
+        for f in [392.0, 587.33] {
+            for i in 0..<(n - start) {
+                let t = Double(i) / sampleRate
+                // Yavaş giriş (attack) + uzun kuyruk: "açılıyor" hissi
+                let attack = min(t / 0.16, 1.0)
+                let env = attack * exp(-t * 2.6)
+                let s = sin(2 * .pi * f * t) * 0.5 + sin(2 * .pi * f * 3 * t) * 0.08
+                data[start + i] += Float(s * env * 0.22)
+            }
+        }
+        return buffer
+    }
+
     private func makeWinArpeggio() -> AVAudioPCMBuffer {
         let notes: [Double] = [440, 523.25, 659.26, 880]
         let step = 0.13
