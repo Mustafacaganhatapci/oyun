@@ -161,13 +161,16 @@ final class GameScene: SKScene {
 
     // MARK: Sonsuz moddaki can kalpleri
     //
-    // Yirminci halkadan sonra her sekiz halkada bir, halkanın ÜSTÜNDE duran
+    // Yirminci halkadan sonra her on iki halkada bir, halkanın ÜSTÜNDE duran
     // bir kalp. Uzun bir turda tek bir hata her şeyi bitiriyordu; bu kalpler
     // ilerlemeye bir ödül veriyor ve kaybetme korkusunu makul bir yere
     // çekiyor. Kalp taşıyan halkaya tehlike yayı KONMUYOR: ödül veren halka
     // aynı anda tuzak olmamalı.
+    //
+    // Aralık sekizden on ikiye çıkarıldı: üç canın tavanına çok çabuk
+    // varılıyor, kalpler bir yerden sonra hiçbir şey ifade etmiyordu.
     static let endlessLifeFirstRing = 20     // bu halkadan SONRA başlar
-    static let endlessLifeEvery = 8          // 28, 36, 44 …
+    static let endlessLifeEvery = 12         // 32, 44, 56 …
     static let endlessMaxLives = 3
 
     static func endlessRingHasLife(_ index: Int) -> Bool {
