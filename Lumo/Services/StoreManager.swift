@@ -59,16 +59,31 @@ final class StoreManager: ObservableObject {
         // Çevrimdışı açılışta arayüz doğru görünsün diye son bilinen durumu oku;
         // gerçek kaynak her zaman Transaction.currentEntitlements'tır.
         entitled = UserDefaults.standard.bool(forKey: "lumo.store.premiumCache")
+        // Bahşiş ve kod hakları iCloud'da da tutuluyor: bahşiş tüketilebilir
+        // bir ürün ve Apple onu geri yüklemiyor, kod da yalnızca girildiği
+        // cihazda kalıyordu. İkisinden hangisi evet derse hak veriliyor.
         promoGranted = UserDefaults.standard.bool(forKey: "lumo.store.promo")
-        isPremium = entitled || promoGranted
+            || EntitlementSync.shared.isPromoGranted
         isSupporter = UserDefaults.standard.bool(forKey: "lumo.store.supporter")
+            || EntitlementSync.shared.isSupporter
+        isPremium = entitled || promoGranted || isSupporter
         promoFailCount = UserDefaults.standard.integer(forKey: "lumo.store.promoFailCount")
         promoBonusGranted = UserDefaults.standard.bool(forKey: "lumo.store.promoBonusGranted")
+
+        // Yerel kopyayı da tazele: bir cihazda alınan hak diğerinde iCloud'dan
+        // gelmiş olabilir, bir dahaki açılışta çevrimdışıyken de dursun.
+        if promoGranted { UserDefaults.standard.set(true, forKey: "lumo.store.promo") }
+        if isSupporter { UserDefaults.standard.set(true, forKey: "lumo.store.supporter") }
 
         updatesTask = Task { [weak self] in
             for await update in Transaction.updates {
                 await self?.handle(update)
             }
+        }
+
+        // Başka cihazda bahşiş bırakıldıysa oyun açıkken de düşsün
+        EntitlementSync.shared.startObserving { [weak self] in
+            self?.adoptCloudEntitlements()
         }
         Task {
             await loadProducts()
@@ -78,6 +93,24 @@ final class StoreManager: ObservableObject {
     }
 
     deinit { updatesTask?.cancel() }
+
+    /// iCloud'dan yeni bir hak geldi. Yalnızca EKLER — buradan hiçbir hak
+    /// geri alınmaz, çünkü boş bir iCloud "hakkın yok" demek değil,
+    /// "henüz senkron olmadı" demek de olabilir.
+    private func adoptCloudEntitlements() {
+        var changed = false
+        if EntitlementSync.shared.isSupporter, !isSupporter {
+            isSupporter = true
+            UserDefaults.standard.set(true, forKey: "lumo.store.supporter")
+            changed = true
+        }
+        if EntitlementSync.shared.isPromoGranted, !promoGranted {
+            promoGranted = true
+            UserDefaults.standard.set(true, forKey: "lumo.store.promo")
+            changed = true
+        }
+        if changed { recomputePremium() }
+    }
 
     func loadProducts() async {
         do {
@@ -155,6 +188,7 @@ final class StoreManager: ObservableObject {
     private func grantPromo() {
         promoGranted = true
         UserDefaults.standard.set(true, forKey: "lumo.store.promo")
+        EntitlementSync.shared.markPromoGranted()
         recomputePremium()
     }
 
@@ -226,7 +260,29 @@ final class StoreManager: ObservableObject {
         try? await AppStore.sync()
         await finishPendingTransactions()
         await refreshEntitlements()
+        await restoreSupporterFromHistory()
+        adoptCloudEntitlements()
         statusMessage = isPremium ? .restored : .nothingToRestore
+    }
+
+    /// Geçmişte bırakılmış bir bahşiş var mı? Apple tüketilebilirleri geri
+    /// YÜKLEMİYOR ama işlem geçmişinde bir süre duruyorlar; duruyorsa hakkı
+    /// buradan da geri veririz. Asıl güvence iCloud tarafı — bu ikinci bir
+    /// ihtimal, bulursa kâr.
+    private func restoreSupporterFromHistory() async {
+        guard !isSupporter else { return }
+        for await result in Transaction.all {
+            guard case .verified(let transaction) = result else { continue }
+            guard transaction.productID == Self.tipSmallID
+                    || transaction.productID == Self.tipSmallLegacyID
+                    || transaction.productID == Self.tipBigID else { continue }
+            guard transaction.revocationDate == nil else { continue }
+            isSupporter = true
+            UserDefaults.standard.set(true, forKey: "lumo.store.supporter")
+            EntitlementSync.shared.markSupporter()
+            recomputePremium()
+            return
+        }
     }
 
     private func handle(_ update: VerificationResult<Transaction>) async {
@@ -250,6 +306,8 @@ final class StoreManager: ObservableObject {
             // veren birine "bu da ayrıca satılıyor" demek nezaketsizlik olurdu.
             isSupporter = true
             UserDefaults.standard.set(true, forKey: "lumo.store.supporter")
+            // Diğer cihazlarına da geçsin: bahşiş geri yüklenemeyen bir ürün
+            EntitlementSync.shared.markSupporter()
             recomputePremium()
             record(productID: transaction.productID)
             thankYou = .init(isTip: true)

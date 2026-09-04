@@ -2634,43 +2634,43 @@
         }
       }
     },
-    "Either one unlocks everything.": {
+    "Either one unlocks everything, on every device you sign in with.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Either one unlocks everything."
+            "value": "Either one unlocks everything, on every device you sign in with."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hangisini seçersen seç, her şey açılır."
+            "value": "Hangisini seçersen seç, her şey açılır — giriş yaptığın her cihazda."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Beide schalten alles frei."
+            "value": "Beide schalten alles frei, auf jedem Gerät, an dem du angemeldet bist."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cualquiera de los dos lo desbloquea todo."
+            "value": "Cualquiera de los dos lo desbloquea todo, en todos tus dispositivos."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "L'un comme l'autre débloque tout."
+            "value": "L'un comme l'autre débloque tout, sur chacun de tes appareils."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "どちらでもすべて解放されます。"
+            "value": "どちらでもすべて解放されます。サインインしているすべての端末で有効です。"
           }
         }
       }
@@ -3959,43 +3959,43 @@
         }
       }
     },
-    "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do.": {
+    "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do. It follows your iCloud account, so it's there on your other devices too.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do."
+            "value": "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do. It follows your iCloud account, so it's there on your other devices too."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Orbeon'u tek başıma yapıyorum. Senin gibi birinin destek olması, bir sonraki güncellemeyi yazmaya değdiğini hatırlatıyor. Premium'u da açtım, en azından bu kadarını yapayım."
+            "value": "Orbeon'u tek başıma yapıyorum ve birinin destek olmayı seçmesi, bir sonraki güncellemeyi yazmaya değer kılan şey. Premium da senin — en azından bunu yapabilirim. iCloud hesabınla birlikte geliyor, diğer cihazlarında da açık olacak."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ich mache Orbeon allein, und dass jemand freiwillig etwas dalässt, ist der Grund, warum sich das nächste Update lohnt. Premium gehört jetzt auch dir — das Mindeste, was ich tun kann."
+            "value": "Ich mache Orbeon allein, und wenn jemand etwas dazugibt, lohnt sich das nächste Update. Premium gehört dir ebenfalls — das Mindeste, was ich tun kann. Es hängt an deinem iCloud-Account und ist auch auf deinen anderen Geräten da."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hago Orbeon yo solo, y que alguien decida aportar algo es lo que hace que valga la pena escribir la siguiente actualización. Premium también es tuyo: es lo mínimo que puedo hacer."
+            "value": "Hago Orbeon yo solo, y que alguien decida aportar es lo que hace que valga la pena escribir la próxima actualización. Premium también es tuyo: es lo menos que puedo hacer. Va con tu cuenta de iCloud, así que también estará en tus otros dispositivos."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Je fais Orbeon tout seul, et savoir que quelqu'un a choisi de participer, c'est ce qui donne envie d'écrire la prochaine mise à jour. Premium est à toi aussi, c'est la moindre des choses."
+            "value": "Je fais Orbeon tout seul, et quand quelqu'un participe, ça donne envie d'écrire la mise à jour suivante. Premium est à toi aussi — c'est la moindre des choses. Il suit ton compte iCloud, donc il est là sur tes autres appareils aussi."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Orbeonは一人で作っています。こうして支えてくれる人がいるから、次のアップデートを書く意味があります。プレミアムもお渡しします。せめてものお礼です。"
+            "value": "Orbeonは一人で作っています。誰かが支えてくれることが、次のアップデートを書く理由になります。プレミアムもあなたのものです。iCloudアカウントに紐づくので、ほかの端末でも有効です。"
           }
         }
       }
@@ -5215,41 +5215,6 @@
         }
       }
     },
-    "No previous purchases found on this Apple Account": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine früheren Käufe für diesen Apple-Account gefunden"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se encontraron compras anteriores en esta cuenta de Apple"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aucun achat précédent trouvé sur ce compte Apple"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "このApple アカウントに以前の購入は見つかりません"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bu Apple Hesabında önceki satın alma bulunamadı"
-          }
-        }
-      }
-    },
     "No problem, keep playing ad-free. Premium is %@ anytime.": {
       "extractionState": "manual",
       "localizations": {
@@ -5509,6 +5474,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "あとで"
+          }
+        }
+      }
+    },
+    "Nothing to restore on this Apple Account. Tips carry over through iCloud — make sure iCloud Drive is on and you're signed in with the same account.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to restore on this Apple Account. Tips carry over through iCloud — make sure iCloud Drive is on and you're signed in with the same account."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu Apple Hesabında geri yüklenecek bir şey yok. Bahşişler iCloud üzerinden taşınır — iCloud Drive'ın açık ve aynı hesapla giriş yapmış olduğundan emin ol."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf diesem Apple-Account gibt es nichts wiederherzustellen. Trinkgelder werden über iCloud übertragen — prüfe, ob iCloud Drive an ist und du mit demselben Account angemeldet bist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay nada que restaurar en esta cuenta de Apple. Las propinas se transfieren por iCloud: comprueba que iCloud Drive esté activado y que uses la misma cuenta."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien à restaurer sur ce compte Apple. Les pourboires sont transférés via iCloud — vérifie qu'iCloud Drive est activé et que tu utilises le même compte."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このApple Accountに復元できる購入はありません。チップはiCloud経由で引き継がれます。iCloud Driveがオンで、同じアカウントでサインインしているか確認してください。"
           }
         }
       }

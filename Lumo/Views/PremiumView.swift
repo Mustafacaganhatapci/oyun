@@ -326,7 +326,11 @@ struct PremiumView: View {
             case .restored:
                 return ("Purchases restored", "checkmark.circle.fill", settings.theme.gate.color)
             case .nothingToRestore:
-                return ("No previous purchases found on this Apple Account", "info.circle.fill", .white.opacity(0.7))
+                // Bahşiş tüketilebilir bir üründür ve Apple onu geri yüklemez.
+                // Bahşiş bırakmış biri "hiçbir şey bulunamadı" görüp haklı
+                // olarak kızıyordu; hakkı iCloud taşıyor, o yüzden yol orası.
+                return ("Nothing to restore on this Apple Account. Tips carry over through iCloud — make sure iCloud Drive is on and you're signed in with the same account.",
+                        "info.circle.fill", .white.opacity(0.7))
             case .pending:
                 return ("Waiting for approval — you'll get it once it's approved", "clock.fill", settings.theme.lumen.color)
             case .failed:
@@ -391,7 +395,7 @@ struct PremiumView: View {
                 }
             }
 
-            Text("Either one unlocks everything.")
+            Text("Either one unlocks everything, on every device you sign in with.")
                 .font(.system(.caption2, design: .rounded))
                 .foregroundStyle(.white.opacity(0.4))
                 .multilineTextAlignment(.center)

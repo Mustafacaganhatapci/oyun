@@ -53,7 +53,7 @@ struct ThankYouView: View {
                 .multilineTextAlignment(.center)
 
                 Text(isTip
-                     ? "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do."
+                     ? "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do. It follows your iCloud account, so it's there on your other devices too."
                      : "The ads are off from today. I make Orbeon on my own, and this goes straight into the next levels, characters and music.")
                     .font(.system(.subheadline, design: .rounded))
                     .foregroundStyle(.white.opacity(0.8))
