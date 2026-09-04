@@ -50,6 +50,11 @@ enum RevenueCatBridge {
             builder = builder.with(appUserID: playerID)
         }
         Purchases.configure(with: builder.build())
+        // Paketin gerçekten bağlı olduğunu görmenin en kısa yolu: çalıştır,
+        // Xcode konsolunda "Orbeon" ile süz. Bu satır düşüyorsa bağlı.
+        leaderboardLog("REVENUECAT: gözlemci kipinde kuruldu (kimlik: \(playerID ?? "anonim"))")
+        #else
+        leaderboardLog("REVENUECAT: paket projeye eklenmemiş — satın almalar kaydedilmiyor")
         #endif
     }
 
