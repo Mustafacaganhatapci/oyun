@@ -211,6 +211,10 @@ final class StoreManager: ObservableObject {
         defer { purchaseInProgress = false }
         do {
             let result = try await product.purchase()
+            // Gözlemci kipi: hakkı StoreKit veriyor, RevenueCat yalnızca
+            // haberdar ediliyor. Kaydın başarısız olması satın almayı
+            // etkilemez, o yüzden sonucuna bakılmıyor.
+            await RevenueCatBridge.record(result)
             switch result {
             case .success(let verification):
                 switch verification {

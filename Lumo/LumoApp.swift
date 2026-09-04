@@ -10,6 +10,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         LeaderboardService.bootstrapFirebase()
+        // RevenueCat gözlemci kipinde: satın almayı StoreKit yürütüyor,
+        // RevenueCat yalnızca kaydediyor. Oyuncu kimliğini veriyoruz ki
+        // panodaki müşteri Firestore'daki destekçi kaydıyla aynı olsun.
+        RevenueCatBridge.configure(playerID: UserDefaults.standard.string(forKey: "lumo.player.id"))
         UNUserNotificationCenter.current().delegate = self
         return true
     }
