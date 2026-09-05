@@ -114,6 +114,24 @@ struct LevelSelectView: View {
     }
 }
 
+/// Altıgen. Topla-bitir bölümlerinin silueti bu — oyundaki kapı da altıgen
+/// bir ızgarayla çiziliyor, harita ile oynanış aynı dili konuşsun.
+private struct Hexagon: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let c = CGPoint(x: rect.midX, y: rect.midY)
+        let r = min(rect.width, rect.height) / 2
+        for i in 0..<6 {
+            // -90°'den başla: düz kenar değil, sivri uç yukarı baksın
+            let a = CGFloat(i) * .pi / 3 - .pi / 2
+            let p = CGPoint(x: c.x + cos(a) * r, y: c.y + sin(a) * r)
+            if i == 0 { path.move(to: p) } else { path.addLine(to: p) }
+        }
+        path.closeSubpath()
+        return path
+    }
+}
+
 private struct LevelNode: View {
     let id: Int
     let stars: Int
@@ -130,6 +148,11 @@ private struct LevelNode: View {
     @State private var pulse = false
 
     private var accent: Color { isBonus ? theme.lumen.color : theme.ring.color }
+
+    /// Topla-bitir bölümü altıgen, gerisi daire
+    private var nodeShape: AnyShape {
+        isCollect ? AnyShape(Hexagon()) : AnyShape(Circle())
+    }
     private var playable: Bool { unlocked && !isBonusCompleted }
 
     var body: some View {
@@ -147,20 +170,34 @@ private struct LevelNode: View {
                             .onAppear { pulse = true }
                     }
 
-                    Circle()
+                    // Siluet bölümün türünü söylüyor: topla-bitir altıgen,
+                    // gerisi daire. Rozet küçük kalıyordu; şekil uzaktan
+                    // okunuyor ve haritada bakışta ayrışıyor.
+                    nodeShape
                         .fill(unlocked ? accent.opacity(isBonus ? 0.28 : 0.18) : Color.white.opacity(0.06))
                         .frame(width: 58, height: 58)
                         .opacity(isBonusCompleted ? 0.5 : 1)
 
-                    Circle()
-                        .strokeBorder(unlocked
-                                      ? (stars >= maxStars ? theme.lumen.color : accent.opacity(0.7))
-                                      : Color.white.opacity(0.12),
-                                      style: isBonus
-                                      ? StrokeStyle(lineWidth: 2, dash: [5, 4])
-                                      : StrokeStyle(lineWidth: 2))
+                    nodeShape
+                        .stroke(unlocked
+                                ? (stars >= maxStars ? theme.lumen.color : accent.opacity(0.7))
+                                : Color.white.opacity(0.12),
+                                style: isBonus
+                                ? StrokeStyle(lineWidth: 2, dash: [5, 4])
+                                : StrokeStyle(lineWidth: 2))
                         .frame(width: 58, height: 58)
                         .opacity(isBonusCompleted ? 0.5 : 1)
+
+                    // Süreli bölüm: dışta bir kronometre kadranı. Üç çeyrek
+                    // çizilmiş halka "süre işliyor" demenin en kısa yolu.
+                    if isTimed, unlocked, !isCollect {
+                        Circle()
+                            .trim(from: 0, to: 0.72)
+                            .stroke(theme.hazard.opacity(0.85),
+                                    style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                            .frame(width: 68, height: 68)
+                    }
 
                     if isBonusCompleted {
                         VStack(spacing: 0) {
@@ -202,15 +239,6 @@ private struct LevelNode: View {
                             .offset(x: 22, y: -22)
                     }
 
-                    // Topla-bitir rozeti: kapı her şey toplanmadan açılmaz
-                    if isCollect, unlocked {
-                        Image(systemName: "circle.hexagongrid.fill")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(theme.gate.color)
-                            .padding(4)
-                            .background(Circle().fill(.black.opacity(0.55)))
-                            .offset(x: 22, y: 22)
-                    }
                 }
 
                 if unlocked {

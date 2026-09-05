@@ -101,6 +101,9 @@ SES VE TİTREŞİM
 • Öğretici artık atlayışta sayı sınırı olmadığını, sarı yıldızların karakter
   açtığını ve yeşilden kırmızıya dönen yayların ne yaptığını da gösteriyor.
 • Bonus turuna ilk girişte ne olduğu anlatılıyor.
+• Haritada topla-bitir bölümleri altıgen, süreli bölümler kronometre
+  kadranıyla çiziliyor. Bölüm başındaki rozet uydurma zorluk yerine
+  bölümün kuralını yazıyor.
 • 10. bölümde sonsuz mod ile hız turunun açıldığı duyuruluyor.
 
 EKRANLAR
@@ -227,6 +230,9 @@ TUTORIAL
 • It now covers that there's no limit on hops, that yellow stars unlock
   characters, and what the arcs turning green to red actually do.
 • The first bonus round explains itself.
+• On the map, collect levels are hexagons and timed levels carry a
+  stopwatch dial. The badge at the start of a level names its rule instead
+  of guessing at a difficulty.
 • Level 10 announces that Endless and Speed Run are open.
 
 SCREENS
@@ -356,6 +362,9 @@ TUTORIAL
 • Ahora explica que no hay límite de saltos, que las estrellas amarillas
   desbloquean personajes y qué hacen los arcos que pasan de verde a rojo.
 • La primera ronda de bonus se explica sola.
+• En el mapa, los niveles de recolección son hexágonos y los cronometrados
+  llevan una esfera de cronómetro. La etiqueta al empezar un nivel dice su
+  regla en vez de inventar una dificultad.
 • El nivel 10 anuncia que se abren el modo infinito y contrarreloj.
 
 PANTALLAS

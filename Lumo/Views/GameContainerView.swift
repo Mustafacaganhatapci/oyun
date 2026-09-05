@@ -58,7 +58,7 @@ struct GameContainerView: View {
     @State private var sceneSize: CGSize = .zero
     @State private var tutorialHops = 0        // antrenman bölümünde kaç atlayış yapıldı
     @State private var celebrationKey: String? // 3 yıldız kutlama başlığı (rastgele seçilir)
-    @State private var levelIntroVisible = false  // bölüm başındaki "Level X — Zorluk" kartı
+    @State private var levelIntroVisible = false  // bölüm başındaki "Level X — kural" kartı
     /// Yıldız eşiği geçilip açılan, henüz gösterilmemiş karakter
     @State private var orbReveal: OrbStyle?
     /// Sonsuz modda yeniden başlat onayı (skor sıfırdan büyükken sorulur)
@@ -153,7 +153,7 @@ struct GameContainerView: View {
                     tutorialCaption
                 }
 
-                // Bölüm başı kartı: "Level X" + zorluk etiketi, kısa süre görünüp söner
+                // Bölüm başı kartı: "Level X" + kural etiketi, kısa süre görünüp söner
                 if levelIntroVisible, overlay == .none {
                     levelIntro
                 }
@@ -1007,29 +1007,33 @@ struct GameContainerView: View {
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
-    /// Bölüm zorluk etiketi (yerelleştirme anahtarı). Öğretici/bonus için yok.
-    static func difficultyKey(for id: Int) -> String? {
+    /// Bölümün NE OLDUĞU (yerelleştirme anahtarı). Öğretici/bonus için yok.
+    ///
+    /// Burada eskiden zorluk yazıyordu — "Zor", "Çok Zor", "Ekstrem" — ve
+    /// bunlar bölüm numarasından uyduruluyordu. Oysa "çok zor" denen bir bölüm
+    /// çoğu zaman doğrudan kapıya gidilerek geçilebiliyor; etiket yalan
+    /// söylüyordu. Uyduramayacağımız şeyi iddia etmek yerine kesin olarak
+    /// bildiğimizi söylüyoruz: bu bölümün kuralı ne.
+    ///
+    /// Sıra önemli — bir bölüm hem süreli hem dev yıldızlı olabilir; oyuncuyu
+    /// en çok bağlayan kural yazılır.
+    static func levelRuleKey(for id: Int) -> String? {
         guard id != LevelLibrary.tutorialID, !LevelLibrary.isBonus(id) else { return nil }
-        // 100 normal bölüme dengeli dağılım (zorluk eğrisiyle uyumlu)
-        switch LevelLibrary.normalIndex(id) {
-        case ..<6:  return "Easy"
-        case ..<20: return "Medium"
-        case ..<45: return "Hard"
-        case ..<75: return "Very Hard"
-        default:    return "Extreme"
+        if LevelLibrary.isCollect(id) { return "Collect every star" }
+        if LevelLibrary.hasTimer(id) { return "Beat the clock" }
+        if LevelLibrary.hasGrandStar(id) { return "Giant star" }
+        return nil
+    }
+
+    private func levelRuleColor(for id: Int) -> Color {
+        switch Self.levelRuleKey(for: id) {
+        case "Collect every star": return settings.theme.gate.color
+        case "Beat the clock":     return settings.theme.hazard.color
+        default:                   return settings.theme.lumen.color
         }
     }
 
-    private func difficultyColor(for id: Int) -> Color {
-        switch Self.difficultyKey(for: id) {
-        case "Easy":   return settings.theme.gate.color
-        case "Medium": return settings.theme.accent.color
-        case "Hard":   return settings.theme.lumen.color
-        default:       return settings.theme.hazard.color
-        }
-    }
-
-    /// Bölüm başında ~1,6 sn görünen tanıtım kartı: bölüm numarası + zorluk rozeti
+    /// Bölüm başında ~1,6 sn görünen tanıtım kartı: bölüm numarası + kural rozeti
     @ViewBuilder
     private var levelIntro: some View {
         if case .level(let id) = playMode, !isTutorialLevel {
@@ -1038,13 +1042,13 @@ struct GameContainerView: View {
                     .font(.system(size: 40, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                     .shadow(color: settings.theme.accent.opacity(0.8), radius: 16)
-                if let key = Self.difficultyKey(for: id) {
+                if let key = Self.levelRuleKey(for: id) {
                     Text(LocalizedStringKey(key))
                         .font(.system(.subheadline, design: .rounded).bold())
                         .foregroundStyle(.black)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 6)
-                        .background(Capsule().fill(difficultyColor(for: id)))
+                        .background(Capsule().fill(levelRuleColor(for: id)))
                 }
             }
             .padding(.vertical, 26)
