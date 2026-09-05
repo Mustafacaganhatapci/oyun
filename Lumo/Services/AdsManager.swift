@@ -256,8 +256,13 @@ final class AdMobProvider: NSObject, InterstitialProvider, FullScreenContentDele
                 // reklam gelmeme sebebini (doldurulamadı/ağ/geçersiz istek) gösterir
                 os_log(.error, "AdMob yükleme hatası: %{public}@", error.localizedDescription)
             }
-            self?.interstitial = ad
-            ad?.fullScreenContentDelegate = self
+            // Google bu geri çağrıyı ANA iş parçacığında veriyor; derleyiciye
+            // bunu söylüyoruz. `Task { @MainActor }` ile hoplamak burada
+            // çalışmaz: reklam nesnesi Sendable değil, aktör sınırını geçemez.
+            MainActor.assumeIsolated {
+                self?.interstitial = ad
+                ad?.fullScreenContentDelegate = self
+            }
         }
     }
 
@@ -330,9 +335,13 @@ final class AdMobRewardedProvider: NSObject, RewardedProvider, FullScreenContent
             if let error {
                 os_log(.error, "AdMob ödüllü yükleme hatası: %{public}@", error.localizedDescription)
             }
-            self?.rewarded = ad
-            ad?.fullScreenContentDelegate = self
-            ready(ad != nil)
+            // Geçiş reklamındakiyle aynı gerekçe: geri çağrı ana iş
+            // parçacığında geliyor, reklam nesnesi Sendable değil.
+            MainActor.assumeIsolated {
+                self?.rewarded = ad
+                ad?.fullScreenContentDelegate = self
+                ready(ad != nil)
+            }
         }
     }
 

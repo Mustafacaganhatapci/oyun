@@ -58,15 +58,24 @@ final class StoreManager: ObservableObject {
     init() {
         // Çevrimdışı açılışta arayüz doğru görünsün diye son bilinen durumu oku;
         // gerçek kaynak her zaman Transaction.currentEntitlements'tır.
-        entitled = UserDefaults.standard.bool(forKey: "lumo.store.premiumCache")
         // Bahşiş ve kod hakları iCloud'da da tutuluyor: bahşiş tüketilebilir
         // bir ürün ve Apple onu geri yüklemiyor, kod da yalnızca girildiği
         // cihazda kalıyordu. İkisinden hangisi evet derse hak veriliyor.
-        promoGranted = UserDefaults.standard.bool(forKey: "lumo.store.promo")
+        //
+        // Önce YEREL değişkenlere alınıyor: `isSupporter` ve `isPremium` birer
+        // @Published, yani okumak sarmalayıcının getter'ından geçiyor ve o da
+        // self'in tamamen kurulmuş olmasını istiyor. init içinde birini okuyup
+        // diğerine yazmak bu yüzden derlenmiyor.
+        let premiumCache = UserDefaults.standard.bool(forKey: "lumo.store.premiumCache")
+        let promo = UserDefaults.standard.bool(forKey: "lumo.store.promo")
             || EntitlementSync.shared.isPromoGranted
-        isSupporter = UserDefaults.standard.bool(forKey: "lumo.store.supporter")
+        let supporter = UserDefaults.standard.bool(forKey: "lumo.store.supporter")
             || EntitlementSync.shared.isSupporter
-        isPremium = entitled || promoGranted || isSupporter
+
+        entitled = premiumCache
+        promoGranted = promo
+        isSupporter = supporter
+        isPremium = premiumCache || promo || supporter
         promoFailCount = UserDefaults.standard.integer(forKey: "lumo.store.promoFailCount")
         promoBonusGranted = UserDefaults.standard.bool(forKey: "lumo.store.promoBonusGranted")
 

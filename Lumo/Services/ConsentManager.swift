@@ -55,12 +55,16 @@ final class ConsentManager: ObservableObject {
                 next()
                 return
             }
-            guard let root = Self.topViewController() else { next(); return }
-            ConsentForm.loadAndPresentIfRequired(from: root) { formError in
-                if let formError {
-                    os_log(.error, "UMP form hatası: %{public}@", formError.localizedDescription)
+            // UMP geri çağrıyı ana iş parçacığında veriyor; ekranı ve formu
+            // ancak orada isteyebiliriz.
+            MainActor.assumeIsolated {
+                guard let root = Self.topViewController() else { next(); return }
+                ConsentForm.loadAndPresentIfRequired(from: root) { formError in
+                    if let formError {
+                        os_log(.error, "UMP form hatası: %{public}@", formError.localizedDescription)
+                    }
+                    next()
                 }
-                next()
             }
         }
         #else
