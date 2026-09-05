@@ -698,7 +698,21 @@ enum FirebaseBridge {
             ? collection.whereField("value", isGreaterThan: value)
             : collection.whereField("value", isLessThan: value)
         guard let snap = try? await better.count.getAggregation(source: .server) else { return nil }
-        return snap.count.intValue + 1
+
+        // Eşit skorlar. "Benden iyi olanlar + 1" eşitlik kümesinin EN ÜSTÜNÜ
+        // söylüyordu: sonsuz modda değer tam sayı (halka sayısı), 327 kişilik
+        // bir haftada aynı skoru düzinelerce kişi paylaşıyor. Şerit "198"
+        // derken satır kümenin ortasında, çok daha aşağıda duruyordu.
+        // Tablo eşitleri belge kimliğine göre sıralıyor (Firestore'un örtük
+        // __name__ sıralaması); sıramı da aynı ölçüyle sayıyoruz.
+        var rank = snap.count.intValue + 1
+        let tied = collection
+            .whereField("value", isEqualTo: value)
+            .whereField(FieldPath.documentID(), isLessThan: playerID)
+        if let tiedSnap = try? await tied.count.getAggregation(source: .server) {
+            rank += tiedSnap.count.intValue
+        }
+        return rank
     }
 
     /// `config/announcement` — ana menüdeki duyuru kartı. Belge yoksa nil.

@@ -57,7 +57,7 @@ struct WorldRankingView: View {
             // kadar kaydırmadan görülmüyordu; oysa oyuncunun bu ekranda ilk
             // sorduğu şey bu. Rütbe başlıklarından ayrışsın diye dolgulu ve
             // çerçeveli — onlar düz yazı, bu bir kart.
-            if leaderboard.isAvailable, let rank = leaderboard.myRank(mode) {
+            if leaderboard.isAvailable, let rank = myPlace {
                 myRankBanner(rank)
             }
 
@@ -263,6 +263,15 @@ struct WorldRankingView: View {
         .buttonStyle(.plain)
     }
 
+    /// Şeritte yazan sıra. Satırım yüklenmiş sayfaların içindeyse GÖZÜN
+    /// gördüğü sırayı kullanır; şerit "198" derken satırın başka bir yerde
+    /// duramaz. Sunucudan gelen sayım yalnızca satırım henüz yüklenmemiş
+    /// pencerenin ötesindeyken devreye giriyor.
+    private var myPlace: Int? {
+        if let i = entries.firstIndex(where: \.isMe) { return i + 1 }
+        return leaderboard.myRank(mode)
+    }
+
     /// Kendi skorum — rozeti doğru renkte çizmek için
     private var myValue: Double? {
         entries.first(where: \.isMe)?.value ?? leaderboard.weeklyBest(mode)
@@ -316,14 +325,17 @@ struct WorldRankingView: View {
                 .frame(width: 3, height: 22)
 
             // Sıra üç haneye çıkabiliyor (500 satır). Sütun 30 puntoydu ve
-            // "180" alt alta iki satıra sarıyordu.
+            // "180" alt alta iki satıra sarıyordu. Punto artık sabit:
+            // `minimumScaleFactor` küçülttüğünde SwiftUI yazıyı aynı taban
+            // çizgisinde bırakıyor, küçülen rakamlar isme göre aşağı kaymış
+            // görünüyordu. 17 punto monospace üç hanede 31 punto tutuyor,
+            // 44'lük sütuna her zaman sığıyor — küçültmeye gerek kalmıyor.
             Text("\(index + 1)")
-                .font(.system(.headline, design: .rounded).bold())
+                .font(.system(size: 17, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
                 .foregroundStyle(rankColor(index))
-                .frame(width: 40, alignment: .center)
+                .frame(width: 44, alignment: .center)
 
             Text(entry.username)
                 .font(.system(.body, design: .rounded).bold())
