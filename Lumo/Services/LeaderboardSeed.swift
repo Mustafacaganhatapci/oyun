@@ -22,7 +22,7 @@ enum LeaderboardSeed {
     /// Doldurma belgelerinin kuşağı. Ad üretimi ya da dağılım değişince
     /// artırılır: eski kuşaktan kalan belgeler böylece tanınıp siliniyor,
     /// aynı haftada iki farklı üretimin yan yana durması engelleniyor.
-    static let generation = 4
+    static let generation = 5
 
     /// `config/leaderboard` alanları
     struct Config {
@@ -227,8 +227,12 @@ enum LeaderboardSeed {
                     let span = config.speedrunWorst - config.speedrunBest
                     value = config.speedrunWorst - span * (t * t)
                 } else {
-                    // Hız turunda kötü olmak yavaş olmaktır
-                    value = config.speedrunWorst + (config.speedrunWorst * 0.7) * t
+                    // Hız turunda kötü olmak yavaş olmaktır — ama bir sınıra
+                    // kadar. Yayılım %70'ti ve tablonun dibi 7:22'ye kadar
+                    // çıkıyordu; on bölümü altı buçuk dakikada bitiren biri
+                    // oynamıyor, telefonu bırakmış demektir. %25 ile en yavaş
+                    // satır 5:25'te kalıyor: acemi ama gerçek bir oyuncu.
+                    value = config.speedrunWorst + (config.speedrunWorst * 0.25) * t
                 }
             }
             out.append((documentID(week: week, index: i), candidate, value))
