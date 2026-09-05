@@ -2383,6 +2383,47 @@
         }
       }
     },
+    "Counting everyone twice…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Counting everyone twice…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Herkes iki kez sayılıyor…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle werden zweimal gezählt…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contando a todos dos veces…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On compte tout le monde deux fois…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "みんなを二度数えています…"
+          }
+        }
+      }
+    },
     "Crystal": {
       "extractionState": "manual",
       "localizations": {
@@ -4499,6 +4540,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Işık"
+          }
+        }
+      }
+    },
+    "Lining up the rings…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lining up the rings…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halkalar diziliyor…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Ringe werden aufgereiht…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alineando los anillos…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On aligne les anneaux…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リングを並べています…"
           }
         }
       }
@@ -9230,6 +9312,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Onay bekleniyor — onaylanınca hesabına geçecek"
+          }
+        }
+      }
+    },
+    "Waking the leaderboard…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waking the leaderboard…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sıralama uyandırılıyor…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Rangliste wird geweckt…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Despertando la clasificación…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On réveille le classement…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ランキングを起こしています…"
           }
         }
       }

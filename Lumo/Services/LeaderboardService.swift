@@ -253,6 +253,17 @@ final class LeaderboardService: ObservableObject {
         #endif
     }
 
+    /// Gelen ne varsa gösterilir. Eskiden doldurmalar ilk 50'ye sığmadıklarında
+    /// gizleniyordu: dün tabloda duran bir ad bugün yok oluyordu ve bu, tabloyu
+    /// güvenilmez yapıyordu. Artık bir satır bir kez göründüyse hafta boyunca
+    /// yerinde kalıyor.
+    private func publish(_ entries: [LeaderboardEntry], for mode: LeaderboardMode) {
+        switch mode {
+        case .endless: endlessEntries = entries
+        case .speedrun: speedrunEntries = entries
+        }
+    }
+
     /// Kendi sıramı sunucudan sorar. Bütün tabloyu indirmeye gerek yok:
     /// benden İYİ olanların SAYISI + 1. Tek sayım okuması, beş yüz satır değil.
     private func refreshMyRank(mode: LeaderboardMode, week: Int, playerID: String) async {
@@ -289,30 +300,25 @@ final class LeaderboardService: ObservableObject {
         refreshToken += 1
         let token = refreshToken
         Task {
-            // Eski kuşak varsa ÖNCE gitsin: sayaç onları da sayıyor
-            await self.pruneStaleGeneration(mode: mode, week: week)
-
+            // ÖNCE oku, hemen çiz. Eskiden ilk çizimden önce eski kuşak
+            // temizliği, sayım ve gerekirse yazma+ikinci okuma bekleniyordu:
+            // üç dört gidiş-dönüş. Mod değiştirmek bu yüzden ağır duruyordu.
+            // Bakım işleri tablo ekrana geldikten sonra yapılıyor.
             var entries = await FirebaseBridge.fetchTop(mode: mode, week: week,
                                                         myPlayerID: myPlayerID, limit: rows)
+            guard token == self.refreshToken else { return }
+            self.publish(entries, for: mode)
+            self.isLoading = false
 
+            // Buradan sonrası oyuncuyu bekletmiyor
+            await self.pruneStaleGeneration(mode: mode, week: week)
             if let added = await seedIfNeeded(mode: mode, week: week, start: start,
                                               existing: entries), added > 0 {
                 entries = await FirebaseBridge.fetchTop(mode: mode, week: week,
                                                         myPlayerID: myPlayerID, limit: rows)
+                guard token == self.refreshToken else { return }
+                self.publish(entries, for: mode)
             }
-
-            // Gelen ne varsa gösterilir. Eskiden doldurmalar ilk 50'ye
-            // sığmadıklarında gizleniyordu: dün tabloda duran bir ad bugün
-            // yok oluyordu ve bu, tabloyu güvenilmez yapıyordu. Artık bir
-            // satır bir kez göründüyse hafta boyunca yerinde kalıyor.
-            let shown = entries
-            // Bu istek hâlâ güncel mi? Değilse sessizce çekil.
-            guard token == self.refreshToken else { return }
-            switch mode {
-            case .endless: self.endlessEntries = shown
-            case .speedrun: self.speedrunEntries = shown
-            }
-            self.isLoading = false
 
             guard token == self.refreshToken else { return }
             await self.refreshMyRank(mode: mode, week: week, playerID: myPlayerID)

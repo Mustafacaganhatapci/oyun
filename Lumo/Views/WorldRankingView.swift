@@ -65,7 +65,7 @@ struct WorldRankingView: View {
                 notConnected
             } else if leaderboard.isLoading && entries.isEmpty {
                 Spacer()
-                ProgressView().tint(.white)
+                loadingOrb
                 Spacer()
             } else if entries.isEmpty {
                 Spacer()
@@ -315,10 +315,15 @@ struct WorldRankingView: View {
                 .fill(rank.color.opacity(entry.isMe ? 0.95 : 0.55))
                 .frame(width: 3, height: 22)
 
+            // Sıra üç haneye çıkabiliyor (500 satır). Sütun 30 puntoydu ve
+            // "180" alt alta iki satıra sarıyordu.
             Text("\(index + 1)")
                 .font(.system(.headline, design: .rounded).bold())
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
                 .foregroundStyle(rankColor(index))
-                .frame(width: 30, alignment: .center)
+                .frame(width: 40, alignment: .center)
 
             Text(entry.username)
                 .font(.system(.body, design: .rounded).bold())
@@ -388,6 +393,47 @@ struct WorldRankingView: View {
         }
         .padding(.top, 24)
     }
+
+    /// Bekleme ekranı. Çıplak bir çark her uygulamada aynı; burada oyunun
+    /// kendi hareketi dönüyor — küre bir halkanın çevresinde. Altındaki yazı
+    /// da her saniye değişiyor, böylece bekleme donmuş gibi durmuyor.
+    private var loadingOrb: some View {
+        VStack(spacing: 18) {
+            TimelineView(.animation) { timeline in
+                let t = timeline.date.timeIntervalSinceReferenceDate
+                let angle = t * 2.2                      // rad/sn
+                let r: Double = 26
+                ZStack {
+                    Circle()
+                        .strokeBorder(settings.theme.ring.opacity(0.45), lineWidth: 2)
+                        .frame(width: r * 2, height: r * 2)
+                    Circle()
+                        .fill(settings.theme.orb.color)
+                        .frame(width: 11, height: 11)
+                        .shadow(color: settings.theme.accent.opacity(0.9), radius: 7)
+                        .offset(x: cos(angle) * r, y: sin(angle) * r)
+                }
+                .frame(width: r * 2 + 14, height: r * 2 + 14)
+            }
+
+            // Üç satır sırayla: bekleme kısa sürerse ilkini bile görmeden geçer
+            TimelineView(.periodic(from: .now, by: 1.3)) { timeline in
+                let step = Int(timeline.date.timeIntervalSinceReferenceDate / 1.3)
+                Text(Self.loadingLines[step % Self.loadingLines.count])
+                    .font(.system(.footnote, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.55))
+                    .transition(.opacity)
+                    .id(step % Self.loadingLines.count)
+            }
+            .animation(.easeInOut(duration: 0.3), value: UUID())
+        }
+    }
+
+    private static let loadingLines: [LocalizedStringKey] = [
+        "Lining up the rings…",
+        "Waking the leaderboard…",
+        "Counting everyone twice…"
+    ]
 
     private var notConnected: some View {
         VStack(spacing: 16) {
