@@ -161,6 +161,28 @@ final class GameScene: SKScene {
     private var aimLine: SKShapeNode?
     private var tapHint: SKNode?
 
+    // MARK: Chrono küresi — gizli kürenin iki yeteneği
+    //
+    // Nişan çizgisi antrenmandaki çizginin aynısı, bir farkla: çarpacağı
+    // halkada KESİLİYOR ve oraya bir nokta koyuyor. Uçuş düz çizgi ve sabit
+    // hızda olduğu için bu tahmin sabit halkalarda birebir doğru; hareketli
+    // halkada ufak kayıyor, çünkü çizgi halkaların O ANKİ yerine bakıyor.
+    //
+    // Yavaşlatma parmağın altında: basılı tuttukça zaman ağırlaşıyor,
+    // bırakınca küre fırlıyor. Yani chrono ile "dokun" değil "bas ve bırak"
+    // oynanıyor; kısa dokunuş da aynı sonucu verdiği için fark edilmiyor.
+    // Bedava değil: dolum bitince zaman normale dönüyor, halkada beklerken
+    // yavaşça doluyor.
+    private var usesChrono: Bool { orbStyle.kind == .chrono }
+    private static let chronoSlowFactor: Double = 0.35   // zamanın kaçta kaçı
+    private static let chronoDrain: Double = 0.45        // sn başına tüketim (≈2,2 sn)
+    private static let chronoRefill: Double = 0.22       // sn başına dolum (≈4,5 sn)
+    private var chronoCharge: Double = 1.0
+    private var chronoHeld = false
+    private var chronoSlowing = false
+    private var chronoGauge: SKShapeNode?
+    private var chronoMark: SKShapeNode?
+
     // Sonsuz mod
     private var endlessScore = 0
     private var cameraNode: SKCameraNode?
@@ -251,6 +273,13 @@ final class GameScene: SKScene {
             }
             seedEndless()
             respawn(animated: false)
+        }
+
+        // Chrono küresi nişan çizgisini her bölümde ve sonsuz modda taşır.
+        // Antrenmanda çizgi zaten kurulmuş oluyor; ikincisini kurmuyoruz.
+        if usesChrono {
+            if aimLine == nil { setupAimLine() }
+            setupChronoMark()
         }
     }
 
@@ -623,6 +652,46 @@ final class GameScene: SKScene {
             }
             orbCore = body
 
+        case .chrono:
+            // Kadran + akrep. Akrep SKAction ile dönüyor: zaman yavaşlarken
+            // sahnenin hızı da düştüğü için akrep gözle görülür şekilde
+            // ağırlaşıyor. Yeteneğin çalıştığını söyleyen en sessiz gösterge.
+            let dial = SKShapeNode(circleOfRadius: orbRadius * 1.35)
+            dial.fillColor = theme.bgTop.uiColor.withAlphaComponent(0.9)
+            dial.strokeColor = theme.accent.uiColor
+            dial.lineWidth = 2
+            dial.glowWidth = 2
+            container.addChild(dial)
+
+            let hand = CGMutablePath()
+            hand.move(to: .zero)
+            hand.addLine(to: CGPoint(x: 0, y: orbRadius * 1.05))
+            let needle = SKShapeNode(path: hand)
+            needle.strokeColor = theme.lumen.uiColor
+            needle.lineWidth = 1.6
+            needle.lineCap = .round
+            needle.run(.repeatForever(.rotate(byAngle: -.pi * 2, duration: 3)))
+            container.addChild(needle)
+
+            let pin = SKShapeNode(circleOfRadius: orbRadius * 0.3)
+            pin.fillColor = theme.lumen.uiColor
+            pin.strokeColor = .clear
+            container.addChild(pin)
+            orbCore = dial
+
+            // Dolum halkası kürenin dışında bir yay. Her karede yeniden
+            // çiziliyor; doluyken saklanıyor ki oyunu kalabalıklaştırmasın.
+            let gauge = SKShapeNode()
+            gauge.strokeColor = theme.lumen.uiColor
+            gauge.lineWidth = 2.5
+            gauge.lineCap = .round
+            gauge.fillColor = .clear
+            gauge.glowWidth = 1
+            gauge.isHidden = true
+            gauge.zPosition = 2
+            container.addChild(gauge)
+            chronoGauge = gauge
+
         case .champion:
             // Altın taç + çevresinde ters yönde dönen defne halkası. Köşeli
             // siluet diğer kürelerin hepsinden ayrışsın diye seçildi.
@@ -854,9 +923,11 @@ final class GameScene: SKScene {
 
     // MARK: Antrenman görselleri — yazı yok, göstererek öğretir
 
-    private func setupTutorialVisuals() {
-        // Nişan çizgisi: küre O AN fırlatılırsa gideceği yönü canlı gösterir.
-        // Çizgi yeşil halkayı kestiği anda dokunmak = doğru zamanlama.
+    /// Nişan çizgisi: küre O AN fırlatılırsa gideceği yönü canlı gösterir.
+    /// Çizgi yeşil halkayı kestiği anda dokunmak = doğru zamanlama.
+    /// Antrenman bunu sabit boyda kullanıyor; chrono küresi her karede
+    /// çarpacağı halkada kesiyor.
+    private func setupAimLine() {
         let length = size.width * 0.5
         let path = CGMutablePath()
         path.move(to: .zero)
@@ -869,6 +940,27 @@ final class GameScene: SKScene {
         line.zPosition = 30
         addChild(line)
         aimLine = line
+    }
+
+    /// Chrono'nun iniş noktası: çizginin ucundaki nabız atan halka
+    private func setupChronoMark() {
+        let mark = SKShapeNode(circleOfRadius: 9)
+        mark.fillColor = .clear
+        mark.strokeColor = UIColor.white.withAlphaComponent(0.85)
+        mark.lineWidth = 2
+        mark.glowWidth = 1
+        mark.zPosition = 30
+        mark.isHidden = true
+        mark.run(.repeatForever(.sequence([
+            .scale(to: 1.25, duration: 0.5),
+            .scale(to: 1.0, duration: 0.5)
+        ])))
+        addChild(mark)
+        chronoMark = mark
+    }
+
+    private func setupTutorialVisuals() {
+        setupAimLine()
 
         // Dokunuş ipucu: nabız gibi genişleyen halka + el simgesi.
         // Halkaların YANINA konur (üstlerine değil) — "halkaya bas" izlenimi
@@ -899,6 +991,122 @@ final class GameScene: SKScene {
         hint.addChild(ripple)
         addChild(hint)
         tapHint = hint
+    }
+
+    // MARK: Chrono — yavaşlatma ve iniş tahmini
+
+    /// Gerçek kareyi oyun karesine çevirir ve dolumu işler.
+    ///
+    /// Dolum GERÇEK saniyeyle tükeniyor, oyun saniyesiyle değil: yoksa
+    /// yavaşlatmak kendi bütçesini de yavaşlatır ve parmak ekranda kaldıkça
+    /// süre uzardı. Böylece bütçe her zaman aynı: dolu haznede ~2,2 saniye.
+    private func updateChrono(realDelta: TimeInterval) -> TimeInterval {
+        let attached: Bool
+        if case .attached = orbState { attached = true } else { attached = false }
+
+        // Yavaşlatma yalnızca halkadayken: chrono'nun işi UÇUŞU izlemek değil,
+        // atlayışı seçmek. Uçarken de çalışsaydı ıskalanan atış yavaş çekimde
+        // seyredilirdi, düzeltilemezdi.
+        let wantSlow = chronoHeld && attached && !finished && chronoCharge > 0
+        if wantSlow {
+            chronoCharge = max(0, chronoCharge - Self.chronoDrain * realDelta)
+        } else {
+            chronoCharge = min(1, chronoCharge + Self.chronoRefill * realDelta)
+        }
+
+        if wantSlow != chronoSlowing {
+            chronoSlowing = wantSlow
+            // Sahnenin hızı da düşüyor: halkaların nabzı, tehlike dönüşleri,
+            // kürenin akrebi, kıvılcımlar. Simülasyon dt ile, görsel efektler
+            // bununla yavaşlıyor — ikisi birlikte olmazsa oyun yavaşlarken
+            // ekran normal hızda kalıyor ve his bozuluyor.
+            speed = wantSlow ? CGFloat(Self.chronoSlowFactor) : 1
+            // Zamanın büküldüğü an parmakta hafif bir tık. Atlayışın kendi
+            // titreşiminden daha yumuşak olsun diye `hop`, `collect` değil.
+            Haptics.shared.hop()
+        }
+
+        updateChronoGauge()
+        return wantSlow ? realDelta * Self.chronoSlowFactor : realDelta
+    }
+
+    /// Kürenin çevresindeki dolum yayı. Doluyken görünmüyor: her karede
+    /// ekranda duran bir gösterge, bir şey anlatmadığı sürece gürültüdür.
+    private func updateChronoGauge() {
+        guard let gauge = chronoGauge else { return }
+        let full = chronoCharge >= 0.999
+        gauge.isHidden = full && !chronoSlowing
+        guard !gauge.isHidden else { return }
+
+        let r = orbRadius * 2.4
+        let start = CGFloat.pi / 2
+        let path = CGMutablePath()
+        path.addArc(center: .zero, radius: r,
+                    startAngle: start,
+                    endAngle: start - .pi * 2 * CGFloat(chronoCharge),
+                    clockwise: true)
+        gauge.path = path
+        gauge.strokeColor = chronoCharge < 0.2
+            ? theme.hazard.uiColor
+            : theme.lumen.uiColor.withAlphaComponent(0.9)
+    }
+
+    /// Fırlatılırsa nereye varacağını çizer.
+    ///
+    /// Uçuş düz ve sabit hızlı olduğu için tahmin bir doğru-çember kesişimi:
+    /// ışını bütün halkalarla kesiştirip en yakınını alıyoruz. Hareketli
+    /// halkada kayma var — çizgi halkaların O ANKİ yerine bakıyor, oysa küre
+    /// oraya varana kadar halka yürüyor. Kayma bilerek düzeltilmedi: yoksa
+    /// chrono bütün bölümleri kendisi çözerdi.
+    private func updateChronoAim(from pos: CGPoint, ring: Int,
+                                 angle: CGFloat, direction: CGFloat) {
+        guard let aim = aimLine else { return }
+        let d = CGVector(dx: -sin(angle) * direction, dy: cos(angle) * direction)
+        let maxLen = flightSpeedFactor * size.width * CGFloat(maxFlightTime)
+
+        var hit: (distance: CGFloat, ring: Int)?
+        for i in ringSpecs.indices where i != ring {
+            let c = ringCenter(i, at: elapsed)
+            let r = ringRadius(i)
+            // |pos + t·d − c|² = r², |d| = 1 olduğu için t² − 2(m·d)t + |m|² − r² = 0
+            let mx = c.x - pos.x, my = c.y - pos.y
+            let proj = mx * d.dx + my * d.dy
+            let perp2 = mx * mx + my * my - proj * proj
+            let rr = r * r
+            guard perp2 <= rr else { continue }
+            let t = proj - sqrt(rr - perp2)     // çemberin yakın yüzü
+            guard t > 0, t <= maxLen else { continue }
+            if t < (hit?.distance ?? .greatestFiniteMagnitude) { hit = (t, i) }
+        }
+
+        let path = CGMutablePath()
+        path.move(to: .zero)
+        path.addLine(to: CGPoint(x: hit?.distance ?? size.width * 0.55, y: 0))
+        aim.path = path.copy(dashingWithPhase: 0, lengths: [10, 9])
+
+        guard let hit else {
+            // Hiçbir halkayı kesmiyor: bu atış boşluğa gidiyor. Çizgi soluk,
+            // nokta yok — "şu an fırlatma" demenin en sessiz yolu.
+            aim.strokeColor = UIColor.white.withAlphaComponent(0.22)
+            chronoMark?.isHidden = true
+            return
+        }
+
+        let point = CGPoint(x: pos.x + d.dx * hit.distance,
+                            y: pos.y + d.dy * hit.distance)
+        let c = ringCenter(hit.ring, at: elapsed)
+        let landingAngle = atan2(point.y - c.y, point.x - c.x)
+        // İneceği yer ŞU AN kırmızıysa çizgi de kırmızı. Halka döndüğü için
+        // varana kadar değişebilir; söylediği şey "şimdi fırlatırsan" —
+        // zaten chrono'nun bütün mesleği o "şimdi"yi seçtirmek.
+        let deadly = hazardContains(ring: hit.ring, angle: landingAngle)
+        let color = deadly ? theme.hazard.uiColor
+                           : (ringSpecs[hit.ring].isGate ? theme.gate.uiColor : UIColor.white)
+        aim.strokeColor = color.withAlphaComponent(0.8)
+
+        chronoMark?.isHidden = false
+        chronoMark?.position = point
+        chronoMark?.strokeColor = color
     }
 
     /// İlk fırlatmadan sonra dokunuş ipucu kaybolur (görevini yaptı)
@@ -1024,7 +1232,15 @@ final class GameScene: SKScene {
         switch orbState {
         case .attached(let ring, let angle, let direction):
             dismissTapHint()
-            launch(from: ring, angle: angle, direction: direction)
+            // Chrono "bas–bırak" ile oynanıyor: basılı tutmak zamanı
+            // yavaşlatır, fırlatma parmak KALKINCA olur. Kısa dokunuşta iki
+            // davranış arasında hissedilir fark yok; fark yalnızca oyuncu
+            // beklemeye karar verdiğinde ortaya çıkıyor.
+            if usesChrono {
+                chronoHeld = true
+            } else {
+                launch(from: ring, angle: angle, direction: direction)
+            }
 
         case .dead:
             // Güvenlik ağı: yeniden doğma herhangi bir nedenle gecikirse
@@ -1038,6 +1254,29 @@ final class GameScene: SKScene {
         }
     }
 
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        releaseChrono()
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Telefon çaldı, bildirim geldi: parmak "kalkmış" sayılıyor ama
+        // fırlatma yapılmıyor. Kesintiye uğrayan bir dokunuş atış olmamalı.
+        chronoHeld = false
+    }
+
+    /// Parmak kalktı: yavaşlatma biter, küre fırlar.
+    private func releaseChrono() {
+        guard usesChrono, chronoHeld else { return }
+        chronoHeld = false
+        if chronoSlowing {
+            chronoSlowing = false
+            speed = 1
+        }
+        guard !coachFrozen,
+              case .attached(let ring, let angle, let direction) = orbState else { return }
+        launch(from: ring, angle: angle, direction: direction)
+    }
+
     // MARK: Ana döngü
 
     override func update(_ currentTime: TimeInterval) {
@@ -1048,6 +1287,13 @@ final class GameScene: SKScene {
         // Öğretici dondurması — sahne olduğu yerde bekler; `elapsed` ilerlemediği
         // için süreler kaymaz, tehlikeler ve geri sayımlar donuk kalır
         if coachFrozen { return }
+
+        // Chrono küresi zamanı buradan geçiriyor: parmak ekrandayken dt
+        // küçülüyor, yani halkalar, tehlikeler, geri sayımlar — her şey
+        // birlikte ağırlaşıyor. Oyuncu zaman kazanmıyor, DÜŞÜNME payı
+        // kazanıyor; süreli bölümün sayacı da aynı oranda yavaşladığı için
+        // yavaşlatmak bedava süre değil.
+        if usesChrono { dt = updateChrono(realDelta: dt) }
 
         elapsed += dt
 
@@ -1106,6 +1352,11 @@ final class GameScene: SKScene {
                 aim.position = orbNode.position
                 aim.zRotation = atan2(cos(angle) * direction, -sin(angle) * direction)
             }
+            // Chrono: aynı çizgi, ama nereye VARDIĞINI de söylüyor
+            if usesChrono {
+                updateChronoAim(from: orbNode.position, ring: ring,
+                                angle: angle, direction: direction)
+            }
             updateHazardTint()
             checkHazard(ring: ring, angle: angle)
             checkLumens()
@@ -1149,6 +1400,7 @@ final class GameScene: SKScene {
 
         case .flying(let v):
             aimLine?.isHidden = true
+            chronoMark?.isHidden = true
             dwellArc?.isHidden = true
             flightTime += dt
             orbNode.position = CGPoint(x: orbNode.position.x + v.dx * CGFloat(dt),
@@ -1161,6 +1413,7 @@ final class GameScene: SKScene {
 
         case .dead:
             aimLine?.isHidden = true
+            chronoMark?.isHidden = true
             dwellArc?.isHidden = true
             // Yeniden doğma zamanlaması SKAction yerine burada işlenir:
             // sahne duraklatılsa/aksiyon kaybolsa bile bu yol her zaman çalışır
@@ -1185,6 +1438,7 @@ final class GameScene: SKScene {
 
         case .won:
             aimLine?.isHidden = true
+            chronoMark?.isHidden = true
             dwellArc?.isHidden = true
         }
 

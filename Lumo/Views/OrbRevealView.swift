@@ -59,6 +59,14 @@ struct OrbRevealView: View {
                             .font(.system(.subheadline, design: .rounded).bold())
                     }
                     .foregroundStyle(.white.opacity(0.5))
+                } else if style.unlock == .secret {
+                    // Yeteneği olan tek küre. Bulan kişi ne bulduğunu burada
+                    // öğreniyor; başka hiçbir yerde anlatılmıyor.
+                    Text("Hold to slow time. The line shows where you land.")
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 8)
                 }
 
                 VStack(spacing: 10) {

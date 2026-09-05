@@ -160,6 +160,8 @@ final class ProgressStore: ObservableObject {
         // Şampiyon küresi satın alınamaz, eşikle de açılmaz: tek yolu
         // haftalık ilk üçe girmek.
         case .champion: return unlockedOrbs.contains(style.id)
+        // Gizli küre: yalnızca ayarlardaki vuruş dizisiyle
+        case .secret: return unlockedOrbs.contains(style.id)
         }
     }
 
@@ -183,6 +185,19 @@ final class ProgressStore: ObservableObject {
     /// Sıradaki küre ve ona kalan yıldız. Hepsi açıldıysa nil.
     var nextOrbGoal: (style: OrbStyle, remaining: Int)? {
         OrbStyle.nextLocked(totalStars: totalStars)
+    }
+
+    /// Gizli küreyi açar. `true` dönerse İLK kez açıldı demektir — kutlama
+    /// ekranı buna bakıyor. Bir kez bulunduktan sonra iCloud'la öteki
+    /// cihazlara da geçiyor: aynı diziyi her telefonda tekrar bulmak
+    /// ödül değil, angarya olurdu.
+    @discardableResult
+    func grantSecretOrb() -> Bool {
+        let isNew = unlockedOrbs.insert(OrbStyle.secretID).inserted
+        guard isNew else { return false }
+        defaults.set(Array(unlockedOrbs), forKey: Key.unlockedOrbs)
+        pushToCloud()
+        return true
     }
 
     /// Haftalık şampiyonluk ödülü: yıldızlar + şampiyon küresi.

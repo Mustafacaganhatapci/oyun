@@ -182,6 +182,11 @@ struct PersonalizeView: View {
             // kazanılabileceğini kimsenin bilmemesi demek olurdu.
             championRow
 
+            // Gizli küre tam tersi: açılana kadar listede HİÇ yok. Kilitli
+            // bir satır bırakmak "bir yerlerde bir şey var" demek olurdu ve
+            // sırrı sır olmaktan çıkarırdı.
+            if progress.isOrbUnlocked(OrbStyle.secret) { secretRow }
+
             // "Yüzünü küreye koy" premium'un kendi vaadi; fotoğraf seçme de
             // bu yüzden burada duruyor
             if store.isPremium {
@@ -300,6 +305,48 @@ struct PersonalizeView: View {
                 Image(systemName: "lock.fill")
                     .font(.caption)
                     .foregroundStyle(.white.opacity(0.35))
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    /// Bulunmuş gizli küre. Tek yeteneği olan küre bu olduğu için satırında
+    /// ne yaptığı da yazıyor: kimse ayarlarda bulduğu şeyin ne işe yaradığını
+    /// oynayarak keşfetmek zorunda kalmasın.
+    private var secretRow: some View {
+        let style = OrbStyle.secret
+        let equipped = settings.orbStyleID == style.id
+        return HStack(spacing: 14) {
+            CharacterPreview(kind: style.kind, theme: settings.theme)
+                .frame(width: 46, height: 46)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(style.localizedName)
+                    .font(.system(.body, design: .rounded).bold())
+                    .foregroundStyle(.white)
+                Text("Hold to slow time. The line shows where you land.")
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.45))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+
+            if equipped {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 18))
+                    .foregroundStyle(settings.theme.gate.color)
+            } else {
+                Button {
+                    AudioEngine.shared.playTap()
+                    settings.orbStyleID = style.id
+                } label: {
+                    Text("Equip")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+                        .background(Capsule().fill(settings.theme.accent.color))
+                }
             }
         }
         .padding(.vertical, 4)
@@ -677,6 +724,23 @@ struct CharacterPreview: View {
                 Circle().fill(.white).frame(width: 11, height: 11).offset(x: -6, y: 2)
                 Circle().fill(.white).frame(width: 9, height: 9).offset(x: 7, y: 2)
                 Circle().fill(.white).frame(width: 14, height: 14).offset(y: -2)
+            }
+        case .chrono:
+            // Kadran + akrep. Oyundaki siluetin aynısı; akrep ortadan
+            // döndüğü için gövde yukarı kaydırılıp merkez etrafında
+            // çevriliyor.
+            ZStack {
+                Circle()
+                    .fill(theme.bgTop.opacity(0.9))
+                    .overlay(Circle().strokeBorder(theme.accent.color, lineWidth: 2))
+                    .frame(width: 24, height: 24)
+                    .shadow(color: theme.accent.color, radius: 5)
+                Capsule()
+                    .fill(theme.lumen.color)
+                    .frame(width: 2, height: 9)
+                    .offset(y: -4.5)
+                    .rotationEffect(.degrees(40))
+                Circle().fill(theme.lumen.color).frame(width: 4.5, height: 4.5)
             }
         case .champion:
             ZStack {

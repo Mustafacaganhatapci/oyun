@@ -12,6 +12,11 @@ enum OrbUnlock: Equatable {
     /// Haftalık sıralamada ilk üçe girerek kazanılır. Satın alınamaz,
     /// yıldızla açılamaz — tek yolu o hafta zirveye oynamak.
     case champion
+    /// Gizli. Listede hiç görünmez, hiçbir yerde ipucu verilmez; ayarlardaki
+    /// sürüm yazısına yapılan bir vuruş dizisiyle açılır. Bulunması gereken
+    /// tek şey olduğu için tarifi de kodda duruyor: sekiz vuruş, beş saniye
+    /// bekleme, iki vuruş daha.
+    case secret
 }
 
 /// Kürenin (oyuncu "karakterinin") görsel stili.
@@ -41,6 +46,10 @@ struct OrbStyle: Identifiable, Equatable {
         /// Kampanyadaki BÜTÜN yıldızları toplayanın küresi. Eşiği 806, yani
         /// tam not; bu yüzden patlayan bir yıldız gibi görünüyor.
         case nova
+        /// Gizli küre: kadranı olan bir zaman küresi. Tek yeteneği olan
+        /// küre budur — basılı tutunca oyunu ağırlaştırır ve fırlatılırsa
+        /// nereye gideceğini bir çizgiyle gösterir.
+        case chrono
         /// Haftanın şampiyonu: altın bir taç, çevresinde dönen defne halkası.
         /// Kasten diğerlerinden çok farklı — köşeli silueti ve altın parıltısı
         /// uzaktan bile "bu oyuncu zirveye çıkmış" diye okunuyor.
@@ -90,7 +99,10 @@ struct OrbStyle: Identifiable, Equatable {
         OrbStyle(id: "atom",    name: "Atom",    unlock: .stars(750),  kind: .atom),
         OrbStyle(id: "nova",    name: "Nova",    unlock: .stars(806),  kind: .nova),
         OrbStyle(id: "photo",   name: "Photo",   unlock: .premium,     kind: .photo),
-        OrbStyle(id: "champion", name: "Champion", unlock: .champion,  kind: .champion)
+        OrbStyle(id: "champion", name: "Champion", unlock: .champion,  kind: .champion),
+        // Gizli. Hiçbir listede, hiçbir sayaçta, hiçbir ipucunda geçmiyor —
+        // açılana kadar oyuncu için yok. Bu yüzden en sonda.
+        OrbStyle(id: "chrono",  name: "Chrono",  unlock: .secret,      kind: .chrono)
     ]
 
     /// Yıldız eşiğiyle açılan stiller, eşiğe göre sıralı
@@ -110,6 +122,9 @@ struct OrbStyle: Identifiable, Equatable {
 
     static let championID = "champion"
     static var champion: OrbStyle { style(id: championID) }
+
+    static let secretID = "chrono"
+    static var secret: OrbStyle { style(id: secretID) }
 
     static func style(id: String) -> OrbStyle {
         all.first { $0.id == id } ?? all[0]

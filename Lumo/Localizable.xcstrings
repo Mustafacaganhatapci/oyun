@@ -1688,6 +1688,41 @@
         }
       }
     },
+    "Chrono": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chrono"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chrono"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chrono"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クロノ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chrono"
+          }
+        }
+      }
+    },
     "Claimed today": {
       "extractionState": "manual",
       "localizations": {
@@ -3938,6 +3973,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kalp"
+          }
+        }
+      }
+    },
+    "Hold to slow time. The line shows where you land.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte gedrückt, um die Zeit zu verlangsamen. Die Linie zeigt, wo du landest."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mantén pulsado para ralentizar el tiempo. La línea muestra dónde caerás."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintiens pour ralentir le temps. La ligne montre où tu vas atterrir."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "長押しで時間がゆっくりに。線が着地点を示します。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Basılı tut, zaman yavaşlasın. Çizgi nereye ineceğini gösterir."
           }
         }
       }

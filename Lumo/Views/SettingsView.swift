@@ -1,4 +1,98 @@
+import Combine
 import SwiftUI
+
+/// Sürüm yazısının altındaki gizli kilit.
+///
+/// Dizi: **sekiz vuruş, beş saniye bekleme, iki vuruş daha.** Beklemesi
+/// gereken yerde dokunan baştan başlıyor — sabırsızlık cezalandırılmıyor,
+/// yalnızca geri sayıyor. İlk sekizin arası üç saniyeyi geçerse de sayaç
+/// sıfırlanıyor: ayarlarda oyalanırken kazara açılmasın.
+///
+/// Kilit hiçbir yerde anlatılmıyor. Tarifi burada duruyor, çünkü altı ay
+/// sonra bu ekranı açan kişinin sayıları koddan okuyabilmesi gerekiyor.
+struct SecretKnock {
+    enum Stage: Equatable { case idle, knocking, waiting, open }
+
+    static let knocks = 8
+    static let pause: TimeInterval = 5
+    private static let knockGap: TimeInterval = 3    // vuruşlar arası üst sınır
+    private static let window: TimeInterval = 12     // beklemenin başından itibaren
+    private static let finalKnocks = 2
+
+    private(set) var stage: Stage = .idle
+    private var count = 0
+    private var last: Date?
+    private var waitStarted: Date?
+
+    /// Zamanlayıcının dönmesi gerekiyor mu — dizi başlamadan hiçbir şey işlemiyor
+    var isTiming: Bool { waitStarted != nil }
+
+    /// Bir vuruş işler. Kilit AÇILDIYSA `true` döner.
+    mutating func tap(at now: Date = Date()) -> Bool {
+        switch stage {
+        case .idle:
+            stage = .knocking
+            count = 1
+            last = now
+
+        case .knocking:
+            if let last, now.timeIntervalSince(last) > Self.knockGap {
+                count = 1
+            } else {
+                count += 1
+            }
+            self.last = now
+            if count >= Self.knocks {
+                stage = .waiting
+                waitStarted = now
+                count = 0
+            }
+
+        case .waiting:
+            // Beklemesi gereken yerde dokundu: dizi baştan başlıyor
+            reset()
+            stage = .knocking
+            count = 1
+            last = now
+
+        case .open:
+            if let last, now.timeIntervalSince(last) > Self.knockGap {
+                reset()
+                stage = .knocking
+                count = 1
+                self.last = now
+                return false
+            }
+            count += 1
+            last = now
+            if count >= Self.finalKnocks {
+                reset()
+                return true
+            }
+        }
+        return false
+    }
+
+    /// Bekleme doldu mu, pencere kapandı mı — görünüm bunu saniyede iki kez sorar
+    mutating func settle(at now: Date = Date()) {
+        guard let started = waitStarted else { return }
+        let waited = now.timeIntervalSince(started)
+        if stage == .waiting, waited >= Self.pause {
+            stage = .open
+            count = 0
+            last = nil
+        } else if stage == .open, waited >= Self.window {
+            reset()
+        }
+    }
+
+    mutating func reset() {
+        stage = .idle
+        count = 0
+        last = nil
+        waitStarted = nil
+    }
+}
 
 struct SettingsView: View {
     @EnvironmentObject private var app: AppModel
@@ -14,6 +108,13 @@ struct SettingsView: View {
     @State private var sendingFeedback = false
     @State private var feedbackSent = false
     @FocusState private var feedbackFocused: Bool
+
+    /// Sürüm yazısındaki gizli kilit ve bulununca açılan kutlama
+    @State private var knock = SecretKnock()
+    @State private var showSecretReveal = false
+    /// @State: görünüm struct'ı her yeniden kurulduğunda yeni bir
+    /// zamanlayıcı doğmasın, abonelik de baştan kurulmasın
+    @State private var knockTimer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
 
     /// Info.plist'ten okunur — sürüm yükseltirken burayı düzeltmek unutulmasın
     private static var appVersion: String {
@@ -125,9 +226,21 @@ struct SettingsView: View {
                             .kerning(2)
                         // Sürüm elle yazılıydı ve 1.0'da kalmıştı; artık
                         // derlemenin kendi numarasını gösteriyor.
+                        //
+                        // Aynı yazı gizli kilidin kapısı. Sekiz vuruştan
+                        // sonra rengi ısınıyor, bekleme dolunca parlıyor:
+                        // diziyi bilmeyen hiçbir şey görmüyor, bilen de
+                        // karanlıkta el yordamıyla aramıyor.
                         Text(verbatim: "\(Self.appVersion)")
                             .font(.system(.footnote, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.4))
+                            .foregroundStyle(versionTint)
+                            .shadow(color: knock.stage == .open
+                                    ? settings.theme.lumen.color : .clear, radius: 7)
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 26)
+                            .contentShape(Rectangle())
+                            .onTapGesture { knockTapped() }
+                            .animation(.easeInOut(duration: 0.25), value: knock.stage)
                         Text("Designed and built by Axium Dynamics. All rights reserved.")
                             .font(.system(.caption, design: .rounded))
                             .foregroundStyle(.white.opacity(0.35))
@@ -139,6 +252,43 @@ struct SettingsView: View {
                 .padding(.top, 20)
             }
         }
+        // Zamanlayıcı yalnızca dizi başladıktan sonra iş yapıyor: `settle`
+        // @State'e yazdığı için her boş tık görünümü yeniden çizerdi.
+        .onReceive(knockTimer) { _ in
+            guard knock.isTiming else { return }
+            knock.settle()
+        }
+        .onDisappear { knock.reset() }
+        .overlay {
+            if showSecretReveal {
+                OrbRevealView(style: OrbStyle.secret, theme: settings.theme) {
+                    settings.orbStyleID = OrbStyle.secretID
+                    showSecretReveal = false
+                } onClose: {
+                    showSecretReveal = false
+                }
+                .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: showSecretReveal)
+    }
+
+    /// Kilit ilerledikçe sürüm yazısının rengi. Tek geri bildirim bu.
+    private var versionTint: Color {
+        switch knock.stage {
+        case .idle, .knocking: return .white.opacity(0.4)
+        case .waiting: return .white.opacity(0.7)
+        case .open: return settings.theme.lumen.color
+        }
+    }
+
+    /// Sürüm yazısına dokunuldu. Dizi tamamlandıysa gizli küre açılıyor;
+    /// zaten açıksa kutlama yine gösteriliyor — bulduğunu yeniden görmek
+    /// isteyene "bu sende zaten" demek gereksiz bir soğukluk olurdu.
+    private func knockTapped() {
+        guard knock.tap() else { return }
+        progress.grantSecretOrb()
+        showSecretReveal = true
     }
 
     /// Oyuncunun doğrudan yazabileceği tek yer. Mağaza yorumu bize ulaşmıyor,
