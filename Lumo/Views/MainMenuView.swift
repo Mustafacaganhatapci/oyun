@@ -173,10 +173,6 @@ struct MainMenuView: View {
         }
     }
 
-    /// Yıldız hedefi. Toplam sayı ("x / 806") oyuncuya hiçbir şey
-    /// söylemiyordu — kaç yıldız biriktiği değil, SIRADAKİ karaktere ne
-    /// kaldığı önemli. Hepsi açıldıysa yalnızca bu söyleniyor, sayı yok.
-    @ViewBuilder
     /// Firestore'dan gelen duyuru. Metnin tamamı konsoldan yazılıyor, o yüzden
     /// burada yerelleştirilecek bir şey yok — yalnızca düğme yazıları.
     @ViewBuilder
@@ -232,6 +228,10 @@ struct MainMenuView: View {
         }
     }
 
+    /// Yıldız hedefi. Toplam sayı ("x / 806") oyuncuya hiçbir şey
+    /// söylemiyordu — kaç yıldız biriktiği değil, SIRADAKİ karaktere ne
+    /// kaldığı önemli. Hepsi açıldıysa yalnızca bu söyleniyor, sayı yok.
+    @ViewBuilder
     private var starGoal: some View {
         if let goal = progress.nextOrbGoal {
             VStack(spacing: 6) {
