@@ -6,7 +6,7 @@ import Combine
 /// yükseldikçe hızlandırılıp inceltilir — sentetik pentatonik dizinin yaptığını
 /// oyuncunun kendi "hop"u yapar.
 enum CustomSoundSlot: String, CaseIterable, Identifiable {
-    case hop, collect, lifeLost, fail, win
+    case hop, collect, gate, lifeLost, fail, win
 
     var id: String { rawValue }
 
@@ -15,6 +15,7 @@ enum CustomSoundSlot: String, CaseIterable, Identifiable {
         switch self {
         case .hop:      return "Hop"
         case .collect:  return "Star"
+        case .gate:     return "Gate"
         case .lifeLost: return "Life lost"
         case .fail:     return "Death"
         case .win:      return "Level complete"
@@ -25,6 +26,7 @@ enum CustomSoundSlot: String, CaseIterable, Identifiable {
         switch self {
         case .hop:      return "Rises in pitch as your combo grows."
         case .collect:  return "Plays when you pick up a star."
+        case .gate:     return "Plays when the gate opens."
         case .lifeLost: return "Plays when an extra life is spent."
         case .fail:     return "Plays when the orb is lost."
         case .win:      return "Plays when a level is finished."
@@ -35,6 +37,7 @@ enum CustomSoundSlot: String, CaseIterable, Identifiable {
         switch self {
         case .hop:      return "arrow.up.forward"
         case .collect:  return "star.fill"
+        case .gate:     return "lock.open.fill"
         case .lifeLost: return "heart.slash.fill"
         case .fail:     return "xmark.circle.fill"
         case .win:      return "flag.checkered"
@@ -266,6 +269,7 @@ final class CustomSoundStore: NSObject, ObservableObject {
             set.hopLadder = AudioEngine.shared.pitchLadder(from: hop)
         }
         set.collect = loadBuffer(.collect)
+        set.gate = loadBuffer(.gate)
         set.lifeLost = loadBuffer(.lifeLost)
         set.fail = loadBuffer(.fail)
         set.win = loadBuffer(.win)
@@ -336,6 +340,7 @@ struct CustomSoundSet {
     /// Komboyla tizleşen atlayış sesleri (sentetik dizinin perde oranlarında)
     var hopLadder: [AVAudioPCMBuffer] = []
     var collect: AVAudioPCMBuffer?
+    var gate: AVAudioPCMBuffer?
     var lifeLost: AVAudioPCMBuffer?
     var fail: AVAudioPCMBuffer?
     var win: AVAudioPCMBuffer?

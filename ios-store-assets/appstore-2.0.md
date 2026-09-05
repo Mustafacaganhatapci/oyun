@@ -74,7 +74,8 @@ Bu sürümde en büyük yenilik: premium oyuncular oyunun seslerini kendi
 sesleriyle değiştirebiliyor.
 
 KENDİ SESLERİN (PREMIUM)
-• Atlayış, yıldız, can eksilme, ölüm ve bölüm bitirme sesini kendin kaydet.
+• Atlayış, yıldız, kapı, can eksilme, ölüm ve bölüm bitirme sesini kendin
+  kaydet.
 • Kayıt 3-2-1 geri sayımından sonra başlıyor.
 • Atlayış kaydın komboyla incelip geri kalınlaşıyor.
 • Kayıtlar telefonunda kalıyor, hiçbir yere yüklenmiyor.
@@ -199,7 +200,8 @@ The headline this time: premium players can replace the game's sounds with
 their own voice.
 
 YOUR OWN SOUNDS (PREMIUM)
-• Record the hop, the star, the life lost, the death and the level complete.
+• Record the hop, the star, the gate, the life lost, the death and the
+  level complete.
 • Recording starts after a 3-2-1 countdown.
 • Your hop recording rises with the combo and comes back down.
 • Recordings stay on your phone. They are never uploaded.
@@ -327,7 +329,8 @@ Lo más importante esta vez: los jugadores premium pueden sustituir los sonidos
 del juego por su propia voz.
 
 TUS PROPIOS SONIDOS (PREMIUM)
-• Graba el salto, la estrella, la vida perdida, la muerte y el nivel completado.
+• Graba el salto, la estrella, la puerta, la vida perdida, la muerte y el
+  nivel completado.
 • La grabación empieza tras una cuenta atrás de 3-2-1.
 • Tu grabación del salto sube con el combo y luego vuelve a bajar.
 • Las grabaciones se quedan en tu teléfono. Nunca se suben a ningún sitio.

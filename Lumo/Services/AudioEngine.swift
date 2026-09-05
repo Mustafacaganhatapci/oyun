@@ -256,9 +256,8 @@ final class AudioEngine {
 
     /// Kapı açıldı. Bölüm bitirme sesinden AYRI: ikisi de aynı yükselen
     /// arpej olunca "kapı açıldı" ile "bölüm bitti" aynı şey sanılıyordu.
-    /// Kendi ses kaydı da bunun yerine geçmiyor — "bölüm bitirme" yuvası
-    /// bölüm bitişi için.
-    func playGate() { if let b = gateBuffer { play(b) } }
+    /// Kaydedilebilir kendi yuvası da var — ses ayrıysa kaydı da ayrı olmalı.
+    func playGate() { if let b = custom.gate ?? gateBuffer { play(b) } }
 
     // MARK: Premium — kendi sesin
 
