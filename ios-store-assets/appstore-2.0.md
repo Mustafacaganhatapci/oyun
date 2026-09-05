@@ -122,8 +122,8 @@ OYNANIŞ
 • Renk körlüğü modu.
 • Premium'a sonsuz modda tur başına bir can.
 • Sonsuz modda yeniden başlat düğmesi.
-• Sonsuz modda 20. halkadan sonra her on iki halkada bir, halkanın üstünde
-  can kalbi. En fazla üç can.
+• Sonsuz modda 12. halkadan başlayarak her sekiz halkada bir, halkanın
+  üstünde can kalbi. En fazla üç can.
 • Hız turunda kapı, yıldızlar toplanmadan açılmıyor.
 • Premium kodu girme alanı.
 • Bahşiş bırakan premium'u da alıyor.
@@ -248,8 +248,8 @@ GAMEPLAY
 • Colorblind mode.
 • Premium gets one extra life per endless run.
 • Restart button in endless mode.
-• Past ring 20, every twelfth ring in Endless carries a heart sitting on it.
-  Three lives at most.
+• From ring 12 on, every eighth ring in Endless carries a heart sitting on
+  it. Three lives at most.
 • In Speed Run the gate stays shut until every star is collected.
 • A field for premium codes.
 • Leaving a tip now includes premium.
@@ -376,7 +376,7 @@ JUGABILIDAD
 • Modo daltónico.
 • Premium incluye una vida extra en cada partida infinita.
 • Botón de reinicio en el modo infinito.
-• Pasado el anillo 20, cada doce anillos del modo infinito lleva un corazón
+• Desde el anillo 12, cada ocho anillos del modo infinito lleva un corazón
   encima. Tres vidas como máximo.
 • En Contrarreloj la puerta no se abre sin recoger todas las estrellas.
 • Campo para códigos premium.

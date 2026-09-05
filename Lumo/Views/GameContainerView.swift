@@ -545,8 +545,8 @@ struct GameContainerView: View {
             .frame(width: 56)
         } else if playMode == .endless && extraLives > 0 {
             // Can hakkı iki yerden geliyor: premium tura bir tane ile başlıyor,
-            // ve 20. halkadan sonra her on iki halkada bir halkanın üstünde
-            // bir kalp duruyor. En fazla üç. Kaç tane kaldığı burada.
+            // ve 12. halkadan başlayarak sekizde bir halkanın üstünde bir
+            // kalp duruyor. En fazla üç. Kaç tane kaldığı burada.
             HStack(spacing: 4) {
                 Image(systemName: "heart.fill")
                     .font(.system(size: 13, weight: .bold))
