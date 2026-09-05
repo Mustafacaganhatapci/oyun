@@ -68,6 +68,13 @@ final class GameScene: SKScene {
     /// yıldızları atlayarak kısaltmak mümkün olmasın diye.
     private let requiresAllLumens: Bool
     private var restartsOnDeath = false
+    /// Bu ölüm SÜRE dolduğu için mi oldu? Öyleyse bölüm baştan kurulur.
+    ///
+    /// Süreli bölümde sadece küre başa dönüp süre yenileniyordu; toplanan
+    /// yıldızlar duruyordu. Yani süreyi bilerek doldurup her denemede birkaç
+    /// yıldız daha ekleyerek bölüm sınırsız sürede bitirilebiliyordu — süre
+    /// kuralının hiçbir hükmü kalmıyordu.
+    private var failedByTimeout = false
     /// Premium'un sonsuz modda tur başına kullanabildiği can hakkı
     private(set) var extraLives = 0
     private weak var gateDashed: SKShapeNode?
@@ -1023,7 +1030,7 @@ final class GameScene: SKScene {
             // Güvenlik ağı: yeniden doğma herhangi bir nedenle gecikirse
             // dokunuş anında canlandırır — oyun asla "takılı" kalmaz
             if let since = deadSince, elapsed - since > 0.9, mode != .endless {
-                restartsOnDeath ? restartLevel() : respawn(animated: true)
+                resumeAfterDeath()
             }
 
         case .flying, .won:
@@ -1078,7 +1085,10 @@ final class GameScene: SKScene {
                     lastTimeTickSent = remaining
                     onEvent?(.timeTick(remaining: remaining))
                 }
-                if elapsed >= deadline { fail() }   // süre doldu — deneme yandı
+                if elapsed >= deadline {
+                    failedByTimeout = true
+                    fail()   // süre doldu — deneme yandı, yıldızlar da geri gelir
+                }
             }
         }
 
@@ -1169,7 +1179,7 @@ final class GameScene: SKScene {
                         }
                     }
                 } else if !finished {
-                    restartsOnDeath ? restartLevel() : respawn(animated: true)
+                    resumeAfterDeath()
                 }
             }
 
@@ -1410,6 +1420,7 @@ final class GameScene: SKScene {
     private func restartLevel() {
         deadSince = nil
         combo = 0
+        failedByTimeout = false
         finished = false
         orbNode.isHidden = false
 
@@ -1597,6 +1608,18 @@ final class GameScene: SKScene {
         var willRevive = false
         if case .endless = mode, extraLives > 0, !endlessOverSent { willRevive = true }
         onEvent?(.fail(willRevive: willRevive))
+    }
+
+    /// Ölümden sonra nereden devam edilecek.
+    ///
+    /// Topla-bitir bölümü ve SÜRE DOLMASI bölümü baştan kurar — ikisinde de
+    /// oyuncunun elindeki ilerleme kuralın kendisi olduğu için, yalnızca küreyi
+    /// geri koymak kuralı boşa çıkarırdı. Gerisinde küre başa döner, toplanan
+    /// yıldızlar durur.
+    private func resumeAfterDeath() {
+        let restart = restartsOnDeath || failedByTimeout
+        failedByTimeout = false
+        restart ? restartLevel() : respawn(animated: true)
     }
 
     private func respawn(animated: Bool) {

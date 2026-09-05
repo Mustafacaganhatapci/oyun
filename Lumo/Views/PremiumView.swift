@@ -39,11 +39,6 @@ struct PremiumView: View {
                 VStack(spacing: 20) {
                     premiumCard
 
-                    // Kayıt arayüzünün kendisi Kişiselleştir'de, kürelerin
-                    // altında duruyor — küreni, arka planını ve sesini aynı
-                    // yerden seçmek daha doğal. Buradan yalnızca yol gösterilir.
-                    if store.isPremium { soundsPointer }
-
                     if !store.isPremium { redeemSection }
 
                     // Dürüstlük ilkesi — açıkça söylüyoruz
@@ -412,38 +407,5 @@ struct PremiumView: View {
                 .fill(.white.opacity(0.05))
         }
         .padding(.horizontal, 20)
-    }
-
-    /// Premium alanın kayıt arayüzüne giden yolu. Sesler Kişiselleştir'de,
-    /// kürelerin altında duruyor.
-    private var soundsPointer: some View {
-        Button {
-            AudioEngine.shared.playTap()
-            app.route = .personalize
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "mic.fill")
-                    .foregroundStyle(settings.theme.lumen.color)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Record your own sounds")
-                        .font(.system(.subheadline, design: .rounded).bold())
-                        .foregroundStyle(.white)
-                    Text("In Personalize, under your characters.")
-                        .font(.system(.caption2, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.5))
-                }
-                Spacer(minLength: 4)
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.4))
-            }
-            .padding(16)
-            .background {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(.white.opacity(0.05))
-            }
-            .padding(.horizontal, 20)
-        }
-        .buttonStyle(.plain)
     }
 }

@@ -4059,47 +4059,6 @@
         }
       }
     },
-    "In Personalize, under your characters.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In Personalize, under your characters."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kişiselleştir'de, karakterlerin altında."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unter „Personalisieren“, unter deinen Charakteren."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "En Personalizar, debajo de tus personajes."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dans Personnaliser, sous tes personnages."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "「カスタマイズ」のキャラクターの下にあります。"
-          }
-        }
-      }
-    },
     "In the real version an interstitial ad is shown here.\nPremium removes all ads.": {
       "extractionState": "manual",
       "localizations": {
