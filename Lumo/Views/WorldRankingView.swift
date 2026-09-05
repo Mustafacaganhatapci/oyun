@@ -17,6 +17,9 @@ struct WorldRankingView: View {
     @State private var flashID: String?
     /// Satırlar henüz gelmedi, geldiğinde kaydır
     @State private var pendingJump = false
+    /// Üstteki şeride basıldı. Kaydırıcı listenin İÇİNDE olduğu için şerit ona
+    /// doğrudan erişemiyor; sayaç artınca liste kendi tarafında kaydırıyor.
+    @State private var jumpRequest = 0
 
     private var entries: [LeaderboardEntry] {
         mode == .endless ? leaderboard.endlessEntries : leaderboard.speedrunEntries
@@ -48,6 +51,14 @@ struct WorldRankingView: View {
                     .font(.system(.caption2, design: .rounded))
                     .foregroundStyle(.white.opacity(0.45))
                     .padding(.top, 8)
+            }
+
+            // "Sen buradasın" şeridi EN ÜSTTE. Aşağıdayken tabloyu sonuna
+            // kadar kaydırmadan görülmüyordu; oysa oyuncunun bu ekranda ilk
+            // sorduğu şey bu. Rütbe başlıklarından ayrışsın diye dolgulu ve
+            // çerçeveli — onlar düz yazı, bu bir kart.
+            if leaderboard.isAvailable, let rank = leaderboard.myRank(mode) {
+                myRankBanner(rank)
             }
 
             if !leaderboard.isAvailable {
@@ -160,10 +171,8 @@ struct WorldRankingView: View {
                 guard pendingJump else { return }
                 jump(with: proxy)
             }
-            .safeAreaInset(edge: .bottom) {
-                if let rank = leaderboard.myRank(mode) {
-                    myRankPill(rank, proxy: proxy)
-                }
+            .onChange(of: jumpRequest) { _, _ in
+                jump(with: proxy)
             }
         }
         // Mod değişince kaydırma görünümü baştan kurulur. Kimlikleri ayırmak
@@ -193,11 +202,12 @@ struct WorldRankingView: View {
         }
     }
 
-    /// Ekranın altında duran "sen buradasın" şeridi. Tabloda görünen pencerenin
+    /// Tablonun üstünde duran "sen buradasın" şeridi. Görünen pencerenin
     /// dışında olsan da sıranı söylüyor; dokununca oraya kadar yükleyip
     /// satırını parlatıyor.
-    private func myRankPill(_ rank: Int, proxy: ScrollViewProxy) -> some View {
-        Button {
+    private func myRankBanner(_ rank: Int) -> some View {
+        let myRank = Rank.of(value: myValue ?? 0, mode: mode)
+        return Button {
             AudioEngine.shared.playTap()
             // Sıra görünen pencerenin dışındaysa oraya kadar yükle
             let needed = min(LeaderboardService.maxRows,
@@ -208,36 +218,47 @@ struct WorldRankingView: View {
                 pendingJump = true
                 loadMore()
             } else {
-                jump(with: proxy)
+                jumpRequest += 1
             }
         } label: {
-            HStack(spacing: 10) {
-                RankBadge(rank: Rank.of(value: myValue ?? 0, mode: mode), size: 13)
-                Text("You")
-                    .font(.system(.subheadline, design: .rounded).bold())
-                    .foregroundStyle(.white)
-                Text("#\(rank)")
-                    .font(.system(.subheadline, design: .rounded).bold())
-                    .monospacedDigit()
+            HStack(spacing: 12) {
+                Image(systemName: "scope")
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(settings.theme.accent.color)
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("You")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(.white)
+                    HStack(spacing: 5) {
+                        RankBadge(rank: myRank, size: 9)
+                        Text(myRank.title)
+                            .font(.system(.caption2, design: .rounded))
+                            .foregroundStyle(myRank.color)
+                    }
+                }
+
                 Spacer(minLength: 8)
+
                 if pendingJump && leaderboard.isLoading {
                     ProgressView().tint(.white)
                 } else {
-                    Image(systemName: "scope")
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.6))
+                    Text("#\(rank)")
+                        .font(.system(size: 26, weight: .black, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(settings.theme.accent.color)
                 }
             }
-            .padding(.horizontal, 18)
+            .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background {
-                Capsule().fill(.ultraThinMaterial)
-                Capsule().fill(settings.theme.accent.opacity(0.14))
-                Capsule().strokeBorder(settings.theme.accent.opacity(0.35), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(settings.theme.accent.opacity(0.14))
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .strokeBorder(settings.theme.accent.opacity(0.40), lineWidth: 1)
             }
             .padding(.horizontal, 20)
-            .padding(.bottom, 8)
+            .padding(.top, 10)
         }
         .buttonStyle(.plain)
     }
