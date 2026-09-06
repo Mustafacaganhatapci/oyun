@@ -67,7 +67,9 @@ struct PremiumView: View {
             }
         }
         .onAppear {
-            withAnimation(.linear(duration: 2.4).repeatForever(autoreverses: false)) { shimmer = true }
+            // Tek geçiş: ekran otursun diye kısa bir gecikme, sonra soldan
+            // sağa bir tarama ve bitiş
+            withAnimation(.easeInOut(duration: 1.15).delay(0.25)) { shimmer = true }
             withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) { crownPulse = true }
         }
     }
@@ -177,13 +179,28 @@ struct PremiumView: View {
                                startPoint: .top, endPoint: .bottom)
             )
 
-            // Kart yüzeyinde yavaşça süzülen ışık
-            shape.fill(
-                LinearGradient(colors: [.clear, .white.opacity(0.14), .clear],
-                               startPoint: .topLeading, endPoint: .bottomTrailing)
-            )
+            // Kart açılırken yüzeyinden BİR KEZ geçen ışık.
+            //
+            // Eskiden sonsuza kadar dönüyordu ve `repeatForever` her turun
+            // sonunda parlamayı tek karede başa sıçratıyordu; üstelik bant
+            // sabit ±220 punto gidip geldiği için kartın kenarından hiç
+            // çıkmıyordu. İkisi birden hareketi yarım bırakılmış gösteriyordu.
+            // Şimdi bant kartın soluna tamamen dışarıdan giriyor, sağından
+            // tamamen çıkıyor ve bir daha dönmüyor: bir kez bakılan bir şey,
+            // sürekli kıpırdayan bir şey değil.
+            GeometryReader { geo in
+                let w = geo.size.width
+                let band = w * 0.42
+                Rectangle()
+                    .fill(LinearGradient(colors: [.clear, .white.opacity(0.22), .clear],
+                                         startPoint: .leading, endPoint: .trailing))
+                    .frame(width: band)
+                    .rotationEffect(.degrees(16))
+                    .scaleEffect(y: 1.7)   // eğik bant köşeleri de süpürsün
+                    .position(x: shimmer ? w + band : -band,
+                              y: geo.size.height / 2)
+            }
             .mask(shape)
-            .offset(x: shimmer ? 220 : -220)
             .allowsHitTesting(false)
 
             shape.strokeBorder(

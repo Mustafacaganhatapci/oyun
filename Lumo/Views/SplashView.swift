@@ -4,8 +4,10 @@ import SwiftUI
 ///
 /// İşaret oyunun kendisi: nötr bir halka, üstünde tek kırmızı yay, çemberin
 /// üstünde dolanan beyaz küre. Animasyon da oyunun kendisi: halka çizilir,
-/// küre yörüngeyi tamamlar, sonra kırmızı yay yerine PATLAR. Stüdyo adı
-/// yukarıda, üst şerit gibi durur — sahne markanın.
+/// küre yörüngeyi tamamlar, kırmızı yay yerine PATLAR — sonra halka küçülerek
+/// sola süzülür ve ORBEON'un O'sunun yerine oturur. Yani açılış, markanın
+/// nereden geldiğini gösteriyor: işaret ayrı bir amblem değil, kelimenin bir
+/// harfi.
 ///
 /// Dokununca atlanabilir.
 struct SplashView: View {
@@ -17,6 +19,8 @@ struct SplashView: View {
     @State private var showName = false
     @State private var hazardIn = false      // kırmızı yay yerine oturdu
     @State private var burst: CGFloat = 0    // 0...1 patlama ilerlemesi
+    @State private var composed = false      // halka O'nun yerine geçti
+    @State private var lettersIn = false     // RBEON açıldı
     @State private var finished = false
 
     private let ringColor = Color(red: 0.503, green: 0.499, blue: 0.540)
@@ -24,6 +28,21 @@ struct SplashView: View {
 
     /// Kırmızı yayın orta açısı — patlama parçacıkları oradan savrulur
     private let hazardMidAngle: Double = -78
+
+    // MARK: Ölçüler
+    //
+    // Halka büyükken 118, kelimenin içindeyken 38 punto. Oran ikisi arasında
+    // tek bir `scaleEffect` ile kuruluyor; harflerin puntosu ile halkanın çapı
+    // ayrı ayrı ayarlanmıyor ki ikisi asla birbirinden kaymasın.
+    private static let markFrame: CGFloat = 190
+    private static let ringBig: CGFloat = 118
+    private static let ringFinal: CGFloat = 38
+    private static let letterSize: CGFloat = 42
+    private static let letterKerning: CGFloat = 13
+    private static let ringGap: CGFloat = 9
+    /// Halka harflerin optik ortasına oturmuyordu: yazı kutusunun ortası
+    /// alt uzantılar yüzünden harflerin göründüğü ortadan aşağıda kalıyor.
+    private static let ringOpticalLift: CGFloat = 3
 
     /// İçinde bulunulan yıl — telif satırı her yıl elle güncellenmesin
     private static var copyrightYear: Int {
@@ -54,8 +73,12 @@ struct SplashView: View {
 
                 Spacer()
 
-                mark
-                    .frame(width: 190, height: 190)
+                // Kelime işareti kendi yerinde duruyor; içindeki halka boşluğu
+                // ölçülüp yukarıdaki katmana bildiriliyor. Yükseklik marka
+                // büyükken de aynı: halka küçülürken sayfa yerinden oynamıyor.
+                lockup
+                    .frame(height: Self.markFrame)
+                    .overlay { tagline.offset(y: 47) }
 
                 Spacer()
                 Spacer()
@@ -74,9 +97,65 @@ struct SplashView: View {
                 .padding(.bottom, 26)
             }
         }
+        // Marka işareti TEK katman: büyük hâliyle ortada duran şeyle O'nun
+        // yerine geçen şey aynı görünüm. İki ayrı görünüm arasında geçiş
+        // yapılsaydı, birinin sönüp öbürünün belirdiği bir kare olurdu.
+        .overlayPreferenceValue(RingSlotKey.self) { anchor in
+            GeometryReader { proxy in
+                markLayer(slot: anchor.map { proxy[$0] }, in: proxy.size)
+            }
+            .allowsHitTesting(false)
+        }
         .contentShape(Rectangle())
         .onTapGesture { finish() }   // dokununca atla
         .task { await run() }
+    }
+
+    // MARK: Kelime işareti
+    //
+    // Halkanın yeri BOŞ bırakılıyor. Gerçek halka üstteki katmanda ve oraya
+    // uçuyor; buradaki şeffaf kutu yalnızca O'nun nerede duracağını söylüyor.
+
+    private var lockup: some View {
+        HStack(spacing: 0) {
+            Color.clear
+                .frame(width: Self.ringFinal, height: Self.ringFinal)
+                .anchorPreference(key: RingSlotKey.self, value: .bounds) { $0 }
+
+            Text(verbatim: "RBEON")
+                .font(.system(size: Self.letterSize, weight: .light))
+                .kerning(Self.letterKerning)
+                // kerning son harften SONRA da boşluk bırakıyor; kelime
+                // işaretinin sola kaymaması için o boşluk geri alınıyor
+                .padding(.trailing, -Self.letterKerning)
+                .padding(.leading, Self.ringGap)
+                .foregroundStyle(.white)
+                .opacity(lettersIn ? 1 : 0)
+                // Harfler halkanın ardından, soldan açılıyor
+                .offset(x: lettersIn ? 0 : -14)
+        }
+    }
+
+    private var tagline: some View {
+        Text("the journey of light")
+            .font(.system(size: 13, weight: .regular, design: .rounded))
+            .kerning(4)
+            .padding(.leading, 4)
+            .foregroundStyle(.white.opacity(0.45))
+            .opacity(lettersIn ? 1 : 0)
+    }
+
+    /// Halkanın kendisi. `slot` kelime işaretindeki O boşluğu — ölçü henüz
+    /// alınmadıysa ekranın ortasında kalıyor.
+    private func markLayer(slot: CGRect?, in size: CGSize) -> some View {
+        let midY = slot?.midY ?? size.height / 2
+        let home = CGPoint(x: size.width / 2, y: midY)
+        let target = CGPoint(x: slot?.midX ?? home.x, y: midY - Self.ringOpticalLift)
+
+        return mark
+            .frame(width: Self.markFrame, height: Self.markFrame)
+            .scaleEffect(composed ? Self.ringFinal / Self.ringBig : 1)
+            .position(composed ? target : home)
     }
 
     // MARK: Marka işareti
@@ -88,13 +167,13 @@ struct SplashView: View {
                 .trim(from: 0, to: ringProgress)
                 .stroke(ringColor, style: StrokeStyle(lineWidth: 5, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .frame(width: 118, height: 118)
+                .frame(width: Self.ringBig, height: Self.ringBig)
 
             // 2) Kırmızı yay yerine oturur: dışarıdan içeri çöker
             Circle()
                 .trim(from: 0.06, to: 0.32)
                 .stroke(hazardColor, style: StrokeStyle(lineWidth: 11, lineCap: .round))
-                .frame(width: 118, height: 118)
+                .frame(width: Self.ringBig, height: Self.ringBig)
                 .rotationEffect(.degrees(-125))
                 .scaleEffect(hazardIn ? 1 : 1.45)
                 .opacity(hazardIn ? 1 : 0)
@@ -142,7 +221,21 @@ struct SplashView: View {
         try? await Task.sleep(for: .seconds(0.22))
         withAnimation(.easeOut(duration: 0.55)) { showName = true }
 
-        try? await Task.sleep(for: .seconds(1.5))
+        // İşaret küçülerek sola süzülür ve O'nun yerine oturur. Küre son
+        // çeyreği de dönüp sol alta yerleşiyor: kelimenin içindeki halka
+        // duran bir amblem değil, hâlâ oyunun bir karesi.
+        try? await Task.sleep(for: .seconds(0.5))
+        withAnimation(.spring(response: 0.62, dampingFraction: 0.86)) {
+            composed = true
+            orbAngle = 315
+        }
+
+        // Harfler işaretin ardından açılıyor: önce yer değiştirme okunsun,
+        // kelime sonra kurulsun
+        try? await Task.sleep(for: .seconds(0.3))
+        withAnimation(.easeOut(duration: 0.45)) { lettersIn = true }
+
+        try? await Task.sleep(for: .seconds(1.15))
         finish()
     }
 
@@ -150,5 +243,13 @@ struct SplashView: View {
         guard !finished else { return }
         finished = true
         onFinished()
+    }
+}
+
+/// Kelime işaretindeki O boşluğunun yeri. Marka katmanı buraya uçuyor.
+private struct RingSlotKey: PreferenceKey {
+    static let defaultValue: Anchor<CGRect>? = nil
+    static func reduce(value: inout Anchor<CGRect>?, nextValue: () -> Anchor<CGRect>?) {
+        value = value ?? nextValue()
     }
 }
