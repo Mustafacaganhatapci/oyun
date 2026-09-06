@@ -306,6 +306,10 @@ struct GameContainerView: View {
             AudioEngine.shared.playCollect()
             Haptics.shared.collect()
 
+        // Sessiz: yalnızca sayaç geri alınıyor, ortada toplanan bir şey yok
+        case .collectReset:
+            lumenCount = 0
+
         case .gateUnlocked:
             // Bölüm bitirme sesi DEĞİL: kapı açılmak bölümü bitirmiyor,
             // yalnızca yolu açıyor. İkisi aynı sesken oyuncu bitirdiğini

@@ -5,6 +5,13 @@ enum GameEvent {
     case hop(combo: Int)
     case attached(hasHazard: Bool, isMoving: Bool)   // öğretici koçu bu bilgiyle tetiklenir
     case collect(total: Int)
+    /// Yıldız sayacı SIFIRLANDI — bölüm baştan kuruldu.
+    ///
+    /// Ayrı bir olay, çünkü `collect` "yıldız toplandı" demek ve arayüz ona
+    /// ses ile titreşim bağlıyor. Sıfırlama da `collect(total: 0)` olarak
+    /// gönderiliyordu: oyuncu öldüğünde, yeniden doğarken yıldız toplama
+    /// sesi duyuyordu.
+    case collectReset
     case gateUnlocked                  // topla-bitir: son lumen toplandı, kapı açıldı
     /// `willRevive`: sonsuz modda can hakkı var, tur bitmeyecek. Ses bu ana
     /// bakarak seçilir — ölüm anında bir ses, biraz sonra ikincisi çıkmasın.
@@ -1697,7 +1704,7 @@ final class GameScene: SKScene {
             gateDashed?.run(.fadeAlpha(to: 0.25, duration: 0.2))
         }
 
-        onEvent?(.collect(total: 0))
+        onEvent?(.collectReset)
         respawn(animated: true)
     }
 
