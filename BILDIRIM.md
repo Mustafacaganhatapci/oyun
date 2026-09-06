@@ -66,9 +66,18 @@ gerekmiyor: `config/{doc}` zaten herkese okunur, yalnızca konsoldan yazılır.
 
 ---
 
-## 2. Bildirim (bir kereye mahsus kurulum)
+## 2. Yerel hatırlatmalar (kurulum yok)
 
-Kod hazır; eksik olan Apple tarafındaki anahtar ve Xcode ayarı.
+Haftalık yarış ve yeni sürüm hatırlatmaları hiçbir şey beklemiyor. Oyuncu
+Ayarlar'dan bildirimleri açtığı an ikisi de kuruluyor. Yapman gereken tek
+şey: hiçbir şey.
+
+---
+
+## 3. Uzaktan yayın (bir kereye mahsus kurulum)
+
+Herkese aynı anda serbest metin göndermek — yalnızca bu Apple tarafındaki
+anahtarı istiyor. Kod hazır.
 
 **a. APNs anahtarı.** developer.apple.com → Certificates, Identifiers &
 Profiles → Keys → yeni anahtar, **Apple Push Notifications service (APNs)**
@@ -84,8 +93,9 @@ dosyasını, Key ID'yi ve Team ID'yi gir.
 *Remote notifications* kutusu.
 
 **d. Paket.** Xcode → Package Dependencies → firebase-ios-sdk zaten ekli;
-ürün listesinden **FirebaseMessaging**'i de hedefe ekle. Bu adım
-tamamlandığı an Ayarlar'daki "Bildirimler" satırı kendiliğinden görünür.
+ürün listesinden **FirebaseMessaging**'i de hedefe ekle. Ayarlardaki
+"Bildirimler" satırı bu adımı BEKLEMİYOR — yerel hatırlatmalar için zaten
+görünüyor; paket yalnızca konsoldan herkese gönderilen yayını açıyor.
 
 **e. Gönder.** Firebase konsolu → Messaging → Create campaign →
 Firebase Notification messages. Hedef olarak **Topic** seç ve `all` yaz.
