@@ -232,7 +232,7 @@ struct PremiumView: View {
                 Text("Same price this month")
                     .font(.system(.subheadline, design: .rounded).bold())
                     .foregroundStyle(.white)
-                Text("Everything new in 2.0 is included and the price did not go up.")
+                Text("Everything new in this update is included and the price did not go up.")
                     .font(.system(.caption2, design: .rounded))
                     .foregroundStyle(.white.opacity(0.6))
                     .fixedSize(horizontal: false, vertical: true)

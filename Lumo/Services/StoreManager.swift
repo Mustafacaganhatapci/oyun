@@ -419,9 +419,10 @@ final class StoreManager: ObservableObject {
 
     // MARK: Fiyat sabit kaldı rozeti
     //
-    // 2.0 ile gelen her şey (yeni bölümler, yeni küreler, kendi kaydettiğin
-    // sesler, sonsuz modda canlar) fiyata dokunmadan geldi. Söylenmeye değer
-    // ve DOĞRU olan cümle bu: "fiyat artmadı".
+    // Bu güncellemeyle gelen her şey (yeni bölüm çeşitleri, yeni küreler,
+    // kendi kaydettiğin sesler, sonsuz modda canlar) fiyata dokunmadan geldi.
+    // Söylenmeye değer ve DOĞRU olan cümle bu: "fiyat artmadı". Metinde sürüm
+    // numarası GEÇMİYOR — bir sonraki sürümde yalan olmasın diye.
     //
     // Rozetin BİTİŞ TARİHİ var. "Bu ay" diyen bir söz, kodda da bir ay
     // sürmeli; tarihsiz bırakılırsa yarın yalan olur. Süre dolunca rozet

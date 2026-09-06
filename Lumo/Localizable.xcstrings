@@ -3078,37 +3078,37 @@
         }
       }
     },
-    "Everything new in 2.0 is included and the price did not go up.": {
+    "Everything new in this update is included and the price did not go up.": {
       "extractionState": "manual",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Alles Neue in 2.0 ist enthalten, der Preis ist gleich geblieben."
+            "value": "Alles Neue in diesem Update ist enthalten, der Preis ist gleich geblieben."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Todo lo nuevo de la 2.0 está incluido y el precio no ha subido."
+            "value": "Todo lo nuevo de esta actualización está incluido y el precio no ha subido."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tout ce que la 2.0 apporte est inclus, et le prix n'a pas bougé."
+            "value": "Tout ce que cette mise à jour apporte est inclus, et le prix n'a pas bougé."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "2.0の新要素はすべて含まれていて、価格は据え置きです。"
+            "value": "このアップデートの新要素はすべて含まれていて、価格は据え置きです。"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "2.0 ile gelen her şey dahil, fiyat artmadı."
+            "value": "Bu güncellemeyle gelen her şey dahil, fiyat artmadı."
           }
         }
       }
