@@ -217,6 +217,27 @@ def scene_endless():
     return DEFS + s
 
 
+def heart(cx, cy, r=30):
+    """Halkanın üstünde duran can. Oyundaki çizimin aynısı."""
+    return (f'<path d="M {cx} {cy + r * 0.78} '
+            f'C {cx - r * 1.5} {cy - r * 0.25} {cx - r * 0.62} {cy - r * 1.15} {cx} {cy - r * 0.32} '
+            f'C {cx + r * 0.62} {cy - r * 1.15} {cx + r * 1.5} {cy - r * 0.25} {cx} {cy + r * 0.78} Z" '
+            f'fill="{HAZARD}"/>')
+
+
+def scene_lives():
+    """2.0: sonsuz modda halkanın ÜSTÜNDE duran canlar — 12, 20, 28 …"""
+    s = ring(880, 2780, 148) + ring(400, 2450, 138)
+    s += ring(900, 2130, 128) + heart(900, 2002)
+    s += ring(420, 1830, 118)
+    s += ring(880, 1540, 108) + hazard(880, 1540, 108, 150, 250, safe=1.0)
+    s += ring(450, 1290, 96) + heart(450, 1194, 26)
+    s += ring(860, 1080, 84) + ring(500, 900, 74)
+    s += trail(400, 2450, 676, 2300) + orb(676, 2300)
+    s += lumen(660, 2020) + lumen(700, 1660)
+    return DEFS + s
+
+
 def hud(level, pips_on, total=3):
     pips = "".join(
         f'<div class="pip{" on" if i < pips_on else ""}"></div>' for i in range(total))
@@ -230,6 +251,7 @@ SCENES = [
     ("collect",    scene_collect,    lambda: hud("88", 1)),
     ("characters", scene_characters, lambda: ""),
     ("endless",    scene_endless,    lambda: ""),
+    ("lives",      scene_lives,      lambda: ""),
 ]
 
 COPY = {
@@ -244,6 +266,8 @@ COPY = {
    "Her eşikte yeni bir küre.<br>257 bölüm, 806 yıldız."),
   ("Sonsuz mod.<br><em>Nereye kadar?</em>",
    "Yukarı çıktıkça hızlanır.<br>Haftalık sıralamada yerini al."),
+  ("Bir hata<br><em>son hata değil</em>.",
+   "12. halkadan sonra sekizer sekizer can.<br>Üç tanesini birden taşıyabilirsin."),
  ],
  "en": [
   ("One tap.<br>Ring to <em>ring</em>.",
@@ -256,6 +280,8 @@ COPY = {
    "A new orb at every milestone.<br>257 levels, 806 stars."),
   ("Endless mode.<br><em>How far?</em>",
    "It speeds up the higher you climb.<br>Take your place on the weekly board."),
+  ("One mistake<br><em>is not the last one</em>.",
+   "A life every eight rings from the twelfth.<br>Carry up to three at once."),
  ],
  "es": [
   ("Un toque.<br>De anillo a <em>anillo</em>.",
@@ -268,6 +294,8 @@ COPY = {
    "Una esfera nueva en cada meta.<br>257 niveles, 806 estrellas."),
   ("Modo infinito.<br><em>¿Hasta dónde?</em>",
    "Acelera cuanto más alto llegas.<br>Ocupa tu lugar en la tabla semanal."),
+  ("Un error<br><em>no es el último</em>.",
+   "Una vida cada ocho anillos desde el doce.<br>Puedes llevar hasta tres.",),
  ],
 }
 
@@ -276,14 +304,42 @@ CSS = f"""
 body {{ background:#000; font-family:"Inter","Inter Display",Helvetica,Arial,sans-serif; }}
 .shot {{ position:relative; width:{W}px; height:{H}px; overflow:hidden;
   background:linear-gradient(180deg,{BG_TOP} 0%,{BG_BOTTOM} 100%); }}
+
+/* Ortam ışığı. Sahne düz siyahın üstünde duruyordu ve başlıkla ilk halka
+   arasındaki boşluk delik gibi görünüyordu; iki yumuşak havuz o bandı
+   ışıkla dolduruyor. Renkler oyunun kendi vurgusu — uydurma bir mor değil. */
+.glow {{ position:absolute; border-radius:50%; pointer-events:none; }}
+.glow-a {{ width:1500px; height:1500px; left:-360px; top:420px;
+  background:radial-gradient(circle,{ACCENT}2E 0%,{ACCENT}00 62%); }}
+.glow-b {{ width:1100px; height:1100px; right:-320px; top:1500px;
+  background:radial-gradient(circle,{LUMEN}22 0%,{LUMEN}00 64%); }}
+
+/* Yazının arkasındaki perde: sahne yukarıda da devam etsin ama başlık
+   okunaklı kalsın. Kesik bir kenar yok, aşağı doğru eriyor. */
+.scrim {{ position:absolute; left:0; right:0; top:0; height:1180px; z-index:4;
+  background:linear-gradient(180deg,rgba(8,8,11,.94) 0%,rgba(8,8,11,.86) 42%,
+    rgba(8,8,11,.42) 76%,rgba(8,8,11,0) 100%); }}
+/* Altta da aynısı: halkalar kadrajın kenarında sert kesilmesin */
+.fade {{ position:absolute; left:0; right:0; bottom:0; height:620px; z-index:4;
+  background:linear-gradient(0deg,{BG_BOTTOM} 0%,{BG_BOTTOM}F2 26%,rgba(24,22,28,0) 100%); }}
+
 .star {{ position:absolute; border-radius:50%; background:#fff; }}
-.copy {{ position:absolute; left:0; right:0; top:200px; text-align:center; padding:0 90px; z-index:5; }}
-.head {{ font-size:100px; font-weight:300; letter-spacing:-1px; line-height:1.1; color:#fff; }}
+.copy {{ position:absolute; left:0; right:0; top:224px; text-align:center; padding:0 90px; z-index:5; }}
+.head {{ font-size:104px; font-weight:300; letter-spacing:-2px; line-height:1.08; color:#fff; }}
 .head em {{ font-style:normal; font-weight:600; color:#fff; }}
 .head .gate {{ color:{GATE}; }}
 .head .safe {{ color:#6E9C74; }}
-.sub {{ margin-top:38px; font-size:40px; font-weight:400; line-height:1.4;
+.sub {{ margin-top:34px; font-size:40px; font-weight:400; line-height:1.4;
   color:rgba(255,255,255,0.52); }}
+
+/* Etiket çipi — sayfanın hangi şeyi anlattığını tek kelimeyle söylüyor ve
+   başlığın altındaki boşluğu bir şeye bağlıyor. */
+.chip {{ display:inline-block; margin-top:44px; padding:16px 34px; border-radius:999px;
+  font-size:32px; font-weight:600; letter-spacing:2px;
+  color:rgba(255,255,255,.82); background:rgba(255,255,255,.07);
+  border:2px solid rgba(255,255,255,.14); }}
+.chip.new {{ color:{HAZARD}; background:{HAZARD}1A; border-color:{HAZARD}55; }}
+
 .hud {{ position:absolute; left:0; right:0; top:70px; display:flex; align-items:center;
   justify-content:space-between; padding:0 78px; z-index:6; }}
 .hud-btn {{ width:84px; height:84px; border-radius:50%; background:rgba(255,255,255,0.10);
@@ -297,11 +353,29 @@ body {{ background:#000; font-family:"Inter","Inter Display",Helvetica,Arial,san
 .hud-score {{ font-size:64px; font-weight:600; color:#fff; }}
 .goal {{ position:absolute; left:0; right:0; top:2500px; text-align:center; z-index:6;
   font-size:36px; font-weight:600; color:{LUMEN}; }}
+
+/* Marka kilidi: halka O'nun yerinde — açılış ekranının bitiş karesi.
+   Yalnızca ilk görselde, altta. */
+.brand {{ position:absolute; left:0; right:0; bottom:150px; z-index:6;
+  display:flex; align-items:center; justify-content:center; gap:0; }}
+.brand svg {{ display:block; margin-right:14px; }}
+.brand .word {{ font-size:66px; font-weight:300; letter-spacing:22px; color:#fff;
+  margin-right:-22px; }}
+
 svg.scene {{ position:absolute; left:0; top:0; }}
 """
 
 STARS = [(180, 820, 4, .34), (1040, 1180, 5, .40), (320, 2260, 4, .30),
          (980, 2520, 5, .34), (660, 1560, 4, .26), (240, 1300, 4, .30)]
+
+# Etiket çipi: sayfanın konusu tek kelimeyle. Yeni olan işaretli.
+# Büyük harfler ELLE yazılıyor. CSS'in `text-transform:uppercase` kuralı
+# Türkçeyi bilmiyor: "Yeni" → "YENI", noktalı İ kayboluyor.
+TAGS = {
+ "tr": ["OYNANIŞ", "TEHLİKE", "BÖLÜMLER", "KARAKTERLER", "SONSUZ", ("YENİ", True)],
+ "en": ["GAMEPLAY", "HAZARDS", "LEVELS", "CHARACTERS", "ENDLESS", ("NEW", True)],
+ "es": ["JUGABILIDAD", "PELIGROS", "NIVELES", "PERSONAJES", "INFINITO", ("NUEVO", True)],
+}
 
 GOAL_COPY = {"tr": "★ Sıradaki karaktere 12 yıldız",
              "en": "★ 12 stars to the next character",
@@ -317,19 +391,41 @@ def build():
                 f'<div class="star" style="width:{s}px;height:{s}px;left:{x}px;top:{y}px;opacity:{o}"></div>'
                 for (x, y, s, o) in STARS)
             extra = hud_fn()
-            if name == "endless":
+            if name in ("endless", "lives"):
                 # Sonsuz modda bölüm numarası yerine skor var
+                score = "31" if name == "endless" else "24"
                 extra = ('<div class="hud"><div class="hud-btn"><span></span></div>'
-                         '<div class="hud-score">31</div>'
+                         f'<div class="hud-score">{score}</div>'
                          '<div style="width:84px"></div></div>')
             elif name == "characters":
                 extra = f'<div class="goal">{GOAL_COPY[lang]}</div>'
+
+            tag = TAGS[lang][i]
+            label, is_new = tag if isinstance(tag, tuple) else (tag, False)
+            chip = f'<div class="chip{" new" if is_new else ""}">{label}</div>'
+
+            # Marka kilidi yalnızca ilk görselde: bir sette imza bir kez atılır
+            brand = ""
+            if i == 0:
+                brand = (
+                    '<div class="brand">'
+                    '<svg width="86" height="86" viewBox="0 0 86 86">'
+                    f'<circle cx="43" cy="43" r="33" stroke="{RING}" stroke-width="4" fill="none"/>'
+                    f'<path d="{arc_path(43, 43, 33, -128, -34)}" stroke="{HAZARD}"'
+                    ' stroke-width="9" stroke-linecap="round" fill="none"/>'
+                    f'<circle cx="20" cy="66" r="7" fill="{ORB}"/>'
+                    '</svg>'
+                    '<div class="word">RBEON</div></div>')
+
             shots.append(
-                f'<div class="shot" id="{lang}{i+1}">{stars}{extra}'
-                f'<div class="copy"><div class="head">{head}</div>'
-                f'<div class="sub">{sub}</div></div>'
+                f'<div class="shot" id="{lang}{i+1}">'
+                '<div class="glow glow-a"></div><div class="glow glow-b"></div>'
                 f'<svg class="scene" width="{W}" height="{H}">{scene_fn()}</svg>'
-                f'</div>')
+                '<div class="scrim"></div><div class="fade"></div>'
+                f'{stars}{extra}'
+                f'<div class="copy"><div class="head">{head}</div>'
+                f'<div class="sub">{sub}</div>{chip}</div>'
+                f'{brand}</div>')
     return ("<!DOCTYPE html><html><head><meta charset='utf-8'><style>"
             + CSS + "</style></head><body>" + "".join(shots) + "</body></html>")
 
