@@ -79,27 +79,88 @@ Ayarlar'dan bildirimleri açtığı an ikisi de kuruluyor. Yapman gereken tek
 Herkese aynı anda serbest metin göndermek — yalnızca bu Apple tarafındaki
 anahtarı istiyor. Kod hazır.
 
-**a. APNs anahtarı.** developer.apple.com → Certificates, Identifiers &
-Profiles → Keys → yeni anahtar, **Apple Push Notifications service (APNs)**
-işaretli. İnen `.p8` dosyası **bir kez** indiriliyor, kaybedersen yenisini
-üretmen gerekir. Key ID ve Team ID'yi de not al.
+Bu projenin sayıları (her adımda lazım olacak):
 
-**b. Firebase'e yükle.** Firebase konsolu → Project settings → Cloud
-Messaging → Apple app configuration → APNs Authentication Key → `.p8`
-dosyasını, Key ID'yi ve Team ID'yi gir.
+| | |
+|---|---|
+| Bundle ID | `com.caganhatapci.lumo` |
+| Firebase projesi | `lumo-890fb` |
+| Sender ID | `1062323753593` |
+| Konu (topic) | `all` |
 
-**c. Xcode.** Hedef → Signing & Capabilities → **+ Capability** →
-*Push Notifications*. Ardından **+ Capability** → *Background Modes* →
-*Remote notifications* kutusu.
+### a. APNs anahtarı üret
 
-**d. Paket.** Xcode → Package Dependencies → firebase-ios-sdk zaten ekli;
-ürün listesinden **FirebaseMessaging**'i de hedefe ekle. Ayarlardaki
-"Bildirimler" satırı bu adımı BEKLEMİYOR — yerel hatırlatmalar için zaten
-görünüyor; paket yalnızca konsoldan herkese gönderilen yayını açıyor.
+developer.apple.com → Certificates, Identifiers & Profiles → soldan **Keys**
+→ mavi **+**. Ad ver ("Orbeon Push" yeter), **Apple Push Notifications
+service (APNs)** kutusunu işaretle → Continue → Register.
 
-**e. Gönder.** Firebase konsolu → Messaging → Create campaign →
-Firebase Notification messages. Hedef olarak **Topic** seç ve `all` yaz.
-Uygulama, oyuncu ayarlardan izin verdiğinde bu konuya abone oluyor.
+İnen `.p8` dosyası **bir kez** iniyor. Kaybedersen o anahtar bir daha
+indirilemez, yenisini üretmen gerekir (eskisini iptal etmeden de olur, bir
+hesapta iki APNs anahtarı bulunabiliyor).
+
+Yanına iki şey daha not al:
+- **Key ID** — anahtarın sayfasında yazan 10 karakter
+- **Team ID** — sağ üstteki hesap adının altında ya da Membership sayfasında
+
+Bu anahtar hem geliştirme hem yayın için geçerli. Eski `.p12` sertifikaların
+aksine ortam ayrımı yok, TestFlight ve App Store aynı anahtarla çalışıyor.
+
+### b. Firebase'e yükle
+
+Firebase konsolu → dişli → Project settings → **Cloud Messaging** sekmesi →
+aşağıda **Apple app configuration** → `com.caganhatapci.lumo` satırı →
+**APNs Authentication Key** → Upload.
+
+Üç alan: `.p8` dosyası, Key ID, Team ID.
+
+Bu satırda uygulama görünmüyorsa iOS uygulaması projeye eklenmemiş demektir;
+`GoogleService-Info.plist` zaten bu projeden indiği için normalde görünür.
+
+### c. Xcode — iki capability
+
+Hedef → **Signing & Capabilities** → **+ Capability**:
+1. **Push Notifications**
+2. **Background Modes** → içinden **Remote notifications** kutusu
+
+Otomatik imzalama açıksa Xcode App ID'ye push yetkisini kendisi ekliyor.
+Ücretli geliştirici hesabı şart — ücretsiz hesapta Push Notifications
+capability listede çıkmıyor.
+
+### d. Paket
+
+Xcode → hedef → General → Frameworks, Libraries, and Embedded Content → **+**
+→ listeden **FirebaseMessaging**. Paket (firebase-ios-sdk) zaten ekli,
+yalnızca bu ürün hedefe bağlı değil.
+
+Ayarlardaki "Bildirimler" satırı bu adımı BEKLEMİYOR — yerel hatırlatmalar
+için zaten görünüyor; paket yalnızca konsoldan gönderilen yayını açıyor.
+
+### e. Dene
+
+**Gerçek cihazda.** Simülatör APNs belirteci almıyor.
+
+1. Derle, Ayarlar → Bildirimler'i aç, izin ver
+2. Console.app → cihazını seç → "Orbeon" ile süz
+3. Firebase konsolu → Messaging → Create campaign → **Firebase Notification
+   messages** → başlık/metin yaz → Next → Target: **Topic** → `all` →
+   Schedule: Now → Review → Publish
+
+Konu aboneliğinin sunucuya işlemesi birkaç dakika sürebiliyor; ilk denemede
+gelmezse beş dakika bekleyip tekrar gönder. Uygulama ÖNDEYKEN de banner
+çıkıyor (`AppDelegate`'teki `willPresent`).
+
+Tek bir cihaza test göndermek istersen konsolda "Send test message" kutusuna
+FCM belirtecini yapıştırman gerekiyor; belirteci koda `Messaging.messaging()
+.token()` çağrısı eklemeden görmenin yolu yok, o yüzden pratikte konu
+yayınıyla denemek daha kolay.
+
+### f. Dil
+
+Konu yayını TEK metin gönderiyor, cihazın diline göre değişmiyor. Uygulama
+içindeki her şey yerelleştirilmiş durumda ama bu değil. Oyuncuların çoğu
+Türkiye'deyse Türkçe yaz; karışıksa İngilizce yaz ya da iki cümleyi alt alta
+koy. Firebase konsolunda dile göre ayrı kampanya açmak da mümkün, hedefleme
+sekmesinden "Language" koşulu ekleniyor.
 
 ### Bilerek yapılmayan şey
 
