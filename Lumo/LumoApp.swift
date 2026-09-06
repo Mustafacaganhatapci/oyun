@@ -79,6 +79,15 @@ struct LumoApp: App {
                     consent.requestIfNeeded(isPremium: store.isPremium)
                     // İzin İSTEMEZ: yalnızca daha önce açanın aboneliğini tazeler
                     PushManager.shared.restoreIfEnabled()
+
+                    // RevenueCat: kimliği bağla, sonra cihazdaki eski
+                    // satın almaları bir kez gönder. Açılıştaki `configure`
+                    // ilk kurulumda kimliği bulamıyor — o zaman burası
+                    // bağlıyor. Sıra önemli: önce kim olduğu, sonra neyi var.
+                    Task {
+                        await RevenueCatBridge.identify(playerID: player.playerID)
+                        await RevenueCatBridge.syncExistingPurchasesOnce()
+                    }
                 }
                 .onChange(of: scenePhase) { _, phase in
                     switch phase {

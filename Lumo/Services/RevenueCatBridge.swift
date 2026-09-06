@@ -58,6 +58,47 @@ enum RevenueCatBridge {
         #endif
     }
 
+    /// Oyuncu kimliğini RevenueCat müşterisine bağlar.
+    ///
+    /// `configure` uygulama açılışında çalışıyor ama İLK açılışta oyuncu
+    /// kimliği henüz YOK: onu `PlayerStore` üretiyor ve o, AppDelegate'ten
+    /// sonra kuruluyor. Sonuç, ilk açılışta anonim bir müşteri açılması ve
+    /// panodaki kişinin Firestore'daki destekçi kaydıyla hiç eşleşmemesiydi;
+    /// üstelik aynı kişi ikinci açılışta ikinci bir müşteri gibi görünüyordu.
+    /// Kimlik belli olduğunda burası devreye giriyor.
+    static func identify(playerID: String) async {
+        #if canImport(RevenueCat)
+        guard Purchases.isConfigured, !playerID.isEmpty,
+              Purchases.shared.appUserID != playerID else { return }
+        _ = try? await Purchases.shared.logIn(playerID)
+        leaderboardLog("REVENUECAT: kimlik bağlandı (\(playerID))")
+        #endif
+    }
+
+    /// Cihazda ZATEN olan satın almaları RevenueCat'e bir kez gönderir.
+    ///
+    /// Gözlemci kipi yalnızca kurulumdan SONRA olanı görüyor; bugüne kadarki
+    /// satışlar panoda hiç yok. Bu çağrı cihazın makbuzunu okuyup gönderiyor,
+    /// yani premium'u olan biri güncellemeyi açtığında hakkıyla birlikte
+    /// beliriyor. Sınırı açık: yalnızca uygulamayı tekrar AÇANLAR gelir,
+    /// silmiş olanlar gelmez; tüketilmiş bahşişler de makbuzda kalmadığı
+    /// için gelmez.
+    ///
+    /// KURULUM BAŞINA BİR KEZ — RevenueCat her açılışta çağırmamayı açıkça
+    /// söylüyor, çağrı makbuz doğrulaması yapıyor. Bayrak ancak çağrı
+    /// başarılı olursa yazılıyor: çevrimdışı bir ilk açılış tek şansı
+    /// harcamasın.
+    static func syncExistingPurchasesOnce() async {
+        #if canImport(RevenueCat)
+        let key = "lumo.revenuecat.synced"
+        guard Purchases.isConfigured,
+              !UserDefaults.standard.bool(forKey: key) else { return }
+        guard (try? await Purchases.shared.syncPurchases()) != nil else { return }
+        UserDefaults.standard.set(true, forKey: key)
+        leaderboardLog("REVENUECAT: cihazdaki satın almalar bir kez eşitlendi")
+        #endif
+    }
+
     /// Gözlemci kipinde satın almayı RevenueCat'e biz bildiriyoruz; SDK
     /// kuyruğu kendi dinlemiyor. Bildirmezsek pano boş kalır.
     ///
