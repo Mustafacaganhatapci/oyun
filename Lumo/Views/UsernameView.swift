@@ -106,7 +106,7 @@ struct UsernameView: View {
                     .multilineTextAlignment(.center)
 
                 TextField("", text: $name,
-                          prompt: Text("your name").foregroundStyle(.white.opacity(0.35)))
+                          prompt: Text("type a name").foregroundStyle(.white.opacity(0.35)))
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .focused($focused)
