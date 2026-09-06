@@ -111,6 +111,10 @@ struct MainMenuView: View {
                                 .padding(.bottom, 14)
                         }
 
+                        // Hafta kapanıyor ve bu oyuncu daha hiç koşmadı
+                        raceCard
+                            .padding(.horizontal, 28)
+
                         dailyStrip
                             .padding(.horizontal, 28)
                             .padding(.bottom, 14)
@@ -225,6 +229,55 @@ struct MainMenuView: View {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .strokeBorder(settings.theme.lumen.opacity(0.28), lineWidth: 1)
             }
+        }
+    }
+
+    /// "Bu haftaki yarışta yerini al" — uygulama içi karşılığı.
+    ///
+    /// Üç şart birden: sıralama bağlı, hafta kapanmasına 48 saatten az var ve
+    /// oyuncu bu hafta HİÇ skor göndermemiş. Üçü birden olmadan görünmüyor,
+    /// çünkü zaten koşmuş birine "koş" demek ya da haftanın başında acele
+    /// ettirmek, kartı ikinci görüşte gürültüye çeviriyor. Bildirimin
+    /// uygulama içindeki eşi bu: biri uzaktakini çağırıyor, bu geleni
+    /// karşılıyor.
+    @ViewBuilder
+    private var raceCard: some View {
+        let closing = leaderboard.timeUntilReset < 48 * 60 * 60
+        let raced = leaderboard.weeklyBest(.endless) != nil
+            || leaderboard.weeklyBest(.speedrun) != nil
+        if leaderboard.isAvailable, closing, !raced {
+            Button {
+                AudioEngine.shared.playTap()
+                app.route = .ranking
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "flag.checkered")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(settings.theme.hazard.color)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Take your place in this week's race")
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundStyle(.white)
+                        Text("\(leaderboard.resetCountdownText) left — one run is enough.")
+                            .font(.system(.caption2, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.6))
+                    }
+                    Spacer(minLength: 4)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.4))
+                }
+                .multilineTextAlignment(.leading)
+                .padding(14)
+                .background {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(settings.theme.hazard.opacity(0.10))
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .strokeBorder(settings.theme.hazard.opacity(0.30), lineWidth: 1)
+                }
+            }
+            .buttonStyle(.plain)
+            .padding(.bottom, 14)
         }
     }
 

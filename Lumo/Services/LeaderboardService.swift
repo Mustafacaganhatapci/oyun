@@ -79,6 +79,14 @@ final class LeaderboardService: ObservableObject {
         Int(floor((date.timeIntervalSince1970 - weekAnchor) / weekLength))
     }
 
+    /// Sıralamanın bir sonraki sıfırlanma anı. Haftalık hatırlatma bildirimi
+    /// bunu kendine çıpa alıyor: hafta tam yedi gün olduğu için haftanın günü
+    /// ve saati hiç kaymıyor, tekrarlayan bir takvim tetiği kurulabiliyor.
+    static func nextReset(after date: Date = Date()) -> Date {
+        let next = weekAnchor + Double(weekIndex(at: date) + 1) * weekLength
+        return Date(timeIntervalSince1970: next)
+    }
+
     /// Bu haftanın numarası — okuma ve yazma bunun üzerinden yapılır
     var currentWeek: Int { Self.weekIndex() }
 

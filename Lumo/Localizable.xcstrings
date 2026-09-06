@@ -36,6 +36,41 @@
         }
       }
     },
+    "%@ left — one run is enough.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch %@ — ein Lauf reicht."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quedan %@: basta con una partida."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il reste %@ — une partie suffit."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "残り%@ — 1回走れば十分です。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ kaldı — tek tur yeter."
+          }
+        }
+      }
+    },
     "%lld": {
       "shouldTranslate": false
     },
@@ -73,6 +108,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld günlük seri"
+          }
+        }
+      }
+    },
+    "%lld left today": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute noch %lld"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Te queda(n) %lld hoy"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il t'en reste %lld aujourd'hui"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本日あと%lld通"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugün %lld hakkın kaldı"
           }
         }
       }
@@ -5800,6 +5870,41 @@
         }
       }
     },
+    "One run is enough to take a place on the board.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Lauf reicht für einen Platz in der Wertung."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Con una sola partida ya entras en la tabla."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une seule partie suffit pour entrer au classement."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1回走るだけでランキングに載れます。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tabloya girmek için tek bir tur yeter."
+          }
+        }
+      }
+    },
     "Or earn it": {
       "extractionState": "manual",
       "localizations": {
@@ -8106,6 +8211,41 @@
         }
       }
     },
+    "Take your place in this week's race": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sichere dir deinen Platz im Rennen dieser Woche"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toma tu lugar en la carrera de esta semana"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prends ta place dans la course de cette semaine"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今週のレースに名前を刻もう"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu haftaki yarışta yerini al"
+          }
+        }
+      }
+    },
     "Tap anywhere to launch the orb!": {
       "extractionState": "manual",
       "localizations": {
@@ -8476,6 +8616,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "O kod doğru değildi ama al sana — 100 yıldız hediye!"
+          }
+        }
+      }
+    },
+    "That is both of today's messages. The box opens again tomorrow.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das waren beide Nachrichten für heute. Morgen ist der Kasten wieder offen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esos son los dos mensajes de hoy. El buzón vuelve a abrirse mañana."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce sont tes deux messages du jour. La boîte rouvre demain."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日の2通はこれで終わりです。明日また書けます。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugünün iki mesajı da gitti. Kutu yarın yeniden açılıyor."
           }
         }
       }
@@ -8984,6 +9159,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bu hafta · son %@"
+          }
+        }
+      }
+    },
+    "This week's race closes tomorrow": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Rennen dieser Woche endet morgen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La carrera de esta semana cierra mañana"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La course de cette semaine se termine demain"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今週のレースは明日で終了します"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu haftaki yarış yarın kapanıyor"
           }
         }
       }

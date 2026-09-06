@@ -1,18 +1,32 @@
 # Duyuru ve bildirim
 
-Oyuncuya haber ulaştırmanın iki yolu var ve ikisi farklı işe yarıyor.
+Oyuncuya haber ulaştırmanın **üç** yolu var.
 
-| | Duyuru kartı | Bildirim |
-|---|---|---|
-| Nereye düşer | Ana menü, oyunu açınca | Kilit ekranı, oyun kapalıyken |
-| Kime ulaşır | Oyunu açan herkese | İzin veren herkese |
-| Kurulum | **Yok** | APNs anahtarı + Xcode + paket |
-| Yayınlama | Firestore'da bir belge | Firebase konsolundan gönderi |
-| Yeni derleme gerekir mi | Hayır | Hayır (bir kez kurulduktan sonra) |
+| | Duyuru kartı | Yerel hatırlatma | Uzaktan yayın |
+|---|---|---|---|
+| Nereye düşer | Ana menü, oyunu açınca | Kilit ekranı, üstten | Kilit ekranı, üstten |
+| Kime ulaşır | Oyunu açan herkese | İzin veren herkese | İzin veren herkese |
+| Kurulum | **Yok** | **Yok** | APNs anahtarı + Xcode + paket |
+| Ne zaman gider | — | Zamanı kod belirliyor | Sen gönderince |
+| Yayınlama | Firestore'da bir belge | — | Firebase konsolundan gönderi |
 
-Kart bugün çalışıyor. Bildirim, aşağıdaki kurulum yapılana kadar Ayarlar'da
-hiç görünmüyor — `FirebaseMessaging` paketi projede olmadığı sürece
-`PushManager.isAvailable` false dönüyor ve satır çizilmiyor.
+İlk ikisi **bugün çalışıyor**. Ayarlardaki bildirim anahtarı artık her zaman
+görünüyor: açan kişi izin verdiği an iki yerel hatırlatma kuruluyor.
+
+**Haftalık yarış** — sıralama sıfırlanmadan bir gün önce, her hafta aynı gün
+ve saatte. Hafta tam yedi gün olduğu için tekrarlayan takvim tetiği kayamıyor.
+Gece yarısına denk gelirse akşam 19:00'a çekiliyor.
+`PushManager.scheduleWeeklyRaceReminder()`
+
+**Yeni sürüm** — aşağıdaki duyuru belgesi yayındaysa, aynı metin dört saat
+sonra bildirim olarak da düşüyor: kartı görüp "sonra" diyene ikinci bir
+dokunuş. Oyuncu güncellerse ya da kartı kapatırsa bekleyen bildirim iptal
+oluyor. `PushManager.syncUpdateReminder(title:body:)`
+
+Üçüncüsü (herkese tek seferlik serbest metin) hâlâ APNs kurulumunu bekliyor;
+`FirebaseMessaging` paketi projede olmadığı sürece `canReceiveBroadcast`
+false dönüyor ve konu aboneliği sessizce atlanıyor. Yerel hatırlatmalar bundan
+etkilenmiyor.
 
 ---
 

@@ -107,6 +107,9 @@ struct SettingsView: View {
     @State private var feedback = ""
     @State private var sendingFeedback = false
     @State private var feedbackSent = false
+    /// Bugün kalan gönderim hakkı. @State: gönderdikçe azalırken arayüz
+    /// kendiliğinden tazelensin.
+    @State private var feedbackLeft = Feedback.remainingToday
     @FocusState private var feedbackFocused: Bool
 
     /// Sürüm yazısındaki gizli kilit ve bulununca açılan kutlama
@@ -307,6 +310,20 @@ struct SettingsView: View {
                 .font(.system(.caption, design: .rounded))
                 .foregroundStyle(.white.opacity(0.5))
 
+            // Günlük hak. Sayı gönderdikten SONRA değil, kutunun başında
+            // duruyor: sınırı gönderdiğinde öğrenmek, sınır olmamasından
+            // daha kötü.
+            if feedbackLeft == 0 {
+                Label("That is both of today's messages. The box opens again tomorrow.",
+                      systemImage: "clock.fill")
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(settings.theme.lumen.color)
+            } else {
+                Text("\(feedbackLeft) left today")
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.4))
+            }
+
             ZStack(alignment: .topLeading) {
                 if feedback.isEmpty {
                     Text("Your message…")
@@ -349,6 +366,7 @@ struct SettingsView: View {
                         if ok {
                             feedback = ""
                             feedbackSent = true
+                            feedbackLeft = Feedback.remainingToday
                             AudioEngine.shared.playWin()
                             Haptics.shared.win()
                         }
@@ -386,7 +404,8 @@ struct SettingsView: View {
 
     private var canSendFeedback: Bool {
         let trimmed = feedback.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.count >= 4 && trimmed.count <= 1000 && !sendingFeedback
+        return trimmed.count >= 4 && trimmed.count <= 1000
+            && !sendingFeedback && feedbackLeft > 0
     }
 
     /// Bildirimler. Kendi satırı var çünkü anahtar doğrudan bir ayarı değil,

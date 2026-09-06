@@ -54,6 +54,10 @@ final class Announcement: ObservableObject {
         guard let raw = await FirebaseBridge.fetchAnnouncement() else { return }
         current = Self.resolve(raw, appVersion: Self.appVersion,
                                language: Locale.preferredLanguages.first ?? "en")
+        // Aynı haber birkaç saat sonra bildirim olarak da düşsün. Kartı görüp
+        // "sonra" diyene ikinci bir dokunuş gerekiyor; duyuru geçersizse
+        // (güncellendi/kapatıldı) bekleyen bildirim de iptal ediliyor.
+        PushManager.shared.syncUpdateReminder(title: current?.title, body: current?.body)
         #endif
     }
 
@@ -98,6 +102,9 @@ final class Announcement: ObservableObject {
         guard let item = current else { return }
         UserDefaults.standard.set(true, forKey: Self.dismissKey(item.id))
         current = nil
+        // Kartı kapatan kişi haberi almış demektir; bildirimi de düşürmek
+        // aynı şeyi ikinci kez söylemek olurdu
+        PushManager.shared.syncUpdateReminder(title: nil, body: nil)
     }
 
     /// App Store'daki sayfayı açar. `itms-apps` doğrudan App Store uygulamasına
