@@ -345,10 +345,11 @@ struct PremiumView: View {
             Text("Tip Jar")
                 .font(.system(.headline, design: .rounded).bold())
                 .foregroundStyle(.white.opacity(0.9))
-            // Bahşiş de premium açıyor — en güçlü sebep bu ve doğru olduğu için
-            // söylenmemesi için sebep yok. Eskiden "istersen bir kahve ısmarla"
-            // diyordu; kibardı ama neden yapılacağını anlatmıyordu.
-            Text("Buy a coffee, get Premium with it.")
+            // Bahşişin premium açtığı BİLEREK yazmıyor. Yazdığı sürece
+            // bahşiş bahşiş olmaktan çıkıp indirimli bir satın alma oluyordu;
+            // "ısmarla, premium da senin olsun" pazarlık cümlesiydi. Açılış
+            // sürpriz kalsın: karşılık bekleyerek verilen şey hediye değil.
+            Text("If you'd like to support the developer.")
                 .font(.system(.footnote, design: .rounded))
                 .foregroundStyle(.white.opacity(0.6))
 
@@ -389,11 +390,6 @@ struct PremiumView: View {
                     .disabled(store.purchaseInProgress)
                 }
             }
-
-            Text("Either one unlocks everything, on every device you sign in with.")
-                .font(.system(.caption2, design: .rounded))
-                .foregroundStyle(.white.opacity(0.4))
-                .multilineTextAlignment(.center)
 
             if store.isSupporter {
                 Label("Thank you for your support!", systemImage: "heart.fill")

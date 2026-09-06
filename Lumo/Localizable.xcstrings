@@ -1292,47 +1292,6 @@
         }
       }
     },
-    "Buy a coffee, get Premium with it.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Buy a coffee, get Premium with it."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bir kahve ısmarla, Premium da senin olsun."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spendier einen Kaffee — Premium gibt's dazu."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Invita a un café y llévate Premium."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Offre un café, Premium vient avec."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "コーヒーを1杯おごると、プレミアムも付いてきます。"
-          }
-        }
-      }
-    },
     "Carbon": {
       "extractionState": "manual",
       "localizations": {
@@ -1951,31 +1910,31 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kahve — kafede"
+            "value": "Kafede kahve"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kaffee — im Café"
+            "value": "Kaffee im Café"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Café — en la cafetería"
+            "value": "Café en la cafetería"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Café — au bistrot"
+            "value": "Café au bistrot"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "コーヒー：カフェで"
+            "value": "カフェでコーヒー"
           }
         }
       }
@@ -1992,31 +1951,31 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kahve — evde"
+            "value": "Evde kahve"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kaffee — zuhause"
+            "value": "Kaffee zuhause"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Café — en casa"
+            "value": "Café en casa"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Café — à la maison"
+            "value": "Café à la maison"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "コーヒー：おうちで"
+            "value": "おうちでコーヒー"
           }
         }
       }
@@ -2753,47 +2712,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "しずく"
-          }
-        }
-      }
-    },
-    "Either one unlocks everything, on every device you sign in with.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Either one unlocks everything, on every device you sign in with."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hangisini seçersen seç, her şey açılır — giriş yaptığın her cihazda."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beide schalten alles frei, auf jedem Gerät, an dem du angemeldet bist."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cualquiera de los dos lo desbloquea todo, en todos tus dispositivos."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "L'un comme l'autre débloque tout, sur chacun de tes appareils."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "どちらでもすべて解放されます。サインインしているすべての端末で有効です。"
           }
         }
       }
@@ -4166,6 +4084,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Orbeonは一人で作っています。誰かが支えてくれることが、次のアップデートを書く理由になります。プレミアムもあなたのものです。iCloudアカウントに紐づくので、ほかの端末でも有効です。"
+          }
+        }
+      }
+    },
+    "If you'd like to support the developer.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Falls du den Entwickler unterstützen möchtest."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Por si quieres apoyar al desarrollador."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si tu veux soutenir le développeur."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開発者を応援したくなったら。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geliştiriciyi desteklemek istersen."
           }
         }
       }

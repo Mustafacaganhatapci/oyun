@@ -22,7 +22,7 @@ enum LeaderboardSeed {
     /// Doldurma belgelerinin kuşağı. Ad üretimi ya da dağılım değişince
     /// artırılır: eski kuşaktan kalan belgeler böylece tanınıp siliniyor,
     /// aynı haftada iki farklı üretimin yan yana durması engelleniyor.
-    static let generation = 5
+    static let generation = 6
 
     /// `config/leaderboard` alanları
     struct Config {
@@ -52,55 +52,70 @@ enum LeaderboardSeed {
 
     // MARK: Adlar
     //
-    // Üç havuz karışıyor: gerçek adlar, tek kelimelik takma adlar ve sıfat+ad
-    // birleşimleri. Beş yüz satırın hepsi "Deniz", "Kerem" olsaydı liste
-    // insan listesine değil ad listesine benzerdi; oyuncuların yarısı zaten
-    // kendine takma ad koyuyor.
+    // Gerçek bir sıralama BAKIMSIZ görünür. Önceki havuz kelime seçkisi
+    // gibiydi — "alacakaranlik", "wintergreen", "duskfall" — ve üstüne
+    // sıfat+ad birleştiriyordu: "sessizkartal", "wildotter77". O kalıp
+    // makine üretimi listelerin imzasıdır; kimse kendine sıfat seçip ad
+    // yapıştırmıyor. İnsanlar adını yazıyor, sesli harfleri düşürüyor,
+    // arkasına doğum yılını ya da plakasını ekliyor, harfi iki kere basıyor.
+    //
+    // Havuzlar buna göre: adlar, kısaltmalar, birkaç düz kelime ve GERÇEK
+    // sayılar. Süsleme yok.
 
     /// Türkçe ve yabancı gerçek adlar. Belirli bir kişiyi işaret etmesin diye
     /// hepsi tek kelime ve yaygın.
     static let firstNames: [String] = [
         "Deniz", "Kerem", "Elif", "Barış", "Zeynep", "Emre", "Selin", "Mert",
         "Aslı", "Tuna", "Ceren", "Yiğit", "Ece", "Berk", "Sude", "Kaan",
-        "Melis", "Arda", "Nehir", "Doruk", "Bade", "Efe", "İpek", "Sarp",
+        // Buradaki adların hepsi hem küçük hem büyük harfe SORUNSUZ dönüyor.
+        // "İpek" ve "Işık" havuzdan çıktı: Swift'in yerelden bağımsız
+        // `lowercased()` çağrısı "İ"yi birleşik noktalı bir "i̇"ye çeviriyor,
+        // "I"yı da noktalı "i" yapıp "işık" gibi yanlış yazımlar üretiyordu.
+        "Melis", "Arda", "Nehir", "Doruk", "Bade", "Efe", "Irmak", "Sarp",
         "Mika", "Luca", "Nora", "Theo", "Ines", "Kai", "Alma", "Ravi",
         "Sora", "Milo", "Yuki", "Iva", "Otto", "Nina", "Leo", "Zara",
         "Anton", "Mira", "Elias", "Sena", "Noa", "Bruno", "Lina", "Hugo",
         "Aylin", "Cem", "Duru", "Kuzey", "Rüzgar", "Alp", "Sıla", "Toprak",
-        "Ada", "Poyraz", "Ayaz", "Işık", "Bora", "Derin", "Ekin", "Umut",
+        "Ada", "Poyraz", "Ayaz", "Ayla", "Bora", "Derin", "Ekin", "Umut",
         "Pınar", "Tarık", "Ozan", "Vera", "Ilya", "Nils", "Emil", "Suna",
         "Jonas", "Amira", "Dilara", "Kian", "Rana", "Timur", "Yasin", "Lale",
         "Aren", "Bilge", "Cansu", "Halit", "Miray", "Onur", "Şevval", "Ulaş"
     ]
 
-    /// Tek kelimelik takma adlar. Küçük harf: oyuncuların kendi yazdığı gibi.
-    static let handles: [String] = [
-        "gecekusu", "kuytu", "pusula", "zeplin", "karabatak", "yelkovan",
-        "kivilcim", "alacakaranlik", "kutup", "kervan", "mercan", "obruk",
-        "panjur", "sisliyol", "tozduman", "yankibey", "camasir", "kirlangic",
-        "denizfeneri", "gemici", "harita", "kumsaat", "mandal", "nazar",
-        "orakci", "pervane", "salkim", "tavuskusu", "uskumru", "vapur",
-        "yakamoz", "zeytin", "bozkir", "cakil", "dolunay", "eflatun",
-        "orbit", "nebula", "vortex", "glitch", "pixel", "static", "quasar",
-        "cinder", "driftwood", "moonlit", "halogen", "signal", "lowbeam",
-        "nightowl", "tinyrocket", "saltwater", "paperjet", "coldbrew",
-        "backspace", "loopback", "sandstorm", "wintergreen", "bluehour",
-        "afterglow", "sparrow", "duskfall", "ironwood", "quicksand",
-        "hollowpoint", "riverbend", "tundra", "monsoon", "lantern"
+    /// Sesli harfleri düşmüş kısaltmalar. Bir oyun hesabına en çok yazılan
+    /// şey bu: adın kendisi değil, üç dört harfi.
+    static let shortNames: [String] = [
+        "mrt", "brk", "krm", "zynp", "cnr", "srkn", "onr", "efe", "ahmt",
+        "hsn", "ylmz", "tlha", "byrm", "kvn", "sdt", "brc", "gkhn", "mstf",
+        "elf", "slm", "ozn", "arda", "ecm", "nzm", "rmzn", "svg", "ynk",
+        "mke", "nte", "jke", "tmy", "alx", "chrs", "mtt", "sm", "dnl",
+        "krl", "sbn", "vlk", "ykt", "dgn", "hkn", "cgn", "brn", "ekn"
     ]
 
-    static let adjectives: [String] = [
-        "hizli", "sessiz", "yalniz", "kizil", "mavi", "derin", "uzak",
-        "keskin", "serin", "yaman", "cevik", "gizli", "parlak", "sakin",
-        "silent", "rapid", "lucky", "tiny", "north", "late", "wild",
-        "calm", "neon", "solar", "quiet", "half", "double", "midnight"
+    /// Düz kelimeler. Az ve sıradan: kimse kendine şiir seçmiyor, aklına
+    /// ilk geleni yazıyor.
+    static let words: [String] = [
+        "kartal", "zeytin", "pusula", "dolunay", "fener", "sincap", "tilki",
+        "balina", "kirpi", "vapur", "nazar", "yakamoz", "bozkir", "mercan",
+        "pixel", "orbit", "comet", "otter", "raven", "panda", "wolf",
+        "static", "signal", "tundra", "lantern", "sparrow", "echo", "drift"
     ]
 
-    static let nouns: [String] = [
-        "kartal", "balina", "tilki", "sahin", "kunduz", "yosun", "fener",
-        "kuyruk", "kirpi", "sincap", "martı", "ceylan",
-        "fox", "wolf", "comet", "moth", "pixel", "tide", "echo", "drift",
-        "ember", "stone", "koala", "panda", "otter", "raven", "finch"
+    /// Ada yapıştırılan ön ekler. "by" Türk oyun kültürünün klasiği,
+    /// "mr"/"the"/"lil" karşılığı.
+    static let prefixes: [String] = ["by", "by", "mr", "the", "lil", "kral", "efsane"]
+
+    /// Adın arkasındaki sayı UYDURMA OLMASIN. Önceki sürüm 7 ile 98 arası
+    /// rastgele sayı basıyordu; gerçek hesaplarda o sayı bir şeydir —
+    /// doğum yılı, plaka, kuruluş yılı ya da klavyeye üç kez basmak.
+    static let tags: [String] = [
+        "34", "06", "35", "41", "16", "61", "27", "07", "55", "42", "01",
+        "31", "38", "21", "26", "44", "52",                       // plaka
+        "95", "96", "97", "98", "99", "00", "01", "02", "03", "04",
+        "05", "06", "07", "08", "09", "10", "11", "12",           // doğum yılı
+        "1998", "2003", "2005", "2007", "2010", "2012",
+        "1903", "1905", "1907",                                   // kuruluş
+        "11", "22", "77", "99", "123", "1234", "10", "23", "45"
     ]
 
     /// Bir doldurmanın kimliği. `bot_` önekiyle başlar: konsolda ayırt
@@ -130,24 +145,37 @@ enum LeaderboardSeed {
         var rng = SplitMix64(seed: UInt64(bitPattern: Int64(week &* 22861 &+ index &* 48271))
                              ^ 0x9E37_79B9 ^ modeSalt)
         let pattern = Int(rng.unit() * 100)
-        let first = firstNames[Int(rng.unit() * Double(firstNames.count)) % firstNames.count]
-        let handle = handles[Int(rng.unit() * Double(handles.count)) % handles.count]
-        let adjective = adjectives[Int(rng.unit() * Double(adjectives.count)) % adjectives.count]
-        let noun = nouns[Int(rng.unit() * Double(nouns.count)) % nouns.count]
-        let number = 7 + Int(rng.unit() * 92)
+        let first = pick(firstNames, &rng)
+        let short = pick(shortNames, &rng)
+        let word = pick(words, &rng)
+        let tag = pick(tags, &rng)
+        let prefix = pick(prefixes, &rng)
+        let separator = pick(["_", ".", ""], &rng)
+        let lower = first.lowercased()
 
-        // Düz adlar bilerek azınlıkta. Beş yüz satırın çoğu düz ad olsaydı
-        // seksen sekiz adlık havuz defalarca dönerdi; takma adlar hem daha
-        // gerçekçi hem de kombinasyonları bitmiyor.
+        // Gerçek bir tabloda yazım da dağınıktır: aynı ad kimi satırda büyük
+        // harfle, kimi satırda küçük başlar. Tek biçime sokmak listeyi
+        // tek elden yazılmış gibi gösteriyordu.
         switch pattern {
-        case ..<14:  return first                              // Deniz
-        case ..<30:  return handle                             // yakamoz
-        case ..<52:  return adjective + noun                   // sessizkartal
-        case ..<68:  return "\(handle)\(number)"               // orbit42
-        case ..<82:  return "\(first.lowercased())_\(number)"  // deniz_18
-        case ..<92:  return "\(adjective)_\(noun)"             // neon_raven
-        default:     return "\(adjective)\(noun)\(number)"     // wildotter77
+        case ..<15:  return first                          // Deniz
+        case ..<26:  return lower                          // deniz
+        case ..<31:  return first.uppercased()             // DENIZ
+        case ..<45:  return lower + tag                    // deniz34
+        case ..<53:  return lower + separator + tag        // kaan.07
+        case ..<62:  return short                          // mrt
+        case ..<71:  return short + tag                    // brk61
+        case ..<78:  return prefix + first                 // byEmre
+        case ..<85:  return word                           // zeytin
+        case ..<93:  return word + tag                     // pixel07
+        // Adı alınmış olanın klasik çözümü: son harfe bir daha basmak
+        default:     return lower + String(lower.last ?? "a")   // emree
         }
+    }
+
+    /// Havuzdan deterministik seçim — her cihaz aynı sırayı üretsin diye
+    /// tek yerde
+    private static func pick<T>(_ list: [T], _ rng: inout SplitMix64) -> T {
+        list[min(list.count - 1, Int(rng.unit() * Double(list.count)))]
     }
 
     /// Bu hafta, ŞU ANA KADAR görünmesi gereken doldurmalar.
@@ -170,21 +198,22 @@ enum LeaderboardSeed {
         for i in 0..<total {
             // Adı zamanı gelmemiş olanlar için de üretiyoruz: tekilleştirme
             // ancak nüfusun tamamı görüldüğünde her cihazda aynı sonucu verir.
-            // Çakışma olursa iki haneli bir sayı ekleniyor — "Deniz2" değil
-            // "Deniz34". Sıra numarası eklemek listenin uydurma olduğunu
-            // ilk bakışta ele verirdi.
+            //
+            // Çakışanın çözümü ADI BAŞTAN ÇEKMEK. Eskiden sonuna iki haneli
+            // bir sayı yapıştırılıyordu; "kartal47" tek başına masum ama
+            // çakışmalar aynı küçük havuzlarda toplandığı için tabloda alt
+            // alta rastgele sayılı satırlar birikiyordu. Yeniden çekilen ad
+            // hangi kalıba düşerse düşsün gerçek görünüyor.
             var candidate = name(week: week, index: i, mode: mode)
+            var reroll = 0
+            while used.contains(candidate), reroll < 12 {
+                reroll += 1
+                candidate = name(week: week, index: i &+ reroll &* 9973, mode: mode)
+            }
             if used.contains(candidate) {
-                let base = candidate
-                var tag = 11 + (i &* 37) % 88
-                var tries = 0
-                while used.contains("\(base)\(tag)"), tries < 88 {
-                    tag = 11 + (tag &+ 7) % 88
-                    tries += 1
-                }
-                // 88 deneme de tutmazsa sıraya düş: bu noktada zaten
-                // gerçekçilik değil, tekillik önemli
-                candidate = used.contains("\(base)\(tag)") ? "\(base)_\(i)" : "\(base)\(tag)"
+                // On iki deneme de tutmadı: bu noktada gerçekçilik değil,
+                // tekillik önemli
+                candidate += "_\(i)"
             }
             used.insert(candidate)
 
