@@ -80,6 +80,10 @@ struct LumoApp: App {
                     // İzin İSTEMEZ: yalnızca daha önce açanın aboneliğini tazeler
                     PushManager.shared.restoreIfEnabled()
 
+                    // Çökme raporunda hangi oyuncu olduğu görünsün — kimlik
+                    // cihazda üretilmiş bir UUID, kişisel hiçbir şey taşımıyor
+                    Diagnostics.identify(playerID: player.playerID)
+
                     // RevenueCat: kimliği bağla, sonra cihazdaki eski
                     // satın almaları bir kez gönder. Açılıştaki `configure`
                     // ilk kurulumda kimliği bulamıyor — o zaman burası

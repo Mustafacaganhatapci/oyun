@@ -10,6 +10,15 @@ import os
 /// ayrıca `print` ile yazılır, böylece panelde kesinlikle görünür.
 func leaderboardLog(_ message: String, isError: Bool = false) {
     os_log(isError ? .error : .info, "%{public}@", message)
+    // Hata olanlar rapora da düşüyor: cihazın kendi günlüğü yalnızca o
+    // telefon elimizdeyken okunabiliyor, oysa asıl bilinmesi gereken
+    // mağazadaki oyuncularda neyin bozulduğu. Hata olmayanlar yalnızca
+    // iz olarak duruyor — çökme olursa oraya nasıl gelindiği okunsun.
+    if isError {
+        Diagnostics.record(message, domain: "Orbeon.Leaderboard")
+    } else {
+        Diagnostics.breadcrumb(message)
+    }
     #if DEBUG
     print("[Orbeon.Leaderboard] \(message)")
     #endif
