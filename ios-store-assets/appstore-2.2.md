@@ -1,10 +1,11 @@
-# Orbeon 2.0 (build 9) — mağaza metinleri
+# Orbeon 2.2 (build 9) — mağaza metinleri
 
 Diller: **TR · EN · ES**. Karakter sınırları App Store'a göre:
 promosyon metni 170, açıklama 4000, yenilikler 4000, anahtar kelimeler 100.
 
-Mağazadaki son sürüm **1.6** idi; 1.7 hiç yayınlanmadı. Bu yüzden "Yenilikler"
-1.6'dan bu yana biriken her şeyi kapsıyor — 1.7 için yazılmış maddeler de burada.
+Sürüm numarası **2.2**. 2.0 ve 2.1 App Store'da kapandığı için yükleme
+reddedildi: yeni derleme onaylanmış son sürümden büyük bir numara istiyor.
+"Yenilikler" 1.6'dan bu yana biriken her şeyi kapsıyor.
 
 Ekran görüntüleri: `appstore-{dil}-{1..6}-{sahne}.png` (1320×2868) ve
 `6.5-inch/` (1242×2688). Altısı da `build_shots.py --render` ile üretiliyor —
@@ -73,7 +74,7 @@ işaretlenir. On arka plan teması, 22 karakter.
 Reklamlar isteğe bağlıdır ve oynanışa karışmaz. İnternetsiz de oynanır.
 Hiçbir satın alma oyunu kolaylaştırmaz — Orbeon'da pay-to-win yoktur.
 
-### Yenilikler (2.0)
+### Yenilikler (2.2)
 Bu sürümde en büyük yenilik: premium oyuncular oyunun seslerini kendi
 sesleriyle değiştirebiliyor.
 
@@ -227,7 +228,7 @@ colour. Ten background themes, 22 characters.
 Ads are optional and never interrupt a run. The game plays offline. No purchase
 makes it easier — there is no pay-to-win in Orbeon.
 
-### What's New (2.0)
+### What's New (2.2)
 The headline this time: premium players can replace the game's sounds with
 their own voice.
 
@@ -380,7 +381,7 @@ color. Diez fondos y 22 personajes.
 Los anuncios son opcionales y nunca interrumpen una partida. Se puede jugar sin
 conexión. Ninguna compra facilita el juego: en Orbeon no hay pay-to-win.
 
-### Novedades (2.0)
+### Novedades (2.2)
 Lo más importante esta vez: los jugadores premium pueden sustituir los sonidos
 del juego por su propia voz.
 
