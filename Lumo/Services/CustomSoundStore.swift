@@ -18,7 +18,7 @@ enum CustomSoundSlot: String, CaseIterable, Identifiable {
         case .gate:     return "Gate"
         case .lifeLost: return "Life lost"
         case .fail:     return "Death"
-        case .win:      return "Level complete"
+        case .win:      return "Level finish"
         }
     }
 

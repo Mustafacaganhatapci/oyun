@@ -959,41 +959,6 @@
         }
       }
     },
-    "Beat the clock!": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schlag die Uhr!"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Gana al reloj!"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Battez le chrono !"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "タイムアタック！"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Süreye karşı!"
-          }
-        }
-      }
-    },
     "Best Time: %@": {
       "extractionState": "manual",
       "localizations": {
@@ -4520,21 +4485,9 @@
         }
       }
     },
-    "Level complete": {
+    "Level finish": {
       "extractionState": "manual",
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level complete"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bölüm bitti"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "translated",
@@ -4557,6 +4510,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "クリア"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bölüm bitti"
           }
         }
       }
@@ -10051,47 +10010,6 @@
         }
       }
     },
-    "You": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sen"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Du"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tú"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toi"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "あなた"
-          }
-        }
-      }
-    },
     "You finished 1st on last week's board.": {
       "extractionState": "manual",
       "localizations": {
@@ -10571,6 +10489,41 @@
         }
       }
     },
+    "Your place": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Platz"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu puesto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta place"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あなたの順位"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senin sıran"
+          }
+        }
+      }
+    },
     "Zenith": {
       "extractionState": "manual",
       "localizations": {
@@ -10752,41 +10705,6 @@
         }
       }
     },
-    "username": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "benutzername"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "usuario"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "nom d'utilisateur"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ユーザー名"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "kullanıcı adı"
-          }
-        }
-      }
-    },
     "you": {
       "extractionState": "manual",
       "localizations": {
@@ -10818,6 +10736,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "sen"
+          }
+        }
+      }
+    },
+    "your name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dein name"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tu nombre"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ton nom"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "なまえ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "adın"
           }
         }
       }

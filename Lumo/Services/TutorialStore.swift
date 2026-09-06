@@ -49,7 +49,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .hazard: return "Watch out!"
         case .moving: return "Moving rings"
         case .gate:   return "The gate"
-        case .timed:  return "Beat the clock!"
+        case .timed:  return "Beat the clock"
         case .bounds: return "Careful now!"
         case .bonus:  return "Bonus round"
         case .modes:  return "Two new modes"

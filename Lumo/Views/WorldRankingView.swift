@@ -227,7 +227,7 @@ struct WorldRankingView: View {
                     .foregroundStyle(settings.theme.accent.color)
 
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("You")
+                    Text("Your place")
                         .font(.system(.subheadline, design: .rounded).bold())
                         .foregroundStyle(.white)
                     HStack(spacing: 5) {
