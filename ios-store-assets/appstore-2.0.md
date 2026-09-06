@@ -1,4 +1,4 @@
-# Orbeon 2.0 — mağaza metinleri
+# Orbeon 2.0 (build 9) — mağaza metinleri
 
 Diller: **TR · EN · ES**. Karakter sınırları App Store'a göre:
 promosyon metni 170, açıklama 4000, yenilikler 4000, anahtar kelimeler 100.
@@ -6,9 +6,13 @@ promosyon metni 170, açıklama 4000, yenilikler 4000, anahtar kelimeler 100.
 Mağazadaki son sürüm **1.6** idi; 1.7 hiç yayınlanmadı. Bu yüzden "Yenilikler"
 1.6'dan bu yana biriken her şeyi kapsıyor — 1.7 için yazılmış maddeler de burada.
 
-Ekran görüntüleri: `appstore-{dil}-{1..5}-{sahne}.png` (1320×2868) ve
-`6.5-inch/` (1242×2688). Beşi de `build_shots.py` ile üretiliyor —
-metin değişince yeniden çalıştır, elle düzenleme.
+Ekran görüntüleri: `appstore-{dil}-{1..6}-{sahne}.png` (1320×2868) ve
+`6.5-inch/` (1242×2688). Altısı da `build_shots.py --render` ile üretiliyor —
+metin değişince yeniden çalıştır, elle düzenleme. Altıncısı sonsuz moddaki
+canları gösteriyor.
+
+Karakter sayısı 22 kalıyor. Yirmi üçüncü küre GİZLİ: ayarlardaki vuruş
+dizisiyle açılıyor ve mağaza metninde geçmesi onu sır olmaktan çıkarırdı.
 
 Sayılar oyundan: **257 bölüm, 806 yıldız, 22 karakter, 10 tema, 6 rütbe.**
 Değişirlerse buradaki her üç dili de güncelle.
@@ -94,13 +98,10 @@ SES VE TİTREŞİM
 • Atlayış sesi uzun komboda tavan yapmıyor; yükselip aynı yoldan iniyor.
 • Can eksilmesinin ayrı bir sesi var.
 • Sonsuz modda ölünce iki ses üst üste biniyordu.
-• Titreşim, uygulamayı arka plana alıp geri döndükten sonra da çalışıyor.
-• Hızlı seride sesler birbirini kesiyordu, düzeldi.
 
 ÖĞRETİCİ VE ANLATIM
 • Öğretici artık atlayışta sayı sınırı olmadığını, sarı yıldızların karakter
   açtığını ve yeşilden kırmızıya dönen yayların ne yaptığını da gösteriyor.
-• Bonus turuna ilk girişte ne olduğu anlatılıyor.
 • Haritada topla-bitir bölümleri altıgen, süreli bölümler kronometre
   kadranıyla çiziliyor. Bölüm başındaki rozet uydurma zorluk yerine
   bölümün kuralını yazıyor.
@@ -110,13 +111,11 @@ EKRANLAR
 • Kişiselleştir, Premium ve Ayarlar üç ayrı ekrana ayrıldı.
 • Karakterler, arka planlar ve kendi seslerin aynı ekranda.
 • Ayarlarda görüş ve öneri kutusu.
-• İnternet yoksa ne olduğunu söyleyen kısa bir not.
 
 GÖRÜNÜM
 • Halkalar, zemin ve küre nötr griye çekildi. Tek doygun renk tehlike kırmızısı.
 • Kapı, tehlike ve yıldız renkleri bütün temalarda aynı.
 • Yeni logo ve uygulama ikonu.
-• Alev karakteri gerçekten alev oldu.
 
 OYNANIŞ
 • Tehlike yayları ilk turda yakmıyor. Üstündeki yeşil eriyerek ne zaman
@@ -126,20 +125,50 @@ OYNANIŞ
 • Renk körlüğü modu.
 • Premium'a sonsuz modda tur başına bir can.
 • Sonsuz modda yeniden başlat düğmesi.
-• Sonsuz modda 12. halkadan başlayarak her sekiz halkada bir, halkanın
-  üstünde can kalbi. En fazla üç can.
 • Hız turunda kapı, yıldızlar toplanmadan açılmıyor.
 • Premium kodu girme alanı.
 • Bahşiş bırakan premium'u da alıyor.
 
+BÖLÜM ÇEŞİTLERİ (150'DEN SONRA)
+• Renkleri ters bölümler: halka kırmızı, öldüren yay BEYAZ. Yüz elli bölümde
+  öğrendiğin şey burada geçersiz.
+• Baş aşağı bölümler: küre yukarıda başlıyor, kapı aşağıda.
+• İki çıkışlı bölümler: yolun yanında ikinci, beyaz bir kapı. Şimdi çıkarsan
+  arkasındaki yıldızlar orada kalıyor.
+• Üçü de yalnızca 150'den sonra ve tek tek serpiştirilmiş — hiçbir bölümde
+  ikisi birden yok.
+• Bölüm haritasındaki şekiller ne olduğunu söylüyor: ters bölümün çizgisi
+  kırmızı, baş aşağı bölüm aşağı bakan üçgen, iki çıkışlı bölümde ikinci
+  bir halka.
+
+SONSUZ MODDA CAN
+• 12. halkadan başlayarak her sekiz halkada bir kalp. Aynı anda en fazla üç.
+• Kalp taşıyan halkaya tehlike yayı konmuyor: ödül veren halka aynı anda
+  tuzak olmamalı.
+
+YILDIZLA PREMIUM
+• 2600 yıldız toplayan herkes premium'u kalıcı olarak kazanıyor.
+• Hiçbir şey harcanmıyor — yıldızların sende kalıyor, kürelerin bozulmuyor.
+• Premium ekranında ne kadar kaldığını gösteren bir çubuk var.
+
+BİLDİRİMLER
+• Ayarlardan açılıyor, varsayılanı kapalı.
+• Haftalık yarış kapanmadan bir gün önce hatırlatma.
+• Yeni sürüm çıktığında haber.
+
 DÜZELTMELER
 • Haftalık tabloda kendi haftalık skorun yerine tüm zamanlar rekorun görünüyordu.
-• Müziği kapatıp uygulamayı yeniden açınca ayar unutuluyordu.
-• Ana menüdeki logo küresi zamanla aşağı kayıyordu.
-• Satın alırken bekleme göstergesi yoktu.
 • Sonsuz modda boşluğa atılan küre geç ölüyordu.
 • Açık kapının üstünde beklerken bölüm bitmiyordu.
-• Süresiz bölümlerde 0'da donmuş sayaç görünüyordu.
+• Dünya sıralamasında "sen buradasın" şeridinin yazdığı sayı ile satırının
+  yeri artık aynı. Eşit skorlular yüzünden kayıyordu.
+• Hız turundan sonsuz moda geçince eski satırlar ekranda kalabiliyordu.
+• Süreli bölümde süre dolunca yıldızlar geri geliyor — bölüm gerçekten
+  baştan başlıyor.
+• Yeniden doğarken yıldız toplama sesi çalıyordu, kesildi.
+• Kapı açılma sesi bölüm bitirme sesinden ayrıldı.
+• Bölümler ekranındaki yıldız sayacı köşeye yapışmıyor.
+• Açılış ekranı yenilendi: halka küçülerek ORBEON'un O'sunun yerine oturuyor.
 
 ---
 
@@ -212,7 +241,6 @@ YOUR OWN SOUNDS (PREMIUM)
 RANKING
 • The weekly board is split into six ranks, Spark through Zenith.
 • It opens with a hundred rows and Show more adds more.
-• Your rank shows even with no connection.
 
 CHARACTERS
 • Seven new orbs: Moon, Atom, Nova, Planet, Bolt, Droplet, Ghost.
@@ -223,30 +251,23 @@ AUDIO AND HAPTICS
 • The hop no longer tops out on a long combo — it climbs and comes back down.
 • Losing a life has its own sound.
 • Dying in endless mode played two sounds over each other.
-• Haptics work again after the app has been backgrounded.
-• Sounds cut each other off during fast streaks. Fixed.
 
 TUTORIAL
 • It now covers that there's no limit on hops, that yellow stars unlock
   characters, and what the arcs turning green to red actually do.
-• The first bonus round explains itself.
 • On the map, collect levels are hexagons and timed levels carry a
   stopwatch dial. The badge at the start of a level names its rule instead
   of guessing at a difficulty.
-• Level 10 announces that Endless and Speed Run are open.
 
 SCREENS
 • Personalize, Premium and Settings are three separate screens now.
 • Characters, backgrounds and your own sounds live together.
-• A feedback box in Settings.
-• A short note when there's no connection.
 
 LOOK
 • Rings, background and orb pulled to neutral grey. The only saturated colour
   is the hazard red.
 • Gate, hazard and star colours are the same in every theme.
 • New logo and app icon.
-• The Flame character is actually a flame now.
 
 GAMEPLAY
 • Hazard arcs don't burn on the first lap. The green cover melts away to show
@@ -255,21 +276,50 @@ GAMEPLAY
 • Characters aren't bought any more. They unlock at star thresholds.
 • Colorblind mode.
 • Premium gets one extra life per endless run.
-• Restart button in endless mode.
-• From ring 12 on, every eighth ring in Endless carries a heart sitting on
-  it. Three lives at most.
 • In Speed Run the gate stays shut until every star is collected.
 • A field for premium codes.
 • Leaving a tip now includes premium.
 
+LEVEL TYPES (PAST 150)
+• Inverted levels: the ring is red and the arc that kills is WHITE. What a
+  hundred and fifty levels taught you does not hold here.
+• Upside-down levels: the orb starts at the top, the gate is at the bottom.
+• Two-exit levels: a second, white gate off to the side of the path. Leave
+  through it and the stars behind it stay where they are.
+• All three appear only past 150, one at a time — no level carries two.
+• The map says which is which: inverted levels are outlined in red,
+  upside-down ones are a downward triangle, two-exit ones carry a second ring.
+
+LIVES IN ENDLESS
+• A heart on the twelfth ring and every eight after it. Three at most.
+• Rings carrying a heart never carry a hazard: the ring that rewards you
+  should not be the one that kills you.
+
+PREMIUM WITH STARS
+• Collect 2600 stars and Premium unlocks for good.
+• Nothing is spent — your stars stay yours and your characters stay unlocked.
+• The Premium screen shows how far you have to go.
+
+NOTIFICATIONS
+• Off by default, turned on in Settings.
+• A nudge the day before the weekly race closes.
+• Word when a new version is out.
+
 FIXES
 • The weekly board showed your all-time record instead of this week's.
-• Turning music off was forgotten after a relaunch.
-• The logo orb on the main menu drifted downwards over time.
 • No loading indicator during a purchase.
 • An orb thrown into empty space in endless mode died too late.
 • The level didn't end while you waited on an open gate.
 • A countdown frozen at 0 on levels with no time limit.
+• On the world board, the number on the "you are here" banner and the place
+  your row actually sits are the same again. Tied scores pulled them apart.
+• Switching from Speed Run to Endless could leave the old rows on screen.
+• When the clock runs out on a timed level the stars come back — the level
+  really does start over.
+• Respawning played the star-pickup sound. It does not any more.
+• The gate opening no longer sounds like finishing the level.
+• The star counter on the levels screen no longer sticks to the corner.
+• New splash: the ring shrinks and takes its place as the O in ORBEON.
 
 ---
 
@@ -339,12 +389,9 @@ TUS PROPIOS SONIDOS (PREMIUM)
   nivel completado.
 • La grabación empieza tras una cuenta atrás de 3-2-1.
 • Tu grabación del salto sube con el combo y luego vuelve a bajar.
-• Las grabaciones se quedan en tu teléfono. Nunca se suben a ningún sitio.
 
 CLASIFICACIÓN
 • La tabla semanal se divide en seis rangos, de Chispa a Cénit.
-• Se abre con cien filas y "Mostrar más" añade el resto.
-• Tu rango se ve también sin conexión.
 
 PERSONAJES
 • Siete esferas nuevas: Luna, Átomo, Nova, Planeta, Rayo, Gota y Fantasma.
@@ -354,51 +401,68 @@ PERSONAJES
 SONIDO Y VIBRACIÓN
 • El salto ya no se estanca en combos largos: sube y vuelve a bajar.
 • Perder una vida tiene su propio sonido.
-• Al morir en el modo infinito sonaban dos efectos a la vez.
-• La vibración vuelve a funcionar tras dejar la app en segundo plano.
-• Los sonidos se cortaban entre sí en las rachas rápidas. Arreglado.
 
 TUTORIAL
-• Ahora explica que no hay límite de saltos, que las estrellas amarillas
-  desbloquean personajes y qué hacen los arcos que pasan de verde a rojo.
-• La primera ronda de bonus se explica sola.
-• En el mapa, los niveles de recolección son hexágonos y los cronometrados
-  llevan una esfera de cronómetro. La etiqueta al empezar un nivel dice su
-  regla en vez de inventar una dificultad.
-• El nivel 10 anuncia que se abren el modo infinito y contrarreloj.
 
 PANTALLAS
 • Personalizar, Premium y Ajustes son tres pantallas separadas.
-• Personajes, fondos y tus propios sonidos están juntos.
-• Caja de sugerencias en Ajustes.
-• Un aviso corto cuando no hay conexión.
 
 ASPECTO
 • Anillos, fondo y esfera en gris neutro. El único color saturado es el rojo
   del peligro.
-• Los colores de puerta, peligro y estrella son iguales en todos los temas.
-• Nuevo logotipo e icono.
-• El personaje Llama es ahora una llama de verdad.
 
 JUGABILIDAD
 • Los arcos de peligro no queman en la primera vuelta. La capa verde se
   consume y muestra cuándo se arma el arco.
 • 257 niveles, 806 estrellas.
 • Los personajes ya no se compran. Se desbloquean al alcanzar metas.
-• Modo daltónico.
 • Premium incluye una vida extra en cada partida infinita.
-• Botón de reinicio en el modo infinito.
-• Desde el anillo 12, cada ocho anillos del modo infinito lleva un corazón
-  encima. Tres vidas como máximo.
 • En Contrarreloj la puerta no se abre sin recoger todas las estrellas.
 • Campo para códigos premium.
 • Dejar una propina ahora incluye premium.
 
+TIPOS DE NIVEL (A PARTIR DEL 150)
+• Niveles invertidos: el anillo es rojo y el arco que mata es BLANCO. Lo que
+  ciento cincuenta niveles te enseñaron aquí no vale.
+• Niveles al revés: la esfera empieza arriba y la puerta está abajo.
+• Niveles con dos salidas: una segunda puerta blanca al lado del camino. Si
+  sales por ahí, las estrellas que quedan detrás se quedan ahí.
+• Los tres aparecen solo a partir del 150 y de uno en uno: ningún nivel lleva
+  dos a la vez.
+• El mapa lo dice: los invertidos van perfilados en rojo, los del revés son
+  un triángulo hacia abajo, los de dos salidas llevan un segundo anillo.
+
+VIDAS EN MODO INFINITO
+• Un corazón en el anillo doce y cada ocho anillos después. Tres como máximo.
+• Los anillos con corazón nunca llevan peligro: el anillo que te premia no
+  debería ser el que te mata.
+
+PREMIUM CON ESTRELLAS
+• Reúne 2600 estrellas y Premium se desbloquea para siempre.
+• No se gasta nada: tus estrellas siguen siendo tuyas y tus personajes
+  siguen desbloqueados.
+• La pantalla de Premium muestra cuánto te falta.
+
+NOTIFICACIONES
+• Desactivadas por defecto, se activan en Ajustes.
+• Un aviso el día antes de que cierre la carrera semanal.
+• Noticia cuando sale una versión nueva.
+
 CORRECCIONES
 • La tabla semanal mostraba tu récord histórico en vez del de la semana.
 • Al reabrir la app se olvidaba que habías apagado la música.
-• La esfera del logotipo del menú se iba desplazando hacia abajo.
 • No había indicador de carga durante una compra.
 • En el modo infinito, la esfera lanzada al vacío tardaba en morir.
 • El nivel no terminaba mientras esperabas sobre una puerta abierta.
 • Aparecía una cuenta atrás congelada en 0 en niveles sin tiempo.
+• En la tabla mundial, el número del aviso "estás aquí" y el lugar real de tu
+  fila vuelven a coincidir. Los empates los separaban.
+• Al pasar de Contrarreloj a Infinito podían quedarse en pantalla las filas
+  anteriores.
+• Cuando se acaba el tiempo en un nivel cronometrado, las estrellas vuelven:
+  el nivel empieza de verdad desde cero.
+• Al reaparecer sonaba el sonido de recoger estrella. Ya no.
+• Abrir la puerta ya no suena igual que terminar el nivel.
+• El contador de estrellas de la pantalla de niveles ya no se pega a la esquina.
+• Nueva pantalla de inicio: el anillo se encoge y ocupa el lugar de la O de
+  ORBEON.
