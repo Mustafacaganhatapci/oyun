@@ -5765,6 +5765,41 @@
         }
       }
     },
+    "Or earn it": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oder verdiene es dir"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O gánatelo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ou gagne-le"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あるいは、自分で手に入れる"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya da kazan"
+          }
+        }
+      }
+    },
     "PREMIUM": {
       "extractionState": "manual",
       "localizations": {
@@ -6498,6 +6533,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "プレミアム解放"
+          }
+        }
+      }
+    },
+    "Premium unlocks by itself when you get there. Nothing is spent — every star stays yours.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium schaltet sich von selbst frei, sobald du dort bist. Es wird nichts abgezogen — jeder Stern bleibt dir."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium se desbloquea solo cuando llegues. No se gasta nada: todas tus estrellas siguen siendo tuyas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium se débloque tout seul une fois arrivé. Rien n'est dépensé : chaque étoile reste la tienne."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "そこに届いた時点でプレミアムが自動で解放されます。消費はありません——星はすべて手元に残ります。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oraya vardığında Premium kendiliğinden açılıyor. Hiçbir şey harcanmıyor — yıldızların tamamı sende kalıyor."
           }
         }
       }
@@ -9773,6 +9843,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tüm bölümleri bitirdin! 🎉"
+          }
+        }
+      }
+    },
+    "You played for this one. The ads are off for good, and not a single star was spent — every one of them is still yours.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das hier hast du dir erspielt. Die Werbung ist für immer weg, und kein einziger Stern wurde abgezogen — sie gehören alle noch dir."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este te lo has jugado. La publicidad se acabó para siempre, y no se gastó ni una estrella: todas siguen siendo tuyas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Celui-là, tu l'as joué. Fini la publicité, définitivement, et pas une seule étoile n'a été dépensée : elles sont toutes encore à toi."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "これは自分で勝ち取ったものです。広告はこれきりで消え、星は一つも減っていません——すべてそのまま残ります。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bunu oynayarak kazandın. Reklamlar temelli kapandı ve tek bir yıldızın bile gitmedi — hepsi hâlâ sende."
           }
         }
       }

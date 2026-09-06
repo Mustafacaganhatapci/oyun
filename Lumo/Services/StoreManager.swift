@@ -35,6 +35,18 @@ final class StoreManager: ObservableObject {
     /// Ödüllü reklam sonunda verilen yıldız
     static let rewardedStarGrant = 25
 
+    /// YILDIZLA PREMIUM. Bu kadar yıldız toplayan oyuncuya premium kalıcı
+    /// olarak veriliyor — ödeme yok, harcama da yok: yıldızlar oyuncuda
+    /// kalıyor, küre eşikleri bozulmuyor. Oyundaki bütün eşikler gibi bu da
+    /// GEÇİLDİĞİ AN açılıyor.
+    ///
+    /// Sayı neden 2600: kampanyanın tamamı 806 yıldız veriyor, yani bu eşik
+    /// bölümleri bitirmekle tek başına geçilemiyor. Kalan ~1800 günlük ödül
+    /// (seri dolduğunda 60/gün), görevler (3 × ~21/gün) ve ödüllü reklamlarla
+    /// geliyor; düzenli oynayan biri için iki-üç hafta demek. Yeterince uzak
+    /// ki satın almanın yerini almasın, yeterince yakın ki gerçek bir söz olsun.
+    static let starPremiumThreshold = 2600
+
     @Published private(set) var isPremium: Bool
     @Published private(set) var isSupporter: Bool
     @Published private(set) var products: [Product] = []
@@ -46,11 +58,15 @@ final class StoreManager: ObservableObject {
     @Published var statusMessage: StatusMessage?
 
     /// Satın alma sonrası kişiye özel teşekkür kartı
-    struct ThankYou: Equatable { let isTip: Bool }
+    struct ThankYou: Equatable {
+        enum Kind { case premium, tip, stars }
+        let kind: Kind
+    }
     @Published var thankYou: ThankYou?
 
     private var entitled = false        // gerçek IAP satın alması var mı
     private var promoGranted = false    // kodla açıldı mı
+    private var starGranted = false     // yıldız eşiği geçilerek kazanıldı mı
     private var promoFailCount = 0
     private var promoBonusGranted = false
     private var updatesTask: Task<Void, Never>?
@@ -71,11 +87,16 @@ final class StoreManager: ObservableObject {
             || EntitlementSync.shared.isPromoGranted
         let supporter = UserDefaults.standard.bool(forKey: "lumo.store.supporter")
             || EntitlementSync.shared.isSupporter
+        // Yıldız eşiği yerelde tutuluyor; başka cihaza iCloud'la geçen şey
+        // yıldızların KENDİSİ zaten (ProgressStore), eşik orada yeniden
+        // geçiliyor ve hak kendiliğinden veriliyor.
+        let stars = UserDefaults.standard.bool(forKey: Self.starGrantKey)
 
         entitled = premiumCache
         promoGranted = promo
+        starGranted = stars
         isSupporter = supporter
-        isPremium = premiumCache || promo || supporter
+        isPremium = premiumCache || promo || supporter || stars
         promoFailCount = UserDefaults.standard.integer(forKey: "lumo.store.promoFailCount")
         promoBonusGranted = UserDefaults.standard.bool(forKey: "lumo.store.promoBonusGranted")
 
@@ -312,7 +333,7 @@ final class StoreManager: ObservableObject {
             recomputePremium()
             if transaction.revocationDate == nil {
                 record(productID: transaction.productID)
-                thankYou = .init(isTip: false)
+                thankYou = .init(kind: .premium)
             }
         case Self.tipSmallID, Self.tipSmallLegacyID, Self.tipBigID:
             // Bahşiş bırakan da premium alır. Parasını oyunu desteklemek için
@@ -323,16 +344,45 @@ final class StoreManager: ObservableObject {
             EntitlementSync.shared.markSupporter()
             recomputePremium()
             record(productID: transaction.productID)
-            thankYou = .init(isTip: true)
+            thankYou = .init(kind: .tip)
         default:
             break
         }
     }
 
-    /// premium = gerçek satın alma VEYA tanıdık kodu VEYA bahşiş
+    /// premium = gerçek satın alma VEYA tanıdık kodu VEYA bahşiş VEYA yıldız eşiği
     private func recomputePremium() {
-        isPremium = entitled || promoGranted || isSupporter
+        isPremium = entitled || promoGranted || isSupporter || starGranted
         UserDefaults.standard.set(entitled, forKey: "lumo.store.premiumCache")
+    }
+
+    // MARK: Yıldızla premium
+
+    private static let starGrantKey = "lumo.store.starPremium"
+
+    /// Yıldız sayısı değiştiğinde çağrılır. Eşik geçildiyse premium'u kalıcı
+    /// verir ve `true` döner.
+    ///
+    /// Yıldız HARCANMIYOR. Küreler de eşikle açılıyor ve harcama olsaydı
+    /// premium'u alan oyuncu kürelerini geri kaybederdi; ayrıca "biriktirdiğin
+    /// şey elinden alınıyor" hissi, ödülün kendisini cezaya çeviriyor.
+    @discardableResult
+    func checkStarUnlock(totalStars: Int) -> Bool {
+        guard !starGranted, totalStars >= Self.starPremiumThreshold else { return false }
+        // Zaten premium'u olana kutlama kartı ÇIKMIYOR: ona söylenecek yeni
+        // bir şey yok. Hak yine de işaretleniyor, satın alması bir gün iade
+        // edilse bile emeğiyle kazandığı yerinde kalsın.
+        let announce = !isPremium
+        starGranted = true
+        UserDefaults.standard.set(true, forKey: Self.starGrantKey)
+        recomputePremium()
+        if announce { thankYou = .init(kind: .stars) }
+        return announce
+    }
+
+    /// Eşiğe ne kadar kaldı — teklif ekranındaki çubuk bunu gösteriyor
+    func starProgress(totalStars: Int) -> Double {
+        min(1, Double(totalStars) / Double(Self.starPremiumThreshold))
     }
 
     // MARK: Destekçi kaydı

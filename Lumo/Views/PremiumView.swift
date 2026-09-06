@@ -39,7 +39,10 @@ struct PremiumView: View {
                 VStack(spacing: 20) {
                     premiumCard
 
-                    if !store.isPremium { redeemSection }
+                    if !store.isPremium {
+                        starPathCard
+                        redeemSection
+                    }
 
                     // Dürüstlük ilkesi — açıkça söylüyoruz
                     Label("No purchase gives a gameplay advantage. There is no pay-to-win in Orbeon.",
@@ -213,6 +216,52 @@ struct PremiumView: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         .shadow(color: settings.theme.lumen.opacity(0.22), radius: 18, y: 6)
+        .padding(.horizontal, 20)
+    }
+
+    /// Ödemeden gelen yol.
+    ///
+    /// Teklifi zayıflatmıyor: eşik kampanyanın verdiği yıldızın üç katından
+    /// fazla, yani bu yolu seçen gerçekten oynuyor. Ama yazılı bir söz olarak
+    /// duruyor — "parası olmayan asla alamaz" demeyen bir oyun, ödeyenin de
+    /// gözünde daha dürüst.
+    private var starPathCard: some View {
+        let total = progress.totalStars
+        let goal = StoreManager.starPremiumThreshold
+        let remaining = max(0, goal - total)
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "star.fill")
+                    .foregroundStyle(settings.theme.lumen.color)
+                Text("Or earn it")
+                    .font(.system(.headline, design: .rounded).bold())
+                    .foregroundStyle(.white.opacity(0.9))
+                Spacer(minLength: 8)
+                Text(verbatim: "\(total) / \(goal)")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .monospacedDigit()
+                    .foregroundStyle(settings.theme.lumen.color)
+            }
+
+            ProgressView(value: store.starProgress(totalStars: total))
+                .tint(settings.theme.lumen.color)
+
+            Text("Premium unlocks by itself when you get there. Nothing is spent — every star stays yours.")
+                .font(.system(.caption, design: .rounded))
+                .foregroundStyle(.white.opacity(0.55))
+                .fixedSize(horizontal: false, vertical: true)
+
+            if remaining > 0 {
+                Text("\(remaining) more stars")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.lumen.color)
+            }
+        }
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(.white.opacity(0.05))
+        }
         .padding(.horizontal, 20)
     }
 

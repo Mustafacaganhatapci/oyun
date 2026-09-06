@@ -103,7 +103,7 @@ struct RootView: View {
 
             // Satın alma sonrası adına seslenen teşekkür kartı
             if let thanks = store.thankYou {
-                ThankYouView(isTip: thanks.isTip,
+                ThankYouView(kind: thanks.kind,
                              username: player.username,
                              theme: settings.theme) {
                     store.thankYou = nil

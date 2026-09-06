@@ -88,6 +88,15 @@ struct LumoApp: App {
                         await RevenueCatBridge.identify(playerID: player.playerID)
                         await RevenueCatBridge.syncExistingPurchasesOnce()
                     }
+
+                    // Eşik daha önce geçilmiş olabilir (güncellemeden önce
+                    // toplanmış yıldızlar): açılışta da bakılıyor
+                    store.checkStarUnlock(totalStars: progress.totalStars)
+                }
+                // Yıldız her arttığında eşiğe bakılıyor. Günlük ödül, görev,
+                // ödüllü reklam ve bölüm bitirme — hepsi buradan geçiyor.
+                .onChange(of: progress.totalStars) { _, total in
+                    store.checkStarUnlock(totalStars: total)
                 }
                 .onChange(of: scenePhase) { _, phase in
                     switch phase {

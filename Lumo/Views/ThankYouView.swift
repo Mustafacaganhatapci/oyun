@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// Satın alma sonrası çıkan, adına seslenen teşekkür kartı.
+/// Premium'a kavuşulan anın kartı — adına seslenerek.
 ///
-/// Bir bahşiş bırakan kişi para karşılığı bir şey almıyor; verdiği şeyin
-/// karşılığı ancak bu olabilir. Sıradan bir "işlem başarılı" bildirimi bu işi
-/// görmüyordu.
+/// Üç yolu var ve üçü de aynı yere çıkmıyor: satın alan bir şey aldı,
+/// bahşiş bırakan karşılık beklemeden verdi, yıldızla açan ise ödemedi —
+/// oynadı. Üçüne aynı cümleyi kurmak, üçünü de yanlış anlamak olurdu.
 struct ThankYouView: View {
-    let isTip: Bool
+    let kind: StoreManager.ThankYou.Kind
     let username: String
     let theme: Theme
     let onClose: () -> Void
@@ -15,6 +15,25 @@ struct ThankYouView: View {
     @State private var glow = false
 
     private var accent: Color { theme.lumen.color }
+
+    private var symbol: String {
+        switch kind {
+        case .premium: return "crown.fill"
+        case .tip:     return "heart.fill"
+        case .stars:   return "star.fill"
+        }
+    }
+
+    private var message: LocalizedStringKey {
+        switch kind {
+        case .premium:
+            return "The ads are off from today. I make Orbeon on my own, and this goes straight into the next levels, characters and music."
+        case .tip:
+            return "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do. It follows your iCloud account, so it's there on your other devices too."
+        case .stars:
+            return "You played for this one. The ads are off for good, and not a single star was spent — every one of them is still yours."
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -29,7 +48,7 @@ struct ThankYouView: View {
                         .frame(width: 180, height: 180)
                         .scaleEffect(glow ? 1.1 : 0.9)
 
-                    Image(systemName: isTip ? "heart.fill" : "crown.fill")
+                    Image(systemName: symbol)
                         .font(.system(size: 54))
                         .foregroundStyle(
                             LinearGradient(colors: [.white, accent],
@@ -52,15 +71,13 @@ struct ThankYouView: View {
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
 
-                Text(isTip
-                     ? "I make Orbeon on my own, and someone choosing to chip in is what makes the next update worth writing. Premium is yours as well — consider it the least I can do. It follows your iCloud account, so it's there on your other devices too."
-                     : "The ads are off from today. I make Orbeon on my own, and this goes straight into the next levels, characters and music.")
+                Text(message)
                     .font(.system(.subheadline, design: .rounded))
                     .foregroundStyle(.white.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 6)
 
-                if isTip {
+                if kind != .premium {
                     Label("Premium unlocked", systemImage: "checkmark.seal.fill")
                         .font(.system(.subheadline, design: .rounded).bold())
                         .foregroundStyle(theme.gate.color)
