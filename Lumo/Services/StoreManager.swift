@@ -416,4 +416,20 @@ final class StoreManager: ObservableObject {
             ?? UserDefaults.standard.string(forKey: Self.priceCacheKey)
     }
     var tipProducts: [Product] { products.filter { $0.id != Self.premiumID } }
+
+    // MARK: Fiyat sabit kaldı rozeti
+    //
+    // 2.0 ile gelen her şey (yeni bölümler, yeni küreler, kendi kaydettiğin
+    // sesler, sonsuz modda canlar) fiyata dokunmadan geldi. Söylenmeye değer
+    // ve DOĞRU olan cümle bu: "fiyat artmadı".
+    //
+    // Rozetin BİTİŞ TARİHİ var. "Bu ay" diyen bir söz, kodda da bir ay
+    // sürmeli; tarihsiz bırakılırsa yarın yalan olur. Süre dolunca rozet
+    // kendiliğinden kayboluyor, elle kaldırmak gerekmiyor.
+    static let priceHoldEnds = DateComponents(year: 2026, month: 10, day: 6)
+
+    var isPriceHoldActive: Bool {
+        guard let end = Calendar.current.date(from: Self.priceHoldEnds) else { return false }
+        return Date() < end
+    }
 }

@@ -147,6 +147,7 @@ struct PremiumView: View {
                     .foregroundStyle(settings.theme.gate.color)
                     .padding(.vertical, 10)
             } else if let product = store.premiumProduct {
+                if store.isPriceHoldActive { priceHoldBadge }
                 Button {
                     Task { await store.purchase(product) }
                 } label: {
@@ -217,6 +218,36 @@ struct PremiumView: View {
         .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         .shadow(color: settings.theme.lumen.opacity(0.22), radius: 18, y: 6)
         .padding(.horizontal, 20)
+    }
+
+    /// 2.0 ile gelen her şey fiyata dokunmadan geldi — söylenecek olan bu.
+    /// Rozetin kendi bitiş tarihi var (`StoreManager.priceHoldEnds`); "bu ay"
+    /// diyen bir cümle bir ay sonra kendiliğinden kaybolmalı.
+    private var priceHoldBadge: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "tag.fill")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(settings.theme.gate.color)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Same price this month")
+                    .font(.system(.subheadline, design: .rounded).bold())
+                    .foregroundStyle(.white)
+                Text("Everything new in 2.0 is included and the price did not go up.")
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(settings.theme.gate.opacity(0.12))
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(settings.theme.gate.opacity(0.35), lineWidth: 1)
+        }
+        .padding(.bottom, 4)
     }
 
     /// Ödemeden gelen yol.

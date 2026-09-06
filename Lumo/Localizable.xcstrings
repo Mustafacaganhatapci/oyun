@@ -3008,6 +3008,41 @@
         }
       }
     },
+    "Everything new in 2.0 is included and the price did not go up.": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles Neue in 2.0 ist enthalten, der Preis ist gleich geblieben."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todo lo nuevo de la 2.0 está incluido y el precio no ha subido."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout ce que la 2.0 apporte est inclus, et le prix n'a pas bougé."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2.0の新要素はすべて含まれていて、価格は据え置きです。"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2.0 ile gelen her şey dahil, fiyat artmadı."
+          }
+        }
+      }
+    },
     "Feedback": {
       "extractionState": "manual",
       "localizations": {
@@ -7360,6 +7395,41 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sakura"
+          }
+        }
+      }
+    },
+    "Same price this month": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diesen Monat zum gleichen Preis"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este mes, el mismo precio"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Même prix ce mois-ci"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今月は同じ価格のまま"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu ay da aynı fiyat"
           }
         }
       }
