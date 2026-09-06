@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""App Store ekran görüntülerini üretir — 5 sahne × 3 dil, 1320x2868.
+"""App Store ekran görüntülerini üretir — 6 sahne × 3 dil × 2 boy.
 
 Sahneler oyunun GERÇEK çizim kurallarıyla kurulur: mat palet, parıltısız
 halka çizgisi, kapının dönen kesikli dış çemberi, yeşilden kırmızıya eriyen
@@ -12,7 +12,11 @@ temalarda sabit olduğu için mağaza görselleri de oyunla aynı şeyi gösteri
 
 Kullanım:
     python3 build_shots.py            # shots.html üretir
-    python3 build_shots.py --render   # + PNG'leri yazar (Playwright ister)
+    python3 build_shots.py --render   # + PNG'leri yazar (Playwright + Pillow ister)
+
+Render iki boyu birden yazıyor: 6.9" (1320×2868) bu klasöre, 6.5"
+(1242×2688) `6.5-inch/` altına. İkincisi birincisinden küçültülüyor —
+çizimin tamamı vektör olduğu için kayıp yok.
 """
 import math
 import pathlib
@@ -449,7 +453,24 @@ def render(html_path, out_dir):
                 target = out_dir / f"appstore-{lang}-{i+1}-{name}.png"
                 el.screenshot(path=str(target))
                 print("yazıldı:", target.name)
+                downscale(target, out_dir / "6.5-inch" / target.name)
         browser.close()
+
+
+# App Store iki boy istiyor: 6.9" (1320×2868) ve 6.5" (1242×2688). İkisinin
+# en-boy oranı birebir aynı değil (0.4603 / 0.4620), o yüzden genişliğe göre
+# küçültülüp taşan 10 piksel ALTTAN kırpılıyor — orası zaten sahnenin eridiği
+# perde, kaybolan bir şey yok. Sahneyi ikinci kez, başka koordinatlarla
+# çizmenin anlamı yok: çizimin tamamı vektör.
+SMALL_W, SMALL_H = 1242, 2688
+
+
+def downscale(src, dst):
+    from PIL import Image
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    im = Image.open(src)
+    scaled = im.resize((SMALL_W, round(im.height * SMALL_W / im.width)), Image.LANCZOS)
+    scaled.crop((0, 0, SMALL_W, SMALL_H)).save(dst)
 
 
 if __name__ == "__main__":
