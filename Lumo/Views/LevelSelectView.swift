@@ -76,6 +76,9 @@ struct LevelSelectView: View {
                                       isBonusCompleted: LevelLibrary.isBonus(id) && progress.stars[id] != nil,
                                       isTimed: LevelLibrary.hasTimer(id),
                                       isCollect: LevelLibrary.isCollect(id),
+                                      isInverted: LevelLibrary.isInverted(id),
+                                      isUpsideDown: LevelLibrary.isUpsideDown(id),
+                                      hasTwoGates: LevelLibrary.hasShortcutGate(id),
                                       maxStars: LevelLibrary.maxStars(for: id),
                                       theme: settings.theme) {
                                 AudioEngine.shared.playTap()
@@ -132,6 +135,18 @@ private struct Hexagon: Shape {
     }
 }
 
+/// Aşağı bakan üçgen — baş aşağı bölümlerin silüeti
+private struct DownTriangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + rect.height * 0.12))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + rect.height * 0.12))
+        path.closeSubpath()
+        return path
+    }
+}
+
 private struct LevelNode: View {
     let id: Int
     let stars: Int
@@ -141,6 +156,9 @@ private struct LevelNode: View {
     let isBonusCompleted: Bool
     let isTimed: Bool
     let isCollect: Bool
+    let isInverted: Bool
+    let isUpsideDown: Bool
+    let hasTwoGates: Bool
     let maxStars: Int
     let theme: Theme
     let action: () -> Void
@@ -149,9 +167,19 @@ private struct LevelNode: View {
 
     private var accent: Color { isBonus ? theme.lumen.color : theme.ring.color }
 
-    /// Topla-bitir bölümü altıgen, gerisi daire
+    /// Silüet bölümün ne olduğunu söylüyor: topla-bitir altıgen, baş aşağı
+    /// bölüm AŞAĞI bakan üçgen, gerisi daire. Girmeden önce ne olduğu
+    /// anlaşılsın diye — sürpriz, tuzağa düşmek demek değil.
     private var nodeShape: AnyShape {
-        isCollect ? AnyShape(Hexagon()) : AnyShape(Circle())
+        if isUpsideDown { return AnyShape(DownTriangle()) }
+        return isCollect ? AnyShape(Hexagon()) : AnyShape(Circle())
+    }
+
+    /// Ters bölümde düğümün çizgisi kırmızı: oyundaki halkaların rengiyle aynı
+    private var strokeTint: Color {
+        guard unlocked else { return .white.opacity(0.12) }
+        if isInverted { return theme.hazard.opacity(0.85) }
+        return stars >= maxStars ? theme.lumen.color : accent.opacity(0.7)
     }
     private var playable: Bool { unlocked && !isBonusCompleted }
 
@@ -179,9 +207,7 @@ private struct LevelNode: View {
                         .opacity(isBonusCompleted ? 0.5 : 1)
 
                     nodeShape
-                        .stroke(unlocked
-                                ? (stars >= maxStars ? theme.lumen.color : accent.opacity(0.7))
-                                : Color.white.opacity(0.12),
+                        .stroke(strokeTint,
                                 style: isBonus
                                 ? StrokeStyle(lineWidth: 2, dash: [5, 4])
                                 : StrokeStyle(lineWidth: 2))
@@ -227,6 +253,15 @@ private struct LevelNode: View {
                         Image(systemName: "lock.fill")
                             .font(.subheadline)
                             .foregroundStyle(.white.opacity(0.3))
+                    }
+
+                    // İki kapılı bölüm: sağ altta ikinci, beyaz bir halka —
+                    // "burada iki çıkış var" demenin en sessiz yolu
+                    if hasTwoGates, unlocked {
+                        Circle()
+                            .strokeBorder(.white.opacity(0.85), lineWidth: 2)
+                            .frame(width: 13, height: 13)
+                            .offset(x: 21, y: 21)
                     }
 
                     // Süreli bölüm rozeti

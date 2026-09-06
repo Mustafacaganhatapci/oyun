@@ -1023,6 +1023,13 @@ struct GameContainerView: View {
     /// en çok bağlayan kural yazılır.
     static func levelRuleKey(for id: Int) -> String? {
         guard id != LevelLibrary.tutorialID, !LevelLibrary.isBonus(id) else { return nil }
+        // 150 sonrası çeşitler ÖNCE geliyor: bunlar kuralın kendisini
+        // değiştiriyor, ötekiler yalnızca hedefi. Renkleri ters çevrilmiş
+        // bir bölüme girip "büyük yıldız" yazısını okumak kimseyi
+        // hazırlamazdı.
+        if LevelLibrary.isInverted(id) { return "White burns here" }
+        if LevelLibrary.isUpsideDown(id) { return "Upside down" }
+        if LevelLibrary.hasShortcutGate(id) { return "Two ways out" }
         if LevelLibrary.isCollect(id) { return "Collect every star" }
         if LevelLibrary.hasTimer(id) { return "Beat the clock" }
         if LevelLibrary.hasGrandStar(id) { return "Giant star" }
@@ -1033,6 +1040,10 @@ struct GameContainerView: View {
         switch Self.levelRuleKey(for: id) {
         case "Collect every star": return settings.theme.gate.color
         case "Beat the clock":     return settings.theme.hazard.color
+        // Ters bölümün rozeti BEYAZ: bölümde öldüren renk hangisiyse o
+        case "White burns here":   return .white
+        case "Upside down":        return settings.theme.accent.color
+        case "Two ways out":       return .white
         default:                   return settings.theme.lumen.color
         }
     }

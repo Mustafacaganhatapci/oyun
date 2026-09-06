@@ -22,6 +22,10 @@ struct RingSpec: Equatable {
     var hazardRotationSpeed: CGFloat = 0          // radyan/sn (tehlike yayları döner)
     var moving: MovingSpec? = nil
     var isGate: Bool = false
+    /// KAÇIŞ kapısı — zincirin ortasında duran ikinci kapı. Beyaz çiziliyor,
+    /// bölümü hemen bitiriyor, ama arkasındaki yıldızlar orada kalıyor.
+    /// Yeşil kapıya gitmek daha uzun yol ve daha çok yıldız demek.
+    var isShortcutGate: Bool = false
 }
 
 struct LumenSpec: Equatable {
@@ -45,6 +49,16 @@ struct Level: Identifiable, Equatable {
     let lumens: [LumenSpec]
     var timeLimit: TimeInterval? = nil   // süreli bölüm: kapıya bu sürede ulaş (deneme başına)
     var dwellLimit: TimeInterval? = nil  // "devam et ya da düş": bir halkada bu süre dolunca küre kendiliğinden fırlar
+    /// RENKLER TERS. Halka kırmızı çiziliyor, öldüren yay BEYAZ. Yüz elli
+    /// bölüm boyunca "kırmızı yakar" diye öğrenilen şey burada geçersiz;
+    /// tehlike aynı yerde duruyor, yalnızca hangi rengin öldürdüğü değişiyor.
+    var invertedHazard = false
+    /// Bölüm BAŞ AŞAĞI kuruldu: küre yukarıda başlıyor, kapı aşağıda.
+    /// Oyunda yerçekimi olmadığı için tek bir kural değişmiyor — değişen,
+    /// yüz elli bölümde kurulmuş olan "yukarı doğru oynanır" alışkanlığı.
+    var upsideDown = false
+    /// Zincirin ortasında ikinci, beyaz bir kapı var
+    var hasShortcutGate = false
     var startRing: Int { 0 }
     var bonusDuration: TimeInterval { 25 }
 
@@ -121,6 +135,42 @@ enum LevelLibrary {
         if id <= legacyCount { return id % 7 == 1 }
         if id <= priorCount { return id % 3 == 2 }
         return id % 4 == 1 && !isCollect(id)
+    }
+
+    // MARK: 150 sonrası çeşit bölümleri
+    //
+    // Üçü de YALNIZCA `priorCount`'tan sonra. 1...150 yayında ve oyuncuların
+    // kayıtlı ilerlemesi o düzene göre kazanıldı; oradaki hiçbir bölümün
+    // kuralı değişmiyor. Aralara serpiştiriliyorlar — art arda gelmeleri
+    // sürprizi alışkanlığa çevirirdi.
+
+    /// Renkler ters: halka kırmızı, öldüren yay beyaz.
+    static func isInverted(_ id: Int) -> Bool {
+        guard id > priorCount, !isBonus(id) else { return false }
+        return id % 5 == 2
+    }
+
+    /// Baş aşağı: küre yukarıda başlar, kapı aşağıdadır.
+    ///
+    /// Ters bölümlerle ÇAKIŞMIYOR. İki çeşit aynı bölümde toplanınca hem
+    /// giriş kartındaki tek satırlık kural yalan söylüyor, hem de ilk
+    /// karşılaşma öğretici değil kafa karıştırıcı oluyor.
+    static func isUpsideDown(_ id: Int) -> Bool {
+        guard id > priorCount, !isBonus(id), !isInverted(id) else { return false }
+        return id % 7 == 5
+    }
+
+    /// Zincirin ortasında ikinci bir kapı. Topla-bitir bölümünde OLMAZ:
+    /// orada kapı zaten yıldızların hepsi toplanana kadar açılmıyor, yani
+    /// "erken çık" diye bir seçenek yok, kaçış kapısı anlamsız kalırdı.
+    ///
+    /// Bölen 8: 9 denenmişti ama `id % 9 == 4` demek `id % 3 == 1` demek,
+    /// yani 150 sonrasında HER seferinde topla-bitir bölümüne denk geliyor
+    /// ve eleniyordu — tek bir iki kapılı bölüm üretilmiyordu.
+    static func hasShortcutGate(_ id: Int) -> Bool {
+        guard id > priorCount, !isBonus(id), !isCollect(id),
+              !isInverted(id), !isUpsideDown(id) else { return false }
+        return id % 8 == 3
     }
 
     /// Zorluk eğrisinin 0...1 konumu. 100. normal bölümden sonra 1'de durur.
@@ -283,13 +333,73 @@ enum LevelLibrary {
 
         // Topla-bitir bölümlerinde süre baskısı yok: asıl meydan okuma kapıyı
         // açmak için haritayı süpürmek. İkisi üst üste binerse ceza olur.
+        // Kaçış kapısı zincirin DIŞINA konuyor.
+        //
+        // Önce zincirin ortasındaki halka kapıya çevriliyordu, ama zincir
+        // sırayla basılarak ilerliyor: yoldaki bir kapıya basmak zorunlu
+        // olurdu ve "erken çık" bir seçim değil, mecburiyet hâline gelirdi.
+        // Yana konan kapıya ancak oyuncu BİLEREK nişan alırsa varılıyor;
+        // almazsa zincir kesintisiz devam ediyor.
+        //
+        // Yıldızlar zaten yerleştirildikten SONRA ekleniyor: lumen konumları
+        // halka çiftlerine göre hesaplanıyor, araya girmek onları kaydırırdı.
+        var shortcut = false
+        if hasShortcutGate(id), rings.count >= 5 {
+            let anchor = rings[rings.count / 2].center
+            let radius: CGFloat = 0.085
+            let margin: CGFloat = 0.05
+
+            // Bütün haritayı tarıyoruz. Zincire yakın ama üstüne binmeyen bir
+            // yer arıyoruz: çok uzağa konan kapı görülmeden geçilir, çok
+            // yakına konan da zincirin bir parçası sanılır.
+            var best: CGPoint? = nil
+            var bestScore = -CGFloat.greatestFiniteMagnitude
+            var fallback: CGPoint? = nil
+            var fallbackClear = -CGFloat.greatestFiniteMagnitude
+            for gx in stride(from: CGFloat(0.13), through: 0.87, by: 0.03) {
+                for gy in stride(from: CGFloat(0.10), through: 0.90, by: 0.03) {
+                    let p = CGPoint(x: gx, y: gy)
+                    let c = clearance(p, radius: radius, rings: rings)
+                    if c > fallbackClear { fallbackClear = c; fallback = p }
+                    guard c >= margin else { continue }
+                    let dx = p.x - anchor.x, dy = p.y - anchor.y
+                    // 0.26 birim uzaklık hedefleniyor; sapma kadar puan kırılıyor
+                    let score = -abs(sqrt(dx * dx + dy * dy) - 0.26)
+                    if score > bestScore { bestScore = score; best = p }
+                }
+            }
+
+            // Sıkışık haritada en ferah nokta yine de alınıyor: harita
+            // "iki çıkış var" diye rozet taşıyorsa ikinci kapı MUTLAKA
+            // konmalı, yoksa etiket yalan söyler.
+            if let p = best ?? fallback {
+                var gate = RingSpec(center: p, radius: radius,
+                                    orbitSpeed: 1.6, direction: 1)
+                gate.isGate = true
+                gate.isShortcutGate = true
+                rings.append(gate)
+                shortcut = true
+            }
+        }
+
+        // Baş aşağı: her şey dikeyde aynalanıyor. Zincir aynı zincir, halkalar
+        // aynı halkalar; yalnızca başlangıç yukarıda, kapı aşağıda kalıyor.
+        let flipped = isUpsideDown(id)
+        if flipped {
+            for i in rings.indices { rings[i].center.y = 1 - rings[i].center.y }
+            for i in lumens.indices { lumens[i].position.y = 1 - lumens[i].position.y }
+        }
+
         let collect = isCollect(id)
         return Level(id: id,
                      kind: collect ? .collect : .normal,
                      rings: rings,
                      lumens: lumens,
                      timeLimit: collect ? nil : timeLimit,
-                     dwellLimit: collect ? nil : dwellLimit(for: id))
+                     dwellLimit: collect ? nil : dwellLimit(for: id),
+                     invertedHazard: isInverted(id),
+                     upsideDown: flipped,
+                     hasShortcutGate: shortcut)
     }
 
     // MARK: Bonus turu üretimi — tehlike yok, bol lumen, süre sınırlı

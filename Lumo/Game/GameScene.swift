@@ -71,6 +71,8 @@ final class GameScene: SKScene {
     private var lumenValues: [Int] = []          // her lumenin yıldız değeri (normal 1, büyük 4)
     private var lumenSpecs: [LumenSpec] = []     // topla-bitir bölümünde yeniden kurmak için
     private var gateNeedsAllLumens = false
+    /// Renkler ters: halka kırmızı, öldüren yay beyaz. Bölümden okunuyor.
+    private var invertedHazard = false
     /// Hız turunda kapı, yıldızların hepsi toplanmadan açılmaz — sıralamayı
     /// yıldızları atlayarak kısaltmak mümkün olmasın diye.
     private let requiresAllLumens: Bool
@@ -258,6 +260,7 @@ final class GameScene: SKScene {
             dwellLimit = lvl.dwellLimit
             forgivingBounds = LevelLibrary.isForgiving(id)
             gateNeedsAllLumens = lvl.gateNeedsAllLumens || (requiresAllLumens && !lvl.lumens.isEmpty)
+            invertedHazard = lvl.invertedHazard
             restartsOnDeath = lvl.restartsOnDeath
             hazardGraceEnabled = LevelLibrary.hasHazardGrace(id)
             lumenSpecs = lvl.lumens
@@ -800,15 +803,23 @@ final class GameScene: SKScene {
         // Antrenman bölümünde hedef halka bariz YEŞİL — "buraya atacaksın"
         // Öğreticide hedef bariz YEŞİL — ama renk körlüğü modunda o yeşil
         // tam da ayırt edilemeyen renk; orada temanın güvenli kapı rengi kalır
-        let gateColor = (isTutorial && !theme.isColorBlindSafe)
+        var gateColor = (isTutorial && !theme.isColorBlindSafe)
             ? UIColor.systemGreen : theme.gate.uiColor
+        // Kaçış kapısı BEYAZ: yeşil kapı "bölümün sonu", beyaz kapı "buradan
+        // da çıkabilirsin". İkisi aynı renk olsaydı seçim diye bir şey
+        // kalmaz, oyuncu yakın olana gider ve farkı hiç görmezdi.
+        if spec.isShortcutGate { gateColor = .white }
 
         // Topla-bitir bölümünde kapı, her şey toplanana kadar sönük durur —
         // "buraya gelmek yetmiyor" bilgisi renkten okunsun
         let locked = spec.isGate && gateNeedsAllLumens
 
         let circle = SKShapeNode(circleOfRadius: r)
-        circle.strokeColor = spec.isGate ? gateColor : theme.ring.uiColor
+        // Ters bölümde halkanın KENDİSİ kırmızı. Bölüme girer girmez, tek bir
+        // yazı okumadan, kuralın değiştiği anlaşılıyor.
+        circle.strokeColor = spec.isGate
+            ? gateColor
+            : (invertedHazard ? theme.hazard.uiColor : theme.ring.uiColor)
         // Halka zeminden net ayrılsın: arka planlar koyulaştı, çizgi de
         // buna karşılık biraz kalınlaştı ve tam opaklığa çıktı. Düşük
         // kontrast, parlaklıktan daha çok göz yoruyor.
@@ -859,7 +870,8 @@ final class GameScene: SKScene {
                             startAngle: arc.lowerBound, endAngle: arc.upperBound, clockwise: false)
                 let shape = SKShapeNode(path: path)
                 shape.name = Self.hazardBaseName
-                shape.strokeColor = theme.hazard.uiColor
+                // Ters bölümde öldüren yay BEYAZ, halka kırmızı
+                shape.strokeColor = invertedHazard ? .white : theme.hazard.uiColor
                 shape.lineWidth = 7
                 shape.lineCap = .round
                 shape.glowWidth = 2
@@ -1919,9 +1931,18 @@ final class GameScene: SKScene {
     private func win() {
         guard !finished else { return }
         finished = true
+        // Kutlama, üstünde DURULAN kapıda patlıyor. Eskiden ilk kapı
+        // aranıyordu; iki kapılı bölümde yeşilden çıkan oyuncu, ekranın
+        // ortasındaki beyaz kapının parladığını görüyordu. Durum `.won`a
+        // çevrilmeden ÖNCE okunuyor — sonrasında hangi halkada olunduğu
+        // bilgisi kayboluyor.
+        var winningGate: Int? = nil
+        if case .attached(let ring, _, _) = orbState, ringSpecs[ring].isGate {
+            winningGate = ring
+        }
         orbState = .won
         let stars = collectedStars
-        if let gateIndex = ringSpecs.firstIndex(where: { $0.isGate }) {
+        if let gateIndex = winningGate ?? ringSpecs.firstIndex(where: { $0.isGate }) {
             ringCircles[gateIndex].run(.sequence([.scale(to: 1.4, duration: 0.3), .scale(to: 1.0, duration: 0.3)]))
         }
         burst(at: orbNode.position, color: theme.gate.uiColor, count: 40)
