@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 // Yükleme anahtarı depoya girmez. `keystore.properties` yoksa (temiz bir
@@ -24,8 +25,8 @@ android {
         applicationId = "com.caganhatapci.orbeon"
         minSdk = 24
         targetSdk = 35
-        versionCode = 7
-        versionName = "2.0"
+        versionCode = 8
+        versionName = "2.2"
         resourceConfigurations += listOf("en", "tr", "de", "fr", "es", "ja")
     }
 
@@ -104,4 +105,10 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
+    // Bildirim: konsoldan tek gönderiyle herkese ulaşan yayın
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    // Çökme raporu: başkasının elindeki hata iz bırakmadan kayboluyordu
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    // Haftalık yarış hatırlatması — sunucu istemeyen yerel bildirim
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
 }

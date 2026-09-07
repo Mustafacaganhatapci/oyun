@@ -199,4 +199,10 @@
     <string name="thanks_stars_body">Celui-là, tu l\'as joué. Fini la publicité, définitivement, et pas une seule étoile n\'a été dépensée.</string>
     <string name="or_earn_it">Ou gagne-le</string>
     <string name="star_path_note">Premium se débloque tout seul une fois arrivé. Rien n\'est dépensé : chaque étoile reste la tienne.</string>
+    <string name="race_closes_tomorrow">La course de cette semaine se termine demain</string>
+    <string name="race_one_run_enough">Une seule partie suffit pour entrer au classement.</string>
+    <string name="notifications">Notifications</string>
+    <string name="notifications_note">Nouveaux niveaux, nouveaux personnages et un rappel avant la remise à zéro du classement. Rien d\'autre.</string>
+    <string name="notifications_denied">Les notifications sont désactivées pour Orbeon. Active-les dans les réglages du système.</string>
+    <string name="update_button">Mettre à jour</string>
 </resources>

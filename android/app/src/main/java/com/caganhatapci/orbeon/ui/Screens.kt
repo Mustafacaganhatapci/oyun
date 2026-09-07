@@ -1,5 +1,8 @@
 package com.caganhatapci.orbeon.ui
 
+import android.Manifest
+import android.os.Build
+import androidx.compose.ui.platform.LocalContext
 import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -109,7 +112,16 @@ fun MainMenuScreen(
 ) {
     val app = LocalAppState.current
     val theme = app.settings.theme
+    val context = LocalContext.current
     var showMissions by remember { mutableStateOf(false) }
+
+    // Duyuru oturumda bir kez okunuyor. Menüde, çünkü oyuncunun haberi
+    // görebileceği tek sakin an burası.
+    LaunchedEffect(Unit) {
+        app.announcement.refreshIfNeeded(
+            com.caganhatapci.orbeon.BuildConfig.VERSION_NAME, app.push
+        )
+    }
     var claimedFlash by remember { mutableStateOf<Int?>(null) }
     // Günlük ödül ve görev yıldızları da eşik geçirebilir; menüye her
     // dönüşte bekleyen açılış var mı diye bakılıyor
@@ -182,6 +194,45 @@ fun MainMenuScreen(
                 fontWeight = FontWeight.Light, letterSpacing = 13.sp,
                 modifier = Modifier.padding(top = 16.dp))
             Text(stringResource(R.string.tagline), color = Color.White.copy(alpha = 0.55f), fontSize = 13.sp)
+
+            // Firestore'dan gelen duyuru. Metnin tamamı konsoldan yazılıyor,
+            // o yüzden burada yerelleştirilecek bir şey yok — yalnızca düğme.
+            app.announcement.current?.let { item ->
+                Column(
+                    Modifier.fillMaxWidth().padding(horizontal = 28.dp, vertical = 14.dp)
+                        .background(theme.lumen.copy(alpha = 0.10f), RoundedCornerShape(18.dp))
+                        .border(1.dp, theme.lumen.copy(alpha = 0.28f), RoundedCornerShape(18.dp))
+                        .padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.Top) {
+                        Column(Modifier.weight(1f)) {
+                            Text(item.title, color = Color.White, fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold)
+                            Text(item.body, color = Color.White.copy(alpha = 0.65f), fontSize = 12.sp)
+                        }
+                        Text("✕", color = Color.White.copy(alpha = 0.45f), fontSize = 13.sp,
+                            modifier = Modifier.clickable {
+                                app.audio.playTap(); app.announcement.dismiss(app.push)
+                            })
+                    }
+                    item.storeId?.let { id ->
+                        Text(stringResource(R.string.update_button), color = theme.lumen,
+                            fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                            modifier = Modifier.clickable {
+                                app.audio.playTap()
+                                runCatching {
+                                    context.startActivity(
+                                        android.content.Intent(
+                                            android.content.Intent.ACTION_VIEW,
+                                            android.net.Uri.parse("market://details?id=$id")
+                                        )
+                                    )
+                                }
+                            })
+                    }
+                }
+            }
 
             // Ham "x / 806" oyuncuya hiçbir şey söylemiyordu; sıradaki karakter
             // bir hedef veriyor ve toplananın niye toplandığını anlatıyor.
@@ -942,6 +993,44 @@ fun SettingsScreen(onBack: () -> Unit, onPremium: () -> Unit, onTutorial: () -> 
                         Text(
                             stringResource(R.string.colorblind_mode_note),
                             color = Color.White.copy(alpha = 0.5f), fontSize = 12.sp
+                        )
+
+                        // Bildirim izni BURADA isteniyor, açılışta değil:
+                        // oyunu ilk kez açan birine sorulan izin çoğunlukla
+                        // reddediliyor ve bir daha sorulamıyor.
+                        val activityForPush = LocalActivity.current
+                        val permissionLauncher = rememberLauncherForActivityResult(
+                            ActivityResultContracts.RequestPermission()
+                        ) { granted -> app.push.setEnabled(true, granted) }
+
+                        ToggleRow(stringResource(R.string.notifications), app.push.isEnabled) { on ->
+                            if (!on) {
+                                app.push.setEnabled(false)
+                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                       !app.push.hasSystemPermission()) {
+                                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            } else {
+                                app.push.setEnabled(true, granted = true)
+                            }
+                        }
+                        Text(
+                            stringResource(
+                                if (app.push.isDenied) R.string.notifications_denied
+                                else R.string.notifications_note
+                            ),
+                            color = if (app.push.isDenied) theme.hazard
+                                    else Color.White.copy(alpha = 0.5f),
+                            fontSize = 12.sp,
+                            modifier = Modifier.clickable(enabled = app.push.isDenied) {
+                                activityForPush.startActivity(
+                                    android.content.Intent(
+                                        android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                                    ).putExtra(
+                                        android.provider.Settings.EXTRA_APP_PACKAGE,
+                                        activityForPush.packageName
+                                    )
+                                )
+                            }
                         )
                     }
                 }

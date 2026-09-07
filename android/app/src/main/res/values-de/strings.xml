@@ -199,4 +199,10 @@
     <string name="thanks_stars_body">Das hier hast du dir erspielt. Die Werbung ist für immer weg, und kein einziger Stern wurde abgezogen.</string>
     <string name="or_earn_it">Oder verdiene es dir</string>
     <string name="star_path_note">Premium schaltet sich von selbst frei, sobald du dort bist. Es wird nichts abgezogen.</string>
+    <string name="race_closes_tomorrow">Das Rennen dieser Woche endet morgen</string>
+    <string name="race_one_run_enough">Ein Lauf reicht für einen Platz in der Wertung.</string>
+    <string name="notifications">Benachrichtigungen</string>
+    <string name="notifications_note">Neue Level, neue Charaktere und ein Hinweis, bevor die Wochenwertung zurückgesetzt wird. Sonst nichts.</string>
+    <string name="notifications_denied">Benachrichtigungen für Orbeon sind aus. In den Systemeinstellungen aktivieren.</string>
+    <string name="update_button">Aktualisieren</string>
 </resources>

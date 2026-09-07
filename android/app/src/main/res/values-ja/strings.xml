@@ -199,4 +199,10 @@
     <string name="thanks_stars_body">これは自分で勝ち取ったものです。広告はこれきりで消え、星は一つも減っていません。</string>
     <string name="or_earn_it">あるいは、自分で手に入れる</string>
     <string name="star_path_note">そこに届いた時点でプレミアムが自動で解放されます。消費はありません。</string>
+    <string name="race_closes_tomorrow">今週のレースは明日で終了します</string>
+    <string name="race_one_run_enough">1回走るだけでランキングに載れます。</string>
+    <string name="notifications">通知</string>
+    <string name="notifications_note">新しいレベル、新しいキャラクター、そして週間ランキングのリセット前のお知らせ。それだけです。</string>
+    <string name="notifications_denied">Orbeonの通知はオフです。システム設定から有効にしてください。</string>
+    <string name="update_button">アップデート</string>
 </resources>

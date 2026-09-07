@@ -199,4 +199,10 @@
     <string name="thanks_stars_body">You played for this one. The ads are off for good, and not a single star was spent — every one of them is still yours.</string>
     <string name="or_earn_it">Or earn it</string>
     <string name="star_path_note">Premium unlocks by itself when you get there. Nothing is spent — every star stays yours.</string>
+    <string name="race_closes_tomorrow">This week\'s race closes tomorrow</string>
+    <string name="race_one_run_enough">One run is enough to take a place on the board.</string>
+    <string name="notifications">Notifications</string>
+    <string name="notifications_note">New levels, new characters and a nudge before the weekly board resets. Nothing else.</string>
+    <string name="notifications_denied">Notifications are off for Orbeon. Turn them on in system settings.</string>
+    <string name="update_button">Update</string>
 </resources>

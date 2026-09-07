@@ -199,4 +199,10 @@
     <string name="thanks_stars_body">Bunu oynayarak kazandın. Reklamlar temelli kapandı ve tek bir yıldızın bile gitmedi — hepsi hâlâ sende.</string>
     <string name="or_earn_it">Ya da kazan</string>
     <string name="star_path_note">Oraya vardığında Premium kendiliğinden açılıyor. Hiçbir şey harcanmıyor — yıldızların tamamı sende kalıyor.</string>
+    <string name="race_closes_tomorrow">Bu haftaki yarış yarın kapanıyor</string>
+    <string name="race_one_run_enough">Tabloya girmek için tek bir tur yeter.</string>
+    <string name="notifications">Bildirimler</string>
+    <string name="notifications_note">Yeni bölümler, yeni karakterler ve haftalık tablo sıfırlanmadan önce bir hatırlatma. Başka bir şey yok.</string>
+    <string name="notifications_denied">Orbeon için bildirimler kapalı. Sistem ayarlarından açabilirsin.</string>
+    <string name="update_button">Güncelle</string>
 </resources>

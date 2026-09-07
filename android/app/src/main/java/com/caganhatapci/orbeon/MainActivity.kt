@@ -11,6 +11,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.caganhatapci.orbeon.services.Announcement
+import com.caganhatapci.orbeon.services.Diagnostics
+import com.caganhatapci.orbeon.services.PushManager
 import com.caganhatapci.orbeon.services.AdsManager
 import com.caganhatapci.orbeon.services.AudioEngine
 import com.caganhatapci.orbeon.services.BillingManager
@@ -42,7 +45,9 @@ class AppState(
     val audio: AudioEngine,
     val haptics: Haptics,
     val customSounds: CustomSoundStore,
-    val connectivity: Connectivity
+    val connectivity: Connectivity,
+    val push: PushManager,
+    val announcement: Announcement
 )
 
 val LocalAppState = staticCompositionLocalOf<AppState> { error("AppState sağlanmadı") }
@@ -71,13 +76,20 @@ class MainActivity : ComponentActivity() {
             audio = AudioEngine(this),
             haptics = Haptics(this),
             customSounds = CustomSoundStore(this),
-            connectivity = Connectivity(this)
+            connectivity = Connectivity(this),
+            push = PushManager(this),
+            announcement = Announcement(this)
         )
 
         state.audio.soundEnabled = state.settings.soundOn
         state.audio.musicEnabled = state.settings.musicOn
         state.haptics.enabled = state.settings.hapticsOn
         state.leaderboard.configureIfPossible()
+        // Çökme raporunda hangi oyuncu olduğu görünsün — kimlik cihazda
+        // üretilmiş bir UUID, kişisel hiçbir şey taşımıyor
+        Diagnostics.identify(state.player.playerId)
+        // İzin İSTEMEZ: yalnızca daha önce açanın aboneliğini tazeler
+        state.push.restoreIfEnabled()
 
         // Premium'un kendi kaydettiği sesler motora yüklenir (yoksa sentetik kalır)
         state.customSounds.premiumActive = state.billing.isPremium

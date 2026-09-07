@@ -92,6 +92,7 @@ class LeaderboardService {
             isConfigured = true
         }.onFailure {
             Log.w("Orbeon.Leaderboard", "Firebase yok, sıralama kapalı: ${it.message}")
+            Diagnostics.breadcrumb("Firebase yok, sıralama kapalı: ${it.message}")
             isConfigured = false
         }
     }
@@ -157,6 +158,10 @@ class LeaderboardService {
             }
             .addOnFailureListener {
                 Log.e("Orbeon.Leaderboard", "Sıralama yüklenemedi: ${it.message}")
+                // Cihazın kendi günlüğü yalnızca o telefon elimizdeyken
+                // okunabiliyor; asıl bilinmesi gereken mağazadaki oyuncularda
+                // neyin bozulduğu.
+                Diagnostics.record("Sıralama yüklenemedi: ${it.message}", "Orbeon.Leaderboard")
                 loading = false
             }
     }

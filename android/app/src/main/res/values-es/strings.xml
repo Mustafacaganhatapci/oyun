@@ -199,4 +199,10 @@
     <string name="thanks_stars_body">Este te lo has jugado. La publicidad se acabó para siempre y no se gastó ni una estrella.</string>
     <string name="or_earn_it">O gánatelo</string>
     <string name="star_path_note">Premium se desbloquea solo cuando llegues. No se gasta nada: todas tus estrellas siguen siendo tuyas.</string>
+    <string name="race_closes_tomorrow">La carrera de esta semana cierra mañana</string>
+    <string name="race_one_run_enough">Con una sola partida ya entras en la tabla.</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="notifications_note">Nuevos niveles, nuevos personajes y un aviso antes de que se reinicie la tabla semanal. Nada más.</string>
+    <string name="notifications_denied">Las notificaciones de Orbeon están desactivadas. Actívalas en los ajustes del sistema.</string>
+    <string name="update_button">Actualizar</string>
 </resources>
