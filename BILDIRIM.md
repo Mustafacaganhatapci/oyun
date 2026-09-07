@@ -156,11 +156,27 @@ yayınıyla denemek daha kolay.
 
 ### f. Dil
 
-Konu yayını TEK metin gönderiyor, cihazın diline göre değişmiyor. Uygulama
-içindeki her şey yerelleştirilmiş durumda ama bu değil. Oyuncuların çoğu
-Türkiye'deyse Türkçe yaz; karışıksa İngilizce yaz ya da iki cümleyi alt alta
-koy. Firebase konsolunda dile göre ayrı kampanya açmak da mümkün, hedefleme
-sekmesinden "Language" koşulu ekleniyor.
+Bir konu yayını TEK metin gönderiyor ve cihazın diline göre değişmiyor.
+Firebase'in kendi dil hedeflemesi Google Analytics istiyor, o da bu projede
+bağlı değil (yalnızca Auth, Firestore ve AdMob var).
+
+Çözüm konunun kendisinde: her cihaz **iki** konuya abone oluyor —
+herkesi kapsayan `all` ve kendi dilininki.
+
+| Konu | Kime gider |
+|---|---|
+| `all` | Herkese, dil fark etmeksizin |
+| `all_tr` | Telefonu Türkçe olanlara |
+| `all_en` | İngilizce — desteklenmeyen diller de buraya düşüyor |
+| `all_de` `all_es` `all_fr` `all_ja` | Kendi dillerine |
+
+Yani Türkçe metni `all_tr`'ye, İngilizceyi `all_en`'e gönderiyorsun: iki
+kampanya, iki dil, kimse yabancı bir cümleyle karşılaşmıyor. Dilin fark
+etmediği bir haber varsa (bakım, sunucu sorunu) `all` yetiyor.
+
+Konsolda Target adımında Topic kutusuna hangisini yazarsan ona gidiyor.
+`all`'a gönderirsen dil konularına AYRICA gönderme — aynı kişiye iki
+bildirim düşer.
 
 ### Bilerek yapılmayan şey
 

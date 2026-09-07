@@ -54,6 +54,26 @@ final class PushManager: NSObject, ObservableObject {
     /// Konsoldan "Send to topic: all" ile herkese gönderilir
     private static let topic = "all"
 
+    /// Uygulamanın konuştuğu diller
+    private static let languages = ["tr", "en", "de", "es", "fr", "ja"]
+
+    /// Cihazın dil konusu — `all_tr`, `all_en` gibi.
+    ///
+    /// Konu yayını TEK metin gönderiyor ve cihazın diline göre değişmiyor.
+    /// Firebase'in dile göre hedeflemesi ise Google Analytics istiyor, o da
+    /// bu projede bağlı değil. Çözüm konunun kendisinde: her cihaz hem
+    /// `all`'a hem kendi dilinin konusuna abone oluyor. Türkçe metni
+    /// `all_tr`'ye, İngilizceyi `all_en`'e gönderiyorsun; iki dilde iki
+    /// kampanya, tek metinle herkesi zorlamak yok.
+    ///
+    /// Desteklenmeyen bir dilde açılan cihaz `all_en`'e düşüyor: uygulamanın
+    /// kendisi de o durumda İngilizce açılıyor.
+    private static var languageTopic: String {
+        let code = Locale.preferredLanguages.first?
+            .split(separator: "-").first.map(String.init) ?? "en"
+        return "all_" + (languages.contains(code) ? code : "en")
+    }
+
     private override init() {
         isEnabled = UserDefaults.standard.bool(forKey: Self.enabledKey)
         super.init()
@@ -198,12 +218,19 @@ final class PushManager: NSObject, ObservableObject {
     private func subscribe() {
         #if canImport(FirebaseMessaging)
         Messaging.messaging().subscribe(toTopic: Self.topic)
+        Messaging.messaging().subscribe(toTopic: Self.languageTopic)
         #endif
     }
 
     private func unsubscribe() {
         #if canImport(FirebaseMessaging)
         Messaging.messaging().unsubscribe(fromTopic: Self.topic)
+        // Dil konularının HEPSİNDEN çıkılıyor, yalnızca şu ankinden değil:
+        // oyuncu telefonun dilini değiştirmiş olabilir ve geride kalan bir
+        // abonelik, bildirimleri kapatmış birine bildirim göndermek demek.
+        for code in Self.languages {
+            Messaging.messaging().unsubscribe(fromTopic: "all_" + code)
+        }
         #endif
     }
 
