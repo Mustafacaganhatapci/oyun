@@ -66,6 +66,7 @@ fun GameCanvas(engine: GameEngine, theme: Theme, orbStyle: OrbStyle, orbPhoto: B
             drawTrail(engine, theme, orbStyle, den)
             drawRings(engine, theme, t, den)
             drawLumens(engine, theme, t, den)
+            drawLifePickups(engine, theme, t, den)
             drawAimLine(engine, theme, den)
             drawOrb(engine, theme, orbStyle, photoImage, t, den)
             drawBursts(engine, theme, den)
@@ -235,6 +236,36 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
                 style = Stroke(width = 3f * den, cap = StrokeCap.Round)
             )
         }
+    }
+}
+
+/**
+ * Sonsuz moddaki can kalpleri — halkanın üstünde duruyorlar.
+ *
+ * Nabız ÇİFT vuruşlu: yıldızların yumuşak salınımından ayrışsın diye. İkisi
+ * de altın/kırmızı ve aynı büyüklükte olsaydı uzaktan ayırt edilemezdi.
+ */
+private fun DrawScope.drawLifePickups(engine: GameEngine, theme: Theme, t: Float, den: Float) {
+    if (engine.lifePickups.isEmpty()) return
+    for ((_, pos) in engine.lifePickups) {
+        val (px, py) = engine.lifePoint(pos)
+        val c = Offset(px, py)
+        val beat = t * 1.6f
+        val phase = beat - kotlin.math.floor(beat)
+        val pulse = when {
+            phase < 0.12f -> 1f + 0.22f * (phase / 0.12f)
+            phase < 0.28f -> 1.22f - 0.22f * ((phase - 0.12f) / 0.16f)
+            phase < 0.38f -> 1f + 0.14f * ((phase - 0.28f) / 0.10f)
+            phase < 0.56f -> 1.14f - 0.14f * ((phase - 0.38f) / 0.18f)
+            else -> 1f
+        }
+        val r = 9f * den * pulse
+        drawCircle(theme.hazard.copy(alpha = 0.20f), r * 2.1f, c)
+        drawPath(heartPath(c, r), theme.hazard)
+        drawPath(heartPath(c, r), Color.White.copy(alpha = 0.85f),
+                 style = Stroke(width = 1f * den))
+        // `pos` normalize; sahne koordinatına çevirmek motorun işi, çünkü
+        // oynanabilir alanın kenar boşlukları orada tanımlı
     }
 }
 

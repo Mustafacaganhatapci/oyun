@@ -40,6 +40,8 @@ sealed class GameEvent {
     data class EndlessGameOver(val score: Int) : GameEvent()
     /** Premium ekstra canı harcandı — HUD göstergesi güncellensin */
     data class ExtraLifeUsed(val remaining: Int) : GameEvent()
+    /** Sonsuz modda halka üstündeki kalp toplandı */
+    data class ExtraLifeGained(val total: Int) : GameEvent()
 }
 
 sealed class GameMode {
@@ -199,6 +201,20 @@ class GameEngine(
         private set
     /** Kalan ekstra can — HUD sağ üstte kalp olarak gösterir */
     var extraLives = if (mode is GameMode.Endless && isPremium) 1 else 0
+
+    // Sonsuz moddaki can kalpleri — iOS'takiyle birebir aynı sayılar.
+    //
+    // İlk kalp on ikinci halkada, sonrası sekizer sekizer: 12, 20, 28, 36 …
+    // Halkanın ÜSTÜNDE duruyorlar. Uzun bir turda tek bir hata her şeyi
+    // bitiriyordu; bu kalpler ilerlemeye bir ödül veriyor. Kalp taşıyan
+    // halkaya tehlike yayı KONMUYOR: ödül veren halka aynı anda tuzak olmamalı.
+    //
+    // Tavan üç: ilk kalpler onu hızla dolduruyor, sonrakiler can kaybettikçe
+    // yeniden anlam kazanıyor. Canı doluyken gelinen kalp yerinde bırakılıyor.
+
+    /** Toplanmamış kalpler: halka sırası → normalize konum */
+    var lifePickups = mutableMapOf<Int, Pt>()
+        private set
         private set
     var cameraY = 0f
         private set
@@ -305,6 +321,9 @@ class GameEngine(
     fun ringRadius(i: Int): Float = ringSpecs[i].radius * width
 
     fun lumenPoint(i: Int): Pair<Float, Float> = scenePoint(lumens[i])
+
+    /** Kalbin sahne koordinatı — tuval kalpleri buradan çiziyor */
+    fun lifePoint(p: Pt): Pair<Float, Float> = scenePoint(p)
 
     // MARK: Girdi — tek dokunuş, tüm ekran
 
@@ -417,6 +436,7 @@ class GameEngine(
                     hazardArmedRing = s.ring
                 }
                 checkLumens()
+                checkLifePickups()
 
                 // AÇIK kapının üstünde durmak da kazanmaktır. Kazanma yalnızca
                 // `checkCapture` içinde, yani kapıya UÇARAK konulduğunda
@@ -448,6 +468,7 @@ class GameEngine(
                 orbY += s.vy * dt.toFloat()
                 checkCapture()
                 checkLumens()
+                checkLifePickups()
                 checkBounds()
                 if (flightTime > maxFlightTime) missedShot()
             }
@@ -566,6 +587,29 @@ class GameEngine(
     /** Topla-bitir bölümünde kapı, her lumen toplanana kadar kapalıdır. */
     private val gateOpen: Boolean
         get() = !gateNeedsAllLumens || lumenCollected.all { it }
+
+    /**
+     * Halka üstündeki kalpler. Canı doluyken gelinen kalp YERİNDE bırakılıyor:
+     * boşa harcanmış olmaz, geri dönüp alınabilir.
+     */
+    private fun checkLifePickups() {
+        if (mode !is GameMode.Endless || lifePickups.isEmpty()) return
+        if (extraLives >= ENDLESS_MAX_LIVES) return
+        val it = lifePickups.entries.iterator()
+        while (it.hasNext()) {
+            val entry = it.next()
+            val px = entry.value.x * width
+            val py = entry.value.y * height
+            val dx = px - orbX
+            val dy = py - orbY
+            if (sqrt(dx * dx + dy * dy) >= collectDistance * 1.4f) continue
+            extraLives = min(extraLives + 1, ENDLESS_MAX_LIVES)
+            burst(px, py, 22, FxColor.HAZARD)
+            it.remove()
+            onEvent?.invoke(GameEvent.ExtraLifeGained(extraLives))
+            return
+        }
+    }
 
     private fun checkLumens() {
         for (i in lumens.indices) {
@@ -759,7 +803,8 @@ class GameEngine(
 
             var arcs: List<ArcRange> = emptyList()
             var rot = 0f
-            if (n > 8 && endlessRNG.rand(0f, 1f) < 0.3f + 0.3f * hardness) {
+            val carriesLife = endlessRingHasLife(n)
+            if (n > 8 && !carriesLife && endlessRNG.rand(0f, 1f) < 0.3f + 0.3f * hardness) {
                 val span = endlessRNG.rand(
                     (PI * 0.22).toFloat(),
                     (PI * (0.3 + 0.2 * hardness)).toFloat()
@@ -779,6 +824,14 @@ class GameEngine(
                     hazardRotationSpeed = rot
                 )
             )
+
+            // Kalp, halkanın BİR ÖNCEKİNE bakan yakasına konuyor: küre oradan
+            // geliyor ve halkaya o tarafta tutunuyor, yani kalbi tam turu
+            // beklemeden alıyor.
+            if (carriesLife) {
+                val a = kotlin.math.atan2(prev.center.y - cy, prev.center.x - cx)
+                lifePickups[n] = Pt(cx + cos(a) * radius, cy + sin(a) * radius)
+            }
         }
         ringSpecs = list
     }
@@ -813,5 +866,17 @@ class GameEngine(
             val y = height * (0.30f + rng.nextFloat() * 0.55f)
             burst(x, y, 22, palette[i % palette.size], delay = 0.06f * i)
         }
+    }
+
+    companion object {
+        // Sonsuz moddaki can kalpleri — iOS'takiyle birebir aynı sayılar.
+        // Kural "N'den SONRA" değil "İLK N, sonra M'de bir": 12, 20, 28, 36 …
+        const val ENDLESS_LIFE_FIRST_RING = 12
+        const val ENDLESS_LIFE_EVERY = 8
+        const val ENDLESS_MAX_LIVES = 3
+
+        fun endlessRingHasLife(index: Int): Boolean =
+            index >= ENDLESS_LIFE_FIRST_RING &&
+                (index - ENDLESS_LIFE_FIRST_RING) % ENDLESS_LIFE_EVERY == 0
     }
 }

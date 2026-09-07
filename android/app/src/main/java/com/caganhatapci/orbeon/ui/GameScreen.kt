@@ -218,6 +218,14 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
 
             // Sessiz: yalnızca sayaç geri alınıyor, ortada toplanan bir şey yok
             is GameEvent.CollectReset -> lumenCount = 0
+
+            // Halka üstündeki kalp toplandı: yıldız sesinden ayrı bir ses,
+            // çünkü toplanan şey de ayrı
+            is GameEvent.ExtraLifeGained -> {
+                extraLives = event.total
+                app.audio.playCollect()
+                app.haptics.win()
+            }
             GameEvent.GateUnlocked -> {
                 app.audio.playWin()
                 app.haptics.win()
