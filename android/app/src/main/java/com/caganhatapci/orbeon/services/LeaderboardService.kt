@@ -5,6 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.AggregateSource
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
@@ -37,6 +39,14 @@ class LeaderboardService {
          * hesabı yerine bu kullanılıyor: java.time minSdk 24'te desugaring
          * istiyor, bu aritmetik ise her yerde aynı sonucu veriyor.
          */
+        /**
+         * Tablonun ilk sayfası kaç satır. Elli satır haftanın nüfusunun
+         * altıda biriydi: tablo hep aynı yerde bitiyor, arkadaki kalabalık
+         * hiç görünmüyordu.
+         */
+        const val PAGE_SIZE = 100
+        const val MAX_ROWS = 500
+
         private const val WEEK_ANCHOR_SECONDS = 1_704_067_200L   // 2024-01-01, Pazartesi, UTC
         private const val WEEK_LENGTH_SECONDS = 7L * 24 * 60 * 60
 
@@ -59,6 +69,17 @@ class LeaderboardService {
         private set
     var loading by mutableStateOf(false)
         private set
+    /**
+     * Bu haftaki kendi sıram — tablonun görünen penceresinin DIŞINDA olsam da.
+     * Üç yüz kişilik bir tabloda 190. olan kendini asla göremiyordu.
+     */
+    var myRank by mutableStateOf<Int?>(null)
+        private set
+    /** Kaç satır istendi — "daha fazla" her seferinde bir sayfa ekliyor */
+    var visibleRows by mutableStateOf(PAGE_SIZE)
+        private set
+    /** Arkada daha satır var mı */
+    val canLoadMore: Boolean get() = entries.size >= visibleRows && visibleRows < MAX_ROWS
 
     private var db: FirebaseFirestore? = null
 
@@ -105,9 +126,19 @@ class LeaderboardService {
         }
     }
 
-    fun load(mode: Mode, limit: Long = 50) {
+    /** Bir sayfa daha iste — liste sonuna gelince çağrılıyor */
+    fun loadMore(mode: Mode, playerId: String) {
+        if (!canLoadMore || loading) return
+        visibleRows = (visibleRows + PAGE_SIZE).coerceAtMost(MAX_ROWS)
+        load(mode, playerId)
+    }
+
+    fun load(mode: Mode, playerId: String = "", resetPaging: Boolean = false) {
         val database = db ?: return
+        if (resetPaging) visibleRows = PAGE_SIZE
+        val limit = visibleRows.toLong()
         loading = true
+        if (playerId.isNotBlank()) refreshMyRank(mode, playerId)
         val direction = if (mode == Mode.ENDLESS) Query.Direction.DESCENDING else Query.Direction.ASCENDING
         database.collection(mode.collection(currentWeek()))
             .orderBy("value", direction)
@@ -128,5 +159,38 @@ class LeaderboardService {
                 Log.e("Orbeon.Leaderboard", "Sıralama yüklenemedi: ${it.message}")
                 loading = false
             }
+    }
+
+    /**
+     * Kendi sıramı sunucudan sorar: benden İYİ olanların SAYISI + 1. Bütün
+     * tabloyu indirmeye gerek yok.
+     *
+     * EŞİTLİK de sayılıyor. "Benden iyi olanlar + 1" eşit skorluların EN
+     * ÜSTÜNÜ söylüyordu: sonsuz modda değer tam sayı, aynı skoru düzinelerce
+     * kişi paylaşıyor ve şerit "198" derken satır çok daha aşağıda duruyordu.
+     * Tablo eşitleri belge kimliğine göre sıralıyor; sıra da öyle sayılıyor.
+     */
+    private fun refreshMyRank(mode: Mode, playerId: String) {
+        val database = db ?: return
+        val collection = database.collection(mode.collection(currentWeek()))
+        collection.document(playerId).get().addOnSuccessListener { mine ->
+            val value = mine.getDouble("value")
+            if (value == null || (mode == Mode.ENDLESS && value < 1.0)) {
+                myRank = null
+                return@addOnSuccessListener
+            }
+            val better = if (mode == Mode.ENDLESS)
+                collection.whereGreaterThan("value", value)
+            else
+                collection.whereLessThan("value", value)
+            better.count().get(AggregateSource.SERVER).addOnSuccessListener { snap ->
+                val ahead = snap.count.toInt()
+                collection.whereEqualTo("value", value)
+                    .whereLessThan(FieldPath.documentId(), playerId)
+                    .count().get(AggregateSource.SERVER)
+                    .addOnSuccessListener { tied -> myRank = ahead + tied.count.toInt() + 1 }
+                    .addOnFailureListener { myRank = ahead + 1 }
+            }
+        }
     }
 }

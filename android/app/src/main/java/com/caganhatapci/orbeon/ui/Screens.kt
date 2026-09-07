@@ -51,6 +51,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.rotate
@@ -65,6 +66,7 @@ import androidx.compose.ui.unit.sp
 import com.caganhatapci.orbeon.LocalActivity
 import com.caganhatapci.orbeon.LocalAppState
 import com.caganhatapci.orbeon.R
+import com.caganhatapci.orbeon.model.Rank
 import com.caganhatapci.orbeon.model.LevelLibrary
 import com.caganhatapci.orbeon.model.OrbStyle
 import com.caganhatapci.orbeon.services.AdsManager
@@ -1118,7 +1120,11 @@ fun RankingScreen(onBack: () -> Unit, onEditName: () -> Unit) {
     val theme = app.settings.theme
     var mode by remember { mutableStateOf(LeaderboardService.Mode.ENDLESS) }
 
-    LaunchedEffect(mode) { app.leaderboard.load(mode) }
+    // Mod değişince sayfalama da başa dönüyor: hız turunun 400. satırından
+    // sonsuz moda geçip aynı derinlikte açılmak, bakılan şeyi değiştirmiyor
+    LaunchedEffect(mode) {
+        app.leaderboard.load(mode, app.player.playerId, resetPaging = true)
+    }
 
     ThemeBackground(theme) {
         Column(Modifier.fillMaxSize()) {
@@ -1149,35 +1155,155 @@ fun RankingScreen(onBack: () -> Unit, onEditName: () -> Unit) {
                     modifier = Modifier.fillMaxWidth().padding(30.dp)
                 )
             } else {
+                val entries = app.leaderboard.entries
+                // Şeritteki sayı GÖZÜN gördüğü sıra olmalı. Satırım yüklenmiş
+                // sayfaların içindeyse onun sırası kullanılıyor; sunucudan
+                // gelen sayım yalnızca satırım pencerenin ötesindeyken.
+                val myIndex = entries.indexOfFirst { it.playerId == app.player.playerId }
+                val myPlace = if (myIndex >= 0) myIndex + 1 else app.leaderboard.myRank
+
                 LazyColumn(
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(20.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(app.leaderboard.entries) { entry ->
-                        val index = app.leaderboard.entries.indexOf(entry) + 1
-                        val isMe = entry.playerId == app.player.playerId
-                        Row(
-                            Modifier.fillMaxWidth()
-                                .background(
-                                    if (isMe) theme.accent.copy(alpha = 0.18f) else Color.White.copy(alpha = 0.05f),
-                                    RoundedCornerShape(12.dp)
+                    // "Sen buradasın" şeridi EN ÜSTTE. Aşağıdayken tabloyu
+                    // sonuna kadar kaydırmadan görülmüyordu; oysa oyuncunun bu
+                    // ekranda ilk sorduğu şey bu.
+                    if (myPlace != null) {
+                        item(key = "me-banner") {
+                            val myValue = entries.getOrNull(myIndex)?.value ?: 0.0
+                            val myRankTier = Rank.of(myValue, mode)
+                            Row(
+                                Modifier.fillMaxWidth()
+                                    .background(theme.accent.copy(alpha = 0.14f), RoundedCornerShape(18.dp))
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RankDot(myRankTier, 14.dp)
+                                Column(Modifier.weight(1f).padding(start = 12.dp)) {
+                                    Text(stringResource(R.string.your_place), color = Color.White,
+                                        fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                    Text(stringResource(myRankTier.titleRes),
+                                        color = myRankTier.color, fontSize = 11.sp)
+                                }
+                                Text("#$myPlace", color = theme.accent,
+                                    fontSize = 24.sp, fontWeight = FontWeight.Black)
+                            }
+                        }
+                    }
+
+                    // Tablo rütbelere bölünmüş hâlde. Liste zaten skora göre
+                    // sıralı olduğu için art arda gelenleri kümelemek yetiyor:
+                    // başlık her rütbe değiştiğinde düşüyor.
+                    var lastRank: Rank? = null
+                    entries.forEachIndexed { index, entry ->
+                        val rank = Rank.of(entry.value, mode)
+                        if (rank != lastRank) {
+                            lastRank = rank
+                            item(key = "h-${mode.name}-${rank.name}") {
+                                Row(
+                                    Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 2.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RankDot(rank, 12.dp)
+                                    Text(stringResource(rank.titleRes), color = rank.color,
+                                        fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(start = 8.dp))
+                                    Text(Rank.rangeText(rank, mode),
+                                        color = Color.White.copy(alpha = 0.35f), fontSize = 11.sp,
+                                        modifier = Modifier.weight(1f).padding(start = 8.dp))
+                                }
+                            }
+                        }
+                        // Kimliğin içinde MOD var: doldurma belgeleri iki
+                        // koleksiyonda da aynı kimliği taşıyor, mod değişince
+                        // eski satır yeniden kullanılmasın.
+                        item(key = "${mode.name}-${entry.playerId}") {
+                            val isMe = entry.playerId == app.player.playerId
+                            Row(
+                                Modifier.fillMaxWidth()
+                                    .background(
+                                        if (isMe) theme.accent.copy(alpha = 0.18f)
+                                        else Color.White.copy(alpha = 0.05f),
+                                        RoundedCornerShape(12.dp)
+                                    )
+                                    .padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("${index + 1}", color = theme.lumen, fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold, maxLines = 1)
+                                Text(entry.username, color = Color.White, fontSize = 14.sp,
+                                    maxLines = 1,
+                                    modifier = Modifier.weight(1f).padding(start = 14.dp))
+                                Text(
+                                    if (mode == LeaderboardService.Mode.ENDLESS) "${entry.value.toInt()}"
+                                    else String.format("%.2f s", entry.value),
+                                    color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold
                                 )
-                                .padding(14.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("$index", color = theme.lumen, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                            Text(entry.username, color = Color.White, fontSize = 14.sp,
-                                modifier = Modifier.weight(1f).padding(start = 14.dp))
-                            Text(
-                                if (mode == LeaderboardService.Mode.ENDLESS) "${entry.value.toInt()}"
-                                else String.format("%.2f s", entry.value),
-                                color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold
-                            )
+                            }
+                        }
+                    }
+
+                    // Düğmeye basmak yerine: son satır ekrana girince bir
+                    // sayfa daha isteniyor.
+                    if (app.leaderboard.canLoadMore) {
+                        item(key = "more") {
+                            LaunchedEffect(app.leaderboard.visibleRows) {
+                                app.leaderboard.loadMore(mode, app.player.playerId)
+                            }
+                            Box(Modifier.fillMaxWidth().padding(16.dp),
+                                contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator(
+                                    color = Color.White.copy(alpha = 0.5f),
+                                    modifier = Modifier.size(22.dp), strokeWidth = 2.dp
+                                )
+                            }
+                        }
+                    }
+
+                    // Rütbe cetveli: merdivenin tamamı. Yalnızca dolu rütbeler
+                    // görünürken bir üsttekine ne kadar kaldığı bilinmiyordu.
+                    item(key = "ladder") {
+                        Column(Modifier.fillMaxWidth().padding(top = 24.dp)) {
+                            Text(stringResource(R.string.ranks), color = Color.White.copy(alpha = 0.9f),
+                                fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                            Rank.entries.reversed().forEach { r ->
+                                Row(
+                                    Modifier.fillMaxWidth().padding(top = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RankDot(r, 11.dp)
+                                    Text(stringResource(r.titleRes), color = Color.White.copy(alpha = 0.8f),
+                                        fontSize = 12.sp, modifier = Modifier.padding(start = 8.dp))
+                                    Text(Rank.rangeText(r, mode), color = Color.White.copy(alpha = 0.35f),
+                                        fontSize = 11.sp, textAlign = TextAlign.End,
+                                        modifier = Modifier.weight(1f))
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+/**
+ * Rütbe nişanı — simge yerine küçük bir küre, çünkü ekranın geri kalanı
+ * zaten kürelerden oluşuyor.
+ */
+@Composable
+private fun RankDot(rank: Rank, size: androidx.compose.ui.unit.Dp) {
+    Canvas(Modifier.size(size)) {
+        drawCircle(
+            Brush.radialGradient(
+                listOf(Color.White.copy(alpha = 0.9f), rank.color),
+                center = Offset(this.size.width * 0.35f, this.size.height * 0.3f),
+                radius = this.size.width * 0.7f
+            )
+        )
+        drawCircle(Color.White.copy(alpha = 0.25f), this.size.width / 2f,
+                   style = Stroke(width = 1f))
     }
 }
 

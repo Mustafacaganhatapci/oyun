@@ -187,4 +187,13 @@
     <string name="orb_moon">Lune</string>
     <string name="orb_atom">Atome</string>
     <string name="orb_nova">Nova</string>
+    <string name="rank_spark">Étincelle</string>
+    <string name="rank_ember">Braise</string>
+    <string name="rank_beacon">Phare</string>
+    <string name="rank_pulsar">Pulsar</string>
+    <string name="rank_quasar">Quasar</string>
+    <string name="rank_zenith">Zénith</string>
+    <string name="your_place">Ta place</string>
+    <string name="ranks">Rangs</string>
+    <string name="race_take_place">Prends ta place dans la course de cette semaine</string>
 </resources>

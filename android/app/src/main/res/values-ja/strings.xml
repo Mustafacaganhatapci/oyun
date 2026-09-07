@@ -187,4 +187,13 @@
     <string name="orb_moon">月</string>
     <string name="orb_atom">アトム</string>
     <string name="orb_nova">ノヴァ</string>
+    <string name="rank_spark">スパーク</string>
+    <string name="rank_ember">エンバー</string>
+    <string name="rank_beacon">ビーコン</string>
+    <string name="rank_pulsar">パルサー</string>
+    <string name="rank_quasar">クエーサー</string>
+    <string name="rank_zenith">ゼニス</string>
+    <string name="your_place">あなたの順位</string>
+    <string name="ranks">ランク</string>
+    <string name="race_take_place">今週のレースに名前を刻もう</string>
 </resources>

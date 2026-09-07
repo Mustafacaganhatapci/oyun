@@ -187,4 +187,13 @@
     <string name="orb_moon">Ay</string>
     <string name="orb_atom">Atom</string>
     <string name="orb_nova">Nova</string>
+    <string name="rank_spark">Kıvılcım</string>
+    <string name="rank_ember">Kor</string>
+    <string name="rank_beacon">Fener</string>
+    <string name="rank_pulsar">Pulsar</string>
+    <string name="rank_quasar">Kuazar</string>
+    <string name="rank_zenith">Zirve</string>
+    <string name="your_place">Senin sıran</string>
+    <string name="ranks">Rütbeler</string>
+    <string name="race_take_place">Bu haftaki yarışta yerini al</string>
 </resources>
