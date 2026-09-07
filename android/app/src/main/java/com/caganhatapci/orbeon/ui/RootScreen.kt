@@ -50,6 +50,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.caganhatapci.orbeon.services.BillingManager
 import com.caganhatapci.orbeon.LocalActivity
 import com.caganhatapci.orbeon.LocalAppState
 import com.caganhatapci.orbeon.R
@@ -131,7 +132,7 @@ fun RootScreen() {
         // Satın alma sonrası adına seslenen teşekkür kartı
         app.billing.thankYou?.let { thanks ->
             ThankYouOverlay(
-                isTip = thanks.isTip,
+                kind = thanks.kind,
                 username = app.player.username,
                 theme = theme
             ) { app.billing.thankYou = null }
@@ -167,6 +168,13 @@ fun RootScreen() {
                 app.billing.isPremium, app.progress.totalStars
             )
         }
+    }
+
+    // Yıldız her arttığında eşiğe bakılıyor: günlük ödül, görev, ödüllü
+    // reklam ve bölüm bitirme — hepsi buradan geçiyor. Açılışta da bakılıyor,
+    // çünkü eşik güncellemeden önce geçilmiş olabilir.
+    LaunchedEffect(app.progress.totalStars) {
+        app.billing.checkStarUnlock(app.progress.totalStars)
     }
 
     LaunchedEffect(Unit) {
@@ -280,7 +288,7 @@ private fun SplashScreen(theme: Theme) {
  */
 @Composable
 private fun ThankYouOverlay(
-    isTip: Boolean,
+    kind: BillingManager.ThankYou.Kind,
     username: String,
     theme: Theme,
     onClose: () -> Unit
@@ -300,7 +308,14 @@ private fun ThankYouOverlay(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Text(if (isTip) "❤️" else "👑", fontSize = 44.sp)
+            Text(
+                when (kind) {
+                    BillingManager.ThankYou.Kind.TIP -> "❤️"
+                    BillingManager.ThankYou.Kind.STARS -> "⭐️"
+                    else -> "👑"
+                },
+                fontSize = 44.sp
+            )
             // Adı varsa ona seslen; yoksa ad istemeyi seçmiş biri demektir
             Text(
                 if (username.isEmpty()) stringResource(R.string.thanks_plain)
@@ -309,11 +324,17 @@ private fun ThankYouOverlay(
                 textAlign = TextAlign.Center
             )
             Text(
-                stringResource(if (isTip) R.string.thanks_tip_body else R.string.thanks_premium_body),
+                stringResource(
+                    when (kind) {
+                        BillingManager.ThankYou.Kind.TIP -> R.string.thanks_tip_body
+                        BillingManager.ThankYou.Kind.STARS -> R.string.thanks_stars_body
+                        else -> R.string.thanks_premium_body
+                    }
+                ),
                 color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
-            if (isTip) {
+            if (kind != BillingManager.ThankYou.Kind.PREMIUM) {
                 Text(stringResource(R.string.premium_unlocked), color = theme.gate,
                     fontSize = 14.sp, fontWeight = FontWeight.Bold)
             }

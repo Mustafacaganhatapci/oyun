@@ -196,4 +196,7 @@
     <string name="your_place">あなたの順位</string>
     <string name="ranks">ランク</string>
     <string name="race_take_place">今週のレースに名前を刻もう</string>
+    <string name="thanks_stars_body">これは自分で勝ち取ったものです。広告はこれきりで消え、星は一つも減っていません。</string>
+    <string name="or_earn_it">あるいは、自分で手に入れる</string>
+    <string name="star_path_note">そこに届いた時点でプレミアムが自動で解放されます。消費はありません。</string>
 </resources>

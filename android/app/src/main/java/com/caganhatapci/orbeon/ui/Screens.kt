@@ -648,6 +648,39 @@ fun PremiumScreen(onBack: () -> Unit) {
                 Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+                // Ödemeden gelen yol. Teklifi zayıflatmıyor: eşik kampanyanın
+                // verdiği yıldızın üç katından fazla, yani bu yolu seçen
+                // gerçekten oynuyor. Ama yazılı bir söz olarak duruyor —
+                // "parası olmayan asla alamaz" demeyen bir oyun, ödeyenin de
+                // gözünde daha dürüst.
+                if (!app.billing.isPremium) {
+                    val total = app.progress.totalStars
+                    val goal = BillingManager.STAR_PREMIUM_THRESHOLD
+                    Column(
+                        Modifier.fillMaxWidth()
+                            .background(Color.White.copy(alpha = 0.05f), RoundedCornerShape(24.dp))
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("★", color = theme.lumen, fontSize = 15.sp)
+                            Text(stringResource(R.string.or_earn_it), color = Color.White.copy(alpha = 0.9f),
+                                fontSize = 15.sp, fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f).padding(start = 8.dp))
+                            Text("$total / $goal", color = theme.lumen,
+                                fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        }
+                        LinearProgressIndicator(
+                            progress = { app.billing.starProgress(total) },
+                            color = theme.lumen,
+                            trackColor = Color.White.copy(alpha = 0.12f),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Text(stringResource(R.string.star_path_note),
+                            color = Color.White.copy(alpha = 0.55f), fontSize = 12.sp)
+                    }
+                }
+
                 // Premium kartı. Premium alındıysa gösterilmiyor: parası
                 // ödenmiş bir şeyin fiyatını her açılışta göstermenin anlamı
                 // yok, ekranı da uzatıyordu.

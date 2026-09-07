@@ -196,4 +196,7 @@
     <string name="your_place">Tu puesto</string>
     <string name="ranks">Rangos</string>
     <string name="race_take_place">Toma tu lugar en la carrera de esta semana</string>
+    <string name="thanks_stars_body">Este te lo has jugado. La publicidad se acabó para siempre y no se gastó ni una estrella.</string>
+    <string name="or_earn_it">O gánatelo</string>
+    <string name="star_path_note">Premium se desbloquea solo cuando llegues. No se gasta nada: todas tus estrellas siguen siendo tuyas.</string>
 </resources>

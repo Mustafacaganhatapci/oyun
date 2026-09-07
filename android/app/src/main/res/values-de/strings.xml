@@ -196,4 +196,7 @@
     <string name="your_place">Dein Platz</string>
     <string name="ranks">Ränge</string>
     <string name="race_take_place">Sichere dir deinen Platz im Rennen dieser Woche</string>
+    <string name="thanks_stars_body">Das hier hast du dir erspielt. Die Werbung ist für immer weg, und kein einziger Stern wurde abgezogen.</string>
+    <string name="or_earn_it">Oder verdiene es dir</string>
+    <string name="star_path_note">Premium schaltet sich von selbst frei, sobald du dort bist. Es wird nichts abgezogen.</string>
 </resources>

@@ -39,6 +39,18 @@ class BillingManager(private val context: Context) {
         /** Ödüllü reklam sonunda verilen yıldız */
         const val REWARDED_STAR_GRANT = 25
 
+        /**
+         * YILDIZLA PREMIUM. Bu kadar yıldız toplayana premium kalıcı veriliyor
+         * — ödeme yok, harcama da yok.
+         *
+         * Sayı neden 2600: kampanyanın tamamı 806 yıldız veriyor, yani bu eşik
+         * bölümleri bitirmekle tek başına geçilemiyor. Kalanı günlük ödül,
+         * görevler ve ödüllü reklamlarla geliyor; düzenli oynayan için iki-üç
+         * hafta. Yeterince uzak ki satın almanın yerini almasın, yeterince
+         * yakın ki gerçek bir söz olsun.
+         */
+        const val STAR_PREMIUM_THRESHOLD = 2600
+
         /** Tanıdıklara verilen premium kodları (küçük harfe çevrilip karşılaştırılır) */
         val PROMO_CODES = setOf("axiumdynamicsisking", "ays123.")
         const val PROMO_FAIL_BONUS_THRESHOLD = 5
@@ -51,7 +63,14 @@ class BillingManager(private val context: Context) {
     enum class Status { SUCCESS, PENDING, FAILED, RESTORED, NOTHING_TO_RESTORE }
 
     /** Satın alma sonrası kişiye özel teşekkür kartı */
-    data class ThankYou(val isTip: Boolean)
+    /**
+     * Premium'a kavuşulan anın kartı. Üç yolu var ve üçü aynı yere çıkmıyor:
+     * satın alan bir şey aldı, bahşiş bırakan karşılık beklemeden verdi,
+     * yıldızla açan ise ödemedi — oynadı.
+     */
+    data class ThankYou(val kind: Kind) {
+        enum class Kind { PREMIUM, TIP, STARS }
+    }
 
     var thankYou by mutableStateOf<ThankYou?>(null)
 
@@ -70,6 +89,7 @@ class BillingManager(private val context: Context) {
     private val p = prefs(context)
     private var entitled = false      // gerçek satın alma var mı
     private var promoGranted = false  // kodla açıldı mı
+    private var starGranted = false   // yıldız eşiği geçilerek kazanıldı mı
     private var promoFailCount = 0
     private var promoBonusGranted = false
 
@@ -109,6 +129,7 @@ class BillingManager(private val context: Context) {
         entitled = p.getBoolean("store.premiumCache", false)
         promoGranted = p.getBoolean("store.promo", false)
         isSupporter = p.getBoolean("store.supporter", false)
+        starGranted = p.getBoolean("store.starPremium", false)
         promoFailCount = p.getInt("store.promoFailCount", 0)
         promoBonusGranted = p.getBoolean("store.promoBonusGranted", false)
         recomputePremium()
@@ -229,7 +250,7 @@ class BillingManager(private val context: Context) {
                 entitled = true
                 recomputePremium()
                 record(PREMIUM_ID)
-                thankYou = ThankYou(isTip = false)
+                thankYou = ThankYou(ThankYou.Kind.PREMIUM)
                 if (!purchase.isAcknowledged) {
                     val params = AcknowledgePurchaseParams.newBuilder()
                         .setPurchaseToken(purchase.purchaseToken)
@@ -245,7 +266,7 @@ class BillingManager(private val context: Context) {
                 p.edit().putBoolean("store.supporter", true).apply()
                 recomputePremium()
                 record(purchase.products.firstOrNull() ?: TIP_SMALL_ID)
-                thankYou = ThankYou(isTip = true)
+                thankYou = ThankYou(ThankYou.Kind.TIP)
                 // Bahşişler tüketilebilir: tekrar tekrar verilebilmeli
                 val params = ConsumeParams.newBuilder()
                     .setPurchaseToken(purchase.purchaseToken)
@@ -296,11 +317,38 @@ class BillingManager(private val context: Context) {
     }
 
     /** premium = gerçek satın alma VEYA tanıdık kodu */
-    /** premium = gerçek satın alma VEYA tanıdık kodu VEYA bahşiş */
+    /** premium = satın alma VEYA tanıdık kodu VEYA bahşiş VEYA yıldız eşiği */
     private fun recomputePremium() {
-        isPremium = entitled || promoGranted || isSupporter
+        isPremium = entitled || promoGranted || isSupporter || starGranted
         p.edit().putBoolean("store.premiumCache", entitled).apply()
     }
+
+    // MARK: Yıldızla premium
+
+    /**
+     * Yıldız sayısı değiştiğinde çağrılır. Eşik geçildiyse premium kalıcı
+     * veriliyor ve `true` dönüyor (kutlama kartı buna bakıyor).
+     *
+     * Yıldız HARCANMIYOR. Küreler de eşikle açılıyor; harcama olsaydı
+     * premium'u alan oyuncu henüz açılmamış kürelerini geri kaybederdi,
+     * yani ödül cezaya dönerdi.
+     */
+    fun checkStarUnlock(totalStars: Int): Boolean {
+        if (starGranted || totalStars < STAR_PREMIUM_THRESHOLD) return false
+        // Zaten premium'u olana kutlama ÇIKMIYOR: söylenecek yeni bir şey yok.
+        // Hak yine de işaretleniyor — satın alması bir gün iade edilse bile
+        // emeğiyle kazandığı yerinde kalsın.
+        val announce = !isPremium
+        starGranted = true
+        p.edit().putBoolean("store.starPremium", true).apply()
+        recomputePremium()
+        if (announce) thankYou = ThankYou(ThankYou.Kind.STARS)
+        return announce
+    }
+
+    /** Eşiğe ne kadar kaldı — teklif ekranındaki çubuk bunu gösteriyor */
+    fun starProgress(totalStars: Int): Float =
+        (totalStars.toFloat() / STAR_PREMIUM_THRESHOLD).coerceAtMost(1f)
 
     // MARK: Destekçi kaydı
     //

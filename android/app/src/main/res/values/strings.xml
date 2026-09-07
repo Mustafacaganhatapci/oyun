@@ -196,4 +196,7 @@
     <string name="your_place">Your place</string>
     <string name="ranks">Ranks</string>
     <string name="race_take_place">Take your place in this week\'s race</string>
+    <string name="thanks_stars_body">You played for this one. The ads are off for good, and not a single star was spent — every one of them is still yours.</string>
+    <string name="or_earn_it">Or earn it</string>
+    <string name="star_path_note">Premium unlocks by itself when you get there. Nothing is spent — every star stays yours.</string>
 </resources>

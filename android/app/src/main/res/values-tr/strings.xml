@@ -196,4 +196,7 @@
     <string name="your_place">Senin sıran</string>
     <string name="ranks">Rütbeler</string>
     <string name="race_take_place">Bu haftaki yarışta yerini al</string>
+    <string name="thanks_stars_body">Bunu oynayarak kazandın. Reklamlar temelli kapandı ve tek bir yıldızın bile gitmedi — hepsi hâlâ sende.</string>
+    <string name="or_earn_it">Ya da kazan</string>
+    <string name="star_path_note">Oraya vardığında Premium kendiliğinden açılıyor. Hiçbir şey harcanmıyor — yıldızların tamamı sende kalıyor.</string>
 </resources>
