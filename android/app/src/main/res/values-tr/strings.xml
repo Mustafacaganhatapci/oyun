@@ -60,7 +60,7 @@
     <string name="code_bonus">Kod doğru değildi ama al — 100 yıldız bizden!</string>
     <string name="no_pay_to_win">Hiçbir satın alma oyun avantajı vermez. Orbeon\'da pay-to-win yoktur.</string>
     <string name="tip_jar">Bahşiş Kavanozu</string>
-    <string name="tip_jar_body">Oyunu sevdiysen geliştiriciye bir kahve ısmarlayabilirsin ☕️</string>
+    <string name="tip_jar_body">Geliştiriciyi desteklemek istersen.</string>
     <string name="coffee_home">Kahve — Evde</string>
     <string name="coffee_cafe">Kahve — Kafede</string>
     <string name="thanks_support">Desteğin için teşekkürler!</string>

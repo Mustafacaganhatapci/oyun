@@ -689,6 +689,20 @@ fun PersonalizeScreen(onBack: () -> Unit, onPremium: () -> Unit) {
                         OrbStyle.starLadder.forEach { style ->
                             CharacterRow(style, theme, frameTime)
                         }
+
+                        // Şampiyon küresi listede DURUR ama satın alınamaz.
+                        // Gizlemek, kazanılabileceğini kimsenin bilmemesi
+                        // demek olurdu.
+                        CharacterRow(OrbStyle.byId(OrbStyle.CHAMPION_ID), theme, frameTime,
+                            note = stringResource(R.string.orb_champion_note))
+
+                        // Gizli küre TAM TERSİ: açılana kadar listede hiç yok.
+                        // Kilitli bir satır bırakmak "bir yerlerde bir şey var"
+                        // demek olurdu ve sırrı sır olmaktan çıkarırdı.
+                        if (app.progress.isOrbUnlocked(OrbStyle.byId(OrbStyle.SECRET_ID))) {
+                            CharacterRow(OrbStyle.byId(OrbStyle.SECRET_ID), theme, frameTime,
+                                note = stringResource(R.string.orb_chrono_note))
+                        }
                     }
                 }
 
@@ -978,7 +992,17 @@ fun PremiumScreen(onBack: () -> Unit) {
 }
 
 @Composable
-private fun CharacterRow(style: OrbStyle, theme: Theme, t: Float) {
+private fun CharacterRow(
+    style: OrbStyle,
+    theme: Theme,
+    t: Float,
+    /**
+     * Yıldızla açılmayan küreler için tek satırlık açıklama. Şampiyon nasıl
+     * kazanılır, chrono ne yapar — ikisi de yıldız eşiği taşımıyor, yani
+     * "şu kadar yıldız kaldı" satırı onlarda anlamsız kalıyor.
+     */
+    note: String? = null
+) {
     val app = LocalAppState.current
     val owned = app.progress.isOrbUnlocked(style)
     val equipped = app.settings.orbStyleId == style.id
@@ -1003,11 +1027,13 @@ private fun CharacterRow(style: OrbStyle, theme: Theme, t: Float) {
 
         Column(Modifier.weight(1f).padding(start = 12.dp)) {
             Text(
-                if (owned) stringResource(style.nameRes) else "???",
+                if (owned || note != null) stringResource(style.nameRes) else "???",
                 color = if (owned) Color.White else Color.White.copy(alpha = 0.55f),
                 fontSize = 15.sp, fontWeight = FontWeight.Bold
             )
-            if (!owned) {
+            if (note != null) {
+                Text(note, color = Color.White.copy(alpha = 0.45f), fontSize = 12.sp)
+            } else if (!owned) {
                 Text("★ " + stringResource(R.string.more_stars, remaining),
                     color = theme.lumen, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
@@ -1022,6 +1048,9 @@ private fun CharacterRow(style: OrbStyle, theme: Theme, t: Float) {
                     .clickable { app.audio.playTap(); app.settings.orbStyleId = style.id; app.settings.persist() }
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
+            // Eşiksiz küre (şampiyon): çubuk sıfır bölme demek, kilit yeter
+            cost == 0 -> Icon(Icons.Filled.Lock, null,
+                tint = Color.White.copy(alpha = 0.35f), modifier = Modifier.size(16.dp))
             // Eşiğe ne kadar kaldığı çubuktan da okunsun
             else -> LinearProgressIndicator(
                 progress = { app.progress.totalStars.toFloat() / cost.coerceAtLeast(1) },

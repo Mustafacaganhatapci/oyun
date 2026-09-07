@@ -60,7 +60,7 @@
     <string name="code_bonus">Der Code stimmte nicht, aber hier — 100 Sterne aufs Haus!</string>
     <string name="no_pay_to_win">Kein Kauf verschafft einen Spielvorteil. In Orbeon gibt es kein Pay-to-Win.</string>
     <string name="tip_jar">Trinkgeldglas</string>
-    <string name="tip_jar_body">Wenn dir das Spiel gefällt, spendier dem Entwickler einen Kaffee ☕️</string>
+    <string name="tip_jar_body">Falls du den Entwickler unterstützen möchtest.</string>
     <string name="coffee_home">Kaffee zuhause</string>
     <string name="coffee_cafe">Kaffee im Café</string>
     <string name="thanks_support">Danke für deine Unterstützung!</string>
