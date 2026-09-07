@@ -205,4 +205,13 @@
     <string name="notifications_note">Yeni bölümler, yeni karakterler ve haftalık tablo sıfırlanmadan önce bir hatırlatma. Başka bir şey yok.</string>
     <string name="notifications_denied">Orbeon için bildirimler kapalı. Sistem ayarlarından açabilirsin.</string>
     <string name="update_button">Güncelle</string>
+    <string name="orb_planet">Gezegen</string>
+    <string name="orb_bolt">Şimşek</string>
+    <string name="orb_droplet">Damla</string>
+    <string name="orb_ghost">Hayalet</string>
+    <string name="orb_champion">Şampiyon</string>
+    <string name="orb_chrono">Chrono</string>
+    <string name="orb_chrono_note">Basılı tut, zaman yavaşlasın. Çizgi nereye ineceğini gösterir.</string>
+    <string name="orb_champion_note">Haftalık ilk üçe girerek kazanılır</string>
+    <string name="version">Sürüm</string>
 </resources>

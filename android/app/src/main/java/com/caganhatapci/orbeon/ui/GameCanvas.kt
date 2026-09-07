@@ -67,7 +67,7 @@ fun GameCanvas(engine: GameEngine, theme: Theme, orbStyle: OrbStyle, orbPhoto: B
             drawRings(engine, theme, t, den)
             drawLumens(engine, theme, t, den)
             drawLifePickups(engine, theme, t, den)
-            drawAimLine(engine, theme, den)
+            drawAimLine(engine, theme, t, den)
             drawOrb(engine, theme, orbStyle, photoImage, t, den)
             drawBursts(engine, theme, den)
         }
@@ -299,20 +299,38 @@ private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme, t: Float, den
 }
 
 /** Antrenman: küre O AN fırlatılırsa gideceği yönü gösteren kesikli çizgi. */
-private fun DrawScope.drawAimLine(engine: GameEngine, theme: Theme, den: Float) {
-    if (!engine.isTutorial) return
+private fun DrawScope.drawAimLine(engine: GameEngine, theme: Theme, t: Float, den: Float) {
+    // Antrenman çizgisi sabit boyda; chrono çizgisi çarpacağı halkada
+    // KESİLİYOR ve oraya nabız atan bir nokta koyuyor.
+    if (!engine.isTutorial && !engine.usesChrono) return
     val s = engine.orbState as? GameEngine.OrbState.Attached ?: return
+    val start = Offset(engine.orbX, engine.orbY)
     val tx = -sin(s.angle) * s.direction
     val ty = cos(s.angle) * s.direction
-    val len = size.width * 0.5f
+
+    val hit = if (engine.usesChrono) engine.chronoAim else null
+    val end = if (hit != null) Offset(hit.first, hit.second)
+              else Offset(start.x + tx * size.width * 0.5f, start.y + ty * size.width * 0.5f)
+
+    // Hiçbir halkayı kesmiyorsa çizgi soluk: "şu an fırlatma" demenin en
+    // sessiz yolu. İnilecek yer kırmızıysa çizgi de kırmızı.
+    val color = when {
+        engine.usesChrono && hit == null -> Color.White.copy(alpha = 0.22f)
+        engine.chronoAimDeadly -> theme.hazard.copy(alpha = 0.85f)
+        else -> Color.White.copy(alpha = 0.7f)
+    }
+
     drawLine(
-        Color.White.copy(alpha = 0.7f),
-        start = Offset(engine.orbX, engine.orbY),
-        end = Offset(engine.orbX + tx * len, engine.orbY + ty * len),
+        color, start = start, end = end,
         strokeWidth = 3f * den,
         cap = StrokeCap.Round,
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f * den, 9f * den))
     )
+
+    if (hit != null) {
+        val pulse = 1f + 0.25f * sin(t * (PI / 0.5f).toFloat())
+        drawCircle(color, 9f * den * pulse, end, style = Stroke(width = 2f * den))
+    }
 }
 
 /** Dokunuş ipucu: nabız gibi genişleyen halka + el simgesi (ilk fırlatmaya dek). */
@@ -478,6 +496,106 @@ private fun DrawScope.drawOrb(
             drawCircle(theme.lumen, r * 0.85f, c, style = Stroke(width = 1.5f * den))
         }
 
+        OrbStyle.Kind.PLANET -> {
+            // Halkalı gezegen. Halka ARKADA tam elips, ÖNDE alt yarısı: küre
+            // halkanın içinden geçiyormuş gibi duruyor. Tek elips çizmek
+            // küreyi halkanın önüne yapıştırılmış gibi gösteriyordu.
+            val tilt = -20f
+            val rw = r * 3.2f
+            val rh = r * 1.0f
+            rotate(tilt, c) {
+                drawOval(theme.lumen.copy(alpha = 0.75f),
+                    topLeft = Offset(c.x - rw / 2f, c.y - rh / 2f),
+                    size = Size(rw, rh), style = Stroke(width = 2.5f * den))
+            }
+            drawCircle(theme.orb, r, c)
+            rotate(tilt, c) {
+                drawArc(theme.lumen, 0f, 180f, false,
+                    topLeft = Offset(c.x - rw / 2f, c.y - rh / 2f),
+                    size = Size(rw, rh), style = Stroke(width = 2.5f * den))
+            }
+        }
+
+        OrbStyle.Kind.BOLT -> {
+            // Çakma: kısa parlama, uzun bekleme. Sürekli titreyen bir şimşek
+            // şimşek değil, arızalı bir ampul olurdu.
+            val cycle = (t * 0.9f) % 1f
+            val flash = when {
+                cycle < 0.06f -> 1f
+                cycle < 0.14f -> 0.78f
+                cycle < 0.20f -> 1f
+                else -> 0.8f
+            }
+            drawPath(boltPath(c, r * 1.6f), theme.lumen.copy(alpha = flash))
+            drawPath(boltPath(c, r * 1.6f), Color.White.copy(alpha = 0.8f),
+                style = Stroke(width = 1f * den))
+        }
+
+        OrbStyle.Kind.DROPLET -> {
+            // Damla + ondan yayılan halka: düşen damlanın suya değme anı
+            val ripple = (t * 0.55f) % 1f
+            drawCircle(theme.accent.copy(alpha = (1f - ripple) * 0.7f),
+                r * 0.9f * (1f + ripple * 1.1f), c, style = Stroke(width = 1.5f * den))
+            val squash = 1f + 0.09f * sin(t * (PI / 0.55f).toFloat())
+            scale(1f / squash, squash, c) {
+                drawPath(dropletPath(c, r * 1.1f), theme.accent)
+                drawPath(dropletPath(c, r * 1.1f), Color.White.copy(alpha = 0.7f),
+                    style = Stroke(width = 1f * den))
+            }
+            drawCircle(Color.White.copy(alpha = 0.85f), r * 0.22f,
+                Offset(c.x - r * 0.33f, c.y - r * 0.1f))
+        }
+
+        OrbStyle.Kind.GHOST -> {
+            // Süzülme: yukarı aşağı yumuşak salınım
+            val float = sin(t * (PI / 0.8f).toFloat()) * 3.5f * den
+            val gc = Offset(c.x, c.y + float)
+            drawPath(ghostPath(gc, r * 1.15f), Color.White.copy(alpha = 0.92f))
+            val eye = Color(0xFF1F2133)
+            drawCircle(eye, r * 0.18f, Offset(gc.x - r * 0.38f, gc.y - r * 0.35f))
+            drawCircle(eye, r * 0.18f, Offset(gc.x + r * 0.38f, gc.y - r * 0.35f))
+        }
+
+        OrbStyle.Kind.CHAMPION -> {
+            // Altın taç + ters yönde dönen defne halkası. Köşeli siluet
+            // diğer kürelerin hepsinden ayrışsın diye seçildi.
+            val gold = Color(0xFFFFD159)
+            drawCircle(gold.copy(alpha = 0.16f), r * 1.9f, c)
+            val pulse = 1.02f + 0.06f * sin(t * (PI / 0.7f).toFloat())
+            drawPath(crownPath(c, r * 2.6f * pulse, r * 1.9f * pulse), gold)
+            rotate(-t * 72f, c) {
+                drawCircle(gold.copy(alpha = 0.85f), r * 2.1f, c,
+                    style = Stroke(width = 2f * den,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f * den, 6f * den))))
+            }
+        }
+
+        OrbStyle.Kind.CHRONO -> {
+            // Kadran + akrep. Akrep zaman yavaşlarken gözle görülür şekilde
+            // ağırlaşıyor: yeteneğin çalıştığını söyleyen en sessiz gösterge.
+            drawCircle(theme.bgTop.copy(alpha = 0.9f), r * 1.35f, c)
+            drawCircle(theme.accent, r * 1.35f, c, style = Stroke(width = 2f * den))
+            val hand = -t * (360f / 3f)
+            rotate(hand, c) {
+                drawLine(theme.lumen, c, Offset(c.x, c.y - r * 1.05f),
+                    strokeWidth = 1.6f * den, cap = StrokeCap.Round)
+            }
+            drawCircle(theme.lumen, r * 0.3f, c)
+
+            // Dolum yayı: doluyken görünmüyor — her karede ekranda duran bir
+            // gösterge, bir şey anlatmadığı sürece gürültüdür.
+            val charge = engine.chronoCharge
+            if (charge < 0.999f || engine.chronoSlowing) {
+                val gr = r * 2.4f
+                drawArc(
+                    if (charge < 0.2f) theme.hazard else theme.lumen.copy(alpha = 0.9f),
+                    -90f, -360f * charge, false,
+                    topLeft = Offset(c.x - gr, c.y - gr), size = Size(gr * 2, gr * 2),
+                    style = Stroke(width = 2.5f * den, cap = StrokeCap.Round)
+                )
+            }
+        }
+
         OrbStyle.Kind.PHOTO -> {
             if (photo != null) {
                 val pr = r * 1.6f
@@ -551,6 +669,57 @@ private fun polygonPath(c: Offset, sides: Int, radius: Float): Path {
     }
     path.close()
     return path
+}
+
+/** Şimşek — iOS boltPath'inin karşılığı */
+private fun boltPath(c: Offset, r: Float): Path = Path().apply {
+    moveTo(c.x + r * 0.10f, c.y - r)
+    lineTo(c.x - r * 0.55f, c.y + r * 0.12f)
+    lineTo(c.x - r * 0.08f, c.y + r * 0.12f)
+    lineTo(c.x - r * 0.18f, c.y + r)
+    lineTo(c.x + r * 0.55f, c.y - r * 0.18f)
+    lineTo(c.x + r * 0.06f, c.y - r * 0.18f)
+    close()
+}
+
+/** Damla: sivri tepe, yuvarlak taban */
+private fun dropletPath(c: Offset, r: Float): Path = Path().apply {
+    moveTo(c.x, c.y - r * 1.25f)
+    cubicTo(c.x + r * 0.85f, c.y - r * 0.15f, c.x + r, c.y + r * 0.30f, c.x, c.y + r)
+    cubicTo(c.x - r, c.y + r * 0.30f, c.x - r * 0.85f, c.y - r * 0.15f, c.x, c.y - r * 1.25f)
+    close()
+}
+
+/** Hayalet: kubbe gövde, dalgalı etek */
+private fun ghostPath(c: Offset, r: Float): Path = Path().apply {
+    moveTo(c.x - r, c.y + r * 0.75f)
+    lineTo(c.x - r, c.y - r * 0.1f)
+    cubicTo(c.x - r, c.y - r * 1.25f, c.x + r, c.y - r * 1.25f, c.x + r, c.y - r * 0.1f)
+    lineTo(c.x + r, c.y + r * 0.75f)
+    // Üç dalga: eteğin kendisi
+    cubicTo(c.x + r * 0.66f, c.y + r * 1.15f, c.x + r * 0.66f, c.y + r * 0.45f,
+            c.x + r * 0.33f, c.y + r * 0.85f)
+    cubicTo(c.x + r * 0.10f, c.y + r * 1.15f, c.x - r * 0.10f, c.y + r * 1.15f,
+            c.x - r * 0.33f, c.y + r * 0.85f)
+    cubicTo(c.x - r * 0.66f, c.y + r * 0.45f, c.x - r * 0.66f, c.y + r * 1.15f,
+            c.x - r, c.y + r * 0.75f)
+    close()
+}
+
+/** Taç — şampiyon küresinin silueti */
+private fun crownPath(c: Offset, w: Float, h: Float): Path = Path().apply {
+    val left = c.x - w / 2f
+    val right = c.x + w / 2f
+    val bottom = c.y + h * 0.42f
+    val top = c.y - h * 0.5f
+    moveTo(left, bottom)
+    lineTo(left, top + h * 0.18f)
+    lineTo(left + w * 0.25f, top + h * 0.52f)
+    lineTo(c.x, top)
+    lineTo(right - w * 0.25f, top + h * 0.52f)
+    lineTo(right, top + h * 0.18f)
+    lineTo(right, bottom)
+    close()
 }
 
 private fun heartPath(c: Offset, s: Float): Path {

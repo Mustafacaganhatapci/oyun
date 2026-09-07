@@ -2,6 +2,7 @@ package com.caganhatapci.orbeon.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -133,7 +134,13 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             mode,
             isPremium = app.billing.isPremium,
             requiresAllLumens = playMode == PlayMode.Speedrun
-        )
+        ).also { e ->
+            // Gizli küre: yavaşlatma ve nişan çizgisi yalnızca bu kürede
+            e.setChrono(orbStyle.kind == OrbStyle.Kind.CHRONO)
+            // Zamanın büküldüğü an parmakta hafif bir tık — atlayışın kendi
+            // titreşiminden daha yumuşak
+            e.onChronoToggle = { app.haptics.hop() }
+        }
     }
 
     // Yeni motor = yeni deneme: sayaçlar, bölüm kartı ve koç sıfırdan
@@ -331,8 +338,25 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             Modifier
                 .fillMaxSize()
                 .pointerInput(engine) {
-                    detectTapGestures {
-                        if (overlay == Overlay.None && coach?.isBlocking != true) engine.onTap()
+                    // Chrono "bas–bırak" ile oynanıyor: basılı tutmak zamanı
+                    // yavaşlatır, fırlatma parmak KALKINCA olur. Kısa
+                    // dokunuşta iki davranış arasında hissedilir fark yok;
+                    // fark yalnızca oyuncu beklemeye karar verdiğinde çıkıyor.
+                    //
+                    // `detectTapGestures` yerine ham olaylar: basma ile
+                    // bırakmayı ayrı ayrı duymak gerekiyor.
+                    awaitPointerEventScope {
+                        while (true) {
+                            awaitFirstDown(requireUnconsumed = false)
+                            val active = overlay == Overlay.None && coach?.isBlocking != true
+                            if (active) engine.onPressStart()
+                            var stillDown = true
+                            while (stillDown) {
+                                val event = awaitPointerEvent()
+                                stillDown = event.changes.any { it.pressed }
+                            }
+                            if (active) engine.onPressEnd()
+                        }
                     }
                 }
         ) {
@@ -363,7 +387,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             }
 
             orbReveal?.let { style ->
-                OrbRevealOverlay(style, theme, onEquip = {
+                OrbRevealOverlay(style, theme, note = null, onEquip = {
                     app.audio.playTap()
                     app.settings.orbStyleId = style.id
                     app.settings.persist()

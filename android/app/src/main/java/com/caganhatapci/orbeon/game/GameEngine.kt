@@ -150,6 +150,34 @@ class GameEngine(
     var invertedHazard = false
         private set
 
+    // MARK: Chrono küresi — gizli kürenin iki yeteneği
+    //
+    // Nişan çizgisi çarpacağı halkada KESİLİYOR ve oraya bir nokta koyuyor.
+    // Uçuş düz çizgi ve sabit hızda olduğu için tahmin sabit halkalarda
+    // birebir doğru; hareketli halkada ufak kayıyor, çünkü çizgi halkaların
+    // O ANKİ yerine bakıyor. Kayma bilerek düzeltilmedi: yoksa chrono bütün
+    // bölümleri kendisi çözerdi.
+    //
+    // Yavaşlatma parmağın altında: basılı tuttukça zaman ağırlaşıyor,
+    // bırakınca küre fırlıyor. Bedava değil — dolum bitince zaman normale
+    // dönüyor, halkada beklerken yavaşça doluyor.
+    var usesChrono = false
+        private set
+
+    /** Kuşanılan küre chrono mu — motor kurulurken bildiriliyor */
+    fun setChrono(on: Boolean) { usesChrono = on }
+    var chronoCharge = 1f
+        private set
+    var chronoSlowing = false
+        private set
+    private var chronoHeld = false
+    /** Nişan çizgisinin ucu (sahne koordinatı) — hiçbir halkayı kesmiyorsa null */
+    var chronoAim: Pair<Float, Float>? = null
+        private set
+    /** İniş noktası ŞU AN kırmızı mı — çizgi ona göre renkleniyor */
+    var chronoAimDeadly = false
+        private set
+
     // Tehlike müsamahası — ilk tam tur yakmaz
     /**
      * Müsamahalı bölümde tehlike yayının üstünde BAŞTAN yeşil bir kaplama
@@ -370,7 +398,11 @@ class GameEngine(
     fun update(deltaSeconds: Double) {
         if (coachFrozen) return
         if (width <= 1f) return
-        val dt = min(deltaSeconds, 1.0 / 30.0)
+        var dt = min(deltaSeconds, 1.0 / 30.0)
+        // Chrono zamanı buradan geçiriyor: parmak ekrandayken dt küçülüyor,
+        // yani halkalar, tehlikeler, geri sayımlar — her şey birlikte
+        // ağırlaşıyor. Oyuncu zaman kazanmıyor, DÜŞÜNME payı kazanıyor.
+        if (usesChrono) dt = updateChrono(dt)
         elapsed += dt
 
         // Patlama efektlerini yaşlandır (negatif yaş = henüz patlamadı)
@@ -429,6 +461,9 @@ class GameEngine(
                 val r = ringRadius(s.ring)
                 orbX = cx + cos(angle) * r
                 orbY = cy + sin(angle) * r
+                // Chrono: nişan çizgisi kürenin fırlatma yönünü canlı takip
+                // ediyor ve nereye VARDIĞINI söylüyor
+                if (usesChrono) updateChronoAim(s.ring, angle, s.direction)
                 if (!hazardGraceActive && hazardContains(s.ring, angle)) { fail(); return }
                 // Tur dolduğu an yay kırmızıya döner — artık öldürüyor
                 if (hazardGraceUntil != null && !hazardGraceActive) {
@@ -462,6 +497,7 @@ class GameEngine(
             }
 
             is OrbState.Flying -> {
+                chronoAim = null
                 dwellVisible = false
                 flightTime += dt
                 orbX += s.vx * dt.toFloat()
@@ -587,6 +623,104 @@ class GameEngine(
     /** Topla-bitir bölümünde kapı, her lumen toplanana kadar kapalıdır. */
     private val gateOpen: Boolean
         get() = !gateNeedsAllLumens || lumenCollected.all { it }
+
+    // MARK: Chrono — yavaşlatma ve iniş tahmini
+
+    /**
+     * Gerçek kareyi oyun karesine çevirir ve dolumu işler.
+     *
+     * Dolum GERÇEK saniyeyle tükeniyor, oyun saniyesiyle değil: yoksa
+     * yavaşlatmak kendi bütçesini de yavaşlatır ve parmak ekranda kaldıkça
+     * süre uzardı. Bütçe her zaman aynı: dolu haznede ~2,2 saniye.
+     */
+    private fun updateChrono(realDelta: Double): Double {
+        val attached = orbState is OrbState.Attached
+        // Yavaşlatma yalnızca halkadayken: chrono'nun işi UÇUŞU izlemek değil,
+        // atlayışı seçmek. Uçarken de çalışsaydı ıskalanan atış yavaş çekimde
+        // seyredilirdi, düzeltilemezdi.
+        val wantSlow = chronoHeld && attached && !finished && chronoCharge > 0f
+        chronoCharge = if (wantSlow)
+            max(0f, chronoCharge - (CHRONO_DRAIN * realDelta).toFloat())
+        else
+            min(1f, chronoCharge + (CHRONO_REFILL * realDelta).toFloat())
+
+        if (wantSlow != chronoSlowing) {
+            chronoSlowing = wantSlow
+            onChronoToggle?.invoke(wantSlow)
+        }
+        return if (wantSlow) realDelta * CHRONO_SLOW_FACTOR else realDelta
+    }
+
+    /** Zamanın büküldüğü an dışarıya bildiriliyor — titreşim için */
+    var onChronoToggle: ((Boolean) -> Unit)? = null
+
+    /** Parmak ekrana değdi. Chrono'da fırlatma BIRAKINCA oluyor. */
+    fun onPressStart() {
+        if (coachFrozen) return
+        if (usesChrono && orbState is OrbState.Attached) {
+            chronoHeld = true
+        } else {
+            onTap()
+        }
+    }
+
+    /** Parmak kalktı: yavaşlatma biter, küre fırlar. */
+    fun onPressEnd(cancelled: Boolean = false) {
+        if (!usesChrono || !chronoHeld) return
+        chronoHeld = false
+        if (chronoSlowing) {
+            chronoSlowing = false
+            onChronoToggle?.invoke(false)
+        }
+        // Kesintiye uğrayan bir dokunuş atış olmamalı
+        if (cancelled || coachFrozen) return
+        val s = orbState
+        if (s is OrbState.Attached) launch(s.ring, s.angle, s.direction)
+    }
+
+    /**
+     * Fırlatılırsa nereye varacağını hesaplar: ışını bütün halkalarla
+     * kesiştirip en yakınını alıyoruz. Hareketli halkada kayma var — çizgi
+     * halkaların O ANKİ yerine bakıyor, oysa küre oraya varana kadar halka
+     * yürüyor.
+     */
+    private fun updateChronoAim(ring: Int, angle: Float, direction: Float) {
+        val px = orbX
+        val py = orbY
+        val dx = -sin(angle) * direction
+        val dy = cos(angle) * direction
+        val maxLen = flightSpeedFactor * width * maxFlightTime.toFloat()
+
+        var bestT = Float.MAX_VALUE
+        var bestRing = -1
+        for (i in ringSpecs.indices) {
+            if (i == ring) continue
+            val (cx, cy) = ringCenter(i)
+            val rr = ringRadius(i)
+            // |p + t·d − c|² = r², |d| = 1 olduğu için ikinci derece denklem
+            val mx = cx - px
+            val my = cy - py
+            val proj = mx * dx + my * dy
+            val perp2 = mx * mx + my * my - proj * proj
+            if (perp2 > rr * rr) continue
+            val t = proj - sqrt(rr * rr - perp2)
+            if (t <= 0f || t > maxLen) continue
+            if (t < bestT) { bestT = t; bestRing = i }
+        }
+
+        if (bestRing < 0) {
+            chronoAim = null
+            chronoAimDeadly = false
+            return
+        }
+        val hx = px + dx * bestT
+        val hy = py + dy * bestT
+        chronoAim = hx to hy
+        // İneceği yer ŞU AN kırmızıysa çizgi de kırmızı. Halka döndüğü için
+        // varana kadar değişebilir; söylediği şey "şimdi fırlatırsan".
+        val (cx, cy) = ringCenter(bestRing)
+        chronoAimDeadly = hazardContains(bestRing, atan2(hy - cy, hx - cx))
+    }
 
     /**
      * Halka üstündeki kalpler. Canı doluyken gelinen kalp YERİNDE bırakılıyor:
@@ -874,6 +1008,11 @@ class GameEngine(
         const val ENDLESS_LIFE_FIRST_RING = 12
         const val ENDLESS_LIFE_EVERY = 8
         const val ENDLESS_MAX_LIVES = 3
+
+        // Chrono küresi — iOS'takiyle aynı sayılar
+        const val CHRONO_SLOW_FACTOR = 0.35    // zamanın kaçta kaçı
+        const val CHRONO_DRAIN = 0.45          // sn başına tüketim (≈2,2 sn)
+        const val CHRONO_REFILL = 0.22         // sn başına dolum (≈4,5 sn)
 
         fun endlessRingHasLife(index: Int): Boolean =
             index >= ENDLESS_LIFE_FIRST_RING &&

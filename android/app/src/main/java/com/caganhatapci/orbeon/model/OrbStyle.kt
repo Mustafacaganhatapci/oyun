@@ -10,6 +10,17 @@ sealed class OrbUnlock {
      * harcanmıyor: biriktirmek tek başına ilerleme, her eşik bir ödül.
      */
     data class Stars(val cost: Int) : OrbUnlock()
+    /**
+     * Haftalık sıralamada ilk üçe girerek kazanılır. Satın alınamaz,
+     * yıldızla açılamaz.
+     */
+    data object Champion : OrbUnlock()
+    /**
+     * GİZLİ. Listede hiç görünmez, hiçbir yerde ipucu verilmez; ayarlardaki
+     * sürüm yazısına yapılan bir vuruş dizisiyle açılır: sekiz vuruş, beş
+     * saniye bekleme, iki vuruş daha.
+     */
+    data object Secret : OrbUnlock()
     data object Premium : OrbUnlock()
 }
 
@@ -26,7 +37,7 @@ data class OrbStyle(
     enum class Kind {
         CLASSIC, STAR, CRYSTAL, COMET, RAINBOW, RING,
         DIAMOND, FLAME, PIXEL, PHOTO, BUBBLE, HEART, FIREFLY, CLOUD,
-        MOON, ATOM, NOVA
+        MOON, ATOM, NOVA, PLANET, BOLT, DROPLET, GHOST, CHAMPION, CHRONO
     }
 
     val isPremium: Boolean get() = unlock is OrbUnlock.Premium
@@ -48,16 +59,31 @@ data class OrbStyle(
             OrbStyle("heart",   R.string.orb_heart,   OrbUnlock.Stars(80),   Kind.HEART),
             OrbStyle("comet",   R.string.orb_comet,   OrbUnlock.Stars(110),  Kind.COMET),
             OrbStyle("diamond", R.string.orb_diamond, OrbUnlock.Stars(150),  Kind.DIAMOND),
+            // 150 ile 220 arası, 220 ile 320 arası gibi boşluklar iOS'ta
+            // dolduruldu; iki platform aynı eşiklerde aynı ödülü vermeli,
+            // yoksa cihaz değiştiren oyuncu ilerlemesini kaybetmiş sanır.
+            OrbStyle("planet",  R.string.orb_planet,  OrbUnlock.Stars(185),  Kind.PLANET),
             OrbStyle("firefly", R.string.orb_firefly, OrbUnlock.Stars(220),  Kind.FIREFLY),
+            OrbStyle("bolt",    R.string.orb_bolt,    OrbUnlock.Stars(265),  Kind.BOLT),
             OrbStyle("flame",   R.string.orb_flame,   OrbUnlock.Stars(320),  Kind.FLAME),
+            OrbStyle("droplet", R.string.orb_droplet, OrbUnlock.Stars(380),  Kind.DROPLET),
             OrbStyle("rainbow", R.string.orb_rainbow, OrbUnlock.Stars(450),  Kind.RAINBOW),
+            OrbStyle("ghost",   R.string.orb_ghost,   OrbUnlock.Stars(530),  Kind.GHOST),
             OrbStyle("cloud",   R.string.orb_cloud,   OrbUnlock.Stars(620),  Kind.CLOUD),
             // 620'den sonra 186 yıldız ödülsüz kalıyordu
             OrbStyle("moon",    R.string.orb_moon,    OrbUnlock.Stars(690),  Kind.MOON),
             OrbStyle("atom",    R.string.orb_atom,    OrbUnlock.Stars(750),  Kind.ATOM),
             OrbStyle("nova",    R.string.orb_nova,    OrbUnlock.Stars(806),  Kind.NOVA),
-            OrbStyle("photo",   R.string.orb_photo,   OrbUnlock.Premium,     Kind.PHOTO)
+            OrbStyle("photo",   R.string.orb_photo,   OrbUnlock.Premium,     Kind.PHOTO),
+            // Şampiyon: yalnızca haftalık ilk üçe girerek kazanılıyor
+            OrbStyle("champion", R.string.orb_champion, OrbUnlock.Champion,  Kind.CHAMPION),
+            // GİZLİ. Hiçbir listede, hiçbir sayaçta, hiçbir ipucunda geçmiyor
+            // — açılana kadar oyuncu için yok. Bu yüzden en sonda.
+            OrbStyle("chrono",  R.string.orb_chrono,  OrbUnlock.Secret,      Kind.CHRONO)
         )
+
+        const val CHAMPION_ID = "champion"
+        const val SECRET_ID = "chrono"
 
         /** Yıldız eşiğiyle açılan stiller, eşiğe göre sıralı */
         val starLadder get() = all.filter { it.starCost != null }.sortedBy { it.starCost }

@@ -205,4 +205,13 @@
     <string name="notifications_note">Nuevos niveles, nuevos personajes y un aviso antes de que se reinicie la tabla semanal. Nada más.</string>
     <string name="notifications_denied">Las notificaciones de Orbeon están desactivadas. Actívalas en los ajustes del sistema.</string>
     <string name="update_button">Actualizar</string>
+    <string name="orb_planet">Planeta</string>
+    <string name="orb_bolt">Rayo</string>
+    <string name="orb_droplet">Gota</string>
+    <string name="orb_ghost">Fantasma</string>
+    <string name="orb_champion">Campeón</string>
+    <string name="orb_chrono">Chrono</string>
+    <string name="orb_chrono_note">Mantén pulsado para ralentizar el tiempo. La línea muestra dónde caerás.</string>
+    <string name="orb_champion_note">Entra en el top 3 semanal para ganarlo</string>
+    <string name="version">Versión</string>
 </resources>

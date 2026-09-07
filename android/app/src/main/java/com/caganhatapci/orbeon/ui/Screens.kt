@@ -1,5 +1,7 @@
 package com.caganhatapci.orbeon.ui
 
+import kotlinx.coroutines.delay
+import com.caganhatapci.orbeon.BuildConfig
 import android.Manifest
 import android.os.Build
 import androidx.compose.ui.platform.LocalContext
@@ -102,6 +104,75 @@ private fun ScreenHeader(title: String, onBack: () -> Unit, trailing: @Composabl
     }
 }
 
+/**
+ * Ayarlardaki sürüm yazısının altındaki gizli kilit.
+ *
+ * Dizi: **sekiz vuruş, beş saniye bekleme, iki vuruş daha.** Beklemesi
+ * gereken yerde dokunan baştan başlıyor — sabırsızlık cezalandırılmıyor,
+ * yalnızca geri sayıyor. İlk sekizin arası üç saniyeyi geçerse de sayaç
+ * sıfırlanıyor: ayarlarda oyalanırken kazara açılmasın.
+ *
+ * Kilit hiçbir yerde anlatılmıyor. Tarifi burada duruyor, çünkü altı ay
+ * sonra bu ekranı açan kişinin sayıları koddan okuyabilmesi gerekiyor.
+ *
+ * Değişmez (immutable): Compose durumu kopyalayarak güncelliyor.
+ */
+data class SecretKnock(
+    val stage: Stage = Stage.IDLE,
+    val count: Int = 0,
+    val last: Long = 0L,
+    val waitStarted: Long = 0L
+) {
+    enum class Stage { IDLE, KNOCKING, WAITING, OPEN }
+
+    val isTiming: Boolean get() = waitStarted > 0L
+
+    /** Bir vuruş işler. İkinci değer: kilit AÇILDI mı. */
+    fun tapped(now: Long = System.currentTimeMillis()): Pair<SecretKnock, Boolean> = when (stage) {
+        Stage.IDLE -> copy(stage = Stage.KNOCKING, count = 1, last = now) to false
+
+        Stage.KNOCKING -> {
+            val n = if (now - last > KNOCK_GAP) 1 else count + 1
+            if (n >= KNOCKS)
+                SecretKnock(Stage.WAITING, 0, now, now) to false
+            else
+                copy(count = n, last = now) to false
+        }
+
+        // Beklemesi gereken yerde dokundu: dizi baştan başlıyor
+        Stage.WAITING -> SecretKnock(Stage.KNOCKING, 1, now, 0L) to false
+
+        Stage.OPEN -> {
+            if (last > 0L && now - last > KNOCK_GAP) {
+                SecretKnock(Stage.KNOCKING, 1, now, 0L) to false
+            } else {
+                val n = count + 1
+                if (n >= FINAL_KNOCKS) SecretKnock() to true
+                else copy(count = n, last = now) to false
+            }
+        }
+    }
+
+    /** Bekleme doldu mu, pencere kapandı mı — görünüm saniyede iki kez soruyor */
+    fun settled(now: Long = System.currentTimeMillis()): SecretKnock {
+        if (waitStarted == 0L) return this
+        val waited = now - waitStarted
+        return when {
+            stage == Stage.WAITING && waited >= PAUSE -> copy(stage = Stage.OPEN, count = 0, last = 0L)
+            stage == Stage.OPEN && waited >= WINDOW -> SecretKnock()
+            else -> this
+        }
+    }
+
+    companion object {
+        const val KNOCKS = 8
+        const val FINAL_KNOCKS = 2
+        const val PAUSE = 5_000L        // beklenmesi gereken süre
+        const val KNOCK_GAP = 3_000L    // vuruşlar arası üst sınır
+        const val WINDOW = 12_000L      // beklemenin başından itibaren
+    }
+}
+
 // MARK: Ana menü
 
 @Composable
@@ -136,7 +207,7 @@ fun MainMenuScreen(
     // diye kendi arka planıyla çiziliyor
     orbReveal?.let { style ->
       ThemeBackground(theme) {
-        OrbRevealOverlay(style, theme, onEquip = {
+        OrbRevealOverlay(style, theme, note = null, onEquip = {
             app.audio.playTap()
             app.settings.orbStyleId = style.id
             app.settings.persist()
@@ -1039,6 +1110,55 @@ fun SettingsScreen(onBack: () -> Unit, onPremium: () -> Unit, onTutorial: () -> 
                 CustomSoundsCard(theme, onPremium)
 
                 GlowButton(stringResource(R.string.how_to_play), theme.ring) { onTutorial() }
+
+                // Sürüm yazısı ve altındaki GİZLİ KİLİT.
+                //
+                // Dizi: sekiz vuruş, beş saniye bekleme, iki vuruş daha.
+                // Beklemesi gereken yerde dokunan baştan başlıyor. Sekiz
+                // vuruştan sonra yazı ışıklanıyor, bekleme dolunca parlıyor:
+                // diziyi bilmeyen hiçbir şey görmüyor, bilen de karanlıkta
+                // el yordamıyla aramıyor.
+                var knock by remember { mutableStateOf(SecretKnock()) }
+                var showSecret by remember { mutableStateOf(false) }
+                LaunchedEffect(knock.stage) {
+                    if (!knock.isTiming) return@LaunchedEffect
+                    while (knock.isTiming) {
+                        delay(500)
+                        knock = knock.settled()
+                    }
+                }
+                Text(
+                    "${stringResource(R.string.version)} ${BuildConfig.VERSION_NAME}",
+                    color = when (knock.stage) {
+                        SecretKnock.Stage.OPEN -> theme.lumen
+                        SecretKnock.Stage.WAITING -> Color.White.copy(alpha = 0.7f)
+                        else -> Color.White.copy(alpha = 0.4f)
+                    },
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
+                        .clickable {
+                            val (next, opened) = knock.tapped()
+                            knock = next
+                            if (opened) {
+                                app.progress.grantSecretOrb()
+                                showSecret = true
+                            }
+                        }
+                )
+
+                if (showSecret) {
+                    OrbRevealOverlay(
+                        style = OrbStyle.byId(OrbStyle.SECRET_ID), theme = theme,
+                        note = stringResource(R.string.orb_chrono_note),
+                        onEquip = {
+                            app.settings.orbStyleId = OrbStyle.SECRET_ID
+                            app.settings.persist()
+                            showSecret = false
+                        },
+                        onClose = { showSecret = false }
+                    )
+                }
             }
         }
     }
@@ -1611,6 +1731,51 @@ fun CharacterPreview(kind: OrbStyle.Kind, theme: Theme, t: Float, modifier: Modi
                 drawCircle(puff, 8f, c)
                 drawCircle(puff, 6f, Offset(c.x + 6f, c.y + 1f))
             }
+            OrbStyle.Kind.PLANET -> {
+                rotate(-20f, pivot = c) {
+                    drawOval(theme.lumen.copy(alpha = 0.8f),
+                        topLeft = Offset(c.x - 14f, c.y - 4.5f),
+                        size = androidx.compose.ui.geometry.Size(28f, 9f),
+                        style = Stroke(width = 1.6f))
+                }
+                drawCircle(theme.orb, 7f, c)
+                rotate(-20f, pivot = c) {
+                    drawArc(theme.lumen, 0f, 180f, false,
+                        topLeft = Offset(c.x - 14f, c.y - 4.5f),
+                        size = androidx.compose.ui.geometry.Size(28f, 9f),
+                        style = Stroke(width = 1.6f))
+                }
+            }
+            OrbStyle.Kind.BOLT -> drawPath(miniBolt(c, 11f), theme.lumen)
+            OrbStyle.Kind.DROPLET -> {
+                drawCircle(theme.accent.copy(alpha = 0.5f), 12f, c, style = Stroke(width = 1f))
+                drawPath(miniDroplet(c, 8f), theme.accent)
+            }
+            OrbStyle.Kind.GHOST -> {
+                drawPath(miniGhost(c, 9f), Color.White.copy(alpha = 0.92f))
+                val eye = Color(0xFF1F2133)
+                drawCircle(eye, 1.8f, Offset(c.x - 3f, c.y - 2f))
+                drawCircle(eye, 1.8f, Offset(c.x + 3f, c.y - 2f))
+            }
+            OrbStyle.Kind.CHAMPION -> {
+                val gold = Color(0xFFFFD159)
+                rotate(-t * 60f, pivot = c) {
+                    drawCircle(gold.copy(alpha = 0.85f), 16f, c,
+                        style = Stroke(width = 1.5f,
+                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 5f))))
+                }
+                drawPath(miniCrown(c, 18f, 13f), gold)
+            }
+            OrbStyle.Kind.CHRONO -> {
+                // Kadran + akrep — oyundaki siluetin aynısı
+                drawCircle(theme.bgTop.copy(alpha = 0.9f), 12f, c)
+                drawCircle(theme.accent, 12f, c, style = Stroke(width = 2f))
+                rotate(-t * 90f, pivot = c) {
+                    drawLine(theme.lumen, c, Offset(c.x, c.y - 9f), strokeWidth = 2f,
+                        cap = StrokeCap.Round)
+                }
+                drawCircle(theme.lumen, 2.5f, c)
+            }
             OrbStyle.Kind.PHOTO -> drawCircle(Color.White.copy(alpha = 0.8f), 8f, c,
                 style = Stroke(width = 2f))
         }
@@ -1638,6 +1803,52 @@ private fun miniPoly(c: Offset, sides: Int, radius: Float): Path {
     }
     path.close()
     return path
+}
+
+private fun miniBolt(c: Offset, r: Float): Path = Path().apply {
+    moveTo(c.x + r * 0.10f, c.y - r)
+    lineTo(c.x - r * 0.55f, c.y + r * 0.12f)
+    lineTo(c.x - r * 0.08f, c.y + r * 0.12f)
+    lineTo(c.x - r * 0.18f, c.y + r)
+    lineTo(c.x + r * 0.55f, c.y - r * 0.18f)
+    lineTo(c.x + r * 0.06f, c.y - r * 0.18f)
+    close()
+}
+
+private fun miniDroplet(c: Offset, r: Float): Path = Path().apply {
+    moveTo(c.x, c.y - r * 1.25f)
+    cubicTo(c.x + r * 0.85f, c.y - r * 0.15f, c.x + r, c.y + r * 0.30f, c.x, c.y + r)
+    cubicTo(c.x - r, c.y + r * 0.30f, c.x - r * 0.85f, c.y - r * 0.15f, c.x, c.y - r * 1.25f)
+    close()
+}
+
+private fun miniGhost(c: Offset, r: Float): Path = Path().apply {
+    moveTo(c.x - r, c.y + r * 0.75f)
+    lineTo(c.x - r, c.y - r * 0.1f)
+    cubicTo(c.x - r, c.y - r * 1.25f, c.x + r, c.y - r * 1.25f, c.x + r, c.y - r * 0.1f)
+    lineTo(c.x + r, c.y + r * 0.75f)
+    cubicTo(c.x + r * 0.66f, c.y + r * 1.15f, c.x + r * 0.66f, c.y + r * 0.45f,
+            c.x + r * 0.33f, c.y + r * 0.85f)
+    cubicTo(c.x + r * 0.10f, c.y + r * 1.15f, c.x - r * 0.10f, c.y + r * 1.15f,
+            c.x - r * 0.33f, c.y + r * 0.85f)
+    cubicTo(c.x - r * 0.66f, c.y + r * 0.45f, c.x - r * 0.66f, c.y + r * 1.15f,
+            c.x - r, c.y + r * 0.75f)
+    close()
+}
+
+private fun miniCrown(c: Offset, w: Float, h: Float): Path = Path().apply {
+    val left = c.x - w / 2f
+    val right = c.x + w / 2f
+    val bottom = c.y + h * 0.42f
+    val top = c.y - h * 0.5f
+    moveTo(left, bottom)
+    lineTo(left, top + h * 0.18f)
+    lineTo(left + w * 0.25f, top + h * 0.52f)
+    lineTo(c.x, top)
+    lineTo(right - w * 0.25f, top + h * 0.52f)
+    lineTo(right, top + h * 0.18f)
+    lineTo(right, bottom)
+    close()
 }
 
 private fun miniHeart(c: Offset, s: Float): Path {
@@ -1718,6 +1929,8 @@ private fun PhotoOrbCard(theme: Theme, t: Float) {
 fun OrbRevealOverlay(
     style: OrbStyle,
     theme: Theme,
+    /** Yeteneği olan küreler için tek satırlık açıklama — yoksa gösterilmez */
+    note: String? = null,
     onEquip: () -> Unit,
     onClose: () -> Unit
 ) {
@@ -1771,6 +1984,12 @@ fun OrbRevealOverlay(
 
             style.starCost?.let {
                 Text("★ $it", color = Color.White.copy(alpha = 0.5f), fontSize = 13.sp)
+            }
+            // Yeteneği olan tek küre chrono. Bulan kişi ne bulduğunu burada
+            // öğreniyor; başka hiçbir yerde anlatılmıyor.
+            if (note != null) {
+                Text(note, color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp,
+                    textAlign = TextAlign.Center)
             }
 
             GlowButton(stringResource(R.string.equip), theme.lumen, prominent = true, onClick = onEquip)

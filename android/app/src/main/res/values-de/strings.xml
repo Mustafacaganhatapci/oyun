@@ -205,4 +205,13 @@
     <string name="notifications_note">Neue Level, neue Charaktere und ein Hinweis, bevor die Wochenwertung zurückgesetzt wird. Sonst nichts.</string>
     <string name="notifications_denied">Benachrichtigungen für Orbeon sind aus. In den Systemeinstellungen aktivieren.</string>
     <string name="update_button">Aktualisieren</string>
+    <string name="orb_planet">Planet</string>
+    <string name="orb_bolt">Blitz</string>
+    <string name="orb_droplet">Tropfen</string>
+    <string name="orb_ghost">Geist</string>
+    <string name="orb_champion">Champion</string>
+    <string name="orb_chrono">Chrono</string>
+    <string name="orb_chrono_note">Halte gedrückt, um die Zeit zu verlangsamen. Die Linie zeigt, wo du landest.</string>
+    <string name="orb_champion_note">Erreiche die wöchentlichen Top 3</string>
+    <string name="version">Version</string>
 </resources>

@@ -205,4 +205,13 @@
     <string name="notifications_note">Nouveaux niveaux, nouveaux personnages et un rappel avant la remise à zéro du classement. Rien d\'autre.</string>
     <string name="notifications_denied">Les notifications sont désactivées pour Orbeon. Active-les dans les réglages du système.</string>
     <string name="update_button">Mettre à jour</string>
+    <string name="orb_planet">Planète</string>
+    <string name="orb_bolt">Éclair</string>
+    <string name="orb_droplet">Goutte</string>
+    <string name="orb_ghost">Fantôme</string>
+    <string name="orb_champion">Champion</string>
+    <string name="orb_chrono">Chrono</string>
+    <string name="orb_chrono_note">Maintiens pour ralentir le temps. La ligne montre où tu vas atterrir.</string>
+    <string name="orb_champion_note">Termine dans le top 3 hebdomadaire</string>
+    <string name="version">Version</string>
 </resources>

@@ -98,6 +98,22 @@ class ProgressStore(context: Context) {
         // sürümde satın almış oyuncular için duruyor: eşiğin altında olsalar
         // bile aldıkları küre ellerinden gitmesin.
         is OrbUnlock.Stars -> unlockedOrbs.contains(style.id) || totalStars >= u.cost
+        // Şampiyon küresi satın alınamaz, eşikle de açılmaz: tek yolu
+        // haftalık ilk üçe girmek.
+        is OrbUnlock.Champion -> unlockedOrbs.contains(style.id)
+        // Gizli küre: yalnızca ayarlardaki vuruş dizisiyle
+        is OrbUnlock.Secret -> unlockedOrbs.contains(style.id)
+    }
+
+    /**
+     * Gizli küreyi açar. `true` dönerse İLK kez açıldı demektir — kutlama
+     * ekranı buna bakıyor.
+     */
+    fun grantSecretOrb(): Boolean {
+        if (unlockedOrbs.contains(OrbStyle.SECRET_ID)) return false
+        unlockedOrbs = unlockedOrbs + OrbStyle.SECRET_ID
+        p.edit().putStringSet("progress.unlockedOrbs", unlockedOrbs).apply()
+        return true
     }
 
     /**

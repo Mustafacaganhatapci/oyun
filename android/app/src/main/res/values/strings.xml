@@ -205,4 +205,13 @@
     <string name="notifications_note">New levels, new characters and a nudge before the weekly board resets. Nothing else.</string>
     <string name="notifications_denied">Notifications are off for Orbeon. Turn them on in system settings.</string>
     <string name="update_button">Update</string>
+    <string name="orb_planet">Planet</string>
+    <string name="orb_bolt">Bolt</string>
+    <string name="orb_droplet">Droplet</string>
+    <string name="orb_ghost">Ghost</string>
+    <string name="orb_champion">Champion</string>
+    <string name="orb_chrono">Chrono</string>
+    <string name="orb_chrono_note">Hold to slow time. The line shows where you land.</string>
+    <string name="orb_champion_note">Finish in the weekly top 3 to win it</string>
+    <string name="version">Version</string>
 </resources>

@@ -205,4 +205,13 @@
     <string name="notifications_note">新しいレベル、新しいキャラクター、そして週間ランキングのリセット前のお知らせ。それだけです。</string>
     <string name="notifications_denied">Orbeonの通知はオフです。システム設定から有効にしてください。</string>
     <string name="update_button">アップデート</string>
+    <string name="orb_planet">惑星</string>
+    <string name="orb_bolt">稲妻</string>
+    <string name="orb_droplet">しずく</string>
+    <string name="orb_ghost">おばけ</string>
+    <string name="orb_champion">チャンピオン</string>
+    <string name="orb_chrono">クロノ</string>
+    <string name="orb_chrono_note">長押しで時間がゆっくりに。線が着地点を示します。</string>
+    <string name="orb_champion_note">週間ランキングの上位3位に入ると獲得</string>
+    <string name="version">バージョン</string>
 </resources>
