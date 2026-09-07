@@ -32,7 +32,10 @@ data class RingSpec(
     val hazardArcs: List<ArcRange> = emptyList(),
     val hazardRotationSpeed: Float = 0f,
     val moving: MovingSpec? = null,
-    val isGate: Boolean = false
+    val isGate: Boolean = false,
+    /** KAÇIŞ kapısı — zincirin dışında duran ikinci kapı. Beyaz çiziliyor,
+     *  bölümü hemen bitiriyor, arkasındaki yıldızlar orada kalıyor. */
+    val isShortcutGate: Boolean = false
 )
 
 data class LumenSpec(
@@ -56,7 +59,13 @@ data class Level(
     val rings: List<RingSpec>,
     val lumens: List<LumenSpec>,
     val timeLimit: Double? = null,    // süreli bölüm: kapıya bu sürede ulaş
-    val dwellLimit: Double? = null    // bu süre dolunca küre kendiliğinden fırlar
+    val dwellLimit: Double? = null,   // bu süre dolunca küre kendiliğinden fırlar
+    /** RENKLER TERS: halka kırmızı, öldüren yay BEYAZ. */
+    val invertedHazard: Boolean = false,
+    /** Baş aşağı: küre yukarıda başlıyor, kapı aşağıda. */
+    val upsideDown: Boolean = false,
+    /** Zincirin yanında ikinci, beyaz bir kapı var. */
+    val hasShortcutGate: Boolean = false
 ) {
     val startRing: Int get() = 0
     val bonusDuration: Double get() = 25.0
@@ -162,6 +171,38 @@ object LevelLibrary {
         if (id <= LEGACY_COUNT) return id % 7 == 1
         if (id <= PRIOR_COUNT) return id % 3 == 2
         return id % 4 == 1 && !isCollect(id)
+    }
+
+    // 150 sonrası çeşit bölümleri — iOS'takiyle BİREBİR aynı bölenler.
+    //
+    // Üçü de yalnızca PRIOR_COUNT'tan sonra: 1...150 yayında ve oyuncuların
+    // kayıtlı ilerlemesi o düzene göre kazanıldı. Birbirlerini de dışlıyorlar;
+    // iki çeşit aynı bölümde toplanınca giriş kartındaki tek satırlık kural
+    // yalan söylüyor.
+
+    /** Renkler ters: halka kırmızı, öldüren yay beyaz. */
+    fun isInverted(id: Int): Boolean {
+        if (id <= PRIOR_COUNT || isBonus(id)) return false
+        return id % 5 == 2
+    }
+
+    /** Baş aşağı: küre yukarıda başlar, kapı aşağıdadır. */
+    fun isUpsideDown(id: Int): Boolean {
+        if (id <= PRIOR_COUNT || isBonus(id) || isInverted(id)) return false
+        return id % 7 == 5
+    }
+
+    /**
+     * Zincirin yanında ikinci bir kapı. Topla-bitir bölümünde OLMAZ: orada
+     * kapı zaten yıldızların hepsi toplanana kadar açılmıyor.
+     *
+     * Bölen 8: `id % 9 == 4` demek `id % 3 == 1` demek, yani 150 sonrasında
+     * her seferinde topla-bitir bölümüne denk gelip eleniyordu.
+     */
+    fun hasShortcutGate(id: Int): Boolean {
+        if (id <= PRIOR_COUNT || isBonus(id) || isCollect(id)) return false
+        if (isInverted(id) || isUpsideDown(id)) return false
+        return id % 8 == 3
     }
 
     /**
@@ -295,6 +336,59 @@ object LevelLibrary {
             timeLimit = Math.round(rings.size * (4.0 - 1.4 * t)).toDouble()
         }
 
+        // Kaçış kapısı zincirin DIŞINA konuyor. Yola konsaydı üstüne basmak
+        // zorunlu olurdu ve "erken çık" bir seçim değil, mecburiyet olurdu.
+        // Yıldızlar yerleştikten SONRA ekleniyor: lumen konumları halka
+        // çiftlerine göre hesaplanıyor, araya girmek onları kaydırırdı.
+        var shortcut = false
+        if (hasShortcutGate(id) && rings.size >= 5) {
+            val anchor = rings[rings.size / 2].center
+            val radius = 0.085f
+            val margin = 0.05f
+            var best: Pt? = null
+            var bestScore = -Float.MAX_VALUE
+            var fallback: Pt? = null
+            var fallbackClear = -Float.MAX_VALUE
+            var gx = 0.13f
+            while (gx <= 0.87f) {
+                var gy = 0.10f
+                while (gy <= 0.90f) {
+                    val p = Pt(gx, gy)
+                    val c = clearance(p, radius, rings)
+                    if (c > fallbackClear) { fallbackClear = c; fallback = p }
+                    if (c >= margin) {
+                        val dx = p.x - anchor.x
+                        val dy = p.y - anchor.y
+                        val score = -kotlin.math.abs(sqrt(dx * dx + dy * dy) - 0.26f)
+                        if (score > bestScore) { bestScore = score; best = p }
+                    }
+                    gy += 0.03f
+                }
+                gx += 0.03f
+            }
+            // Sıkışık haritada en ferah nokta yine de alınıyor: harita "iki
+            // çıkış var" diye rozet taşıyorsa ikinci kapı MUTLAKA konmalı.
+            val spot = best ?: fallback
+            if (spot != null) {
+                rings.add(RingSpec(spot, radius, 1.6f, 1f,
+                                   isGate = true, isShortcutGate = true))
+                shortcut = true
+            }
+        }
+
+        // Baş aşağı: her şey dikeyde aynalanıyor. Zincir aynı zincir; yalnızca
+        // başlangıç yukarıda, kapı aşağıda kalıyor.
+        val flipped = isUpsideDown(id)
+        if (flipped) {
+            for (i in rings.indices) {
+                rings[i] = rings[i].copy(center = Pt(rings[i].center.x, 1f - rings[i].center.y))
+            }
+            for (i in lumens.indices) {
+                lumens[i] = lumens[i].copy(
+                    position = Pt(lumens[i].position.x, 1f - lumens[i].position.y))
+            }
+        }
+
         // Topla-bitir bölümlerinde süre baskısı yok: asıl meydan okuma kapıyı
         // açmak için haritayı süpürmek. İkisi üst üste binerse ceza olur.
         val collect = isCollect(id)
@@ -304,7 +398,10 @@ object LevelLibrary {
             rings,
             lumens,
             if (collect) null else timeLimit,
-            if (collect) null else dwellLimit(id)
+            if (collect) null else dwellLimit(id),
+            invertedHazard = isInverted(id),
+            upsideDown = flipped,
+            hasShortcutGate = shortcut
         )
     }
 

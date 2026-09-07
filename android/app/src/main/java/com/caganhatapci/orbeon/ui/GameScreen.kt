@@ -215,6 +215,9 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                 app.audio.playCollect()
                 app.haptics.collect()
             }
+
+            // Sessiz: yalnızca sayaç geri alınıyor, ortada toplanan bir şey yok
+            is GameEvent.CollectReset -> lumenCount = 0
             GameEvent.GateUnlocked -> {
                 app.audio.playWin()
                 app.haptics.win()

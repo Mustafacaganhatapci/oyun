@@ -22,6 +22,14 @@ sealed class GameEvent {
     data class Hop(val combo: Int) : GameEvent()
     data class Attached(val hasHazard: Boolean, val isMoving: Boolean) : GameEvent()
     data class Collect(val total: Int) : GameEvent()
+    /**
+     * Yıldız sayacı SIFIRLANDI — bölüm baştan kuruldu.
+     *
+     * Ayrı bir olay, çünkü `Collect` "yıldız toplandı" demek ve arayüz ona ses
+     * ile titreşim bağlıyor. Sıfırlama da `Collect(0)` olarak gönderiliyordu:
+     * oyuncu öldüğünde, yeniden doğarken yıldız toplama sesi duyuyordu.
+     */
+    data object CollectReset : GameEvent()
     /** Topla-bitir: son lumen toplandı, kapı açıldı */
     data object GateUnlocked : GameEvent()
     data object Fail : GameEvent()
@@ -136,6 +144,10 @@ class GameEngine(
     /** Kilitli kapı sönük çizilsin diye tuvalin okuduğu bayrak */
     val gateLocked: Boolean get() = gateNeedsAllLumens && !gateOpen
 
+    /** Renkler ters: halka kırmızı, öldüren yay beyaz. Tuval buna bakıyor. */
+    var invertedHazard = false
+        private set
+
     // Tehlike müsamahası — ilk tam tur yakmaz
     /**
      * Müsamahalı bölümde tehlike yayının üstünde BAŞTAN yeşil bir kaplama
@@ -249,6 +261,7 @@ class GameEngine(
                 gateNeedsAllLumens = lvl.gateNeedsAllLumens ||
                     (requiresAllLumens && lvl.lumens.isNotEmpty())
                 restartsOnDeath = lvl.restartsOnDeath
+                invertedHazard = lvl.invertedHazard
                 lumenSpecs = lvl.lumens
                 if (isBonus) bonusDeadline = lvl.bonusDuration
                 if (isTutorial) tapHintVisible = true
@@ -694,7 +707,7 @@ class GameEngine(
         orbVisible = true
         lumenCollected = BooleanArray(lumenSpecs.size)
         lumenValues = lumenSpecs.map { it.value }.toIntArray()
-        onEvent?.invoke(GameEvent.Collect(0))
+        onEvent?.invoke(GameEvent.CollectReset)
         respawn()
     }
 

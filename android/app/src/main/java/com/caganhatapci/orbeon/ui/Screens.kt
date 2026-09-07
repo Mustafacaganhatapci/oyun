@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.rotate
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.ui.graphics.PathEffect
@@ -423,6 +424,12 @@ fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
                     val stars = app.progress.stars[id] ?: 0
                     val isBonus = LevelLibrary.isBonus(id)
                     val isCollect = LevelLibrary.isCollect(id)
+                    // 150 sonrası çeşitler: bölüme girmeden ne olduğu belli
+                    // olsun. Bonus ve topla-bitir zaten zeminden ayrışıyor,
+                    // yenileri de aynı dili konuşuyor.
+                    val isInverted = LevelLibrary.isInverted(id)
+                    val isUpsideDown = LevelLibrary.isUpsideDown(id)
+                    val twoGates = LevelLibrary.hasShortcutGate(id)
                     Box(
                         Modifier
                             .height(58.dp)
@@ -431,13 +438,22 @@ fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
                                     isBonus -> theme.lumen.copy(alpha = 0.16f)
                                     // Topla-bitir bölümü kapı rengiyle ayrışsın
                                     isCollect -> theme.gate.copy(alpha = 0.16f)
+                                    // Ters bölüm oyundaki hâliyle aynı renkte
+                                    isInverted -> theme.hazard.copy(alpha = 0.14f)
+                                    isUpsideDown -> theme.accent.copy(alpha = 0.16f)
+                                    twoGates -> Color.White.copy(alpha = 0.13f)
                                     else -> Color.White.copy(alpha = 0.07f)
                                 },
                                 RoundedCornerShape(14.dp)
                             )
                             .border(
                                 1.dp,
-                                if (unlocked) theme.ring.copy(alpha = 0.5f) else Color.Transparent,
+                                when {
+                                    !unlocked -> Color.Transparent
+                                    isInverted -> theme.hazard.copy(alpha = 0.8f)
+                                    twoGates -> Color.White.copy(alpha = 0.6f)
+                                    else -> theme.ring.copy(alpha = 0.5f)
+                                },
                                 RoundedCornerShape(14.dp)
                             )
                             .clickable(enabled = unlocked) { app.audio.playTap(); onPick(id) },
@@ -445,7 +461,13 @@ fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
                     ) {
                         if (unlocked) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("$id", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                                // Baş aşağı bölümün numarası da baş aşağı: renk
+                                // tek başına "ne farklı" demiyor, bu diyor
+                                Text(
+                                    "$id", color = Color.White, fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = if (isUpsideDown) Modifier.rotate(180f) else Modifier
+                                )
                                 if (stars > 0) {
                                     // "Büyük yıldız" bölümlerinde 4'e kadar
                                     val maxStars = LevelLibrary.maxStars(id)

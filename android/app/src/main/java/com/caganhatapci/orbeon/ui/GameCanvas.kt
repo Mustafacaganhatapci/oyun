@@ -120,9 +120,21 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
 
         // Öğreticide hedef bariz YEŞİL — ama renk körlüğü modunda o yeşil tam
         // da ayırt edilemeyen renk; orada temanın güvenli kapı rengi kalıyor
-        val gateColor = if (isTutorial && !theme.isColorBlindSafe) Color(0xFF34C759)
-                        else theme.gate
-        val color = if (spec.isGate) gateColor else theme.ring
+        // Kaçış kapısı BEYAZ: yeşil kapı "bölümün sonu", beyaz kapı "buradan
+        // da çıkabilirsin". İkisi aynı renk olsaydı seçim diye bir şey kalmaz,
+        // oyuncu yakın olana gider ve farkı hiç görmezdi.
+        val gateColor = when {
+            spec.isShortcutGate -> Color.White
+            isTutorial && !theme.isColorBlindSafe -> Color(0xFF34C759)
+            else -> theme.gate
+        }
+        // Ters bölümde halkanın KENDİSİ kırmızı. Bölüme girer girmez, tek bir
+        // yazı okumadan kuralın değiştiği anlaşılıyor.
+        val color = when {
+            spec.isGate -> gateColor
+            engine.invertedHazard -> theme.hazard
+            else -> theme.ring
+        }
 
         // Topla-bitir bölümünde kapı, her şey toplanana kadar sönük durur —
         // "buraya gelmek yetmiyor" bilgisi renkten okunsun
@@ -167,12 +179,14 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
             val safeSweep = sweepDeg * safeFraction
             val safeStart = startDeg + (sweepDeg - safeSweep) / 2f
             val redSweep = (sweepDeg - safeSweep) / 2f
+            // Ters bölümde öldüren yay BEYAZ; halka zaten kırmızı çizildi
+            val deadly = if (engine.invertedHazard) Color.White else theme.hazard
             if (redSweep > 0.05f) {
                 for (rs in listOf(startDeg, safeStart + safeSweep)) {
-                    drawArc(theme.hazard.copy(alpha = 0.16f), rs, redSweep, false,
+                    drawArc(deadly.copy(alpha = 0.16f), rs, redSweep, false,
                         topLeft = box.topLeft, size = Size(box.width, box.height),
                         style = Stroke(width = 11f * den, cap = StrokeCap.Round))
-                    drawArc(theme.hazard, rs, redSweep, false,
+                    drawArc(deadly, rs, redSweep, false,
                         topLeft = box.topLeft, size = Size(box.width, box.height),
                         style = Stroke(width = 7f * den, cap = StrokeCap.Round))
                 }
