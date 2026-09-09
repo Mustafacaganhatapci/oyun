@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Gizlilik manifestosu.
+
+  Uzun süre "hiçbir şey toplanmıyor" diyordu ve doğruydu: oyun tamamen
+  cihazda çalışıyordu. Artık çalışmıyor. Sıralama Firestore'a yazılıyor,
+  Crashlytics çökmeleri ve ölümcül olmayan hataları topluyor, ayarlardaki
+  görüş kutusundan yazılan metin sunucuya gidiyor, bahşiş/premium alanlar
+  `supporters` kaydına düşüyor. Boş bir liste bunları saklamak olurdu.
+
+  Hepsi cihazda üretilen `playerID`'ye bağlı, o yüzden "linked" = true.
+  Hiçbiri REKLAM için kullanılmıyor, o yüzden "tracking" = false: takip,
+  Apple'ın tanımında veriyi başka şirketlerin verisiyle eşleştirmek demek.
+
+  Reklam kimliğini uygulama kendisi toplamıyor — onu AdMob SDK'sı topluyor
+  ve kendi manifestosuyla beyan ediyor.
+
+  AÇIK SORU: kişiselleştirilmiş reklam açıkken NSPrivacyTracking'in true
+  olması ve NSPrivacyTrackingDomains'e AdMob'un alan adlarının yazılması
+  gerekiyor. Liste Google'ın dokümanından BİREBİR alınmalı; ezberden
+  yazılan bir alan adı, boş bırakmaktan daha kötü. README'de açık madde.
+-->
 <plist version="1.0">
 <dict>
 	<key>NSPrivacyTracking</key>
@@ -7,7 +28,74 @@
 	<key>NSPrivacyTrackingDomains</key>
 	<array/>
 	<key>NSPrivacyCollectedDataTypes</key>
-	<array/>
+	<array>
+		<!-- Sıralamadaki takma ad + cihazda üretilen kimlik -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeUserID</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!-- Crashlytics: çökme yığın izleri -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeCrashData</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!-- Ölümcül olmayan hatalar ve izler -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeOtherDiagnosticData</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!-- Ayarlardaki görüş/öneri kutusuna yazılan metin -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeOtherUserContent</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<!-- `supporters`: kim ne aldı. Amacı muhasebe değil, sonradan
+		     hediye premium/kod gönderebilmek -->
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypePurchaseHistory</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
 		<dict>

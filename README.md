@@ -100,7 +100,7 @@ Lumo/
 │   └── AdsManager.swift     Reklam politikası + AdMob sağlayıcısı (canImport ile)
 ├── Views/               Menü, bölüm seçimi, oyun HUD'u, mağaza, ayarlar
 ├── Assets.xcassets      Uygulama ikonu (üretilmiş 1024px) + AccentColor
-├── PrivacyInfo.xcprivacy Gizlilik manifestosu (takip yok, veri toplama yok)
+├── PrivacyInfo.xcprivacy Gizlilik manifestosu (sıralama, çökme, görüş, satın alma)
 └── Lumo.storekit        Yerel IAP test yapılandırması
 ```
 
@@ -158,7 +158,13 @@ SDK'yı ekleyince gerçek test reklamları görünür. Yayın öncesi kendi kiml
 ## ✅ App Store Kontrol Listesi
 
 - [x] Portre, tek el, tam ekran; durum çubuğu gizli
-- [x] Gizlilik manifestosu (takip yok, veri toplanmıyor)
+- [x] Gizlilik manifestosu — beyan edilen: sıralama kimliği, çökme kayıtları,
+      tanılama, görüş kutusu metni, satın alma geçmişi. Hepsi cihazda üretilen
+      `playerID`'ye bağlı, hiçbiri reklam için kullanılmıyor.
+- [ ] **NSPrivacyTracking** — kişiselleştirilmiş reklam açıkken `true` olmalı ve
+      `NSPrivacyTrackingDomains`'e AdMob'un alan adları yazılmalı. Liste
+      Google'ın kendi dokümanından birebir alınmalı: ezberden yazılan bir alan
+      adı boş bırakmaktan kötüdür. Şu an `false` ve liste boş.
 - [x] 1024px uygulama ikonu
 - [x] StoreKit 2 + Geri Yükleme düğmesi (App Review şartı)
 - [x] Reklamsız ilk deneyim (ilk 10 bölüm) — inceleme sırasında reklam sorunu yaşanmaz
@@ -167,6 +173,8 @@ SDK'yı ekleyince gerçek test reklamları görünür. Yayın öncesi kendi kiml
 - [ ] Ekran görüntüleri (6.9" ve 6.5") + tanıtım metni
 - [ ] AdMob kimliklerini gerçek değerlerle değiştir
 - [ ] Gizlilik politikası URL'i (reklam SDK'sı eklenince gerekli)
+- [ ] App Store Connect > App Privacy: manifestodaki beş veri türü orada da
+      işaretlenmeli — manifesto ile formun aynı şeyi söylemesi gerekiyor.
 
 ## 📊 Sıralama doldurmaları
 
