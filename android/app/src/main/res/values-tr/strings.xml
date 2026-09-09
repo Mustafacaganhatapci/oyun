@@ -214,4 +214,8 @@
     <string name="orb_chrono_note">Basılı tut, zaman yavaşlasın. Çizgi nereye ineceğini gösterir.</string>
     <string name="orb_champion_note">Haftalık ilk üçe girerek kazanılır</string>
     <string name="version">Sürüm</string>
+    <string name="sfx_collect">Yıldız</string>
+    <string name="sfx_collect_hint">Yıldız toplandığında çalar.</string>
+    <string name="sfx_gate">Kapı</string>
+    <string name="sfx_gate_hint">Kapı açıldığında çalar — bölüm bittiğinde değil.</string>
 </resources>

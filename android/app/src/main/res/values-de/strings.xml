@@ -214,4 +214,8 @@
     <string name="orb_chrono_note">Halte gedrückt, um die Zeit zu verlangsamen. Die Linie zeigt, wo du landest.</string>
     <string name="orb_champion_note">Erreiche die wöchentlichen Top 3</string>
     <string name="version">Version</string>
+    <string name="sfx_collect">Stern</string>
+    <string name="sfx_collect_hint">Ertönt, wenn ein Stern eingesammelt wird.</string>
+    <string name="sfx_gate">Tor</string>
+    <string name="sfx_gate_hint">Ertönt, wenn sich das Tor öffnet — nicht am Levelende.</string>
 </resources>

@@ -214,4 +214,8 @@
     <string name="orb_chrono_note">長押しで時間がゆっくりに。線が着地点を示します。</string>
     <string name="orb_champion_note">週間ランキングの上位3位に入ると獲得</string>
     <string name="version">バージョン</string>
+    <string name="sfx_collect">スター</string>
+    <string name="sfx_collect_hint">スターを取ったときに鳴ります。</string>
+    <string name="sfx_gate">ゲート</string>
+    <string name="sfx_gate_hint">ゲートが開いたときに鳴ります（クリア時ではありません）。</string>
 </resources>

@@ -126,6 +126,15 @@ class AudioEngine(context: Context) {
     private val failBuf: ShortArray by lazy { sweep(330.0, 110.0, 0.5) }
     /** Can eksilme sesi ölümden ayrı: düşen ikili + boğuk bir vuruş */
     private val lifeLostBuf: ShortArray by lazy { lifeLost() }
+    /**
+     * Kapı açılma sesi bölüm bitirme sesinden AYRI.
+     *
+     * İkisi aynıyken oyuncu son yıldızı toplayınca bölümü bitirdiğini
+     * sanıyor ve kapıya hiç gitmiyordu. Bu ses bir "mandal": kısa bir
+     * alçalma, sonra yavaş açılan bir beşli — biten bir şey değil, açılan
+     * bir şey.
+     */
+    private val gateBuf: ShortArray by lazy { gateOpen() }
 
     /** Üst üste binen sesler için küçük bir AudioTrack havuzu */
     private val voices = arrayOfNulls<AudioTrack>(8)
@@ -175,8 +184,9 @@ class AudioEngine(context: Context) {
         play(ladder[index])
     }
 
-    fun playCollect() = play(collectBuf)
+    fun playCollect() = play(customCollect ?: collectBuf)
     fun playWin() = play(customWin ?: winBuf)
+    fun playGate() = play(customGate ?: gateBuf)
     fun playFail() = play(customFail ?: failBuf)
     fun playLifeLost() = play(customLifeLost ?: lifeLostBuf)
     fun playTap() = play(tapBuf)
@@ -185,17 +195,23 @@ class AudioEngine(context: Context) {
 
     /** Premium oyuncunun kendi kayıtları; boş yuvalar sentetik kalır. */
     private var customHop: List<ShortArray> = emptyList()
+    private var customCollect: ShortArray? = null
+    private var customGate: ShortArray? = null
     private var customLifeLost: ShortArray? = null
     private var customFail: ShortArray? = null
     private var customWin: ShortArray? = null
 
     fun applyCustomSounds(
         hop: List<ShortArray>,
+        collect: ShortArray?,
+        gate: ShortArray?,
         lifeLost: ShortArray?,
         fail: ShortArray?,
         win: ShortArray?
     ) {
         customHop = hop
+        customCollect = collect
+        customGate = gate
         customLifeLost = lifeLost
         customFail = fail
         customWin = win
@@ -203,6 +219,8 @@ class AudioEngine(context: Context) {
 
     fun clearCustomSounds() {
         customHop = emptyList()
+        customCollect = null
+        customGate = null
         customLifeLost = null
         customFail = null
         customWin = null
@@ -272,6 +290,35 @@ class AudioEngine(context: Context) {
             var s = 0.0
             freqs.forEach { s += sin(2.0 * PI * it * t) }
             out[i] = clip(s / freqs.size * env * 0.55)
+        }
+        return out
+    }
+
+    /**
+     * Kapı açılma sesi: 90 ms'lik 220→150 Hz mandal, ardından yavaş açılan
+     * bir beşli (G4+D5). Bitiş sesindeki gibi net bir akor değil — kapının
+     * açıldığını söylüyor, bölümün bittiğini değil.
+     */
+    private fun gateOpen(): ShortArray {
+        val latchN = (sampleRate * 0.09).toInt()
+        val bodyN = (sampleRate * 0.5).toInt()
+        val out = ShortArray(latchN + bodyN)
+        var phase = 0.0
+        for (i in 0 until latchN) {
+            val t = i.toDouble() / latchN
+            val freq = 220.0 + (150.0 - 220.0) * t
+            phase += 2 * Math.PI * freq / sampleRate
+            val env = (1.0 - t) * 0.35
+            out[i] = (kotlin.math.sin(phase) * env * Short.MAX_VALUE).toInt().toShort()
+        }
+        for (i in 0 until bodyN) {
+            val t = i.toDouble() / bodyN
+            // YAVAŞ atak: ses açılarak geliyor, vurarak değil
+            val attack = kotlin.math.min(1.0, t / 0.25)
+            val env = attack * (1.0 - t) * 0.4
+            val v = kotlin.math.sin(2 * Math.PI * 392.0 * i / sampleRate) * 0.6 +
+                    kotlin.math.sin(2 * Math.PI * 587.33 * i / sampleRate) * 0.4
+            out[latchN + i] = (v * env * Short.MAX_VALUE).toInt().toShort()
         }
         return out
     }

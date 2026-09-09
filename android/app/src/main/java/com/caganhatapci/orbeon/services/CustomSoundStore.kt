@@ -27,6 +27,12 @@ import kotlin.math.min
  */
 enum class CustomSoundSlot(val key: String, val maxMs: Int) {
     HOP("hop", 900),
+    COLLECT("collect", 900),
+    /**
+     * Kapı açılma sesi. Bölüm bitirme sesinden AYRI bir yuva: ikisi aynıyken
+     * oyuncu son yıldızı toplayınca bölümü bitirdiğini sanıyordu.
+     */
+    GATE("gate", 2000),
     LIFE_LOST("life_lost", 2000),
     FAIL("fail", 2000),
     WIN("win", 2000)
@@ -170,6 +176,8 @@ class CustomSoundStore(private val context: Context) {
         }
         engine.applyCustomSounds(
             hop = load(CustomSoundSlot.HOP)?.let { engine.pitchLadder(it) } ?: emptyList(),
+            collect = load(CustomSoundSlot.COLLECT),
+            gate = load(CustomSoundSlot.GATE),
             lifeLost = load(CustomSoundSlot.LIFE_LOST),
             fail = load(CustomSoundSlot.FAIL),
             win = load(CustomSoundSlot.WIN)

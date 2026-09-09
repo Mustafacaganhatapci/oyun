@@ -1279,12 +1279,16 @@ private fun CustomSoundRow(
 ) {
     val title = when (slot) {
         CustomSoundSlot.HOP -> R.string.sfx_hop
+        CustomSoundSlot.COLLECT -> R.string.sfx_collect
+        CustomSoundSlot.GATE -> R.string.sfx_gate
         CustomSoundSlot.LIFE_LOST -> R.string.sfx_life_lost
         CustomSoundSlot.FAIL -> R.string.sfx_death
         CustomSoundSlot.WIN -> R.string.sfx_level_complete
     }
     val hint = when (slot) {
         CustomSoundSlot.HOP -> R.string.sfx_hop_hint
+        CustomSoundSlot.COLLECT -> R.string.sfx_collect_hint
+        CustomSoundSlot.GATE -> R.string.sfx_gate_hint
         CustomSoundSlot.LIFE_LOST -> R.string.sfx_life_lost_hint
         CustomSoundSlot.FAIL -> R.string.sfx_death_hint
         CustomSoundSlot.WIN -> R.string.sfx_level_complete_hint

@@ -214,4 +214,8 @@
     <string name="orb_chrono_note">Maintiens pour ralentir le temps. La ligne montre où tu vas atterrir.</string>
     <string name="orb_champion_note">Termine dans le top 3 hebdomadaire</string>
     <string name="version">Version</string>
+    <string name="sfx_collect">Étoile</string>
+    <string name="sfx_collect_hint">Se déclenche quand une étoile est ramassée.</string>
+    <string name="sfx_gate">Porte</string>
+    <string name="sfx_gate_hint">Se déclenche à l\'ouverture de la porte, pas à la fin du niveau.</string>
 </resources>

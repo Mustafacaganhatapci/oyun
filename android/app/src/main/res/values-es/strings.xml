@@ -214,4 +214,8 @@
     <string name="orb_chrono_note">Mantén pulsado para ralentizar el tiempo. La línea muestra dónde caerás.</string>
     <string name="orb_champion_note">Entra en el top 3 semanal para ganarlo</string>
     <string name="version">Versión</string>
+    <string name="sfx_collect">Estrella</string>
+    <string name="sfx_collect_hint">Suena al recoger una estrella.</string>
+    <string name="sfx_gate">Puerta</string>
+    <string name="sfx_gate_hint">Suena al abrirse la puerta, no al acabar el nivel.</string>
 </resources>

@@ -214,4 +214,8 @@
     <string name="orb_chrono_note">Hold to slow time. The line shows where you land.</string>
     <string name="orb_champion_note">Finish in the weekly top 3 to win it</string>
     <string name="version">Version</string>
+    <string name="sfx_collect">Star</string>
+    <string name="sfx_collect_hint">Plays when you pick up a star.</string>
+    <string name="sfx_gate">Gate</string>
+    <string name="sfx_gate_hint">Plays when the gate opens — not when the level ends.</string>
 </resources>

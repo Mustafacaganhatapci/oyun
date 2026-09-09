@@ -230,12 +230,15 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             // çünkü toplanan şey de ayrı
             is GameEvent.ExtraLifeGained -> {
                 extraLives = event.total
-                app.audio.playCollect()
+                app.audio.playWin()
                 app.haptics.win()
             }
             GameEvent.GateUnlocked -> {
-                app.audio.playWin()
-                app.haptics.win()
+                // Bölüm bitirme sesi DEĞİL: kapı açılmak bölümü bitirmiyor,
+                // yalnızca yolu açıyor. İkisi aynı sesken oyuncu bitirdiğini
+                // sanıp kapıya gitmiyordu.
+                app.audio.playGate()
+                app.haptics.collect()
             }
             GameEvent.Fail -> {
                 app.audio.playFail()
