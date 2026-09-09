@@ -18,6 +18,7 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.caganhatapci.orbeon.store.prefs
+import java.util.Calendar
 
 /**
  * Google Play Faturalandırma — iOS'taki StoreManager'ın karşılığı.
@@ -50,6 +51,11 @@ class BillingManager(private val context: Context) {
          * yakın ki gerçek bir söz olsun.
          */
         const val STAR_PREMIUM_THRESHOLD = 2600
+
+        /** 6 Ekim 2026 — Calendar'da ay SIFIR TABANLI, yani 9 = Ekim */
+        const val PRICE_HOLD_END_YEAR = 2026
+        const val PRICE_HOLD_END_MONTH = 9
+        const val PRICE_HOLD_END_DAY = 6
 
         /** Tanıdıklara verilen premium kodları (küçük harfe çevrilip karşılaştırılır) */
         val PROMO_CODES = setOf("axiumdynamicsisking", "ays123.")
@@ -349,6 +355,26 @@ class BillingManager(private val context: Context) {
     /** Eşiğe ne kadar kaldı — teklif ekranındaki çubuk bunu gösteriyor */
     fun starProgress(totalStars: Int): Float =
         (totalStars.toFloat() / STAR_PREMIUM_THRESHOLD).coerceAtMost(1f)
+
+    // MARK: Fiyat sabit kaldı rozeti
+    //
+    // Bu güncellemeyle gelen her şey (yeni bölüm çeşitleri, yeni küreler,
+    // kendi kaydettiğin sesler, sonsuz modda canlar) fiyata dokunmadan geldi.
+    // Söylenmeye değer ve DOĞRU olan cümle bu: "fiyat artmadı". Metinde sürüm
+    // numarası GEÇMİYOR — bir sonraki sürümde yalan olmasın diye.
+    //
+    // Rozetin BİTİŞ TARİHİ var. "Bu ay" diyen bir söz kodda da bir ay
+    // sürmeli; tarihsiz bırakılırsa yarın yalan olur. Süre dolunca rozet
+    // kendiliğinden kayboluyor, elle kaldırmak gerekmiyor. Tarih iOS'takiyle
+    // aynı: iki mağazada aynı gün bitiyor.
+    val isPriceHoldActive: Boolean
+        get() {
+            val end = Calendar.getInstance().apply {
+                clear()
+                set(PRICE_HOLD_END_YEAR, PRICE_HOLD_END_MONTH, PRICE_HOLD_END_DAY)
+            }
+            return System.currentTimeMillis() < end.timeInMillis
+        }
 
     // MARK: Destekçi kaydı
     //

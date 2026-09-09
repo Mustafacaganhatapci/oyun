@@ -227,4 +227,6 @@
     <string name="send">Send</string>
     <string name="sending">Sending…</string>
     <string name="recording_get_ready">Get ready…</string>
+    <string name="price_hold_title">Same price this month</string>
+    <string name="price_hold_body">Everything new in this update is included and the price did not go up.</string>
 </resources>

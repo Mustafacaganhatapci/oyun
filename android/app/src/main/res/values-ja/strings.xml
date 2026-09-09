@@ -227,4 +227,6 @@
     <string name="send">送信</string>
     <string name="sending">送信中…</string>
     <string name="recording_get_ready">準備して…</string>
+    <string name="price_hold_title">今月は同じ価格</string>
+    <string name="price_hold_body">このアップデートの新要素はすべて込みで、価格は上がっていません。</string>
 </resources>

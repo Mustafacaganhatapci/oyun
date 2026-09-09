@@ -849,6 +849,32 @@ fun PremiumScreen(onBack: () -> Unit) {
                                 fontSize = 14.sp, modifier = Modifier.fillMaxWidth())
                         }
 
+                        // Fiyat sabit kaldı rozeti. Bu güncellemeyle gelen
+                        // her şey fiyata dokunmadan geldi; söylenecek olan bu.
+                        // Rozetin kendi bitiş tarihi var — "bu ay" diyen bir
+                        // cümle bir ay sonra kendiliğinden kaybolmalı.
+                        // Fiyat henüz yüklenmediyse gösterilmiyor: fiyatın
+                        // görünmediği bir yerde "fiyat artmadı" demek boşluğa
+                        // konuşmak olur
+                        if (app.billing.isPriceHoldActive && app.billing.premiumProduct != null) {
+                            Row(
+                                Modifier.fillMaxWidth()
+                                    .background(theme.gate.copy(alpha = 0.12f), RoundedCornerShape(16.dp))
+                                    .border(1.dp, theme.gate.copy(alpha = 0.35f), RoundedCornerShape(16.dp))
+                                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Text("🏷", fontSize = 13.sp, modifier = Modifier.padding(end = 8.dp))
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Text(stringResource(R.string.price_hold_title),
+                                        color = Color.White, fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold)
+                                    Text(stringResource(R.string.price_hold_body),
+                                        color = Color.White.copy(alpha = 0.6f), fontSize = 11.sp)
+                                }
+                            }
+                        }
+
                         val premium = app.billing.premiumProduct
                         when {
                             premium != null -> GlowButton(
