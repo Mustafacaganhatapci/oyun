@@ -218,4 +218,12 @@
     <string name="sfx_collect_hint">Se déclenche quand une étoile est ramassée.</string>
     <string name="sfx_gate">Porte</string>
     <string name="sfx_gate_hint">Se déclenche à l\'ouverture de la porte, pas à la fin du niveau.</string>
+    <string name="feedback_title">Retour</string>
+    <string name="feedback_body">Quelque chose de cassé, quelque chose qui manque, une idée ? Écris-le ici, ça m\'arrive directement.</string>
+    <string name="feedback_left">Il t\'en reste %1$d aujourd\'hui</string>
+    <string name="feedback_limit_reached">C\'étaient les deux messages du jour. La boîte rouvre demain.</string>
+    <string name="feedback_placeholder">Ton message…</string>
+    <string name="feedback_thanks">Merci — je les lis tous.</string>
+    <string name="send">Envoyer</string>
+    <string name="sending">Envoi…</string>
 </resources>

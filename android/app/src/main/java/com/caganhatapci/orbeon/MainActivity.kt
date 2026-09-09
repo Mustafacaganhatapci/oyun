@@ -12,6 +12,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.caganhatapci.orbeon.services.Announcement
+import com.caganhatapci.orbeon.services.Feedback
 import com.caganhatapci.orbeon.services.Diagnostics
 import com.caganhatapci.orbeon.services.PushManager
 import com.caganhatapci.orbeon.services.AdsManager
@@ -47,7 +48,8 @@ class AppState(
     val customSounds: CustomSoundStore,
     val connectivity: Connectivity,
     val push: PushManager,
-    val announcement: Announcement
+    val announcement: Announcement,
+    val feedback: Feedback
 )
 
 val LocalAppState = staticCompositionLocalOf<AppState> { error("AppState sağlanmadı") }
@@ -78,7 +80,8 @@ class MainActivity : ComponentActivity() {
             customSounds = CustomSoundStore(this),
             connectivity = Connectivity(this),
             push = PushManager(this),
-            announcement = Announcement(this)
+            announcement = Announcement(this),
+            feedback = Feedback(this)
         )
 
         state.audio.soundEnabled = state.settings.soundOn

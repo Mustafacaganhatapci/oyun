@@ -218,4 +218,12 @@
     <string name="sfx_collect_hint">Yıldız toplandığında çalar.</string>
     <string name="sfx_gate">Kapı</string>
     <string name="sfx_gate_hint">Kapı açıldığında çalar — bölüm bittiğinde değil.</string>
+    <string name="feedback_title">Görüş</string>
+    <string name="feedback_body">Bozuk bir şey, eksik bir şey, bir fikir? Buraya yaz, doğrudan bana geliyor.</string>
+    <string name="feedback_left">Bugün %1$d hakkın kaldı</string>
+    <string name="feedback_limit_reached">Bugünün iki mesajı da bu kadardı. Kutu yarın yeniden açılıyor.</string>
+    <string name="feedback_placeholder">Mesajın…</string>
+    <string name="feedback_thanks">Teşekkürler — hepsini okuyorum.</string>
+    <string name="send">Gönder</string>
+    <string name="sending">Gönderiliyor…</string>
 </resources>

@@ -218,4 +218,12 @@
     <string name="sfx_collect_hint">スターを取ったときに鳴ります。</string>
     <string name="sfx_gate">ゲート</string>
     <string name="sfx_gate_hint">ゲートが開いたときに鳴ります（クリア時ではありません）。</string>
+    <string name="feedback_title">ご意見</string>
+    <string name="feedback_body">壊れているところ、足りないところ、アイデア。ここに書けば直接わたしに届きます。</string>
+    <string name="feedback_left">今日はあと%1$d回</string>
+    <string name="feedback_limit_reached">今日の2件はこれで終わりです。明日また書けます。</string>
+    <string name="feedback_placeholder">メッセージ…</string>
+    <string name="feedback_thanks">ありがとうございます — すべて読んでいます。</string>
+    <string name="send">送信</string>
+    <string name="sending">送信中…</string>
 </resources>

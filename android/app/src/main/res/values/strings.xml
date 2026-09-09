@@ -218,4 +218,12 @@
     <string name="sfx_collect_hint">Plays when you pick up a star.</string>
     <string name="sfx_gate">Gate</string>
     <string name="sfx_gate_hint">Plays when the gate opens — not when the level ends.</string>
+    <string name="feedback_title">Feedback</string>
+    <string name="feedback_body">Something broken, something missing, an idea? Write it here and it comes straight to me.</string>
+    <string name="feedback_left">%1$d left today</string>
+    <string name="feedback_limit_reached">That is both of today\'s messages. The box opens again tomorrow.</string>
+    <string name="feedback_placeholder">Your message…</string>
+    <string name="feedback_thanks">Thanks — I read every one of these.</string>
+    <string name="send">Send</string>
+    <string name="sending">Sending…</string>
 </resources>

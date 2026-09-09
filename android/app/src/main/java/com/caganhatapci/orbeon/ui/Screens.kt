@@ -5,6 +5,7 @@ import com.caganhatapci.orbeon.BuildConfig
 import android.Manifest
 import android.os.Build
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -58,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.rotate
 import androidx.compose.animation.core.Animatable
@@ -77,6 +80,7 @@ import com.caganhatapci.orbeon.model.OrbStyle
 import com.caganhatapci.orbeon.services.AdsManager
 import com.caganhatapci.orbeon.services.BillingManager
 import com.caganhatapci.orbeon.services.CustomSoundSlot
+import com.caganhatapci.orbeon.services.Feedback
 import com.caganhatapci.orbeon.services.LeaderboardService
 import com.caganhatapci.orbeon.store.MissionStore
 import com.caganhatapci.orbeon.store.OrbPhotoStore
@@ -1138,6 +1142,10 @@ fun SettingsScreen(onBack: () -> Unit, onPremium: () -> Unit, onTutorial: () -> 
                 // Premium: kendi kaydettiğin efekt sesleri
                 CustomSoundsCard(theme, onPremium)
 
+                // Görüş kutusu: mağaza yorumu geliştiriciye ulaşmıyor,
+                // e-posta bağlantısını da kimse açmıyor
+                FeedbackCard(theme)
+
                 GlowButton(stringResource(R.string.how_to_play), theme.ring) { onTutorial() }
 
                 // Sürüm yazısı ve altındaki GİZLİ KİLİT.
@@ -1262,6 +1270,96 @@ private fun CustomSoundsCard(theme: Theme, onPremium: () -> Unit) {
                     Text(stringResource(R.string.custom_sounds_mic_denied),
                         color = theme.hazard, fontSize = 12.sp)
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Görüş/öneri kutusu — iOS ayarlarındaki kartın karşılığı, aynı Firestore
+ * koleksiyonuna yazıyor.
+ *
+ * Günlük hak kutunun BAŞINDA yazılı, gönderdikten sonra değil: sınırı ancak
+ * gönderirken öğrenmek, sınır olmamasından daha kötü.
+ */
+@Composable
+private fun FeedbackCard(theme: Theme) {
+    val app = LocalAppState.current
+    var text by remember { mutableStateOf("") }
+    var sending by remember { mutableStateOf(false) }
+    var sent by remember { mutableStateOf(false) }
+    val focus = LocalFocusManager.current
+    val left = app.feedback.remainingToday
+    val canSend = app.feedback.canSend(text) && !sending
+
+    Card {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(stringResource(R.string.feedback_title), color = Color.White.copy(alpha = 0.9f),
+                fontSize = 17.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.feedback_body),
+                color = Color.White.copy(alpha = 0.5f), fontSize = 12.sp)
+
+            if (left == 0) {
+                Text(stringResource(R.string.feedback_limit_reached),
+                    color = theme.lumen, fontSize = 11.sp)
+            } else {
+                Text(stringResource(R.string.feedback_left, left),
+                    color = Color.White.copy(alpha = 0.4f), fontSize = 11.sp)
+            }
+
+            Box(
+                Modifier.fillMaxWidth()
+                    .background(Color.White.copy(alpha = 0.07f), RoundedCornerShape(14.dp))
+                    .padding(horizontal = 14.dp, vertical = 12.dp)
+            ) {
+                BasicTextField(
+                    value = text,
+                    onValueChange = { text = it; sent = false },
+                    textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
+                    cursorBrush = SolidColor(theme.accent),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 76.dp)
+                )
+                if (text.isEmpty()) {
+                    Text(stringResource(R.string.feedback_placeholder),
+                        color = Color.White.copy(alpha = 0.3f), fontSize = 14.sp)
+                }
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // 1000 karakterde kesiliyor: metin doğrudan bir Firestore
+                // belgesine gidiyor, sınırsız bırakmak doğru olmaz
+                Text("${text.length}/${Feedback.MAX_LENGTH}",
+                    color = Color.White.copy(
+                        alpha = if (text.length > Feedback.MAX_LENGTH) 0.9f else 0.35f
+                    ),
+                    fontSize = 11.sp)
+                Spacer(Modifier.weight(1f))
+                Text(
+                    stringResource(if (sending) R.string.sending else R.string.send),
+                    color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .alpha(if (canSend) 1f else 0.4f)
+                        .background(theme.accent, RoundedCornerShape(20.dp))
+                        .clickable(enabled = canSend) {
+                            focus.clearFocus()
+                            sending = true
+                            app.feedback.send(text, app.player.playerId, app.player.username) { ok ->
+                                sending = false
+                                if (ok) {
+                                    text = ""
+                                    sent = true
+                                    app.audio.playWin()
+                                    app.haptics.win()
+                                }
+                            }
+                        }
+                        .padding(horizontal = 18.dp, vertical = 9.dp)
+                )
+            }
+
+            if (sent) {
+                Text(stringResource(R.string.feedback_thanks),
+                    color = theme.gate, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

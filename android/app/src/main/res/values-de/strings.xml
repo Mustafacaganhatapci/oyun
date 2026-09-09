@@ -218,4 +218,12 @@
     <string name="sfx_collect_hint">Ertönt, wenn ein Stern eingesammelt wird.</string>
     <string name="sfx_gate">Tor</string>
     <string name="sfx_gate_hint">Ertönt, wenn sich das Tor öffnet — nicht am Levelende.</string>
+    <string name="feedback_title">Feedback</string>
+    <string name="feedback_body">Etwas kaputt, etwas fehlt, eine Idee? Schreib es hier — es kommt direkt bei mir an.</string>
+    <string name="feedback_left">Heute noch %1$d übrig</string>
+    <string name="feedback_limit_reached">Das waren beide Nachrichten für heute. Morgen öffnet sich das Feld wieder.</string>
+    <string name="feedback_placeholder">Deine Nachricht…</string>
+    <string name="feedback_thanks">Danke — ich lese jede einzelne.</string>
+    <string name="send">Senden</string>
+    <string name="sending">Wird gesendet…</string>
 </resources>
