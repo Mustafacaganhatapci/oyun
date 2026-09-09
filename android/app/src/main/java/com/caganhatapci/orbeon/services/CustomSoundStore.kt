@@ -7,6 +7,7 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
@@ -51,6 +52,16 @@ class CustomSoundStore(private val context: Context) {
     /** Şu an kayıt alınan yuva */
     var recording by mutableStateOf<CustomSoundSlot?>(null)
         private set
+    /**
+     * Geri sayımı süren yuva. Mikrofona basınca kayıt HEMEN başlamıyor:
+     * üçten geri sayılıyor. Aksi hâlde kaydın ilk yarısı, telefonu ağzına
+     * götürürkenki hışırtı oluyordu.
+     */
+    var arming by mutableStateOf<CustomSoundSlot?>(null)
+        private set
+    /** Geri sayımda kalan saniye (3 → 2 → 1); kayıt dışında 0 */
+    var countdown by mutableIntStateOf(0)
+        private set
     /** Kayıtlar oyunda kullanılsın mı */
     var enabled by mutableStateOf(prefs(context).getBoolean(KEY_ENABLED, true))
         private set
@@ -59,6 +70,8 @@ class CustomSoundStore(private val context: Context) {
     var premiumActive = false
 
     private var recordJob: Thread? = null
+    /** Geri sayım adımları; vazgeçilirse hepsi birden iptal edilir */
+    private val armHandler = Handler(Looper.getMainLooper())
     @Volatile private var stopRequested = false
     private var audio: AudioEngine? = null
 
@@ -88,11 +101,42 @@ class CustomSoundStore(private val context: Context) {
     // MARK: Kayıt
 
     /**
+     * 3 → 2 → 1 → kayıt. Her adımda kısa bir tık çalar; ekrana bakmadan da
+     * ne zaman başlayacağı belli olsun diye.
+     */
+    fun startRecording(slot: CustomSoundSlot) {
+        if (recording != null || arming != null || !hasMicPermission()) return
+        arming = slot
+        countdown = 3
+        // İlk tıkı çağıran ekran çaldı; buradan bir daha çalmak çift ses olur
+        for (step in 1..3) {
+            armHandler.postDelayed({
+                if (arming != slot) return@postDelayed
+                val left = 3 - step
+                countdown = left
+                if (left > 0) {
+                    audio?.playTap()
+                } else {
+                    arming = null
+                    beginRecording(slot)
+                }
+            }, TICK_MS * step)
+        }
+    }
+
+    /** Geri sayarken vazgeçildi */
+    fun cancelArming() {
+        armHandler.removeCallbacksAndMessages(null)
+        arming = null
+        countdown = 0
+    }
+
+    /**
      * Ham PCM yakalar. Süre dolunca kendiliğinden durur — uzun kayıt zaten
      * atlayış sesi olarak işe yaramıyor.
      */
-    fun startRecording(slot: CustomSoundSlot) {
-        if (recording != null || !hasMicPermission()) return
+    private fun beginRecording(slot: CustomSoundSlot) {
+        countdown = 0
         val minBuf = AudioRecord.getMinBufferSize(
             sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT
         )
@@ -148,6 +192,8 @@ class CustomSoundStore(private val context: Context) {
     }
 
     fun stopRecording() {
+        // Geri sayarken "durdur"a basılırsa kayıt hiç başlamasın
+        cancelArming()
         stopRequested = true
         recordJob = null
     }
@@ -239,5 +285,7 @@ class CustomSoundStore(private val context: Context) {
 
     private companion object {
         const val KEY_ENABLED = "customSoundsEnabled"
+        /** Geri sayım adımı. iOS'takiyle aynı: 0,8 sn */
+        const val TICK_MS = 800L
     }
 }

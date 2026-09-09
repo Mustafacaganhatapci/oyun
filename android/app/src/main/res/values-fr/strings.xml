@@ -226,4 +226,5 @@
     <string name="feedback_thanks">Merci — je les lis tous.</string>
     <string name="send">Envoyer</string>
     <string name="sending">Envoi…</string>
+    <string name="recording_get_ready">Prépare-toi…</string>
 </resources>

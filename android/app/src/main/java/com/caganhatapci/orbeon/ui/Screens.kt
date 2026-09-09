@@ -1251,9 +1251,13 @@ private fun CustomSoundsCard(theme: Theme, onPremium: () -> Unit) {
                         slot = slot,
                         theme = theme,
                         recording = sounds.recording == slot,
+                        // Geri sayarken satır rakamı gösteriyor; dokunmak vazgeçer
+                        countdown = if (sounds.arming == slot) sounds.countdown else 0,
                         has = sounds.recorded.contains(slot),
                         onRecord = {
-                            if (sounds.recording == slot) {
+                            if (sounds.arming == slot) {
+                                sounds.cancelArming()
+                            } else if (sounds.recording == slot) {
                                 sounds.stopRecording()
                             } else if (sounds.hasMicPermission()) {
                                 app.audio.playTap(); sounds.startRecording(slot)
@@ -1370,6 +1374,7 @@ private fun CustomSoundRow(
     slot: CustomSoundSlot,
     theme: Theme,
     recording: Boolean,
+    countdown: Int,
     has: Boolean,
     onRecord: () -> Unit,
     onPreview: () -> Unit,
@@ -1391,6 +1396,8 @@ private fun CustomSoundRow(
         CustomSoundSlot.FAIL -> R.string.sfx_death_hint
         CustomSoundSlot.WIN -> R.string.sfx_level_complete_hint
     }
+    val arming = countdown > 0
+    val busy = recording || arming
     Row(
         Modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -1398,20 +1405,34 @@ private fun CustomSoundRow(
         Column(Modifier.weight(1f)) {
             Text(stringResource(title), color = Color.White, fontSize = 15.sp)
             Text(
-                if (recording) stringResource(R.string.recording_now) else stringResource(hint),
-                color = if (recording) theme.hazard else Color.White.copy(alpha = 0.45f),
+                when {
+                    arming -> stringResource(R.string.recording_get_ready)
+                    recording -> stringResource(R.string.recording_now)
+                    else -> stringResource(hint)
+                },
+                color = if (busy) theme.hazard else Color.White.copy(alpha = 0.45f),
                 fontSize = 11.sp
             )
         }
-        if (has && !recording) {
+        if (has && !busy) {
             SmallCircleButton("▶") { onPreview() }
             Spacer(Modifier.width(6.dp))
             SmallCircleButton("✕") { onDelete() }
             Spacer(Modifier.width(6.dp))
         }
+        // Geri sayım rakamı mikrofonun YERİNDE duruyor: satır zıplamıyor,
+        // dokunulacak yer de değişmiyor
         SmallCircleButton(
-            if (recording) "■" else "●",
-            tint = if (recording) theme.hazard else Color.White,
+            when {
+                arming -> countdown.toString()
+                recording -> "■"
+                else -> "●"
+            },
+            tint = when {
+                arming -> theme.lumen
+                recording -> theme.hazard
+                else -> Color.White
+            },
             onClick = onRecord
         )
     }

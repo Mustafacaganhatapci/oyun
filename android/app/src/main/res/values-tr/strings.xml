@@ -226,4 +226,5 @@
     <string name="feedback_thanks">Teşekkürler — hepsini okuyorum.</string>
     <string name="send">Gönder</string>
     <string name="sending">Gönderiliyor…</string>
+    <string name="recording_get_ready">Hazır ol…</string>
 </resources>
