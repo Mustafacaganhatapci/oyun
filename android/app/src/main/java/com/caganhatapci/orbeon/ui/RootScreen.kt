@@ -50,6 +50,18 @@ import kotlin.math.cos
 import kotlin.math.sin
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import kotlinx.coroutines.delay
+import java.util.Calendar
+import kotlin.math.roundToInt
 import com.caganhatapci.orbeon.services.BillingManager
 import com.caganhatapci.orbeon.LocalActivity
 import com.caganhatapci.orbeon.LocalAppState
@@ -59,7 +71,6 @@ import com.caganhatapci.orbeon.services.AdsManager
 import com.caganhatapci.orbeon.services.OfflineNotice
 import com.caganhatapci.orbeon.store.TutorialStore
 import com.caganhatapci.orbeon.theme.Theme
-import kotlinx.coroutines.delay
 
 sealed class Route {
     data object Menu : Route()
@@ -178,9 +189,10 @@ fun RootScreen() {
     }
 
     LaunchedEffect(Unit) {
-        // Açılış animasyonu ~1.8 sn sürüyor (halka → küre turu → patlama →
-        // isim); 1600 ms'de kapanınca stüdyo adı belirmeden kesiliyordu.
-        delay(2600)
+        // Açılış animasyonu ~2,6 sn sürüyor (halka → küre turu → patlama →
+        // isim → halkanın O'nun yerine geçmesi → harfler); kurulan kelime
+        // işareti bir an dursun diye biraz daha bekleniyor.
+        delay(3200)
         splashDone = true
         // İlk açılış: doğrudan "nasıl oynanır" antrenman bölümüne
         if (app.tutorial.shouldShow(TutorialStore.Step.LAUNCH)) {
@@ -194,7 +206,10 @@ fun RootScreen() {
  *
  * İşaret oyunun kendisi: nötr bir halka, üstünde tek kırmızı yay, çemberin
  * üstünde dolanan beyaz küre. Animasyon da oyunun kendisi: halka çizilir,
- * küre yörüngeyi tamamlar, sonra kırmızı yay yerine PATLAR.
+ * küre yörüngeyi tamamlar, kırmızı yay yerine PATLAR — sonra halka küçülerek
+ * sola süzülür ve ORBEON'un O'sunun yerine oturur. Yani açılış, markanın
+ * nereden geldiğini gösteriyor: işaret ayrı bir amblem değil, kelimenin bir
+ * harfi.
  */
 @Composable
 private fun SplashScreen(theme: Theme) {
@@ -203,80 +218,203 @@ private fun SplashScreen(theme: Theme) {
     val hazardIn = remember { Animatable(0f) }     // 0 = dışarıda, 1 = yerinde
     val burst = remember { Animatable(0f) }
     val nameIn = remember { Animatable(0f) }
+    val composed = remember { Animatable(0f) }     // halka O'nun yerine geçti
+    val lettersIn = remember { Animatable(0f) }    // RBEON açıldı
 
     LaunchedEffect(Unit) {
         launch { orbAngle.animateTo(270f, tween(1050, easing = FastOutSlowInEasing)) }
         ringProgress.animateTo(1f, tween(1050, easing = FastOutSlowInEasing))
+
+        // Kırmızı yay çöker ve aynı anda patlar
         launch { hazardIn.animateTo(1f, spring(dampingRatio = 0.55f, stiffness = 900f)) }
         launch { burst.animateTo(1f, tween(550, easing = LinearOutSlowInEasing)) }
         delay(220)
-        nameIn.animateTo(1f, tween(550, easing = LinearOutSlowInEasing))
+        launch { nameIn.animateTo(1f, tween(550, easing = LinearOutSlowInEasing)) }
+
+        // İşaret küçülerek sola süzülür ve O'nun yerine oturur. Küre son
+        // çeyreği de dönüp sol alta yerleşiyor: kelimenin içindeki halka
+        // duran bir amblem değil, hâlâ oyunun bir karesi.
+        delay(500)
+        launch { orbAngle.animateTo(315f, spring(dampingRatio = 0.86f, stiffness = 200f)) }
+        launch { composed.animateTo(1f, spring(dampingRatio = 0.86f, stiffness = 200f)) }
+
+        // Harfler işaretin ardından açılıyor: önce yer değiştirme okunsun,
+        // kelime sonra kurulsun
+        delay(300)
+        lettersIn.animateTo(1f, tween(450, easing = LinearOutSlowInEasing))
     }
 
+    // Ölçüler. Halka büyükken 118, kelimenin içindeyken 38 punto; oran ikisi
+    // arasında TEK bir ölçek ile kuruluyor. Harflerin puntosu ile halkanın
+    // çapı ayrı ayrı ayarlanmıyor ki ikisi asla birbirinden kaymasın.
+    val markFrame = 190.dp
+    val ringBig = 118.dp
+    val ringFinal = 38.dp
+    val letterSpacing = 13.sp
+    // Halka harflerin optik ortasına oturmuyordu: yazı kutusunun ortası alt
+    // uzantılar yüzünden harflerin göründüğü ortadan aşağıda kalıyor.
+    val ringOpticalLift = 3.dp
+
+    val density = LocalDensity.current
+    // Ölçüler PENCERE koordinatında toplanıyor, sonra çıkarılıyor: hangi
+    // onGloballyPositioned önce çalışırsa çalışsın sonuç aynı olsun diye
+    var rootOrigin by remember { mutableStateOf(Offset.Zero) }
+    var rootSize by remember { mutableStateOf(IntSize.Zero) }
+    var slotOrigin by remember { mutableStateOf<Offset?>(null) }
+    var slotSize by remember { mutableStateOf(IntSize.Zero) }
+
     ThemeBackground(theme) {
-        Column(
-            Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(Modifier.height(78.dp))
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.alpha(nameIn.value)
-            ) {
-                Text("AXIUM", color = Color.White.copy(alpha = 0.92f), fontSize = 26.sp,
-                     fontWeight = FontWeight.Light, letterSpacing = 13.sp)
-                Text("DYNAMICS", color = Color.White.copy(alpha = 0.42f), fontSize = 12.sp,
-                     letterSpacing = 7.sp, modifier = Modifier.padding(top = 7.dp))
+        Box(
+            Modifier.fillMaxSize().onGloballyPositioned {
+                rootOrigin = it.positionInWindow()
+                rootSize = it.size
             }
+        ) {
+            Column(
+                Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(Modifier.height(78.dp))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.alpha(nameIn.value)
+                ) {
+                    Text("AXIUM", color = Color.White.copy(alpha = 0.92f), fontSize = 26.sp,
+                         fontWeight = FontWeight.Light, letterSpacing = letterSpacing)
+                    Text("DYNAMICS", color = Color.White.copy(alpha = 0.42f), fontSize = 12.sp,
+                         letterSpacing = 7.sp, modifier = Modifier.padding(top = 7.dp))
+                }
 
-            Spacer(Modifier.weight(1f))
+                Spacer(Modifier.weight(1f))
 
-            Canvas(Modifier.size(190.dp)) {
-                val c = Offset(size.width / 2, size.height / 2)
-                val r = 59.dp.toPx()
-                val box = Rect(c.x - r, c.y - r, c.x + r, c.y + r)
-
-                // 1) Halka çizilir
-                drawArc(
-                    theme.ring, -90f, 360f * ringProgress.value, false,
-                    topLeft = box.topLeft, size = Size(box.width, box.height),
-                    style = Stroke(width = 5.dp.toPx(), cap = StrokeCap.Round)
-                )
-
-                // 2) Kırmızı yay dışarıdan içeri çöker
-                if (hazardIn.value > 0f) {
-                    val scale = 1f + (1f - hazardIn.value) * 0.45f
-                    val rr = r * scale
-                    val hb = Rect(c.x - rr, c.y - rr, c.x + rr, c.y + rr)
-                    drawArc(
-                        theme.hazard.copy(alpha = hazardIn.value.coerceIn(0f, 1f)),
-                        -125f, 94f, false,
-                        topLeft = hb.topLeft, size = Size(hb.width, hb.height),
-                        style = Stroke(width = 11.dp.toPx(), cap = StrokeCap.Round)
+                // Kelime işareti kendi yerinde duruyor; içindeki halka boşluğu
+                // ölçülüp üstteki katmana bildiriliyor. Yükseklik marka
+                // büyükken de aynı: halka küçülürken sayfa yerinden oynamıyor.
+                Box(
+                    Modifier.height(markFrame).fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        // Harf aralığı SON harften sonra da boşluk bırakıyor;
+                        // kelime işareti sola kaymasın diye yarısı geri alınıyor
+                        modifier = Modifier.offset(x = 6.5.dp)
+                    ) {
+                        // Halkanın yeri BOŞ: gerçek halka üstteki katmanda ve
+                        // oraya uçuyor, buradaki şeffaf kutu yalnızca O'nun
+                        // nerede duracağını söylüyor
+                        Spacer(
+                            Modifier.size(ringFinal).onGloballyPositioned {
+                                slotOrigin = it.positionInWindow()
+                                slotSize = it.size
+                            }
+                        )
+                        Spacer(Modifier.width(9.dp))
+                        Text(
+                            "RBEON", color = Color.White, fontSize = 42.sp,
+                            fontWeight = FontWeight.Light, letterSpacing = letterSpacing,
+                            // Harfler halkanın ardından, soldan açılıyor
+                            modifier = Modifier.alpha(lettersIn.value)
+                                .offset(x = (-14).dp * (1f - lettersIn.value))
+                        )
+                    }
+                    Text(
+                        stringResource(R.string.tagline),
+                        color = Color.White.copy(alpha = 0.45f), fontSize = 13.sp,
+                        letterSpacing = 4.sp,
+                        modifier = Modifier.offset(y = 47.dp).alpha(lettersIn.value)
                     )
                 }
 
-                // 3) Patlama: yayın ortasından savrulan parçacıklar
-                if (burst.value > 0f) {
-                    val b = burst.value
-                    for (i in 0 until 12) {
-                        val a = Math.toRadians(-78.0 + (i - 6) * 7.0).toFloat()
-                        val dist = r + b * 46.dp.toPx()
-                        drawCircle(
-                            theme.hazard.copy(alpha = (1f - b).coerceIn(0f, 1f)),
-                            2.3.dp.toPx() * (1f - b * 0.55f),
-                            Offset(c.x + cos(a) * dist, c.y + sin(a) * dist)
-                        )
-                    }
-                }
-
-                // 4) Küre yörüngede dolanır
-                val oa = Math.toRadians(orbAngle.value.toDouble()).toFloat()
-                drawCircle(theme.orb, 9.5.dp.toPx(),
-                           Offset(c.x + cos(oa) * r, c.y + sin(oa) * r))
+                Spacer(Modifier.weight(2f))
             }
 
-            Spacer(Modifier.weight(2f))
+            // Telif satırı en altta, stüdyo imzasıyla birlikte belirir
+            Column(
+                Modifier.align(Alignment.BottomCenter).padding(bottom = 26.dp)
+                    .alpha(nameIn.value),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("© ${Calendar.getInstance().get(Calendar.YEAR)} Axium Dynamics",
+                     color = Color.White.copy(alpha = 0.28f), fontSize = 11.sp)
+                Text(stringResource(R.string.all_rights_reserved),
+                     color = Color.White.copy(alpha = 0.28f), fontSize = 11.sp,
+                     modifier = Modifier.padding(top = 3.dp))
+            }
+
+            // Marka işareti TEK katman: büyük hâliyle ortada duran şeyle O'nun
+            // yerine geçen şey aynı görünüm. İki ayrı görünüm arasında geçiş
+            // yapılsaydı, birinin sönüp öbürünün belirdiği bir kare olurdu.
+            val c = composed.value
+            val slotCenter = slotOrigin?.let {
+                Offset(
+                    it.x - rootOrigin.x + slotSize.width / 2f,
+                    it.y - rootOrigin.y + slotSize.height / 2f
+                )
+            }
+            val midY = slotCenter?.y ?: (rootSize.height / 2f)
+            val homeX = rootSize.width / 2f
+            val targetX = slotCenter?.x ?: homeX
+            val liftPx = with(density) { ringOpticalLift.toPx() }
+            val framePx = with(density) { markFrame.toPx() }
+            val scale = 1f + (ringFinal / ringBig - 1f) * c
+            val cx = homeX + (targetX - homeX) * c
+            val cy = midY - liftPx * c
+
+            Box(
+                Modifier
+                    .size(markFrame)
+                    .offset {
+                        IntOffset((cx - framePx / 2f).roundToInt(),
+                                  (cy - framePx / 2f).roundToInt())
+                    }
+                    .graphicsLayer { scaleX = scale; scaleY = scale }
+            ) {
+                Canvas(Modifier.fillMaxSize()) {
+                    val ctr = Offset(size.width / 2, size.height / 2)
+                    val r = 59.dp.toPx()
+                    val box = Rect(ctr.x - r, ctr.y - r, ctr.x + r, ctr.y + r)
+
+                    // 1) Halka çizilir
+                    drawArc(
+                        theme.ring, -90f, 360f * ringProgress.value, false,
+                        topLeft = box.topLeft, size = Size(box.width, box.height),
+                        style = Stroke(width = 5.dp.toPx(), cap = StrokeCap.Round)
+                    )
+
+                    // 2) Kırmızı yay dışarıdan içeri çöker
+                    if (hazardIn.value > 0f) {
+                        val sc = 1f + (1f - hazardIn.value) * 0.45f
+                        val rr = r * sc
+                        val hb = Rect(ctr.x - rr, ctr.y - rr, ctr.x + rr, ctr.y + rr)
+                        drawArc(
+                            theme.hazard.copy(alpha = hazardIn.value.coerceIn(0f, 1f)),
+                            -125f, 94f, false,
+                            topLeft = hb.topLeft, size = Size(hb.width, hb.height),
+                            style = Stroke(width = 11.dp.toPx(), cap = StrokeCap.Round)
+                        )
+                    }
+
+                    // 3) Patlama: yayın ortasından savrulan parçacıklar
+                    if (burst.value > 0f) {
+                        val b = burst.value
+                        for (i in 0 until 12) {
+                            val a = Math.toRadians(-78.0 + (i - 6) * 7.0).toFloat()
+                            val dist = r + b * 46.dp.toPx()
+                            drawCircle(
+                                theme.hazard.copy(alpha = (1f - b).coerceIn(0f, 1f)),
+                                2.3.dp.toPx() * (1f - b * 0.55f),
+                                Offset(ctr.x + cos(a) * dist, ctr.y + sin(a) * dist)
+                            )
+                        }
+                    }
+
+                    // 4) Küre yörüngede dolanır
+                    val oa = Math.toRadians(orbAngle.value.toDouble()).toFloat()
+                    drawCircle(theme.orb, 9.5.dp.toPx(),
+                               Offset(ctr.x + cos(oa) * r, ctr.y + sin(oa) * r))
+                }
+            }
         }
     }
 }
