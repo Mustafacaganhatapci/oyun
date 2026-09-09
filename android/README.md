@@ -102,9 +102,11 @@ ayarlarından yönetilir.
 
 ## Bölüm türleri
 
-150 bölüm var; 1...120 ilk sürümdekiyle **birebir aynı** üretilir. Zorluk
-eğrisinin paydası `LEGACY_COUNT`'a sabitlendiği için bölüm sayısını
-artırmak eski bölümlerin düzenini kaydırmaz — kayıtlı ilerleme geçerli kalır.
+**257 bölüm, 806 yıldız.** 1...120 ilk sürümdekiyle, 121...150 de bir önceki
+sürümdekiyle **birebir aynı** üretilir. Zorluk eğrisinin paydası
+`LEGACY_COUNT`'a sabitlendiği için bölüm sayısını artırmak eski bölümlerin
+düzenini kaydırmaz — kayıtlı ilerleme geçerli kalır. Bölenler iOS'takilerle
+birebir aynı; iki platform aynı bölüm numarasında aynı bölümü üretmeli.
 
 | Tür | Nerede | Kural |
 |---|---|---|
@@ -112,13 +114,20 @@ artırmak eski bölümlerin düzenini kaydırmaz — kayıtlı ilerleme geçerli
 | Bonus | her 6. bölüm | Tehlike ve kapı yok; süre dolana kadar lümen topla |
 | Süreli | 12. normal bölümden itibaren her 4'te bir | Kapıya süre dolmadan ulaş |
 | Topla-bitir | 60-120 `id % 7 == 4`, 121+ `id % 3 == 1` | Kapı tüm lümenler toplanmadan açılmaz; ölünce bölüm sıfırdan, lümenler geri gelir |
-| Büyük yıldız | 60-120 `id % 7 == 1`, 121+ `id % 3 == 2` | 3 küçük lümen yerine 4 eden tek bir iri yıldız |
+| Büyük yıldız | 60-120 `id % 7 == 1`, 121-150 `id % 3 == 2`, 151+ `id % 4 == 1` | 3 küçük lümen yerine 4 eden tek bir iri yıldız |
+| Ters renkler | 151+ `id % 5 == 2` | Halka kırmızı, öldüren yay **beyaz** |
+| Baş aşağı | 151+ `id % 7 == 5` | Küre yukarıda başlar, kapı aşağıdadır |
+| İki çıkışlı | 151+ `id % 8 == 3` | Zincirin yanında ikinci, beyaz bir kapı; erken çıkarsan arkasındaki yıldızlar orada kalır |
 
 Yeni türler `KINDS_FROM = 60`'tan itibaren serpiştirilir (yedide bir), 120'den
 sonra üçte bire çıkar. Bu, 60-120 arasındaki bölümlerin **lümen düzenini ve
-kapı kuralını değiştirir**; halka düzenleri aynı kalır. Azami yıldız toplamı
-360'tan 467'ye çıkar, dolayısıyla eski kayıtlarda "büyük yıldız" bölümleri
-3/4 görünür — oyuncu tekrar oynayıp 4'e tamamlayabilir.
+kapı kuralını değiştirir**; halka düzenleri aynı kalır.
+
+Son üç tür yalnızca `PRIOR_COUNT = 150`'den sonra ve **birbirini dışlıyor**:
+iki çeşit aynı bölümde toplanınca giriş kartındaki tek satırlık kural yalan
+söylüyor. İki çıkışlı bölümlerde bölen 8 seçildi çünkü `id % 9 == 4` demek
+`id % 3 == 1` demek, yani 150 sonrasında her seferinde topla-bitir bölümüne
+denk gelip eleniyordu — ortaya tek bir bölüm çıkmıyordu.
 
 Oyalanma süresi (`dwellLimit`) dolduğunda küre **ölmez, kendiliğinden
 fırlar**. Yayın son üçte biri kırmızıya döner: bu, otomatik fırlatmanın
@@ -129,13 +138,20 @@ geldiğini haber veren uyarıdır, ceza değil.
 ```
 model/     Level.kt      Bölüm üretimi, zorluk eğrisi, SplitMix64
            OrbStyle.kt   Küre stilleri ve açılma koşulları
+           Rank.kt       Haftalık tablodaki altı rütbe ve eşikleri
 theme/     Theme.kt      10 tema paleti
 game/      GameEngine.kt Simülasyon — çizimden bağımsız, saf mantık
 store/     Stores.kt     İlerleme, ayarlar, oyuncu, günlük ödül, görevler
-services/  BillingManager, AdsManager, ConsentManager,
-           LeaderboardService, AudioEngine, Haptics, ReviewPrompt
-ui/        RootScreen (navigasyon), GameScreen (tuval + HUD),
-           Screens.kt (menü, bölümler, mağaza, ayarlar, ad, sıralama)
+           OrbPhotoStore Küreye konan fotoğraf (premium, cihazda kalır)
+services/  BillingManager, AdsManager, ConsentManager, Connectivity,
+           LeaderboardService, AudioEngine, Haptics, ReviewPrompt,
+           CustomSoundStore (premium'un kendi kayıtları),
+           PushManager + ReminderWorker (bildirimler),
+           Announcement (duyuru kartı), Feedback (görüş kutusu),
+           Diagnostics (Crashlytics)
+ui/        RootScreen (navigasyon + açılış), GameScreen (tuval + HUD),
+           GameCanvas (çizim), Components, Screens.kt (menü, bölümler,
+           mağaza, ayarlar, ad, sıralama)
 ```
 
 `GameEngine` hiçbir Compose/Android çizim türüne bağlı değildir; yalnızca
