@@ -473,6 +473,53 @@ def downscale(src, dst):
     scaled.crop((0, 0, SMALL_W, SMALL_H)).save(dst)
 
 
+# Play Store aynı sahneleri istiyor ama başka bir ORANDA: App Store'un
+# 1320×2868'i 1:2,17, Play'in kabul ettiği en uzun oran ise 9:16 (1:1,78).
+# Sahneyi ikinci kez, başka koordinatlarla çizmek yerine tamamı YÜKSEKLİĞE
+# göre küçültülüp yanları oyunun kendi zemin gradyanıyla dolduruluyor:
+# eklenen şey siyah bant değil, sahnenin zaten üstünde durduğu zemin. Böylece
+# tek bir kompozisyon iki mağazada da eksiksiz görünüyor.
+PLAY_W, PLAY_H = 1080, 1920
+
+
+def to_play(src, dst):
+    from PIL import Image
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    im = Image.open(src).convert("RGB")
+    scaled = im.resize((round(im.width * PLAY_H / im.height), PLAY_H), Image.LANCZOS)
+
+    # Yanlar sahnenin KENDİ kenar sütunu uzatılarak dolduruluyor, düz bir
+    # gradyanla değil. Sahnede vinyet ve ışık havuzları var; sabit bir zemin
+    # koyulunca kenarlarda görünür bir çerçeve oluşuyordu. Kenardaki içerik
+    # zaten neredeyse düz zemin olduğu için uzatma dikişsiz duruyor.
+    canvas = Image.new("RGB", (PLAY_W, PLAY_H))
+    left = (PLAY_W - scaled.width) // 2
+    right = PLAY_W - scaled.width - left
+    if left > 0:
+        edge = scaled.crop((0, 0, 1, PLAY_H)).resize((left, PLAY_H))
+        canvas.paste(edge, (0, 0))
+    if right > 0:
+        edge = scaled.crop((scaled.width - 1, 0, scaled.width, PLAY_H)).resize((right, PLAY_H))
+        canvas.paste(edge, (PLAY_W - right, 0))
+    canvas.paste(scaled, (left, 0))
+    canvas.save(dst)
+
+
+def render_play(html_path, out_dir):
+    """App Store boyundan Play boyuna: aynı sahneler, 1080×1920."""
+    here = pathlib.Path(__file__).parent
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for lang in COPY:
+        for i, (name, _, _) in enumerate(SCENES):
+            src = here / f"appstore-{lang}-{i + 1}-{name}.png"
+            if not src.exists():
+                print("atlandı (önce --render):", src.name)
+                continue
+            dst = out_dir / f"play-{lang}-{i + 1}-{name}.png"
+            to_play(src, dst)
+            print("yazıldı:", dst.name)
+
+
 if __name__ == "__main__":
     here = pathlib.Path(__file__).parent
     out = here / "shots.html"
@@ -480,3 +527,5 @@ if __name__ == "__main__":
     print("yazıldı:", out)
     if "--render" in sys.argv:
         render(out, here)
+    if "--render" in sys.argv or "--play" in sys.argv:
+        render_play(out, here.parent / "android" / "store-assets")
