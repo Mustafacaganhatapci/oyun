@@ -9,5 +9,18 @@
 	     beklediği <TeamID>.<BundleID> biçimini derleme sırasında üretir. -->
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
+
+	<!-- Uzaktan bildirim yetkisi.
+	     Bu satır olmadan `registerForRemoteNotifications()` sessizce
+	     başarısız oluyor ("no valid aps-environment entitlement string
+	     found"), yani APNs belirteci hiç gelmiyor ve konu aboneliği hiç
+	     kurulmuyor — hata da vermiyor, bildirim de gelmiyor.
+
+	     Değer `development` yazıyor ve öyle KALMALI: App Store'a
+	     dağıtım için dışa aktarırken Xcode bunu `production` olarak
+	     yeniden imzalıyor. Tek bir .p8 anahtarının hem TestFlight'ta
+	     hem yayında çalışmasının sebebi bu. -->
+	<key>aps-environment</key>
+	<string>development</string>
 </dict>
 </plist>

@@ -6,7 +6,7 @@ Oyuncuya haber ulaştırmanın **üç** yolu var.
 |---|---|---|---|
 | Nereye düşer | Ana menü, oyunu açınca | Kilit ekranı, üstten | Kilit ekranı, üstten |
 | Kime ulaşır | Oyunu açan herkese | İzin veren herkese | İzin veren herkese |
-| Kurulum | **Yok** | **Yok** | APNs anahtarı + Xcode + paket |
+| Kurulum | **Yok** | **Yok** | APNs anahtarı (tek seferlik) |
 | Ne zaman gider | — | Zamanı kod belirliyor | Sen gönderince |
 | Yayınlama | Firestore'da bir belge | — | Firebase konsolundan gönderi |
 
@@ -23,10 +23,17 @@ sonra bildirim olarak da düşüyor: kartı görüp "sonra" diyene ikinci bir
 dokunuş. Oyuncu güncellerse ya da kartı kapatırsa bekleyen bildirim iptal
 oluyor. `PushManager.syncUpdateReminder(title:body:)`
 
-Üçüncüsü (herkese tek seferlik serbest metin) hâlâ APNs kurulumunu bekliyor;
-`FirebaseMessaging` paketi projede olmadığı sürece `canReceiveBroadcast`
-false dönüyor ve konu aboneliği sessizce atlanıyor. Yerel hatırlatmalar bundan
-etkilenmiyor.
+Üçüncüsü (herkese tek seferlik serbest metin) **iki adım** uzakta. Kodun ve
+projenin tarafında yapılacak bir şey kalmadı:
+
+- [x] `PushManager`, `AppDelegate`, izin akışı, konu aboneliği — hazır
+- [x] `FirebaseMessaging` paketi hedefe **bağlandı** (`project.pbxproj`)
+- [x] `aps-environment` yetkisi **eklendi** (`Lumo.entitlements`)
+- [ ] APNs `.p8` anahtarını üret → **§3a**
+- [ ] Anahtarı Firebase'e yükle → **§3b**
+
+Kalan ikisi Apple ve Firebase konsollarında, dosya indirip yüklemekten
+ibaret. Yerel hatırlatmalar bunların hiçbirini beklemiyor, bugün çalışıyor.
 
 ---
 
@@ -116,24 +123,41 @@ aşağıda **Apple app configuration** → `com.caganhatapci.lumo` satırı →
 Bu satırda uygulama görünmüyorsa iOS uygulaması projeye eklenmemiş demektir;
 `GoogleService-Info.plist` zaten bu projeden indiği için normalde görünür.
 
-### c. Xcode — iki capability
+### c. Xcode — capability ✅ yapıldı
 
-Hedef → **Signing & Capabilities** → **+ Capability**:
-1. **Push Notifications**
-2. **Background Modes** → içinden **Remote notifications** kutusu
+`Lumo.entitlements` içine `aps-environment` yazıldı, yani hedef zaten push
+yetkili. Xcode'da **Signing & Capabilities** sekmesini açınca "Push
+Notifications" satırını orada göreceksin; elle eklemene gerek yok.
 
-Otomatik imzalama açıksa Xcode App ID'ye push yetkisini kendisi ekliyor.
-Ücretli geliştirici hesabı şart — ücretsiz hesapta Push Notifications
-capability listede çıkmıyor.
+Bu satır olmadan `registerForRemoteNotifications()` sessizce başarısız
+oluyordu — hata da vermiyor, belirteç de gelmiyor. Aranması en zor arıza
+türü, o yüzden dosyaya yazıldı: bir daha kimse tıklamayı unutamaz.
 
-### d. Paket
+Değer `development` ve öyle **kalmalı**. App Store'a dışa aktarırken Xcode
+onu `production` olarak yeniden imzalıyor; tek bir `.p8`'in hem TestFlight'ta
+hem yayında çalışmasının sebebi bu.
 
-Xcode → hedef → General → Frameworks, Libraries, and Embedded Content → **+**
-→ listeden **FirebaseMessaging**. Paket (firebase-ios-sdk) zaten ekli,
-yalnızca bu ürün hedefe bağlı değil.
+> **Background Modes → Remote notifications gerekmiyor.** O kutu sessiz
+> (içerik-güncelleme) bildirimleri için. Orbeon yalnızca ekrana düşen
+> bildirim gönderiyor; işaretlemek App Review'da "bunu ne için
+> kullanıyorsun" sorusunu davet etmekten başka bir şey yapmaz.
 
-Ayarlardaki "Bildirimler" satırı bu adımı BEKLEMİYOR — yerel hatırlatmalar
-için zaten görünüyor; paket yalnızca konsoldan gönderilen yayını açıyor.
+Ücretli geliştirici hesabı yine de şart: ücretsiz hesap APNs anahtarı
+üretemiyor.
+
+### d. Paket ✅ yapıldı
+
+**FirebaseMessaging** hedefe bağlandı (`project.pbxproj`). Xcode'u açtığında
+Swift Package Manager paketi kendiliğinden çözüyor; ilk açılışta "Resolving
+Package Graph" birkaç saniye sürebilir.
+
+Bunun anlamı: `canImport(FirebaseMessaging)` artık **true**, yani konu
+aboneliği gerçekten kuruluyor. Önce false dönüyordu ve `subscribe()` hiçbir
+şey yapmadan geçiyordu.
+
+Ayarlardaki "Bildirimler" satırı bu adımı zaten beklemiyordu — yerel
+hatırlatmalar için görünüyordu; paket yalnızca konsoldan gönderilen yayını
+açıyor.
 
 ### e. Dene
 
@@ -149,10 +173,24 @@ Konu aboneliğinin sunucuya işlemesi birkaç dakika sürebiliyor; ilk denemede
 gelmezse beş dakika bekleyip tekrar gönder. Uygulama ÖNDEYKEN de banner
 çıkıyor (`AppDelegate`'teki `willPresent`).
 
-Tek bir cihaza test göndermek istersen konsolda "Send test message" kutusuna
-FCM belirtecini yapıştırman gerekiyor; belirteci koda `Messaging.messaging()
-.token()` çağrısı eklemeden görmenin yolu yok, o yüzden pratikte konu
-yayınıyla denemek daha kolay.
+**Önce KENDİ telefonunda dene.** Konu yayını geri alınamıyor: yanlış yazılmış
+bir cümleyi `all`'a gönderdikten sonra düzeltmenin yolu yok, ikinci bir
+bildirim göndermek de ilkini silmiyor.
+
+Hata ayıklama derlemesinde bildirimleri açtığın an FCM belirteci Xcode
+konsoluna düşüyor:
+
+```
+FCM BELİRTECİ (tek cihaz testi için): dQw4w9Wg...
+```
+
+Onu kopyala → Firebase konsolu → Messaging → kampanyayı yaz → **Send test
+message** → kutuya yapıştır → Test. Bildirim yalnızca o telefona düşüyor.
+Metni gerçek kilit ekranında gördükten, uzunluğunu ve satır kırılmasını
+beğendikten sonra Publish'e bas.
+
+Belirteç yalnızca `DEBUG` derlemesinde yazılıyor ve kişiyi değil kurulumu
+adresliyor; uygulamayı silip yeniden kurunca değişiyor.
 
 ### f. Dil
 

@@ -10,6 +10,7 @@
 		A1B2C3D4E5F6000000000040 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000041 /* GoogleMobileAds */; };
 		A1B2C3D4E5F6000000000043 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000044 /* FirebaseAuth */; };
 		A1B2C3D4E5F6000000000045 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000046 /* FirebaseFirestore */; };
+		A1B2C3D4E5F6000000000060 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000061 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 				A1B2C3D4E5F6000000000040 /* GoogleMobileAds in Frameworks */,
 				A1B2C3D4E5F6000000000043 /* FirebaseAuth in Frameworks */,
 				A1B2C3D4E5F6000000000045 /* FirebaseFirestore in Frameworks */,
+				A1B2C3D4E5F6000000000060 /* FirebaseMessaging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +96,7 @@
 				A1B2C3D4E5F6000000000041 /* GoogleMobileAds */,
 				A1B2C3D4E5F6000000000044 /* FirebaseAuth */,
 				A1B2C3D4E5F6000000000046 /* FirebaseFirestore */,
+				A1B2C3D4E5F6000000000061 /* FirebaseMessaging */,
 			);
 			productName = Lumo;
 			productReference = A1B2C3D4E5F6000000000002 /* Lumo.app */;
@@ -394,6 +397,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A1B2C3D4E5F6000000000047 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		A1B2C3D4E5F6000000000061 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D4E5F6000000000047 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

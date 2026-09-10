@@ -219,6 +219,32 @@ final class PushManager: NSObject, ObservableObject {
         #if canImport(FirebaseMessaging)
         Messaging.messaging().subscribe(toTopic: Self.topic)
         Messaging.messaging().subscribe(toTopic: Self.languageTopic)
+        logFCMToken()
+        #endif
+    }
+
+    /// FCM belirtecini günlüğe yazar — TEK bir cihaza test göndermek için.
+    ///
+    /// Konu yayını geri alınamıyor: yanlış yazılmış bir cümleyi `all`'a
+    /// gönderdikten sonra düzeltmenin yolu yok, ikinci bir bildirim
+    /// göndermek de ilkini silmiyor. Bu belirteç Firebase konsolundaki
+    /// "Send test message" kutusuna yapıştırılınca bildirim yalnızca o
+    /// telefona düşüyor; metni gerçek kilit ekranında görüp beğendikten
+    /// sonra herkese gönderiliyor.
+    ///
+    /// Belirteç kişiyi değil KURULUMU adresliyor; uygulama silinip yeniden
+    /// kurulunca değişiyor. Yine de yalnızca hata ayıklama derlemesinde
+    /// yazılıyor: yayındaki bir cihazın günlüğünde durmasına gerek yok.
+    private func logFCMToken() {
+        #if DEBUG && canImport(FirebaseMessaging)
+        Messaging.messaging().token { token, error in
+            if let token {
+                leaderboardLog("FCM BELİRTECİ (tek cihaz testi için): \(token)")
+            } else if let error {
+                leaderboardLog("FCM belirteci alınamadı: \(error.localizedDescription)",
+                               isError: true)
+            }
+        }
         #endif
     }
 
