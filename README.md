@@ -168,13 +168,37 @@ SDK'yı ekleyince gerçek test reklamları görünür. Yayın öncesi kendi kiml
 - [x] 1024px uygulama ikonu
 - [x] StoreKit 2 + Geri Yükleme düğmesi (App Review şartı)
 - [x] Reklamsız ilk deneyim (ilk 10 bölüm) — inceleme sırasında reklam sorunu yaşanmaz
-- [ ] App Store Connect'te 3 IAP ürününü oluştur (`lumo.premium`, `lumo.tip.small`, `lumo.tip.big`)
-- [ ] Game Center'ı etkinleştir + 2 liderlik tablosu (`lumo.endless`, `lumo.speedrun`)
-- [ ] Ekran görüntüleri (6.9" ve 6.5") + tanıtım metni
-- [ ] AdMob kimliklerini gerçek değerlerle değiştir
+- [x] App Store Connect'te 3 IAP ürünü — uygulama 2.1 ile yayında, ürünler çalışıyor
+- [x] Ekran görüntüleri (6.9" ve 6.5") + tanıtım metni — `ios-store-assets/`
+- [x] AdMob kimlikleri gerçek: iOS `…~9123400876`, Android `…~9317548394` (ayrı
+      uygulamalar, ayrı birimler)
 - [ ] Gizlilik politikası URL'i (reklam SDK'sı eklenince gerekli)
 - [ ] App Store Connect > App Privacy: manifestodaki beş veri türü orada da
       işaretlenmeli — manifesto ile formun aynı şeyi söylemesi gerekiyor.
+
+**Game Center kullanılmıyor.** Listede "etkinleştir" maddesi vardı ve yanlıştı:
+sıralama Firestore üzerinden çalışıyor, projede `GameKit` importu yok. Haftalık
+sıfırlanma, rütbeler ve doldurma kayıtları Game Center'ın vermediği şeyler.
+
+## 🔌 Projeye bağlanmamış paketler
+
+Bu üçünün kodu yazılmış ve `canImport` ile korumalı — paket bağlı olmadığı için
+**sessizce hiçbir şey yapmıyorlar.** Hata vermezler, log da basmazlar; çalışıp
+çalışmadığını ancak paneline bakıp "neden boş?" diye sorunca fark edersin.
+
+| Paket | Bağlı mı | Bağlanmazsa ne olmuyor |
+|---|---|---|
+| `FirebaseMessaging` | ✅ bağlandı | — |
+| `FirebaseCrashlytics` | ❌ | `Diagnostics` ölü: çökme, ölümcül olmayan hata ve iz kaydı toplanmıyor. Bir oyuncuda bir şey bozulunca haberin olmuyor. |
+| `RevenueCat` | ❌ | `RevenueCatBridge` ölü: aktif kullanıcı sayımı ve makbuz eşitleme yok. API anahtarı kodda hazır, eksik olan yalnızca paket. |
+
+İkisi de Xcode → File → Add Package Dependencies ile ekleniyor. Crashlytics
+`firebase-ios-sdk` içinde (paket zaten projede, yalnızca ürün hedefe bağlı
+değil); RevenueCat ayrı bir paket:
+`https://github.com/RevenueCat/purchases-ios`.
+
+Crashlytics'in ayrıca bir **Run Script** derleme aşaması istiyor (dSYM yükleme).
+O olmadan da çökme toplanır ama yığın izleri okunaksız gelir.
 
 ## 📊 Sıralama doldurmaları
 
