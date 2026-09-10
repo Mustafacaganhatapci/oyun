@@ -243,7 +243,6 @@ class GameEngine(
     /** Toplanmamış kalpler: halka sırası → normalize konum */
     var lifePickups = mutableMapOf<Int, Pt>()
         private set
-        private set
     var cameraY = 0f
         private set
     private val endlessRNG = SplitMix64(System.currentTimeMillis())
