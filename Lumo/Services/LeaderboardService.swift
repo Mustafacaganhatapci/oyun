@@ -572,6 +572,35 @@ enum FirebaseBridge {
         }
     }
 
+    /// Kaç kişi bu bölümü bitirdi — KİM değil, KAÇ KİŞİ.
+    ///
+    /// Tek bir belgede bölüm başına bir sayaç: `lvl_007: 1240`. Oyuncu
+    /// kimliği yazılmıyor, yazılamaz da — `FieldValue.increment` sayıyı
+    /// okumadan bir artırıyor, yani istemci ne kendi satırını ne de
+    /// başkasınınkini görüyor. Konsolda açınca düşüş eğrisi doğrudan okunuyor:
+    /// insanların oyunu nerede bıraktığı başka hiçbir yerde görünmüyordu.
+    ///
+    /// Alan adı üç haneye tamamlanıyor (`lvl_007`) çünkü konsol alanları
+    /// metin olarak sıralıyor: sıfırsız yazılsa 10, 2'den önce gelirdi.
+    ///
+    /// Platformlar AYRI belgelerde: iOS ile Android'in eğrisi farklı olabilir
+    /// ve tek belgeye yazmak ikisini birbirine karıştırırdı. Ayrıca tek bir
+    /// Firestore belgesi saniyede ~1 yazma kaldırıyor; ikiye bölmek o sınırı
+    /// da ikiye bölüyor.
+    static func bumpLevelReached(_ level: Int) async {
+        guard level > 0 else { return }
+        let field = String(format: "lvl_%03d", level)
+        do {
+            try await Firestore.firestore()
+                .collection("stats").document("progress_ios")
+                .setData([field: FieldValue.increment(Int64(1))], merge: true)
+        } catch {
+            // Sessiz: bu bir istatistik, oyuncunun oyununu etkilemiyor
+            leaderboardLog("BÖLÜM SAYACI YAZILAMADI \(field): \(error.localizedDescription)",
+                           isError: true)
+        }
+    }
+
     /// Destekçi kaydı: kim, hangi adla, ne aldı.
     ///
     /// Amacı muhasebe değil — sonradan o kişilere hediye premium ya da kod
@@ -855,6 +884,7 @@ enum FirebaseBridge {
                                 productID: String, price: String) async {}
     static func sendFeedback(message: String, playerID: String, username: String,
                              version: String) async -> Bool { false }
+    static func bumpLevelReached(_ level: Int) async {}
     static func submit(mode: LeaderboardMode, week: Int, value: Double,
                        username: String, playerID: String) async {}
     static func fetchTop(mode: LeaderboardMode, week: Int, myPlayerID: String,

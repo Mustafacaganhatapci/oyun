@@ -218,6 +218,9 @@ final class ProgressStore: ObservableObject {
         let existing = stars[level] ?? 0
         stars[level] = max(existing, newStars)
         save()
+        // Anonim sayaç: "kaç kişi buraya geldi". Kendisi karar veriyor —
+        // yalnızca bu cihazın daha önce görmediği bir bölümse yazıyor.
+        ProgressStats.reportCompleted(level: level)
     }
 
     func recordHop() {

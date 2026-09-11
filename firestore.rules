@@ -53,6 +53,18 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Bölüm ilerleme sayacı: KİM değil, KAÇ KİŞİ.
+    //
+    // Tek belgede bölüm başına bir sayaç (`lvl_007: 1240`). Oyuncu kimliği
+    // hiç yazılmıyor. Okuma İSTEMCİYE KAPALI: uygulama bu belgeyi zaten hiç
+    // okumuyor, panoyu yalnızca konsoldan görüyoruz — ve "kaç kişi nerede
+    // kaldı" bilgisi rakiplerin değil bizim işimiz.
+    match /stats/{doc} {
+      allow read: if false;
+      allow delete: if false;
+      allow create, update: if request.auth != null;
+    }
+
     // Oyuncuların ayarlardan yazdığı görüş ve öneriler.
     // Yalnızca YAZILIR: istemci ne okuyabilir ne değiştirebilir; başkalarının
     // yazdıklarını görmek kimsenin işi değil.

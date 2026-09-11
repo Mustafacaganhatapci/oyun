@@ -271,3 +271,53 @@ durumda iOS Ayarları'na götüren bir bağlantıya dönüşüyor.
 Konu yayını herkese aynı anda gider ve geri alınamaz. Ayda bir-iki
 gönderiden fazlası bildirimlerin toptan kapatılmasına yol açıyor; kapatan
 oyuncu geri açmıyor.
+
+---
+
+## 4. İnsanlar nereye kadar geliyor?
+
+Kampanya ilerlemesi bugüne kadar hiçbir yere yazılmıyordu: sıralama yalnızca
+sonsuz mod ve hız turunu tutuyor. Yani bir bölüm çok zorsa ya da insanlar
+12'de toptan bırakıyorsa bunu ancak biri yazıp söylerse öğreniyorduk.
+
+Artık Firestore'da iki belge var:
+
+| Belge | Ne tutuyor |
+|---|---|
+| `stats/progress_ios` | Bölüm başına: kaç iPhone oyuncusu o bölümü bitirdi |
+| `stats/progress_android` | Aynısı, Android için |
+
+Alanlar şöyle görünüyor:
+
+```
+lvl_001: 4820
+lvl_002: 4310
+lvl_005: 3105
+lvl_010:  1890
+lvl_020:   640
+```
+
+Konsolda belgeyi açtığında düşüş eğrisini doğrudan okuyorsun. İki sayı
+arasındaki sert düşüş, oranın çok zor ya da bozuk olduğunu söyler.
+
+**Kim olduğu yazılmıyor.** Sayaç `FieldValue.increment` ile artıyor, yani
+istemci sayıyı okumadan bir ekliyor; oyuncu kimliği hiç gönderilmiyor.
+Belge okumaya da kapalı (`firestore.rules` → `match /stats/{doc}`), yalnızca
+konsoldan görünüyor.
+
+**Her bölüm cihaz başına bir kez sayılıyor.** Aynı bölümü on kez oynayan biri
+eğriyi on kat bozmuyor: ölçülen "kaç kişi buraya geldi", "kaç kez oynandı"
+değil.
+
+**Platformlar ayrı belgede.** İki eğri farklı olabilir ve tek belgeye yazmak
+ikisini karıştırırdı. Ayrıca tek bir Firestore belgesi saniyede ~1 yazma
+kaldırıyor; ikiye bölmek o sınırı da ikiye bölüyor. Oyuncu sayısı çok
+artarsa bu sınır yeniden düşünülmeli.
+
+> **Kuralları yeniden yayınlaman gerekiyor.** `firestore.rules` dosyasına
+> `stats` bloğu eklendi; Firebase konsolu → Firestore → Rules → yapıştır →
+> **Publish**. Yayınlanmazsa sayaç yazılamaz (oyun etkilenmez, sessizce
+> atlanır) ve belgeler hiç oluşmaz.
+
+Belgeleri elle oluşturmana gerek yok: ilk oyuncu bir bölüm bitirdiğinde
+kendiliğinden oluşuyorlar.

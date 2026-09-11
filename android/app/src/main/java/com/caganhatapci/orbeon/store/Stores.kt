@@ -1,6 +1,7 @@
 package com.caganhatapci.orbeon.store
 
 import android.content.Context
+import com.caganhatapci.orbeon.services.ProgressStats
 import android.content.SharedPreferences
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -32,7 +33,7 @@ fun prefs(context: Context): SharedPreferences =
  * Android'de yedekleme, manifest'teki allowBackup + auto backup ile
  * sistem tarafından yapılır (iOS'taki iCloud yedeklemesinin karşılığı).
  */
-class ProgressStore(context: Context) {
+class ProgressStore(private val context: Context) {
     private val p = prefs(context)
 
     var stars by mutableStateOf(loadStars())
@@ -145,6 +146,9 @@ class ProgressStore(context: Context) {
         val existing = stars[level] ?: 0
         stars = stars + (level to max(existing, newStars))
         saveStars()
+        // Anonim sayaç: "kaç kişi buraya geldi". Kendisi karar veriyor —
+        // yalnızca bu cihazın daha önce görmediği bir bölümse yazıyor.
+        ProgressStats.reportCompleted(context, level)
     }
 
     fun recordHop() {
