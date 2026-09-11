@@ -191,6 +191,52 @@ enum LevelLibrary {
         return id % 8 == 3
     }
 
+    /// Zamanın yavaşladığı bölümler: küreye BASILI TUTUNCA zaman ağırlaşıyor.
+    ///
+    /// Yetenek gizli chrono küresinden geliyor ama burada küreye değil BÖLÜME
+    /// bağlı — hangi karakterle oynarsan oyna çalışıyor. Gizli küre yine de
+    /// değerini koruyor: iniş noktasını gösteren nişan çizgisi yalnızca onda,
+    /// ve o çizgiyi bu bölümlerde de yalnızca o taşıyor.
+    ///
+    /// Bu bölümler bilerek DAHA ZOR üretiliyor (`slowTimeBoost`): halkalar
+    /// daha hızlı döner, daha çok tehlike ve daha çok hareketli halka çıkar.
+    /// Yavaşlatma bir hediye değil, zorluğun cevabı — yoksa yetenek yalnızca
+    /// zaten geçilebilen bir bölümü kolaylaştıran bir düğme olurdu.
+    ///
+    /// 20'DEN SONRA başlıyor, 150'den değil. Öteki çeşitlerin aksine bu bir
+    /// kural değil bir YETENEK: oyuncudan bir şey istemiyor, ona bir şey
+    /// veriyor. Kampanyanın sonuna saklamak, on iki bölümlük bir sürprizi
+    /// oyuncuların çoğunun hiç görmemesi demekti. İlki 26'da; ilk yirmi bölüm
+    /// temel atlayışın öğrenildiği yer ve oraya yeni bir düğme koymak erken.
+    ///
+    /// Bölen 11 kampanyanın tamamına eşit aralıklı on iki bölüm serpiyor:
+    /// 26, 37, 59, 70, 92, 103, 125, 147, 158, 191, 213, 224.
+    static func slowsTime(_ id: Int) -> Bool {
+        guard id > 20, !isBonus(id), !isCollect(id),
+              !isInverted(id), !isUpsideDown(id), !hasShortcutGate(id) else { return false }
+        return id % 11 == 4
+    }
+
+    /// Zorluk zammı YALNIZCA 150'den sonrasına.
+    ///
+    /// 21...150 yayında ve oynandı; oradaki bir bölümün DÜZENİNİ değiştirmek,
+    /// kuralını değiştirmekten başka bir şey. Ezberlenmiş bir bölüme geri
+    /// dönen oyuncu başka bir bölüm bulurdu. O aralıkta bölüm aynı bölüm
+    /// olarak kalıyor, üstüne yalnızca yetenek geliyor — yani orada
+    /// yavaşlatma saf bir hediye. 150'den sonra ise silaha dönüşüyor.
+    static func slowTimeIsHard(_ id: Int) -> Bool { slowsTime(id) && id > priorCount }
+
+    /// Yavaşlatan bölümün zorluk zammı. Ayrı bir fonksiyon: kuralın hangi
+    /// bölümde geçerli olduğu ile ne kadar zorlaştırdığı ayrı ayrı okunsun.
+    static func slowTimeBoost(_ d: Difficulty) -> Difficulty {
+        var d = d
+        d.speedRange = (d.speedRange.lowerBound * 1.18)...(d.speedRange.upperBound * 1.18)
+        d.hazardChance = min(0.95, d.hazardChance + 0.15)
+        d.movingChance = min(1.0, d.movingChance + 0.20)
+        d.hazardSpan = (d.hazardSpan.lowerBound * 1.10)...(d.hazardSpan.upperBound * 1.10)
+        return d
+    }
+
     /// Zorluk eğrisinin 0...1 konumu. 100. normal bölümden sonra 1'de durur.
     private static func curveT(_ n: Int) -> CGFloat {
         let t = CGFloat(n - 1) / CGFloat(max(1, curveNormalCount - 1))
@@ -301,7 +347,9 @@ enum LevelLibrary {
     // MARK: Normal bölüm üretimi
 
     private static func normalLevel(_ id: Int) -> Level {
-        let d = difficulty(for: id)
+        // Yavaşlatan bölüm daha zor üretiliyor: yetenek zorluğun cevabı olsun,
+        // zaten geçilebilen bir bölümü kolaylaştıran bir düğme olmasın
+        let d = slowTimeIsHard(id) ? slowTimeBoost(difficulty(for: id)) : difficulty(for: id)
         var rng = SplitMix64(seed: 0xC0FFEE &+ UInt64(id) &* 7919)
 
         var rings: [RingSpec] = []

@@ -241,4 +241,7 @@
     <string name="push_optin_body">Yeni bölümler, yeni karakterler ve haftalık yarış kapanmadan bir hatırlatma. Başka hiçbir şey.</string>
     <string name="push_optin_note">İstediğin an Ayarlar’dan kapatabilirsin.</string>
     <string name="push_optin_enable">Bildirimleri aç</string>
+    <string name="rule_slow_time">Basılı tut, zaman yavaşlasın</string>
+    <string name="hint_slow_time_title">Burada zaman bükülüyor</string>
+    <string name="hint_slow_time_body">Parmağını basılı tut, zaman ağırlaşsın. Bırakınca küre fırlar. Kürenin çevresindeki yay senin göstergen: basılı tuttukça tükeniyor, beklerken doluyor.</string>
 </resources>

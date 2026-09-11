@@ -178,6 +178,25 @@ class GameEngine(
 
     /** Kuşanılan küre chrono mu — motor kurulurken bildiriliyor */
     fun setChrono(on: Boolean) { usesChrono = on }
+
+    /** Bölümün kendisi zamanı yavaşlatıyor mu (150 sonrası çeşitlerden biri) */
+    private var levelSlowsTime = false
+
+    /**
+     * Zamanı yavaşlatma. İki kaynaktan geliyor: gizli chrono küresi (her
+     * bölümde) ya da bölümün kendisi (her küreyle).
+     */
+    val usesChronoSlow: Boolean get() = usesChrono || levelSlowsTime
+
+    /**
+     * İniş noktasını gösteren nişan çizgisi YALNIZCA gizli küreye ait.
+     *
+     * Yavaşlatmayı bölüme taşıdık ama çizgiyi taşımadık: çizgi "nereye
+     * ineceğini söyleyen" bir yetenek, yavaşlatma ise "düşünmek için süre
+     * veren" bir yetenek. İkisini birden herkese vermek gizli küreyi gereksiz
+     * kılardı — ve o küre sekiz vuruşla kazanılıyor.
+     */
+    val usesChronoAim: Boolean get() = usesChrono
     var chronoCharge = 1f
         private set
     var chronoSlowing = false
@@ -318,6 +337,7 @@ class GameEngine(
                 // Hız turunda zaten hepsi isteniyor; ikisini birden kurmak
                 // "en az bir" kuralını anlamsız bir alt küme yapar
                 gateNeedsAnyLumen = lvl.gateNeedsAnyLumen && !gateNeedsAllLumens
+                levelSlowsTime = LevelLibrary.slowsTime(mode.id)
                 gateOpenAnnounced = false
                 restartsOnDeath = lvl.restartsOnDeath
                 invertedHazard = lvl.invertedHazard
@@ -417,7 +437,7 @@ class GameEngine(
         // Chrono zamanı buradan geçiriyor: parmak ekrandayken dt küçülüyor,
         // yani halkalar, tehlikeler, geri sayımlar — her şey birlikte
         // ağırlaşıyor. Oyuncu zaman kazanmıyor, DÜŞÜNME payı kazanıyor.
-        if (usesChrono) dt = updateChrono(dt)
+        if (usesChronoSlow) dt = updateChrono(dt)
         elapsed += dt
 
         // Patlama efektlerini yaşlandır (negatif yaş = henüz patlamadı)
@@ -478,7 +498,7 @@ class GameEngine(
                 orbY = cy + sin(angle) * r
                 // Chrono: nişan çizgisi kürenin fırlatma yönünü canlı takip
                 // ediyor ve nereye VARDIĞINI söylüyor
-                if (usesChrono) updateChronoAim(s.ring, angle, s.direction)
+                if (usesChronoAim) updateChronoAim(s.ring, angle, s.direction)
                 if (!hazardGraceActive && hazardContains(s.ring, angle)) { fail(); return }
                 // Tur dolduğu an yay kırmızıya döner — artık öldürüyor
                 if (hazardGraceUntil != null && !hazardGraceActive) {
@@ -680,7 +700,7 @@ class GameEngine(
     /** Parmak ekrana değdi. Chrono'da fırlatma BIRAKINCA oluyor. */
     fun onPressStart() {
         if (coachFrozen) return
-        if (usesChrono && orbState is OrbState.Attached) {
+        if (usesChronoSlow && orbState is OrbState.Attached) {
             chronoHeld = true
         } else {
             onTap()
@@ -689,7 +709,7 @@ class GameEngine(
 
     /** Parmak kalktı: yavaşlatma biter, küre fırlar. */
     fun onPressEnd(cancelled: Boolean = false) {
-        if (!usesChrono || !chronoHeld) return
+        if (!usesChronoSlow || !chronoHeld) return
         chronoHeld = false
         if (chronoSlowing) {
             chronoSlowing = false

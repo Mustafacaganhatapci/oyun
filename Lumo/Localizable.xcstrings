@@ -3965,6 +3965,47 @@
         }
       }
     },
+    "Hold to slow time": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold to slow time"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Basılı tut, zaman yavaşlasın"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte gedrückt, die Zeit wird langsamer"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mantén pulsado para ralentizar el tiempo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintiens pour ralentir le temps"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "長押しで時間が遅くなる"
+          }
+        }
+      }
+    },
     "Hold to slow time. The line shows where you land.": {
       "extractionState": "manual",
       "localizations": {
@@ -3996,6 +4037,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Basılı tut, zaman yavaşlasın. Çizgi nereye ineceğini gösterir."
+          }
+        }
+      }
+    },
+    "Hold your finger down and time slows to a crawl. Let go and the orb launches. The ring around the orb is your meter: it drains while you hold and refills while you wait.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold your finger down and time slows to a crawl. Let go and the orb launches. The ring around the orb is your meter: it drains while you hold and refills while you wait."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parmağını basılı tut, zaman ağırlaşsın. Bırakınca küre fırlar. Kürenin çevresindeki yay senin göstergen: basılı tuttukça tükeniyor, beklerken doluyor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte den Finger gedrückt und die Zeit wird zäh. Lässt du los, startet die Kugel. Der Bogen um die Kugel ist deine Anzeige: Er leert sich beim Halten und füllt sich beim Warten."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mantén el dedo pulsado y el tiempo se ralentiza. Al soltar, la esfera sale disparada. El arco alrededor de la esfera es tu medidor: se vacía mientras mantienes y se llena mientras esperas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garde le doigt appuyé et le temps ralentit. Relâche et la sphère part. L’arc autour de la sphère est ta jauge : elle se vide quand tu maintiens et se remplit quand tu attends."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "指を押したままにすると時間がゆっくりになります。離すとオーブが飛びます。オーブの周りの弧がゲージ：押している間は減り、待っている間に回復します。"
           }
         }
       }
@@ -9235,6 +9317,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bu haftaki yarış yarın kapanıyor"
+          }
+        }
+      }
+    },
+    "Time bends here": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time bends here"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Burada zaman bükülüyor"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hier biegt sich die Zeit"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aquí el tiempo se dobla"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ici le temps se plie"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ここでは時間が曲がる"
           }
         }
       }

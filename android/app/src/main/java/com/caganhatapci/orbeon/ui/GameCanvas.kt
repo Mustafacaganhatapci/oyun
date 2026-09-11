@@ -302,20 +302,20 @@ private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme, t: Float, den
 private fun DrawScope.drawAimLine(engine: GameEngine, theme: Theme, t: Float, den: Float) {
     // Antrenman çizgisi sabit boyda; chrono çizgisi çarpacağı halkada
     // KESİLİYOR ve oraya nabız atan bir nokta koyuyor.
-    if (!engine.isTutorial && !engine.usesChrono) return
+    if (!engine.isTutorial && !engine.usesChronoAim) return
     val s = engine.orbState as? GameEngine.OrbState.Attached ?: return
     val start = Offset(engine.orbX, engine.orbY)
     val tx = -sin(s.angle) * s.direction
     val ty = cos(s.angle) * s.direction
 
-    val hit = if (engine.usesChrono) engine.chronoAim else null
+    val hit = if (engine.usesChronoAim) engine.chronoAim else null
     val end = if (hit != null) Offset(hit.first, hit.second)
               else Offset(start.x + tx * size.width * 0.5f, start.y + ty * size.width * 0.5f)
 
     // Hiçbir halkayı kesmiyorsa çizgi soluk: "şu an fırlatma" demenin en
     // sessiz yolu. İnilecek yer kırmızıysa çizgi de kırmızı.
     val color = when {
-        engine.usesChrono && hit == null -> Color.White.copy(alpha = 0.22f)
+        engine.usesChronoAim && hit == null -> Color.White.copy(alpha = 0.22f)
         engine.chronoAimDeadly -> theme.hazard.copy(alpha = 0.85f)
         else -> Color.White.copy(alpha = 0.7f)
     }
@@ -618,6 +618,23 @@ private fun DrawScope.drawOrb(
             } else {
                 drawCircle(theme.orb, r, c)
             }
+        }
+    }
+
+    // Dolum yayı — yavaşlatan BÖLÜMDE başka bir küreyle oynayan oyuncu için.
+    // Chrono küresinin kendi çiziminde zaten var, o yüzden orada tekrar
+    // çizilmiyor. Aynı yay, aynı yer, aynı renk: yeteneğin nereden geldiği
+    // değişse de göstergesi değişmemeli.
+    if (engine.usesChronoSlow && style.kind != OrbStyle.Kind.CHRONO) {
+        val charge = engine.chronoCharge
+        if (charge < 0.999f || engine.chronoSlowing) {
+            val gr = r * 2.4f
+            drawArc(
+                if (charge < 0.2f) theme.hazard else theme.lumen.copy(alpha = 0.9f),
+                -90f, -360f * charge, false,
+                topLeft = Offset(c.x - gr, c.y - gr), size = Size(gr * 2, gr * 2),
+                style = Stroke(width = 2.5f * den, cap = StrokeCap.Round)
+            )
         }
     }
 }

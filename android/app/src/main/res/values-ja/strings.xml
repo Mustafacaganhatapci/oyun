@@ -241,4 +241,7 @@
     <string name="push_optin_body">新しいレベル、新しいキャラクター、そして週間レースが締まる前のお知らせ。それだけです。</string>
     <string name="push_optin_note">設定でいつでもオフにできます。</string>
     <string name="push_optin_enable">通知をオンにする</string>
+    <string name="rule_slow_time">長押しで時間が遅くなる</string>
+    <string name="hint_slow_time_title">ここでは時間が曲がる</string>
+    <string name="hint_slow_time_body">指を押したままにすると時間がゆっくりになります。離すとオーブが飛びます。オーブの周りの弧がゲージ：押している間は減り、待っている間に回復します。</string>
 </resources>

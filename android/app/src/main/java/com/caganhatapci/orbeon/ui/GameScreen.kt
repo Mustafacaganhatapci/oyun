@@ -69,10 +69,12 @@ private enum class Coach {
     HAZARD_INTRO, HAZARD_TIMING, HAZARD_CLEARED,   // kırmızı şerit: dondur → anlat → yaptır
     MOVING_INTRO, MOVING_TIMING,                    // hareketli halka
     TIMED_INTRO,                                    // süreli bölüm tanıtımı
+    SLOW_TIME_INTRO,                                // zamanın yavaşladığı bölüm
     BOUNDS_INTRO;                                   // "kaçırmak artık elenmek"
 
     val isBlocking get() = this == HAZARD_INTRO || this == MOVING_INTRO ||
-                           this == TIMED_INTRO || this == BOUNDS_INTRO
+                           this == TIMED_INTRO || this == BOUNDS_INTRO ||
+                           this == SLOW_TIME_INTRO
 }
 
 /** 3/3 yıldız için rastgele seçilen tebrik başlıkları */
@@ -168,6 +170,13 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             } else if (LevelLibrary.hasTimer(id) && app.tutorial.shouldShow(TutorialStore.Step.TIMED)) {
                 engine.coachFrozen = true
                 coach = Coach.TIMED_INTRO
+            } else if (LevelLibrary.slowsTime(id) &&
+                       app.tutorial.shouldShow(TutorialStore.Step.SLOW_TIME)) {
+                // Yeni bir DÜĞME veriliyor: anlatılmazsa fark edilmez. Bölüm
+                // kartındaki tek satır "basılı tut" diyor ama neyin ne kadar
+                // sürdüğünü, göstergenin ne olduğunu söylemiyor.
+                engine.coachFrozen = true
+                coach = Coach.SLOW_TIME_INTRO
             }
         }
     }
@@ -416,6 +425,10 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                                     engine.coachFrozen = false; coach = null
                                     app.tutorial.markShown(TutorialStore.Step.TIMED)
                                 }
+                                Coach.SLOW_TIME_INTRO -> {
+                                    engine.coachFrozen = false; coach = null
+                                    app.tutorial.markShown(TutorialStore.Step.SLOW_TIME)
+                                }
                                 Coach.BOUNDS_INTRO -> {
                                     app.tutorial.markShown(TutorialStore.Step.BOUNDS)
                                     val id = (playMode as? PlayMode.LevelPlay)?.id
@@ -585,6 +598,8 @@ private fun CoachIntroOverlay(step: Coach, theme: Theme, onDismiss: () -> Unit) 
         Coach.HAZARD_INTRO -> CoachCard("⚠️", R.string.hint_hazard_title, R.string.hint_hazard_body)
         Coach.MOVING_INTRO -> CoachCard("↔️", R.string.hint_moving_title, R.string.hint_moving_body)
         Coach.TIMED_INTRO -> CoachCard("⏱", R.string.hint_timed_title, R.string.hint_timed_body)
+        Coach.SLOW_TIME_INTRO ->
+            CoachCard("⏳", R.string.hint_slow_time_title, R.string.hint_slow_time_body)
         else -> CoachCard("🛑", R.string.hint_bounds_title, R.string.hint_bounds_body)
     }
     Box(
@@ -667,6 +682,10 @@ private fun levelRuleRes(id: Int): Int? {
     if (LevelLibrary.hasShortcutGate(id)) return R.string.rule_two_ways_out
     if (LevelLibrary.isCollect(id)) return R.string.rule_collect_every_star
     if (LevelLibrary.hasTimer(id)) return R.string.rule_beat_the_clock
+    // Yavaşlatma bir KURAL değil yetenek: oyuncudan bir şey istemiyor. Bu
+    // yüzden kısıtlayıcı kuralların ardında — süreli bir bölümde önce süreyi
+    // bilmek gerekir, yardımı sonra keşfetmek hoş olur.
+    if (LevelLibrary.slowsTime(id)) return R.string.rule_slow_time
     if (LevelLibrary.hasGrandStar(id)) return R.string.rule_giant_star
     // "En az bir yıldız" kuralı artık HER normal bölümde geçerli, o yüzden her
     // kartta yazmıyor: yazsaydı beş bölüm sonra okunmayan bir süs olurdu. İlk
@@ -685,6 +704,9 @@ private fun LevelIntroCard(id: Int, theme: Theme) {
         R.string.rule_white_burns -> Color.White
         R.string.rule_upside_down -> theme.accent
         R.string.rule_two_ways_out -> Color.White
+        // Yavaşlatma rozeti mor: oyunun hiçbir kuralında olmayan bir renk,
+        // yani "burada alışılmadık bir şey var" bilgisini renk taşıyor
+        R.string.rule_slow_time -> theme.accent
         else -> theme.lumen
     }
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

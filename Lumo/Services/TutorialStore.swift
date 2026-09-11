@@ -38,6 +38,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
     case timed      // süreli bölüm
     case bounds     // ileri bölümlerde kaçırmak = elenmek
     case bonus      // bonus turu: kapı yok, tehlike yok, süre var
+    case slowTime   // zamanın yavaşladığı bölüm
     case modes      // 10. bölümde açılan sonsuz mod ve hız turu
 
     var id: String { rawValue }
@@ -52,6 +53,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .timed:  return "Beat the clock"
         case .bounds: return "Careful now!"
         case .bonus:  return "Bonus round"
+        case .slowTime: return "Time bends here"
         case .modes:  return "Two new modes"
         }
     }
@@ -64,6 +66,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .timed:  return "This level is timed! Reach the gate before the countdown hits zero."
         case .bounds: return "From this level on, if the orb flies off the screen, you lose the attempt."
         case .bonus:  return "No gate and nothing that can hurt you here. Just grab as many stars as you can before the clock runs out."
+        case .slowTime: return "Hold your finger down and time slows to a crawl. Let go and the orb launches. The ring around the orb is your meter: it drains while you hold and refills while you wait."
         case .modes:  return "Endless Mode and Speed Run are open. Both go on the weekly board, and it resets every Monday — see if you can take a place in the top three."
         }
     }
@@ -76,6 +79,7 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .timed:  return "timer"
         case .bounds: return "xmark.octagon.fill"
         case .bonus:  return "sparkles"
+        case .slowTime: return "hourglass"
         case .modes:  return "trophy.fill"
         }
     }

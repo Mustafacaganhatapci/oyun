@@ -190,7 +190,20 @@ final class GameScene: SKScene {
     // oynanıyor; kısa dokunuş da aynı sonucu verdiği için fark edilmiyor.
     // Bedava değil: dolum bitince zaman normale dönüyor, halkada beklerken
     // yavaşça doluyor.
-    private var usesChrono: Bool { orbStyle.kind == .chrono }
+    /// Zamanı yavaşlatma. İki kaynaktan geliyor: gizli chrono küresi (her
+    /// bölümde) ya da bölümün kendisi (her küreyle).
+    private var usesChronoSlow: Bool { orbStyle.kind == .chrono || levelSlowsTime }
+
+    /// İniş noktasını gösteren nişan çizgisi YALNIZCA gizli küreye ait.
+    ///
+    /// Yavaşlatmayı bölüme taşıdık ama çizgiyi taşımadık: çizgi "nereye
+    /// ineceğini söyleyen" bir yetenek, yavaşlatma ise "düşünmek için süre
+    /// veren" bir yetenek. İkisini birden herkese vermek gizli küreyi
+    /// gereksiz kılardı — ve o küre sekiz vuruşla kazanılıyor.
+    private var usesChronoAim: Bool { orbStyle.kind == .chrono }
+
+    /// Bölümün kendisi zamanı yavaşlatıyor mu (150 sonrası çeşitlerden biri)
+    private var levelSlowsTime = false
     private static let chronoSlowFactor: Double = 0.35   // zamanın kaçta kaçı
     private static let chronoDrain: Double = 0.45        // sn başına tüketim (≈2,2 sn)
     private static let chronoRefill: Double = 0.22       // sn başına dolum (≈4,5 sn)
@@ -274,6 +287,7 @@ final class GameScene: SKScene {
             invertedHazard = lvl.invertedHazard
             restartsOnDeath = lvl.restartsOnDeath
             hazardGraceEnabled = LevelLibrary.hasHazardGrace(id)
+            levelSlowsTime = LevelLibrary.slowsTime(id)
             lumenSpecs = lvl.lumens
             if isBonus { bonusDeadline = lvl.bonusDuration }
             buildRings(lvl.rings)
@@ -298,10 +312,14 @@ final class GameScene: SKScene {
 
         // Chrono küresi nişan çizgisini her bölümde ve sonsuz modda taşır.
         // Antrenmanda çizgi zaten kurulmuş oluyor; ikincisini kurmuyoruz.
-        if usesChrono {
+        if usesChronoAim {
             if aimLine == nil { setupAimLine() }
             setupChronoMark()
         }
+        // Yavaşlatan bölümde küre chrono DEĞİLSE dolum göstergesi yok:
+        // gösterge chrono küresinin çiziminin içinde kuruluyor. Yeteneği
+        // gösterge olmadan vermek, bütçesi görünmeyen bir güç vermek olurdu.
+        if usesChronoSlow, chronoGauge == nil { attachChronoGauge() }
     }
 
     private func setupBackground() {
@@ -974,6 +992,24 @@ final class GameScene: SKScene {
     }
 
     /// Chrono'nun iniş noktası: çizginin ucundaki nabız atan halka
+    /// Dolum göstergesini kürenin üstüne ekler.
+    ///
+    /// Chrono küresinin kendi çiziminde zaten var; bu, yavaşlatan BÖLÜMDE
+    /// başka bir küreyle oynayan oyuncu için. Aynı yay, aynı yer, aynı renk:
+    /// yeteneğin nereden geldiği değişse de göstergesi değişmemeli.
+    private func attachChronoGauge() {
+        let gauge = SKShapeNode()
+        gauge.strokeColor = theme.lumen.uiColor
+        gauge.lineWidth = 2.5
+        gauge.lineCap = .round
+        gauge.fillColor = .clear
+        gauge.glowWidth = 1
+        gauge.isHidden = true
+        gauge.zPosition = 2
+        orbNode.addChild(gauge)
+        chronoGauge = gauge
+    }
+
     private func setupChronoMark() {
         let mark = SKShapeNode(circleOfRadius: 9)
         mark.fillColor = .clear
@@ -1267,7 +1303,7 @@ final class GameScene: SKScene {
             // yavaşlatır, fırlatma parmak KALKINCA olur. Kısa dokunuşta iki
             // davranış arasında hissedilir fark yok; fark yalnızca oyuncu
             // beklemeye karar verdiğinde ortaya çıkıyor.
-            if usesChrono {
+            if usesChronoSlow {
                 chronoHeld = true
             } else {
                 launch(from: ring, angle: angle, direction: direction)
@@ -1297,7 +1333,7 @@ final class GameScene: SKScene {
 
     /// Parmak kalktı: yavaşlatma biter, küre fırlar.
     private func releaseChrono() {
-        guard usesChrono, chronoHeld else { return }
+        guard usesChronoSlow, chronoHeld else { return }
         chronoHeld = false
         if chronoSlowing {
             chronoSlowing = false
@@ -1324,7 +1360,7 @@ final class GameScene: SKScene {
         // birlikte ağırlaşıyor. Oyuncu zaman kazanmıyor, DÜŞÜNME payı
         // kazanıyor; süreli bölümün sayacı da aynı oranda yavaşladığı için
         // yavaşlatmak bedava süre değil.
-        if usesChrono { dt = updateChrono(realDelta: dt) }
+        if usesChronoSlow { dt = updateChrono(realDelta: dt) }
 
         elapsed += dt
 
@@ -1384,7 +1420,7 @@ final class GameScene: SKScene {
                 aim.zRotation = atan2(cos(angle) * direction, -sin(angle) * direction)
             }
             // Chrono: aynı çizgi, ama nereye VARDIĞINI de söylüyor
-            if usesChrono {
+            if usesChronoAim {
                 updateChronoAim(from: orbNode.position, ring: ring,
                                 angle: angle, direction: direction)
             }

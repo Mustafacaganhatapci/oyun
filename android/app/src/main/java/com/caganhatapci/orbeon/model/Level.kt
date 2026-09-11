@@ -224,6 +224,60 @@ object LevelLibrary {
     }
 
     /**
+     * Zamanın yavaşladığı bölümler: küreye BASILI TUTUNCA zaman ağırlaşıyor.
+     *
+     * Yetenek gizli chrono küresinden geliyor ama burada küreye değil BÖLÜME
+     * bağlı — hangi karakterle oynarsan oyna çalışıyor. Gizli küre yine de
+     * değerini koruyor: iniş noktasını gösteren nişan çizgisi yalnızca onda,
+     * ve o çizgiyi bu bölümlerde de yalnızca o taşıyor.
+     *
+     * Bu bölümler bilerek DAHA ZOR üretiliyor (`slowTimeBoost`): halkalar daha
+     * hızlı döner, daha çok tehlike ve daha çok hareketli halka çıkar.
+     * Yavaşlatma bir hediye değil, zorluğun cevabı — yoksa yetenek yalnızca
+     * zaten geçilebilen bir bölümü kolaylaştıran bir düğme olurdu.
+     *
+     * 20'DEN SONRA başlıyor, 150'den değil. Öteki çeşitlerin aksine bu bir
+     * kural değil bir YETENEK: oyuncudan bir şey istemiyor, ona bir şey
+     * veriyor. Kampanyanın sonuna saklamak, on iki bölümlük bir sürprizi
+     * oyuncuların çoğunun hiç görmemesi demekti. İlki 26'da; ilk yirmi bölüm
+     * temel atlayışın öğrenildiği yer ve oraya yeni bir düğme koymak erken.
+     *
+     * Bölen 11 kampanyanın tamamına eşit aralıklı on iki bölüm serpiyor:
+     * 26, 37, 59, 70, 92, 103, 125, 147, 158, 191, 213, 224.
+     * iOS'takiyle BİREBİR aynı.
+     */
+    fun slowsTime(id: Int): Boolean {
+        if (id <= 20 || isBonus(id) || isCollect(id)) return false
+        if (isInverted(id) || isUpsideDown(id) || hasShortcutGate(id)) return false
+        return id % 11 == 4
+    }
+
+    /**
+     * Zorluk zammı YALNIZCA 150'den sonrasına.
+     *
+     * 21...150 yayında ve oynandı; oradaki bir bölümün DÜZENİNİ değiştirmek,
+     * kuralını değiştirmekten başka bir şey. Ezberlenmiş bir bölüme geri dönen
+     * oyuncu başka bir bölüm bulurdu. O aralıkta bölüm aynı bölüm olarak
+     * kalıyor, üstüne yalnızca yetenek geliyor — yani orada yavaşlatma saf bir
+     * hediye. 150'den sonra ise silaha dönüşüyor.
+     */
+    fun slowTimeIsHard(id: Int): Boolean = slowsTime(id) && id > PRIOR_COUNT
+
+    /**
+     * Yavaşlatan bölümün zorluk zammı. Ayrı bir fonksiyon: kuralın hangi
+     * bölümde geçerli olduğu ile ne kadar zorlaştırdığı ayrı ayrı okunsun.
+     * Katsayılar iOS'takiyle birebir aynı.
+     */
+    fun slowTimeBoost(d: Difficulty): Difficulty = d.copy(
+        speedFrom = d.speedFrom * 1.18f,
+        speedTo = d.speedTo * 1.18f,
+        hazardChance = minOf(0.95f, d.hazardChance + 0.15f),
+        movingChance = minOf(1f, d.movingChance + 0.20f),
+        hazardSpanFrom = d.hazardSpanFrom * 1.10f,
+        hazardSpanTo = d.hazardSpanTo * 1.10f
+    )
+
+    /**
      * Tehlike müsamahasının başladığı bölüm. Buradan sonra (ve sonsuz modda)
      * tehlikeli bir halkaya tutunan küre, o halka etrafında bir tam tur dönene
      * kadar yanmaz; yayın üstündeki yeşil kaplama o süre boyunca erir.
@@ -310,7 +364,9 @@ object LevelLibrary {
     // MARK: Normal bölüm üretimi
 
     private fun normalLevel(id: Int): Level {
-        val d = difficulty(id)
+        // Yavaşlatan bölüm daha zor üretiliyor: yetenek zorluğun cevabı olsun,
+        // zaten geçilebilen bir bölümü kolaylaştıran bir düğme olmasın
+        val d = if (slowTimeIsHard(id)) slowTimeBoost(difficulty(id)) else difficulty(id)
         val rng = SplitMix64(0xC0FFEEL + id.toLong() * 7919L)
 
         val rings = mutableListOf<RingSpec>()

@@ -241,4 +241,7 @@
     <string name="push_optin_body">Neue Level, neue Figuren und ein Hinweis, bevor das Wochenrennen endet. Sonst nichts.</string>
     <string name="push_optin_note">Du kannst es jederzeit in den Einstellungen ausschalten.</string>
     <string name="push_optin_enable">Mitteilungen aktivieren</string>
+    <string name="rule_slow_time">Halte gedrückt, die Zeit wird langsamer</string>
+    <string name="hint_slow_time_title">Hier biegt sich die Zeit</string>
+    <string name="hint_slow_time_body">Halte den Finger gedrückt und die Zeit wird zäh. Lässt du los, startet die Kugel. Der Bogen um die Kugel ist deine Anzeige: Er leert sich beim Halten und füllt sich beim Warten.</string>
 </resources>

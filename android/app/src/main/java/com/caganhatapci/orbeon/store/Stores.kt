@@ -409,7 +409,7 @@ class MissionStore(context: Context) {
 class TutorialStore(context: Context) {
     private val p = prefs(context)
 
-    enum class Step { LAUNCH, GATE, HAZARD, MOVING, TIMED, BOUNDS }
+    enum class Step { LAUNCH, GATE, HAZARD, MOVING, TIMED, BOUNDS, SLOW_TIME }
 
     private var shown by mutableStateOf(
         (p.getStringSet("tutorial.shown", emptySet()) ?: emptySet()).toSet()

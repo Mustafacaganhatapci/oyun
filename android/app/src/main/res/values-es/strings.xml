@@ -241,4 +241,7 @@
     <string name="push_optin_body">Niveles nuevos, personajes nuevos y un aviso antes de que cierre la carrera semanal. Nada más.</string>
     <string name="push_optin_note">Puedes desactivarlo cuando quieras en Ajustes.</string>
     <string name="push_optin_enable">Activar notificaciones</string>
+    <string name="rule_slow_time">Mantén pulsado para ralentizar el tiempo</string>
+    <string name="hint_slow_time_title">Aquí el tiempo se dobla</string>
+    <string name="hint_slow_time_body">Mantén el dedo pulsado y el tiempo se ralentiza. Al soltar, la esfera sale disparada. El arco alrededor de la esfera es tu medidor: se vacía mientras mantienes y se llena mientras esperas.</string>
 </resources>

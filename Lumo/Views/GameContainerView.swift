@@ -26,12 +26,14 @@ struct GameContainerView: View {
         case hazardIntro, hazardTiming, hazardCleared   // kırmızı şerit: dondur → anlat → yaptır
         case movingIntro, movingTiming                  // hareketli halka
         case timedIntro                                 // süreli bölüm tanıtımı
+        case slowTimeIntro                              // zamanın yavaşladığı bölüm
         case boundsIntro                                // "kaçırmak artık elenmek" tanıtımı
         case bonusIntro                                 // bonus turu ne demek
     }
     @State private var coach: CoachStep?
     private var coachIsBlocking: Bool {
         coach == .hazardIntro || coach == .movingIntro || coach == .timedIntro
+            || coach == .slowTimeIntro
             || coach == .boundsIntro || coach == .bonusIntro
     }
 
@@ -885,6 +887,12 @@ struct GameContainerView: View {
         } else if LevelLibrary.hasTimer(id), tutorial.shouldShow(.timed) {
             scene?.coachFrozen = true
             coach = .timedIntro
+        } else if LevelLibrary.slowsTime(id), tutorial.shouldShow(.slowTime) {
+            // Yeni bir DÜĞME veriliyor: anlatılmazsa fark edilmez. Bölüm
+            // kartındaki tek satır "basılı tut" diyor ama neyin ne kadar
+            // sürdüğünü, göstergenin ne olduğunu söylemiyor.
+            scene?.coachFrozen = true
+            coach = .slowTimeIntro
         }
     }
 
@@ -924,6 +932,10 @@ struct GameContainerView: View {
             scene?.coachFrozen = false
             coach = nil
             tutorial.markShown(.timed)
+        case .slowTimeIntro:
+            scene?.coachFrozen = false
+            coach = nil
+            tutorial.markShown(.slowTime)
         case .boundsIntro:
             tutorial.markShown(.bounds)
             // Aynı bölüm süreliyse sıradaki kartı göster (dondurma sürsün)
@@ -945,6 +957,7 @@ struct GameContainerView: View {
         case .hazardIntro: hint = .hazard; color = settings.theme.hazard.color
         case .bonusIntro:  hint = .bonus;  color = settings.theme.lumen.color
         case .timedIntro:  hint = .timed;  color = settings.theme.lumen.color
+        case .slowTimeIntro: hint = .slowTime; color = settings.theme.accent.color
         case .boundsIntro: hint = .bounds; color = settings.theme.hazard.color
         default:           hint = .moving; color = settings.theme.accent.color
         }
@@ -1032,6 +1045,10 @@ struct GameContainerView: View {
         if LevelLibrary.hasShortcutGate(id) { return "Two ways out" }
         if LevelLibrary.isCollect(id) { return "Collect every star" }
         if LevelLibrary.hasTimer(id) { return "Beat the clock" }
+        // Yavaşlatma bir KURAL değil yetenek: oyuncudan bir şey istemiyor.
+        // Bu yüzden kısıtlayıcı kuralların ardında — süreli bir bölümde
+        // önce süreyi bilmek gerekir, yardımı sonra keşfetmek hoş olur.
+        if LevelLibrary.slowsTime(id) { return "Hold to slow time" }
         if LevelLibrary.hasGrandStar(id) { return "Giant star" }
         // "En az bir yıldız" kuralı artık HER normal bölümde geçerli, o yüzden
         // her kartta yazmıyor: yazsaydı beş bölüm sonra okunmayan bir süs
@@ -1049,6 +1066,9 @@ struct GameContainerView: View {
         case "White burns here":   return .white
         case "Upside down":        return settings.theme.accent.color
         case "Two ways out":       return .white
+        // Yavaşlatma rozeti mor: oyunun hiçbir kuralında olmayan bir renk,
+        // yani "burada alışılmadık bir şey var" bilgisini renk taşıyor
+        case "Hold to slow time":  return settings.theme.accent.color
         default:                   return settings.theme.lumen.color
         }
     }

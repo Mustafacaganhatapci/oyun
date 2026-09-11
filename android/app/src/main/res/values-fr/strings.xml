@@ -241,4 +241,7 @@
     <string name="push_optin_body">De nouveaux niveaux, de nouveaux personnages et un rappel avant la fin de la course hebdomadaire. Rien d’autre.</string>
     <string name="push_optin_note">Tu peux le désactiver à tout moment dans les Réglages.</string>
     <string name="push_optin_enable">Activer les notifications</string>
+    <string name="rule_slow_time">Maintiens pour ralentir le temps</string>
+    <string name="hint_slow_time_title">Ici le temps se plie</string>
+    <string name="hint_slow_time_body">Garde le doigt appuyé et le temps ralentit. Relâche et la sphère part. L’arc autour de la sphère est ta jauge : elle se vide quand tu maintiens et se remplit quand tu attends.</string>
 </resources>
