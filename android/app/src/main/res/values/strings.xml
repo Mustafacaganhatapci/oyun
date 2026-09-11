@@ -237,4 +237,8 @@
     <string name="rule_beat_the_clock">Beat the clock</string>
     <string name="rule_giant_star">Giant star</string>
     <string name="rule_one_star_opens">One star opens the gate</string>
+    <string name="push_optin_title">Want a heads-up?</string>
+    <string name="push_optin_body">New levels, new characters, and a nudge before the weekly race closes. Nothing else.</string>
+    <string name="push_optin_note">You can turn it off any time in Settings.</string>
+    <string name="push_optin_enable">Turn on notifications</string>
 </resources>

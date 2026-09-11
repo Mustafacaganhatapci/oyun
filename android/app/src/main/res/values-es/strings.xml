@@ -237,4 +237,8 @@
     <string name="rule_beat_the_clock">Gana al reloj</string>
     <string name="rule_giant_star">Estrella gigante</string>
     <string name="rule_one_star_opens">Una estrella abre la puerta</string>
+    <string name="push_optin_title">¿Quieres que te avisemos?</string>
+    <string name="push_optin_body">Niveles nuevos, personajes nuevos y un aviso antes de que cierre la carrera semanal. Nada más.</string>
+    <string name="push_optin_note">Puedes desactivarlo cuando quieras en Ajustes.</string>
+    <string name="push_optin_enable">Activar notificaciones</string>
 </resources>

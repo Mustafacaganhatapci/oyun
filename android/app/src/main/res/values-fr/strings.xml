@@ -237,4 +237,8 @@
     <string name="rule_beat_the_clock">Bats le chrono</string>
     <string name="rule_giant_star">Étoile géante</string>
     <string name="rule_one_star_opens">Une étoile ouvre la porte</string>
+    <string name="push_optin_title">On te prévient ?</string>
+    <string name="push_optin_body">De nouveaux niveaux, de nouveaux personnages et un rappel avant la fin de la course hebdomadaire. Rien d’autre.</string>
+    <string name="push_optin_note">Tu peux le désactiver à tout moment dans les Réglages.</string>
+    <string name="push_optin_enable">Activer les notifications</string>
 </resources>

@@ -1,5 +1,9 @@
 package com.caganhatapci.orbeon.ui
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -94,6 +98,13 @@ fun RootScreen() {
     var route by remember { mutableStateOf<Route>(Route.Menu) }
     var splashDone by remember { mutableStateOf(false) }
     var showOfflineNotice by remember { mutableStateOf(false) }
+    var showPushOptIn by remember { mutableStateOf(false) }
+
+    // Android 13+ bildirim izni. Kart "Aç" dendiğinde bunu tetikliyor;
+    // kutunun sonucu ne olursa olsun kart bir daha çıkmıyor.
+    val pushPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted -> app.push.setEnabled(true, granted) }
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         when (val r = route) {
@@ -165,10 +176,48 @@ fun RootScreen() {
             )
         }
 
+        // İlk açılışta bildirim izni — sistem kutusunun ÖNÜNE konan kendi
+        // sorumuz. "Şimdi değil" diyene hiçbir şey kaybettirmiyor.
+        if (showPushOptIn) {
+            NotificationOptInOverlay(
+                theme = theme,
+                onEnable = {
+                    app.push.markOptInAsked()
+                    showPushOptIn = false
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                        !app.push.hasSystemPermission()) {
+                        pushPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        app.push.setEnabled(true, granted = true)
+                    }
+                },
+                onDismiss = {
+                    app.push.markOptInAsked()
+                    showPushOptIn = false
+                }
+            )
+        }
+
         // Açılış imzası — yalnızca uygulama başlarken bir kez
         AnimatedVisibility(!splashDone, exit = fadeOut()) {
             SplashScreen(theme)
         }
+    }
+
+    /**
+     * İlk açılışta bildirim kartı.
+     *
+     * Menüye VARINCA çıkıyor, uygulama açılır açılmaz değil: ilk açılışta
+     * oyuncu önce antrenman bölümüne giriyor ve menüyü ancak onu bitirince
+     * görüyor. Yani soru, oyunun ne olduğunu gördükten sonra geliyor —
+     * tanımadığı bir uygulamanın izin isteği reddedilir.
+     *
+     * Bir turu asla bölmüyor (yalnızca menüde) ve çevrimdışı notuyla
+     * çakışmıyor: ikisi aynı anda çıkarsa oyuncu üst üste iki kart görür.
+     */
+    LaunchedEffect(route, splashDone, showOfflineNotice, app.push.isEnabled) {
+        showPushOptIn = splashDone && route == Route.Menu &&
+            !showOfflineNotice && !app.push.optInAsked && !app.push.isEnabled
     }
 
     // Not bir turu asla bölmez: yalnızca menüdeyken ve açılış bittikten sonra
@@ -478,6 +527,72 @@ private fun ThankYouOverlay(
             }
             GlowButton(stringResource(R.string.back_to_game), theme.accent,
                 prominent = true, onClick = onClose)
+        }
+    }
+}
+
+/**
+ * İlk açılışta bildirimleri soran kart.
+ *
+ * Bu kart sistemin izin kutusu DEĞİL; onun önüne konan kendi sorumuz.
+ * Android 13'te izin kutusuna "İzin verme" denirse ikinci kez sorulabiliyor
+ * ama üçüncüde sistem kutuyu hiç göstermiyor; iOS'ta ise ilk ret kalıcı. Her
+ * iki tarafta da o kutu kıt bir kaynak.
+ *
+ * Bu kart ise geri dönüşlü: "şimdi değil" diyene hiçbir şey kaybettirmiyoruz,
+ * sistem izni hâlâ sorulmamış kalıyor. Yalnızca "Aç" denince gerçek kutu
+ * çıkıyor — yani kutuyu görenler zaten istediğini söylemiş kişiler oluyor.
+ *
+ * Metin ne göndereceğimizi tek tek sayıyor. "Bildirim gönderebilir miyiz?"
+ * diye soran bir kutunun cevabı hayırdır; ne göndereceğini söyleyenin cevabı
+ * belki olur.
+ */
+@Composable
+private fun NotificationOptInOverlay(
+    theme: Theme,
+    onEnable: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.72f))
+            .clickable(onClick = onDismiss),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            Modifier
+                .padding(horizontal = 30.dp)
+                .background(Color.Black.copy(alpha = 0.9f), RoundedCornerShape(28.dp))
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text("🔔", fontSize = 34.sp)
+            Text(
+                stringResource(R.string.push_optin_title),
+                color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                stringResource(R.string.push_optin_body),
+                color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp,
+                textAlign = TextAlign.Center
+            )
+            // Kapatma yolunun açıkça yazılması kabul oranını düşürmüyor,
+            // yükseltiyor: geri alınabilir bir karar vermek kolaydır.
+            Text(
+                stringResource(R.string.push_optin_note),
+                color = Color.White.copy(alpha = 0.45f), fontSize = 12.sp,
+                textAlign = TextAlign.Center
+            )
+            GlowButton(stringResource(R.string.push_optin_enable), theme.accent,
+                prominent = true, onClick = onEnable)
+            Text(
+                stringResource(R.string.not_now),
+                color = Color.White.copy(alpha = 0.55f), fontSize = 13.sp,
+                modifier = Modifier.clickable(onClick = onDismiss)
+            )
         }
     }
 }

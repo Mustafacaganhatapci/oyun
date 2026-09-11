@@ -14,6 +14,8 @@ struct RootView: View {
 
     @State private var splashDone = false
     @State private var showOfflineNotice = false
+    @State private var showPushOptIn = false
+    @ObservedObject private var push = PushManager.shared
 
     var body: some View {
         ZStack {
@@ -101,6 +103,24 @@ struct RootView: View {
                 .zIndex(160)
             }
 
+            // İlk açılışta bildirim izni — iOS kutusunun ÖNÜNE konan kendi
+            // sorumuz. "Şimdi değil" diyene hiçbir şey kaybettirmiyor.
+            if showPushOptIn {
+                NotificationOptInView(
+                    onEnable: {
+                        NotificationOptIn.markAsked()
+                        showPushOptIn = false
+                        Task { await push.setEnabled(true) }
+                    },
+                    onDismiss: {
+                        NotificationOptIn.markAsked()
+                        showPushOptIn = false
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(165)
+            }
+
             // Satın alma sonrası adına seslenen teşekkür kartı
             if let thanks = store.thankYou {
                 ThankYouView(kind: thanks.kind,
@@ -143,6 +163,7 @@ struct RootView: View {
         // Premium'un kendi kaydettiği sesler: abonelik durumu değiştikçe motora
         // yüklenir ya da boşaltılır (kayıtlar diskte kalır).
         .animation(.easeInOut(duration: 0.3), value: showOfflineNotice)
+        .animation(.easeInOut(duration: 0.3), value: showPushOptIn)
         .animation(.easeInOut(duration: 0.2), value: store.purchaseInProgress)
         .animation(.easeInOut(duration: 0.3), value: store.thankYou)
         .onAppear { CustomSoundStore.shared.premiumActive = store.isPremium }
@@ -150,9 +171,32 @@ struct RootView: View {
             CustomSoundStore.shared.premiumActive = isPremium
         }
         // Not yalnızca menüde ve oyun dışıyken çıkar; bir turu asla bölmez.
-        .onChange(of: app.route) { _, _ in evaluateOfflineNotice() }
+        .onChange(of: app.route) { _, _ in evaluateOfflineNotice(); evaluatePushOptIn() }
         .onChange(of: net.isOnline) { _, _ in evaluateOfflineNotice() }
-        .onChange(of: splashDone) { _, _ in evaluateOfflineNotice() }
+        .onChange(of: splashDone) { _, _ in evaluateOfflineNotice(); evaluatePushOptIn() }
+    }
+
+    /// İlk açılışta bildirim kartı.
+    ///
+    /// Menüye VARINCA çıkıyor, uygulama açılır açılmaz değil: ilk açılışta
+    /// oyuncu önce antrenman bölümüne giriyor ve menüyü ancak onu bitirince
+    /// görüyor. Yani soru, oyunun ne olduğunu gördükten sonra geliyor —
+    /// tanımadığı bir uygulamanın izin isteği reddedilir.
+    ///
+    /// Bir turu asla bölmüyor (yalnızca `.menu`), çevrimdışı notuyla
+    /// çakışmıyor ve iOS izin durumu okunmadan karar verilmiyor.
+    private func evaluatePushOptIn() {
+        guard splashDone, app.route == .menu,
+              !showOfflineNotice, !showPushOptIn,
+              !NotificationOptIn.wasAsked else { return }
+        Task {
+            await push.refreshUndecided()
+            guard app.route == .menu, !showOfflineNotice else { return }
+            showPushOptIn = NotificationOptIn.shouldShow(
+                isEnabled: push.isEnabled,
+                isUndecided: push.isUndecided
+            )
+        }
     }
 
     /// Dokunuşu yutar: bekleme sürerken alttaki düğmelere ikinci kez basılamaz

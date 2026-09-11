@@ -5151,6 +5151,47 @@
         }
       }
     },
+    "New levels, new characters, and a nudge before the weekly race closes. Nothing else.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New levels, new characters, and a nudge before the weekly race closes. Nothing else."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni bölümler, yeni karakterler ve haftalık yarış kapanmadan bir hatırlatma. Başka hiçbir şey."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Level, neue Figuren und ein Hinweis, bevor das Wochenrennen endet. Sonst nichts."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niveles nuevos, personajes nuevos y un aviso antes de que cierre la carrera semanal. Nada más."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De nouveaux niveaux, de nouveaux personnages et un rappel avant la fin de la course hebdomadaire. Rien d’autre."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しいレベル、新しいキャラクター、そして週間レースが締まる前のお知らせ。それだけです。"
+          }
+        }
+      }
+    },
     "Next Level": {
       "extractionState": "manual",
       "localizations": {
@@ -9350,6 +9391,47 @@
         }
       }
     },
+    "Turn on notifications": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn on notifications"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildirimleri aç"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungen aktivieren"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activar notificaciones"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activer les notifications"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通知をオンにする"
+          }
+        }
+      }
+    },
     "Two new modes": {
       "extractionState": "manual",
       "localizations": {
@@ -9800,6 +9882,47 @@
         }
       }
     },
+    "Want a heads-up?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Want a heads-up?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haberin olsun ister misin?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sollen wir dir Bescheid sagen?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Quieres que te avisemos?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On te prévient ?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "お知らせしましょうか？"
+          }
+        }
+      }
+    },
     "Watch & earn": {
       "extractionState": "manual",
       "localizations": {
@@ -10047,6 +10170,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "黄色い星は新しいキャラを解放します。今は取らなくても、レベルはいつでも戻れます"
+          }
+        }
+      }
+    },
+    "You can turn it off any time in Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can turn it off any time in Settings."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İstediğin an Ayarlar’dan kapatabilirsin."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kannst es jederzeit in den Einstellungen ausschalten."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puedes desactivarlo cuando quieras en Ajustes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu peux le désactiver à tout moment dans les Réglages."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定でいつでもオフにできます。"
           }
         }
       }

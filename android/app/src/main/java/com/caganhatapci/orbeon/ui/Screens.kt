@@ -209,21 +209,27 @@ fun MainMenuScreen(
 
     // Kutlama ekranı menünün yerine geçiyor; arkada temanın zemini kalsın
     // diye kendi arka planıyla çiziliyor
-    orbReveal?.let { style ->
-      ThemeBackground(theme) {
-        OrbRevealOverlay(style, theme, note = null, onEquip = {
-            app.audio.playTap()
-            app.settings.orbStyleId = style.id
-            app.settings.persist()
-            app.progress.markOrbRevealed(style)
-            orbReveal = app.progress.pendingOrbReveal()
-        }, onClose = {
-            app.audio.playTap()
-            app.progress.markOrbRevealed(style)
-            orbReveal = app.progress.pendingOrbReveal()
-        })
-      }
-      return
+    // `let` DEĞİL düz bir if: erken çıkış lambda'nın içinden değil, doğrudan
+    // fonksiyonun kendisinden oluyor. `let` ile yazıldığında bu bir yerel
+    // olmayan (non-local) return'dü — Kotlin'de yasal, ama okuyanın inline'lık
+    // kurallarını bilmesini gerektiriyor ve derleyici kuşkulu durumlarda
+    // reddedebiliyor. Burada kazanılacak bir şey yoktu.
+    val reveal = orbReveal
+    if (reveal != null) {
+        ThemeBackground(theme) {
+            OrbRevealOverlay(reveal, theme, note = null, onEquip = {
+                app.audio.playTap()
+                app.settings.orbStyleId = reveal.id
+                app.settings.persist()
+                app.progress.markOrbRevealed(reveal)
+                orbReveal = app.progress.pendingOrbReveal()
+            }, onClose = {
+                app.audio.playTap()
+                app.progress.markOrbRevealed(reveal)
+                orbReveal = app.progress.pendingOrbReveal()
+            })
+        }
+        return
     }
 
     ThemeBackground(theme) {

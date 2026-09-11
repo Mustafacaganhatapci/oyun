@@ -12,11 +12,15 @@ import FirebaseMessaging
 ///
 /// İKİ ŞEY BİLEREK BÖYLE:
 ///
-///  1. İzin AÇILIŞTA İSTENMİYOR. Oyuncu ayarlardan açtığı an isteniyor.
-///     Oyunu ilk kez açan birinin karşısına çıkan izin kutusu çoğunlukla
-///     reddediliyor ve bir daha sorulamıyor; üstelik Apple, tanıtım amaçlı
-///     bildirimin açık rızayla gönderilmesini şart koşuyor. Ayarlardaki
-///     anahtar o rızanın ta kendisi ve varsayılanı kapalı.
+///  1. iOS İZİN KUTUSU AÇILIŞTA ÇIKMIYOR — bizim kartımız çıkıyor.
+///     Oyunu ilk kez açan birinin karşısına çıkan sistem kutusu çoğunlukla
+///     reddediliyor ve iOS bir daha ASLA sormuyor; o kutu tek kerelik ve
+///     geri dönüşsüz. Bu yüzden önüne kendi sorumuz konuyor
+///     (`NotificationOptInView`): "şimdi değil" diyene hiçbir şey
+///     kaybettirmiyoruz, izin hâlâ sorulmamış kalıyor. Yalnızca "Aç"
+///     denince gerçek kutu çıkıyor. Apple da tanıtım amaçlı bildirim için
+///     açık rıza şart koşuyor (4.5.4); kart o rızanın ta kendisi ve
+///     ayarlardaki anahtarın varsayılanı kapalı.
 ///  2. FirebaseMessaging paketi projede yoksa dosya yine derleniyor,
 ///     `isAvailable` false dönüyor ve ayarlarda satır hiç görünmüyor.
 ///     Projedeki Firestore/Auth kalıbının aynısı.
@@ -30,6 +34,14 @@ final class PushManager: NSObject, ObservableObject {
     @Published private(set) var isDenied = false
     /// İzin kutusu ekrandayken
     @Published private(set) var isWorking = false
+
+    /// iOS izni HENÜZ sorulmamış (`notDetermined`).
+    ///
+    /// İlk açılış kartı buna bakıyor: kabul ya da ret etmiş birine aynı soruyu
+    /// bir daha sormak yalnızca rahatsız eder. Varsayılan false — gerçek değer
+    /// `refreshUndecided()` ile geliyor, yani kart ancak durum okunduktan sonra
+    /// çıkabiliyor. Ters varsayım kartı bir an için yanlışlıkla gösterirdi.
+    @Published private(set) var isUndecided = false
 
     /// Bildirim özelliği HER ZAMAN var.
     ///
@@ -103,6 +115,13 @@ final class PushManager: NSObject, ObservableObject {
         }
     }
 
+    /// iOS izin durumunu okur. İzin İSTEMEZ — yalnızca bakar.
+    func refreshUndecided() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        isUndecided = settings.authorizationStatus == .notDetermined
+        if settings.authorizationStatus == .denied { isDenied = true }
+    }
+
     /// Ayarlardaki anahtar buraya bağlı
     func setEnabled(_ on: Bool) async {
         guard Self.isAvailable, !isWorking else { return }
@@ -119,6 +138,8 @@ final class PushManager: NSObject, ObservableObject {
 
         let center = UNUserNotificationCenter.current()
         let granted = (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        // Kutu bir kez çıktı: karar ne olursa olsun artık "sorulmamış" değil
+        isUndecided = false
         guard granted else {
             // Reddedildi: iOS bir daha sormaz, yol Ayarlar'dan geçer
             isDenied = true

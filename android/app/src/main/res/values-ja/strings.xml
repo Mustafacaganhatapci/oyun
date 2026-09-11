@@ -237,4 +237,8 @@
     <string name="rule_beat_the_clock">時間内にゴールへ</string>
     <string name="rule_giant_star">ジャイアントスター</string>
     <string name="rule_one_star_opens">スター1つでゲートが開く</string>
+    <string name="push_optin_title">お知らせしましょうか？</string>
+    <string name="push_optin_body">新しいレベル、新しいキャラクター、そして週間レースが締まる前のお知らせ。それだけです。</string>
+    <string name="push_optin_note">設定でいつでもオフにできます。</string>
+    <string name="push_optin_enable">通知をオンにする</string>
 </resources>

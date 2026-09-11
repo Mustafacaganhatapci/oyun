@@ -237,4 +237,8 @@
     <string name="rule_beat_the_clock">Süreye yetiş</string>
     <string name="rule_giant_star">Dev yıldız</string>
     <string name="rule_one_star_opens">Kapıyı bir yıldız açar</string>
+    <string name="push_optin_title">Haberin olsun ister misin?</string>
+    <string name="push_optin_body">Yeni bölümler, yeni karakterler ve haftalık yarış kapanmadan bir hatırlatma. Başka hiçbir şey.</string>
+    <string name="push_optin_note">İstediğin an Ayarlar’dan kapatabilirsin.</string>
+    <string name="push_optin_enable">Bildirimleri aç</string>
 </resources>

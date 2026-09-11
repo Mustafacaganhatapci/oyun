@@ -62,6 +62,8 @@ class PushManager(private val context: Context) {
          * gönderiyorsun. Desteklenmeyen bir dil `all_en`'e düşüyor, çünkü
          * uygulamanın kendisi de o durumda İngilizce açılıyor.
          */
+        private const val OPT_IN_KEY = "push.optInAsked"
+
         private fun languageTopic(): String {
             val code = Locale.getDefault().language.lowercase()
             return "all_" + if (LANGUAGES.contains(code)) code else "en"
@@ -76,6 +78,22 @@ class PushManager(private val context: Context) {
     /** Android 13+ izni reddedildi: ayarlarda sistem ayarlarına yol gösteriliyor */
     var isDenied by mutableStateOf(false)
         private set
+
+    /**
+     * İlk açılış kartı bir kez soruldu mu.
+     *
+     * Sistem izninden AYRI tutuluyor: Android 13 öncesinde bildirim izni diye
+     * bir şey yok (uygulama kurulur kurulmaz gönderebiliyor), yani "sistem
+     * sordu mu" diye bakmak orada hiçbir şey söylemez. Kartın kendi kaydı her
+     * sürümde aynı şekilde çalışıyor.
+     */
+    var optInAsked by mutableStateOf(p.getBoolean(OPT_IN_KEY, false))
+        private set
+
+    fun markOptInAsked() {
+        optInAsked = true
+        p.edit().putBoolean(OPT_IN_KEY, true).apply()
+    }
 
     init { ensureChannel() }
 

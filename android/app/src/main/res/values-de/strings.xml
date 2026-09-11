@@ -237,4 +237,8 @@
     <string name="rule_beat_the_clock">Schlag die Uhr</string>
     <string name="rule_giant_star">Riesenstern</string>
     <string name="rule_one_star_opens">Ein Stern öffnet das Tor</string>
+    <string name="push_optin_title">Sollen wir dir Bescheid sagen?</string>
+    <string name="push_optin_body">Neue Level, neue Figuren und ein Hinweis, bevor das Wochenrennen endet. Sonst nichts.</string>
+    <string name="push_optin_note">Du kannst es jederzeit in den Einstellungen ausschalten.</string>
+    <string name="push_optin_enable">Mitteilungen aktivieren</string>
 </resources>
