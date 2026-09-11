@@ -50,23 +50,61 @@ Alanlar:
 | `body` | string | Metin |
 | `title_tr`, `body_tr` | string | Türkçe karşılık. `_de`, `_es`, `_fr`, `_ja` de olur |
 | `minVersion` | string | "2.1". Uygulama bu sürümde ya da üstündeyse **gösterilmez** |
-| `appStoreID` | string | Varsa "Güncelle" düğmesi çıkar ve App Store'u açar |
+| `appStoreID` | string | **iOS**: varsa "Güncelle" düğmesi çıkar ve App Store'u açar |
+| `playStoreId` | string | **Android**: aynı düğme, Play'de bu paketi açar |
 
 `minVersion` güncelleme duyurusunun püf noktası: güncellemeyi almış olan
 kişiye "güncelle" demek, kartı hemen kapatılacak bir gürültüye çevirir.
 
-Örnek — 2.1 çıktığında:
+### Hazır blok — 2.2 duyurusu
+
+**iOS ve Android aynı belgeyi okuyor**, iki ayrı duyuru yazmana gerek yok.
+Tek fark mağaza düğmesinde: iOS `appStoreID`'ye, Android `playStoreId`'ye
+bakıyor. İkisini de yaz, her platform kendininkini alır.
+
+Firestore → `config` → `announcement` belgesine alan alan gir (hepsi
+**string**, yalnızca `enabled` **boolean**):
 
 ```
-enabled:    true
-id:         "v2.1"
-minVersion: "2.1"
-appStoreID: "6753159821"        ← kendi App Store kimliğin
-title:      "Orbeon 2.1 is out"
-body:       "Four new characters and ranks on the weekly board."
-title_tr:   "Orbeon 2.1 yayında"
-body_tr:    "Dört yeni karakter ve haftalık tabloda rütbeler."
+enabled       true                      ← BOOLEAN, tırnaksız
+id            v2.2
+minVersion    2.2
+appStoreID    <App Store Connect → App Information → Apple ID>
+playStoreId   com.caganhatapci.orbeon
+
+title         Orbeon 2.2 is out
+body          Record the game's sounds in your own voice, and meet seven new characters.
+
+title_tr      Orbeon 2.2 yayında
+body_tr       Oyunun seslerini kendi sesinle kaydet; yedi de yeni karakter var.
+
+title_de      Orbeon 2.2 ist da
+body_de       Nimm die Spielgeräusche mit deiner eigenen Stimme auf — und sieben neue Figuren.
+
+title_es      Orbeon 2.2 ya está
+body_es       Graba los sonidos del juego con tu propia voz, y conoce siete personajes nuevos.
+
+title_fr      Orbeon 2.2 est là
+body_fr       Enregistre les sons du jeu avec ta propre voix, et découvre sept nouveaux personnages.
+
+title_ja      Orbeon 2.2 が公開
+body_ja       ゲームの効果音を自分の声で録音できます。新キャラクターも7体。
 ```
+
+> **Sürüm numarasını iki yerde birden değiştir.** `id` "kapat" takibi için,
+> `minVersion` kimin göreceği için. `minVersion`'ı yanlış yazarsan
+> güncellemeyi almış olan kişiye de "güncelle" dersin.
+
+> **`enabled`'ı ancak sürüm mağazada GERÇEKTEN yayına girince true yap.**
+> İnceleme aşamasındaki bir sürüm için duyuru göndermek, düğmeye basanı
+> hâlâ eski sürümün durduğu bir sayfaya götürür.
+
+**Bunun bir bonusu var:** duyuru belgesi yayına girdiğinde aynı metin, bildirim
+izni vermiş oyunculara **dört saat sonra bildirim olarak da düşüyor**
+(`syncUpdateReminder`). Yani kartı görüp "sonra" diyene ikinci bir dokunuş.
+Bu YEREL bir bildirim: APNs anahtarı, `.p8`, Firebase Messaging — hiçbiri
+gerekmiyor. Oyuncu güncellerse ya da kartı kapatırsa bekleyen bildirim
+kendiliğinden iptal oluyor.
 
 Duyuruyu kaldırmak için `enabled` alanını `false` yap. Kural değişikliği
 gerekmiyor: `config/{doc}` zaten herkese okunur, yalnızca konsoldan yazılır.
