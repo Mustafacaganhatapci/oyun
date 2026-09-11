@@ -230,4 +230,11 @@
     <string name="price_hold_title">今月は同じ価格</string>
     <string name="price_hold_body">このアップデートの新要素はすべて込みで、価格は上がっていません。</string>
     <string name="all_rights_reserved">All rights reserved</string>
+    <string name="rule_white_burns">ここでは白が危険</string>
+    <string name="rule_upside_down">さかさま</string>
+    <string name="rule_two_ways_out">出口はふたつ</string>
+    <string name="rule_collect_every_star">すべてのスターを集めろ</string>
+    <string name="rule_beat_the_clock">時間内にゴールへ</string>
+    <string name="rule_giant_star">ジャイアントスター</string>
+    <string name="rule_one_star_opens">スター1つでゲートが開く</string>
 </resources>

@@ -141,10 +141,22 @@ class GameEngine(
 
     // Topla-bitir bölümü
     private var gateNeedsAllLumens = false
+    /**
+     * Kapı en az BİR yıldız toplanmadan açılmaz. Normal bölümlerin hepsinde
+     * geçerli; yıldızları atlayıp doğrudan kapıya gitmek artık bölümü
+     * geçmiyor.
+     */
+    private var gateNeedsAnyLumen = false
+    /**
+     * Kapının açıldığı BİR KEZ duyurulsun. "Hepsi" kuralında son yıldız doğal
+     * bir eşik, ama "en az bir" kuralında kapı ilk yıldızda açılıyor ve
+     * sonraki her yıldızda yeniden kutlanırdı.
+     */
+    private var gateOpenAnnounced = false
     private var restartsOnDeath = false
     private var lumenSpecs: List<LumenSpec> = emptyList()
     /** Kilitli kapı sönük çizilsin diye tuvalin okuduğu bayrak */
-    val gateLocked: Boolean get() = gateNeedsAllLumens && !gateOpen
+    val gateLocked: Boolean get() = gateStartsLocked && !gateOpen
 
     /** Renkler ters: halka kırmızı, öldüren yay beyaz. Tuval buna bakıyor. */
     var invertedHazard = false
@@ -303,6 +315,10 @@ class GameEngine(
                 hazardGraceEnabled = LevelLibrary.hasHazardGrace(mode.id)
                 gateNeedsAllLumens = lvl.gateNeedsAllLumens ||
                     (requiresAllLumens && lvl.lumens.isNotEmpty())
+                // Hız turunda zaten hepsi isteniyor; ikisini birden kurmak
+                // "en az bir" kuralını anlamsız bir alt küme yapar
+                gateNeedsAnyLumen = lvl.gateNeedsAnyLumen && !gateNeedsAllLumens
+                gateOpenAnnounced = false
                 restartsOnDeath = lvl.restartsOnDeath
                 invertedHazard = lvl.invertedHazard
                 lumenSpecs = lvl.lumens
@@ -621,7 +637,15 @@ class GameEngine(
 
     /** Topla-bitir bölümünde kapı, her lumen toplanana kadar kapalıdır. */
     private val gateOpen: Boolean
-        get() = !gateNeedsAllLumens || lumenCollected.all { it }
+        get() = when {
+            gateNeedsAllLumens -> lumenCollected.all { it }
+            gateNeedsAnyLumen -> lumenCollected.any { it }
+            else -> true
+        }
+
+    /** Kapının kilitli göründüğü durumların hepsi */
+    private val gateStartsLocked: Boolean
+        get() = gateNeedsAllLumens || gateNeedsAnyLumen
 
     // MARK: Chrono — yavaşlatma ve iniş tahmini
 
@@ -758,7 +782,8 @@ class GameEngine(
                 if (isBonus && lumenCollected.all { it }) finishBonus()
                 // Topla-bitir: son lumen kapıyı açar. Küre zaten kapının
                 // üstünde dönüyorsa bölüm o anda biter.
-                if (gateNeedsAllLumens && gateOpen) {
+                if (gateStartsLocked && gateOpen && !gateOpenAnnounced) {
+                    gateOpenAnnounced = true
                     val s = orbState
                     if (s is OrbState.Attached && ringSpecs[s.ring].isGate) {
                         win()
@@ -884,6 +909,9 @@ class GameEngine(
         orbVisible = true
         lumenCollected = BooleanArray(lumenSpecs.size)
         lumenValues = lumenSpecs.map { it.value }.toIntArray()
+        // Yıldızlar geri geldi, yani kapı da yeniden kilitli: açılışın ikinci
+        // kez duyurulabilmesi gerekiyor
+        gateOpenAnnounced = false
         onEvent?.invoke(GameEvent.CollectReset)
         respawn()
     }

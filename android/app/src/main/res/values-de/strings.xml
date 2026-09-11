@@ -230,4 +230,11 @@
     <string name="price_hold_title">Diesen Monat derselbe Preis</string>
     <string name="price_hold_body">Alles Neue aus diesem Update ist enthalten, und der Preis ist nicht gestiegen.</string>
     <string name="all_rights_reserved">Alle Rechte vorbehalten</string>
+    <string name="rule_white_burns">Hier brennt Weiß</string>
+    <string name="rule_upside_down">Kopfüber</string>
+    <string name="rule_two_ways_out">Zwei Ausgänge</string>
+    <string name="rule_collect_every_star">Alle Sterne einsammeln</string>
+    <string name="rule_beat_the_clock">Schlag die Uhr</string>
+    <string name="rule_giant_star">Riesenstern</string>
+    <string name="rule_one_star_opens">Ein Stern öffnet das Tor</string>
 </resources>

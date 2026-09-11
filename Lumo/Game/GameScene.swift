@@ -71,6 +71,14 @@ final class GameScene: SKScene {
     private var lumenValues: [Int] = []          // her lumenin yıldız değeri (normal 1, büyük 4)
     private var lumenSpecs: [LumenSpec] = []     // topla-bitir bölümünde yeniden kurmak için
     private var gateNeedsAllLumens = false
+    /// Kapı en az BİR yıldız toplanmadan açılmaz. Normal bölümlerin hepsinde
+    /// geçerli; yıldızları atlayıp doğrudan kapıya gitmek artık bölümü
+    /// geçmiyor.
+    private var gateNeedsAnyLumen = false
+    /// Kapının açıldığı BİR KEZ duyurulsun. "Hepsi" kuralında son yıldız
+    /// doğal bir eşik, ama "en az bir" kuralında kapı ilk yıldızda açılıyor
+    /// ve sonraki her yıldızda yeniden kutlanırdı.
+    private var gateOpenAnnounced = false
     /// Renkler ters: halka kırmızı, öldüren yay beyaz. Bölümden okunuyor.
     private var invertedHazard = false
     /// Hız turunda kapı, yıldızların hepsi toplanmadan açılmaz — sıralamayı
@@ -260,6 +268,9 @@ final class GameScene: SKScene {
             dwellLimit = lvl.dwellLimit
             forgivingBounds = LevelLibrary.isForgiving(id)
             gateNeedsAllLumens = lvl.gateNeedsAllLumens || (requiresAllLumens && !lvl.lumens.isEmpty)
+            // Hız turunda zaten hepsi isteniyor; ikisini birden kurmak
+            // "en az bir" kuralını anlamsız bir alt küme yapar
+            gateNeedsAnyLumen = lvl.gateNeedsAnyLumen && !gateNeedsAllLumens
             invertedHazard = lvl.invertedHazard
             restartsOnDeath = lvl.restartsOnDeath
             hazardGraceEnabled = LevelLibrary.hasHazardGrace(id)
@@ -810,9 +821,10 @@ final class GameScene: SKScene {
         // kalmaz, oyuncu yakın olana gider ve farkı hiç görmezdi.
         if spec.isShortcutGate { gateColor = .white }
 
-        // Topla-bitir bölümünde kapı, her şey toplanana kadar sönük durur —
-        // "buraya gelmek yetmiyor" bilgisi renkten okunsun
-        let locked = spec.isGate && gateNeedsAllLumens
+        // Kapı, şartı karşılanana kadar sönük durur — "buraya gelmek
+        // yetmiyor" bilgisi renkten okunsun. Tek uyarı bu: kilidin sebebini
+        // yazıyla anlatmak yerine kapının kendisi söylüyor.
+        let locked = spec.isGate && gateStartsLocked
 
         let circle = SKShapeNode(circleOfRadius: r)
         // Ters bölümde halkanın KENDİSİ kırmızı. Bölüme girer girmez, tek bir
@@ -1659,7 +1671,8 @@ final class GameScene: SKScene {
                 // Topla-bitir: son lumen kapıyı açar. Küre zaten kapının
                 // üstünde dönüyorsa bölüm o anda biter; değilse kapı yanıp
                 // söner ve oyuncu oraya dönebilir.
-                if gateNeedsAllLumens, gateOpen {
+                if gateStartsLocked, gateOpen, !gateOpenAnnounced {
+                    gateOpenAnnounced = true
                     if case .attached(let ring, _, _) = orbState, ringSpecs[ring].isGate {
                         win()
                     } else {
@@ -1702,6 +1715,9 @@ final class GameScene: SKScene {
         lumenCollected.removeAll()
         lumenValues.removeAll()
         buildLumens(lumenSpecs)
+        // Yıldızlar geri geldi, yani kapı da yeniden kilitli: açılışın
+        // ikinci kez duyurulabilmesi gerekiyor
+        gateOpenAnnounced = false
 
         // Kapı yeniden kilitlenir
         if let gateIndex = ringSpecs.firstIndex(where: { $0.isGate }) {
@@ -1925,8 +1941,13 @@ final class GameScene: SKScene {
 
     /// Topla-bitir bölümünde kapı, her lumen toplanana kadar kapalıdır.
     private var gateOpen: Bool {
-        !gateNeedsAllLumens || lumenCollected.allSatisfy { $0 }
+        if gateNeedsAllLumens { return lumenCollected.allSatisfy { $0 } }
+        if gateNeedsAnyLumen { return lumenCollected.contains(true) }
+        return true
     }
+
+    /// Kapının kilitli göründüğü durumların hepsi
+    private var gateStartsLocked: Bool { gateNeedsAllLumens || gateNeedsAnyLumen }
 
     private func win() {
         guard !finished else { return }

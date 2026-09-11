@@ -68,6 +68,24 @@ struct Level: Identifiable, Equatable {
     /// Kapı yalnızca her şey toplandığında açılır mı?
     var gateNeedsAllLumens: Bool { kind == .collect }
 
+    /// Kapı EN AZ BİR yıldız toplanmadan açılmaz.
+    ///
+    /// Yıldızlar başından beri isteğe bağlıydı: hattı takip etmeden doğrudan
+    /// kapıya gidip bölümü geçmek mümkündü ve oyuncular tam da bunu yapıyordu.
+    /// Bölüm o zaman "üç halka atla" oluyor, tasarlanan yol hiç görülmüyordu.
+    ///
+    /// Bir tanesi kasıtlı olarak az: amaç zorlaştırmak değil, oyuncuyu hattın
+    /// üstüne bir kez çekmek. Üç yıldızın hepsini şart koşmak her bölümü
+    /// topla-bitir bölümüne çevirirdi ve o türün ayrı bir tür olmasının
+    /// anlamı kalmazdı.
+    ///
+    /// Öğretici bölüm dışarıda: orada kural sırayla öğretiliyor, daha
+    /// anlatılmamış bir şartın kapıyı kilitlemesi yardım değil engel olur.
+    var gateNeedsAnyLumen: Bool {
+        kind == .normal && id != LevelLibrary.tutorialID
+            && !lumens.isEmpty && !gateNeedsAllLumens
+    }
+
     /// Ölünce son halkaya değil, bölümün başına dönülür ve lumenler geri gelir.
     var restartsOnDeath: Bool { kind == .collect }
 }

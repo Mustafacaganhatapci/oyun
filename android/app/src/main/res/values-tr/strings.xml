@@ -230,4 +230,11 @@
     <string name="price_hold_title">Bu ay fiyat aynı</string>
     <string name="price_hold_body">Bu güncellemeyle gelen her şey dâhil, fiyat da artmadı.</string>
     <string name="all_rights_reserved">Tüm hakları saklıdır</string>
+    <string name="rule_white_burns">Burada beyaz yakar</string>
+    <string name="rule_upside_down">Baş aşağı</string>
+    <string name="rule_two_ways_out">İki çıkış var</string>
+    <string name="rule_collect_every_star">Bütün yıldızları topla</string>
+    <string name="rule_beat_the_clock">Süreye yetiş</string>
+    <string name="rule_giant_star">Dev yıldız</string>
+    <string name="rule_one_star_opens">Kapıyı bir yıldız açar</string>
 </resources>

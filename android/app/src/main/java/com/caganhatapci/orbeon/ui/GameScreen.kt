@@ -648,26 +648,44 @@ private fun TutorialCaption(hops: Int) {
 
 // MARK: Bölüm giriş kartı
 
-/** Bölüm zorluk etiketi — iOS difficultyKey ile aynı eşikler. */
-private fun difficultyRes(id: Int): Int? {
+/**
+ * Bölümün KURALI — uydurma bir zorluk etiketi değil.
+ *
+ * Burada eskiden "Kolay / Orta / Zor" yazıyordu ve bu bir tahminden ibaretti:
+ * eşik yalnızca bölüm numarasına bakıyordu, oysa zorluğu asıl belirleyen o
+ * bölümün ne istediği. Üstelik tahmin çoğu zaman yanlış oluyordu. Uyduramadığı
+ * şeyi iddia etmek yerine kesin olarak bildiğini söylüyor: bu bölümün kuralı ne.
+ *
+ * Sıra önemli — bir bölüm hem süreli hem dev yıldızlı olabilir; oyuncuyu en
+ * çok bağlayan kural yazılır. 150 sonrası çeşitler ÖNCE geliyor: bunlar
+ * kuralın kendisini değiştiriyor, ötekiler yalnızca hedefi.
+ */
+private fun levelRuleRes(id: Int): Int? {
     if (id == LevelLibrary.TUTORIAL_ID || LevelLibrary.isBonus(id)) return null
-    return when {
-        LevelLibrary.normalIndex(id) < 6 -> R.string.difficulty_easy
-        LevelLibrary.normalIndex(id) < 20 -> R.string.difficulty_medium
-        LevelLibrary.normalIndex(id) < 45 -> R.string.difficulty_hard
-        LevelLibrary.normalIndex(id) < 75 -> R.string.difficulty_very_hard
-        else -> R.string.difficulty_extreme
-    }
+    if (LevelLibrary.isInverted(id)) return R.string.rule_white_burns
+    if (LevelLibrary.isUpsideDown(id)) return R.string.rule_upside_down
+    if (LevelLibrary.hasShortcutGate(id)) return R.string.rule_two_ways_out
+    if (LevelLibrary.isCollect(id)) return R.string.rule_collect_every_star
+    if (LevelLibrary.hasTimer(id)) return R.string.rule_beat_the_clock
+    if (LevelLibrary.hasGrandStar(id)) return R.string.rule_giant_star
+    // "En az bir yıldız" kuralı artık HER normal bölümde geçerli, o yüzden her
+    // kartta yazmıyor: yazsaydı beş bölüm sonra okunmayan bir süs olurdu. İlk
+    // bölümlerde bir kez öğretiliyor, sonrasında kilitli duran kapı söylüyor.
+    if (id <= 5) return R.string.rule_one_star_opens
+    return null
 }
 
 @Composable
 private fun LevelIntroCard(id: Int, theme: Theme) {
-    val diffRes = difficultyRes(id)
-    val diffColor = when (diffRes) {
-        R.string.difficulty_easy -> theme.gate
-        R.string.difficulty_medium -> theme.accent
-        R.string.difficulty_hard -> theme.lumen
-        else -> theme.hazard
+    val ruleRes = levelRuleRes(id)
+    val ruleColor = when (ruleRes) {
+        R.string.rule_collect_every_star -> theme.gate
+        R.string.rule_beat_the_clock -> theme.hazard
+        // Ters bölümün rozeti BEYAZ: bölümde öldüren renk hangisiyse o
+        R.string.rule_white_burns -> Color.White
+        R.string.rule_upside_down -> theme.accent
+        R.string.rule_two_ways_out -> Color.White
+        else -> theme.lumen
     }
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
@@ -681,10 +699,10 @@ private fun LevelIntroCard(id: Int, theme: Theme) {
                 else stringResource(R.string.hud_level, id),
                 color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.Black
             )
-            if (diffRes != null) {
-                Text(stringResource(diffRes), color = Color.Black,
+            if (ruleRes != null) {
+                Text(stringResource(ruleRes), color = Color.Black,
                     fontSize = 13.sp, fontWeight = FontWeight.Bold,
-                    modifier = Modifier.background(diffColor, RoundedCornerShape(20.dp))
+                    modifier = Modifier.background(ruleColor, RoundedCornerShape(20.dp))
                         .padding(horizontal = 16.dp, vertical = 6.dp))
             }
         }

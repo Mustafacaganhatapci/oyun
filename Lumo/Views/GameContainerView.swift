@@ -1033,6 +1033,11 @@ struct GameContainerView: View {
         if LevelLibrary.isCollect(id) { return "Collect every star" }
         if LevelLibrary.hasTimer(id) { return "Beat the clock" }
         if LevelLibrary.hasGrandStar(id) { return "Giant star" }
+        // "En az bir yıldız" kuralı artık HER normal bölümde geçerli, o yüzden
+        // her kartta yazmıyor: yazsaydı beş bölüm sonra okunmayan bir süs
+        // olurdu. İlk bölümlerde bir kez öğretiliyor, sonrasında kilitli duran
+        // kapının kendisi söylüyor.
+        if id <= 5 { return "One star opens the gate" }
         return nil
     }
 

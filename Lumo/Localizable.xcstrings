@@ -5864,6 +5864,47 @@
         }
       }
     },
+    "One star opens the gate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One star opens the gate"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapıyı bir yıldız açar"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Stern öffnet das Tor"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una estrella abre la puerta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une étoile ouvre la porte"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スター1つでゲートが開く"
+          }
+        }
+      }
+    },
     "Or earn it": {
       "extractionState": "manual",
       "localizations": {
