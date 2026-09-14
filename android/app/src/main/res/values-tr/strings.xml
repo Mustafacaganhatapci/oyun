@@ -244,4 +244,10 @@
     <string name="rule_slow_time">Basılı tut, zaman yavaşlasın</string>
     <string name="hint_slow_time_title">Burada zaman bükülüyor</string>
     <string name="hint_slow_time_body">Parmağını basılı tut, zaman ağırlaşsın. Bırakınca küre fırlar. Kürenin çevresindeki yay senin göstergen: basılı tuttukça tükeniyor, beklerken doluyor.</string>
+    <string name="hint_inverted_title">Burada beyaz yakar</string>
+    <string name="hint_inverted_body">Bu bölümde renkler yer değiştirdi. Halkanın kendisi kırmızı ve zararsız — artık seni BEYAZ yay yakıyor. Kırmızı hakkında öğrendiğin her şey burada geçersiz.</string>
+    <string name="hint_upside_down_title">Her şey baş aşağı</string>
+    <string name="hint_upside_down_body">Bu bölüm baş aşağı kuruldu: küre yukarıda başlıyor, kapı aşağıda. Başka hiçbir şey değişmiyor — yalnızca alıştığın yön.</string>
+    <string name="hint_two_gates_title">İki çıkış var</string>
+    <string name="hint_two_gates_body">Yolun yanında ikinci, beyaz bir kapı var. Bölümü hemen bitiriyor — ama arkasındaki yıldızlar orada kalıyor. Yeşil kapı daha uzun yol ve daha zengin olan.</string>
 </resources>

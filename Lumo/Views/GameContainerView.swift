@@ -27,13 +27,17 @@ struct GameContainerView: View {
         case movingIntro, movingTiming                  // hareketli halka
         case timedIntro                                 // süreli bölüm tanıtımı
         case slowTimeIntro                              // zamanın yavaşladığı bölüm
+        case invertedIntro                              // renkler ters
+        case upsideDownIntro                            // bölüm baş aşağı
+        case twoGatesIntro                              // ikinci, beyaz kapı
         case boundsIntro                                // "kaçırmak artık elenmek" tanıtımı
         case bonusIntro                                 // bonus turu ne demek
     }
     @State private var coach: CoachStep?
     private var coachIsBlocking: Bool {
         coach == .hazardIntro || coach == .movingIntro || coach == .timedIntro
-            || coach == .slowTimeIntro
+            || coach == .slowTimeIntro || coach == .invertedIntro
+            || coach == .upsideDownIntro || coach == .twoGatesIntro
             || coach == .boundsIntro || coach == .bonusIntro
     }
 
@@ -887,6 +891,19 @@ struct GameContainerView: View {
         } else if LevelLibrary.hasTimer(id), tutorial.shouldShow(.timed) {
             scene?.coachFrozen = true
             coach = .timedIntro
+        } else if LevelLibrary.isInverted(id), tutorial.shouldShow(.inverted) {
+            // Bu ÜÇÜ artık kampanyanın başlarında da çıkıyor ve ikisi bir
+            // kuralı tersine çeviriyor. Giriş kartındaki tek satır okunmazsa
+            // ilk ölüm "oyun bozuk" gibi hissettiriyor; bir kez anlatmak
+            // o ölümü öğrenmeye çeviriyor.
+            scene?.coachFrozen = true
+            coach = .invertedIntro
+        } else if LevelLibrary.isUpsideDown(id), tutorial.shouldShow(.upsideDown) {
+            scene?.coachFrozen = true
+            coach = .upsideDownIntro
+        } else if LevelLibrary.hasShortcutGate(id), tutorial.shouldShow(.twoGates) {
+            scene?.coachFrozen = true
+            coach = .twoGatesIntro
         } else if LevelLibrary.slowsTime(id), tutorial.shouldShow(.slowTime) {
             // Yeni bir DÜĞME veriliyor: anlatılmazsa fark edilmez. Bölüm
             // kartındaki tek satır "basılı tut" diyor ama neyin ne kadar
@@ -936,6 +953,18 @@ struct GameContainerView: View {
             scene?.coachFrozen = false
             coach = nil
             tutorial.markShown(.slowTime)
+        case .invertedIntro:
+            scene?.coachFrozen = false
+            coach = nil
+            tutorial.markShown(.inverted)
+        case .upsideDownIntro:
+            scene?.coachFrozen = false
+            coach = nil
+            tutorial.markShown(.upsideDown)
+        case .twoGatesIntro:
+            scene?.coachFrozen = false
+            coach = nil
+            tutorial.markShown(.twoGates)
         case .boundsIntro:
             tutorial.markShown(.bounds)
             // Aynı bölüm süreliyse sıradaki kartı göster (dondurma sürsün)
@@ -958,6 +987,10 @@ struct GameContainerView: View {
         case .bonusIntro:  hint = .bonus;  color = settings.theme.lumen.color
         case .timedIntro:  hint = .timed;  color = settings.theme.lumen.color
         case .slowTimeIntro: hint = .slowTime; color = settings.theme.accent.color
+        // Ters bölümün kartı BEYAZ: bölümde öldüren renk hangisiyse o
+        case .invertedIntro: hint = .inverted; color = .white
+        case .upsideDownIntro: hint = .upsideDown; color = settings.theme.accent.color
+        case .twoGatesIntro: hint = .twoGates; color = .white
         case .boundsIntro: hint = .bounds; color = settings.theme.hazard.color
         default:           hint = .moving; color = settings.theme.accent.color
         }

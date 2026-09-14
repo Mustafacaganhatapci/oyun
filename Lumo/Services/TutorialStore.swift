@@ -39,6 +39,9 @@ enum TutorialHint: String, CaseIterable, Identifiable {
     case bounds     // ileri bölümlerde kaçırmak = elenmek
     case bonus      // bonus turu: kapı yok, tehlike yok, süre var
     case slowTime   // zamanın yavaşladığı bölüm
+    case inverted   // renkler ters: beyaz öldürür
+    case upsideDown // bölüm baş aşağı
+    case twoGates   // ikinci, beyaz kaçış kapısı
     case modes      // 10. bölümde açılan sonsuz mod ve hız turu
 
     var id: String { rawValue }
@@ -54,6 +57,9 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .bounds: return "Careful now!"
         case .bonus:  return "Bonus round"
         case .slowTime: return "Time bends here"
+        case .inverted: return "White burns here"
+        case .upsideDown: return "Everything is upside down"
+        case .twoGates: return "There are two ways out"
         case .modes:  return "Two new modes"
         }
     }
@@ -67,6 +73,9 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .bounds: return "From this level on, if the orb flies off the screen, you lose the attempt."
         case .bonus:  return "No gate and nothing that can hurt you here. Just grab as many stars as you can before the clock runs out."
         case .slowTime: return "Hold your finger down and time slows to a crawl. Let go and the orb launches. The ring around the orb is your meter: it drains while you hold and refills while you wait."
+        case .inverted: return "The colours are swapped in this level. The ring itself is red and harmless — it is the WHITE arc that burns you now. Everything you learned about red does not apply here."
+        case .upsideDown: return "This level is built upside down: the orb starts at the top and the gate is at the bottom. Nothing else changes — only the direction you are used to."
+        case .twoGates: return "There is a second, white gate beside the path. It finishes the level right away — but the stars past it stay behind. The green gate is the longer way and the richer one."
         case .modes:  return "Endless Mode and Speed Run are open. Both go on the weekly board, and it resets every Monday — see if you can take a place in the top three."
         }
     }
@@ -80,6 +89,9 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .bounds: return "xmark.octagon.fill"
         case .bonus:  return "sparkles"
         case .slowTime: return "hourglass"
+        case .inverted: return "circle.lefthalf.filled"
+        case .upsideDown: return "arrow.up.arrow.down"
+        case .twoGates: return "arrow.triangle.branch"
         case .modes:  return "trophy.fill"
         }
     }

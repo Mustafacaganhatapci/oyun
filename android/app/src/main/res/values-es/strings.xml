@@ -244,4 +244,10 @@
     <string name="rule_slow_time">Mantén pulsado para ralentizar el tiempo</string>
     <string name="hint_slow_time_title">Aquí el tiempo se dobla</string>
     <string name="hint_slow_time_body">Mantén el dedo pulsado y el tiempo se ralentiza. Al soltar, la esfera sale disparada. El arco alrededor de la esfera es tu medidor: se vacía mientras mantienes y se llena mientras esperas.</string>
+    <string name="hint_inverted_title">Aquí quema el blanco</string>
+    <string name="hint_inverted_body">En este nivel los colores están intercambiados. El anillo es rojo e inofensivo: ahora es el arco BLANCO el que te quema. Nada de lo que aprendiste sobre el rojo sirve aquí.</string>
+    <string name="hint_upside_down_title">Todo está del revés</string>
+    <string name="hint_upside_down_body">Este nivel está del revés: la esfera empieza arriba y la puerta está abajo. No cambia nada más, solo la dirección a la que estás acostumbrado.</string>
+    <string name="hint_two_gates_title">Hay dos salidas</string>
+    <string name="hint_two_gates_body">Hay una segunda puerta blanca junto al camino. Termina el nivel de inmediato, pero las estrellas que quedan detrás se quedan ahí. La puerta verde es el camino más largo y el más rico.</string>
 </resources>

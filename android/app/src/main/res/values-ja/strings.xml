@@ -244,4 +244,10 @@
     <string name="rule_slow_time">長押しで時間が遅くなる</string>
     <string name="hint_slow_time_title">ここでは時間が曲がる</string>
     <string name="hint_slow_time_body">指を押したままにすると時間がゆっくりになります。離すとオーブが飛びます。オーブの周りの弧がゲージ：押している間は減り、待っている間に回復します。</string>
+    <string name="hint_inverted_title">ここでは白が危険</string>
+    <string name="hint_inverted_body">このレベルでは色が入れ替わっています。リング自体は赤くて無害で、あなたを焼くのは白い弧です。赤について学んだことはここでは通用しません。</string>
+    <string name="hint_upside_down_title">すべてさかさま</string>
+    <string name="hint_upside_down_body">このレベルはさかさまに作られています。オーブは上から始まり、ゲートは下にあります。変わるのは慣れた向きだけです。</string>
+    <string name="hint_two_gates_title">出口はふたつ</string>
+    <string name="hint_two_gates_body">道の脇に2つ目の白いゲートがあります。すぐにレベルを終えられますが、その先のスターは残ったままです。緑のゲートは長い道、そして実り多い道です。</string>
 </resources>

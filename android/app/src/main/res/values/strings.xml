@@ -244,4 +244,10 @@
     <string name="rule_slow_time">Hold to slow time</string>
     <string name="hint_slow_time_title">Time bends here</string>
     <string name="hint_slow_time_body">Hold your finger down and time slows to a crawl. Let go and the orb launches. The ring around the orb is your meter: it drains while you hold and refills while you wait.</string>
+    <string name="hint_inverted_title">White burns here</string>
+    <string name="hint_inverted_body">The colours are swapped in this level. The ring itself is red and harmless — it is the WHITE arc that burns you now. Everything you learned about red does not apply here.</string>
+    <string name="hint_upside_down_title">Everything is upside down</string>
+    <string name="hint_upside_down_body">This level is built upside down: the orb starts at the top and the gate is at the bottom. Nothing else changes — only the direction you are used to.</string>
+    <string name="hint_two_gates_title">There are two ways out</string>
+    <string name="hint_two_gates_body">There is a second, white gate beside the path. It finishes the level right away — but the stars past it stay behind. The green gate is the longer way and the richer one.</string>
 </resources>

@@ -155,17 +155,31 @@ enum LevelLibrary {
         return id % 4 == 1 && !isCollect(id)
     }
 
-    // MARK: 150 sonrası çeşit bölümleri
+    // MARK: Çeşit bölümleri
     //
-    // Üçü de YALNIZCA `priorCount`'tan sonra. 1...150 yayında ve oyuncuların
-    // kayıtlı ilerlemesi o düzene göre kazanıldı; oradaki hiçbir bölümün
-    // kuralı değişmiyor. Aralara serpiştiriliyorlar — art arda gelmeleri
-    // sürprizi alışkanlığa çevirirdi.
+    // Üçü de bir zamanlar YALNIZCA 150'den sonra çıkıyordu; gerekçe 1...150'in
+    // yayında olması ve oradaki düzenin korunmasıydı. O kaygı kasıtlı olarak
+    // bırakıldı: üç çeşidin tamamı kampanyanın son beşte birine sıkışınca,
+    // oyuncuların çoğu hiçbirini görmüyordu. Artık kampanyanın tamamına
+    // yayılıyorlar. Kazanılmış yıldızlar ve tamamlanma kayıtları yerinde
+    // duruyor — bölümün düzeni değişiyor, oyuncunun geçmişi değişmiyor.
+    //
+    // BAŞLANGIÇ NOKTALARI ÖĞRENME SIRASINA GÖRE:
+    //   25 — baş aşağı: hiçbir kuralı değiştirmiyor, yalnızca alışkanlığı
+    //   35 — iki çıkış: kapının ve yıldızın ne olduğunu bilmek yetiyor
+    //   45 — ters renk: "kırmızı yakar" ezberi ÖNCE kurulmalı ki bozulabilsin
+    //
+    // BÖLENLER FARKLI SEÇİLDİ. Aynı bölenle iki çeşit sabit mesafede kalıyor
+    // ve her seferinde yan yana düşüyordu: iki büyük sürpriz art arda, sonra
+    // yedi sıradan bölüm. Şimdi hiçbir çeşit bir diğerinin komşusu değil.
+    //
+    // ÜÇÜ DE TOPLA-BİTİR BÖLÜMLERİNİ DIŞLIYOR. Tek bölümde iki kural olunca
+    // giriş kartındaki tek satır yalan söylüyor.
 
     /// Renkler ters: halka kırmızı, öldüren yay beyaz.
     static func isInverted(_ id: Int) -> Bool {
-        guard id > priorCount, !isBonus(id) else { return false }
-        return id % 5 == 2
+        guard id >= 45, !isBonus(id), !isCollect(id) else { return false }
+        return id % 10 == 1
     }
 
     /// Baş aşağı: küre yukarıda başlar, kapı aşağıdadır.
@@ -174,8 +188,8 @@ enum LevelLibrary {
     /// giriş kartındaki tek satırlık kural yalan söylüyor, hem de ilk
     /// karşılaşma öğretici değil kafa karıştırıcı oluyor.
     static func isUpsideDown(_ id: Int) -> Bool {
-        guard id > priorCount, !isBonus(id), !isInverted(id) else { return false }
-        return id % 7 == 5
+        guard id >= 25, !isBonus(id), !isCollect(id), !isInverted(id) else { return false }
+        return id % 8 == 1
     }
 
     /// Zincirin ortasında ikinci bir kapı. Topla-bitir bölümünde OLMAZ:
@@ -186,9 +200,9 @@ enum LevelLibrary {
     /// yani 150 sonrasında HER seferinde topla-bitir bölümüne denk geliyor
     /// ve eleniyordu — tek bir iki kapılı bölüm üretilmiyordu.
     static func hasShortcutGate(_ id: Int) -> Bool {
-        guard id > priorCount, !isBonus(id), !isCollect(id),
+        guard id >= 35, !isBonus(id), !isCollect(id),
               !isInverted(id), !isUpsideDown(id) else { return false }
-        return id % 8 == 3
+        return id % 12 == 3
     }
 
     /// Zamanın yavaşladığı bölümler: küreye BASILI TUTUNCA zaman ağırlaşıyor.

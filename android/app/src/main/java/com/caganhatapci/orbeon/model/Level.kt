@@ -191,23 +191,37 @@ object LevelLibrary {
         return id % 4 == 1 && !isCollect(id)
     }
 
-    // 150 sonrası çeşit bölümleri — iOS'takiyle BİREBİR aynı bölenler.
+    // Çeşit bölümleri — iOS'takiyle BİREBİR aynı bölenler ve eşikler.
     //
-    // Üçü de yalnızca PRIOR_COUNT'tan sonra: 1...150 yayında ve oyuncuların
-    // kayıtlı ilerlemesi o düzene göre kazanıldı. Birbirlerini de dışlıyorlar;
-    // iki çeşit aynı bölümde toplanınca giriş kartındaki tek satırlık kural
-    // yalan söylüyor.
+    // Üçü de bir zamanlar YALNIZCA 150'den sonra çıkıyordu; gerekçe 1...150'in
+    // yayında olması ve oradaki düzenin korunmasıydı. O kaygı kasıtlı olarak
+    // bırakıldı: üç çeşidin tamamı kampanyanın son beşte birine sıkışınca,
+    // oyuncuların çoğu hiçbirini görmüyordu. Artık kampanyanın tamamına
+    // yayılıyorlar. Kazanılmış yıldızlar ve tamamlanma kayıtları yerinde
+    // duruyor — bölümün düzeni değişiyor, oyuncunun geçmişi değişmiyor.
+    //
+    // BAŞLANGIÇ NOKTALARI ÖĞRENME SIRASINA GÖRE:
+    //   25 — baş aşağı: hiçbir kuralı değiştirmiyor, yalnızca alışkanlığı
+    //   35 — iki çıkış: kapının ve yıldızın ne olduğunu bilmek yetiyor
+    //   45 — ters renk: "kırmızı yakar" ezberi ÖNCE kurulmalı ki bozulabilsin
+    //
+    // BÖLENLER FARKLI SEÇİLDİ. Aynı bölenle iki çeşit sabit mesafede kalıyor
+    // ve her seferinde yan yana düşüyordu: iki büyük sürpriz art arda, sonra
+    // yedi sıradan bölüm. Şimdi hiçbir çeşit bir diğerinin komşusu değil.
+    //
+    // ÜÇÜ DE TOPLA-BİTİR BÖLÜMLERİNİ DIŞLIYOR. Tek bölümde iki kural olunca
+    // giriş kartındaki tek satır yalan söylüyor.
 
     /** Renkler ters: halka kırmızı, öldüren yay beyaz. */
     fun isInverted(id: Int): Boolean {
-        if (id <= PRIOR_COUNT || isBonus(id)) return false
-        return id % 5 == 2
+        if (id < 45 || isBonus(id) || isCollect(id)) return false
+        return id % 10 == 1
     }
 
     /** Baş aşağı: küre yukarıda başlar, kapı aşağıdadır. */
     fun isUpsideDown(id: Int): Boolean {
-        if (id <= PRIOR_COUNT || isBonus(id) || isInverted(id)) return false
-        return id % 7 == 5
+        if (id < 25 || isBonus(id) || isCollect(id) || isInverted(id)) return false
+        return id % 8 == 1
     }
 
     /**
@@ -218,9 +232,9 @@ object LevelLibrary {
      * her seferinde topla-bitir bölümüne denk gelip eleniyordu.
      */
     fun hasShortcutGate(id: Int): Boolean {
-        if (id <= PRIOR_COUNT || isBonus(id) || isCollect(id)) return false
+        if (id < 35 || isBonus(id) || isCollect(id)) return false
         if (isInverted(id) || isUpsideDown(id)) return false
-        return id % 8 == 3
+        return id % 12 == 3
     }
 
     /**

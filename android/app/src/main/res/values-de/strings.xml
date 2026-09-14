@@ -244,4 +244,10 @@
     <string name="rule_slow_time">Halte gedrückt, die Zeit wird langsamer</string>
     <string name="hint_slow_time_title">Hier biegt sich die Zeit</string>
     <string name="hint_slow_time_body">Halte den Finger gedrückt und die Zeit wird zäh. Lässt du los, startet die Kugel. Der Bogen um die Kugel ist deine Anzeige: Er leert sich beim Halten und füllt sich beim Warten.</string>
+    <string name="hint_inverted_title">Hier brennt Weiß</string>
+    <string name="hint_inverted_body">In diesem Level sind die Farben vertauscht. Der Ring selbst ist rot und harmlos — es ist der WEISSE Bogen, der dich jetzt verbrennt. Alles, was du über Rot gelernt hast, gilt hier nicht.</string>
+    <string name="hint_upside_down_title">Alles steht kopf</string>
+    <string name="hint_upside_down_body">Dieses Level steht kopf: Die Kugel startet oben, das Tor ist unten. Sonst ändert sich nichts — nur die Richtung, die du gewohnt bist.</string>
+    <string name="hint_two_gates_title">Es gibt zwei Ausgänge</string>
+    <string name="hint_two_gates_body">Neben dem Weg steht ein zweites, weißes Tor. Es beendet das Level sofort — aber die Sterne dahinter bleiben liegen. Das grüne Tor ist der längere und der reichere Weg.</string>
 </resources>

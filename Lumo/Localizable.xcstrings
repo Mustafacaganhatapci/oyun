@@ -3043,6 +3043,47 @@
         }
       }
     },
+    "Everything is upside down": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything is upside down"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her şey baş aşağı"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles steht kopf"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todo está del revés"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout est à l’envers"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべてさかさま"
+          }
+        }
+      }
+    },
     "Everything new in this update is included and the price did not go up.": {
       "extractionState": "manual",
       "localizations": {
@@ -8930,6 +8971,47 @@
         }
       }
     },
+    "The colours are swapped in this level. The ring itself is red and harmless — it is the WHITE arc that burns you now. Everything you learned about red does not apply here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The colours are swapped in this level. The ring itself is red and harmless — it is the WHITE arc that burns you now. Everything you learned about red does not apply here."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bölümde renkler yer değiştirdi. Halkanın kendisi kırmızı ve zararsız — artık seni BEYAZ yay yakıyor. Kırmızı hakkında öğrendiğin her şey burada geçersiz."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In diesem Level sind die Farben vertauscht. Der Ring selbst ist rot und harmlos — es ist der WEISSE Bogen, der dich jetzt verbrennt. Alles, was du über Rot gelernt hast, gilt hier nicht."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En este nivel los colores están intercambiados. El anillo es rojo e inofensivo: ahora es el arco BLANCO el que te quema. Nada de lo que aprendiste sobre el rojo sirve aquí."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans ce niveau les couleurs sont inversées. L’anneau lui-même est rouge et inoffensif — c’est l’arc BLANC qui te brûle désormais. Tout ce que tu as appris sur le rouge ne s’applique pas ici."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このレベルでは色が入れ替わっています。リング自体は赤くて無害で、あなたを焼くのは白い弧です。赤について学んだことはここでは通用しません。"
+          }
+        }
+      }
+    },
     "The first %lld levels are completely ad-free": {
       "extractionState": "manual",
       "localizations": {
@@ -9070,6 +9152,88 @@
         }
       }
     },
+    "There are two ways out": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There are two ways out"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İki çıkış var"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es gibt zwei Ausgänge"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hay dos salidas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il y a deux sorties"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "出口はふたつ"
+          }
+        }
+      }
+    },
+    "There is a second, white gate beside the path. It finishes the level right away — but the stars past it stay behind. The green gate is the longer way and the richer one.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There is a second, white gate beside the path. It finishes the level right away — but the stars past it stay behind. The green gate is the longer way and the richer one."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yolun yanında ikinci, beyaz bir kapı var. Bölümü hemen bitiriyor — ama arkasındaki yıldızlar orada kalıyor. Yeşil kapı daha uzun yol ve daha zengin olan."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neben dem Weg steht ein zweites, weißes Tor. Es beendet das Level sofort — aber die Sterne dahinter bleiben liegen. Das grüne Tor ist der längere und der reichere Weg."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hay una segunda puerta blanca junto al camino. Termina el nivel de inmediato, pero las estrellas que quedan detrás se quedan ahí. La puerta verde es el camino más largo y el más rico."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il y a une seconde porte, blanche, à côté du chemin. Elle termine le niveau tout de suite — mais les étoiles au-delà restent là. La porte verte est le chemin le plus long et le plus riche."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "道の脇に2つ目の白いゲートがあります。すぐにレベルを終えられますが、その先のスターは残ったままです。緑のゲートは長い道、そして実り多い道です。"
+          }
+        }
+      }
+    },
     "This is the name shown on the world ranking.": {
       "extractionState": "manual",
       "localizations": {
@@ -9136,6 +9300,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dünya sıralamasında görünecek ad budur. Bir kez seçilir, sonradan değiştirilemez."
+          }
+        }
+      }
+    },
+    "This level is built upside down: the orb starts at the top and the gate is at the bottom. Nothing else changes — only the direction you are used to.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This level is built upside down: the orb starts at the top and the gate is at the bottom. Nothing else changes — only the direction you are used to."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bölüm baş aşağı kuruldu: küre yukarıda başlıyor, kapı aşağıda. Başka hiçbir şey değişmiyor — yalnızca alıştığın yön."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Level steht kopf: Die Kugel startet oben, das Tor ist unten. Sonst ändert sich nichts — nur die Richtung, die du gewohnt bist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este nivel está del revés: la esfera empieza arriba y la puerta está abajo. No cambia nada más, solo la dirección a la que estás acostumbrado."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce niveau est construit à l’envers : la sphère démarre en haut et la porte est en bas. Rien d’autre ne change — seulement le sens auquel tu es habitué."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このレベルはさかさまに作られています。オーブは上から始まり、ゲートは下にあります。変わるのは慣れた向きだけです。"
           }
         }
       }

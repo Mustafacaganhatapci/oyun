@@ -70,11 +70,15 @@ private enum class Coach {
     MOVING_INTRO, MOVING_TIMING,                    // hareketli halka
     TIMED_INTRO,                                    // süreli bölüm tanıtımı
     SLOW_TIME_INTRO,                                // zamanın yavaşladığı bölüm
+    INVERTED_INTRO,                                 // renkler ters
+    UPSIDE_DOWN_INTRO,                              // bölüm baş aşağı
+    TWO_GATES_INTRO,                                // ikinci, beyaz kapı
     BOUNDS_INTRO;                                   // "kaçırmak artık elenmek"
 
     val isBlocking get() = this == HAZARD_INTRO || this == MOVING_INTRO ||
                            this == TIMED_INTRO || this == BOUNDS_INTRO ||
-                           this == SLOW_TIME_INTRO
+                           this == SLOW_TIME_INTRO || this == INVERTED_INTRO ||
+                           this == UPSIDE_DOWN_INTRO || this == TWO_GATES_INTRO
 }
 
 /** 3/3 yıldız için rastgele seçilen tebrik başlıkları */
@@ -170,6 +174,22 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             } else if (LevelLibrary.hasTimer(id) && app.tutorial.shouldShow(TutorialStore.Step.TIMED)) {
                 engine.coachFrozen = true
                 coach = Coach.TIMED_INTRO
+            } else if (LevelLibrary.isInverted(id) &&
+                       app.tutorial.shouldShow(TutorialStore.Step.INVERTED)) {
+                // Bu ÜÇÜ artık kampanyanın başlarında da çıkıyor ve ikisi bir
+                // kuralı tersine çeviriyor. Giriş kartındaki tek satır
+                // okunmazsa ilk ölüm "oyun bozuk" gibi hissettiriyor; bir kez
+                // anlatmak o ölümü öğrenmeye çeviriyor.
+                engine.coachFrozen = true
+                coach = Coach.INVERTED_INTRO
+            } else if (LevelLibrary.isUpsideDown(id) &&
+                       app.tutorial.shouldShow(TutorialStore.Step.UPSIDE_DOWN)) {
+                engine.coachFrozen = true
+                coach = Coach.UPSIDE_DOWN_INTRO
+            } else if (LevelLibrary.hasShortcutGate(id) &&
+                       app.tutorial.shouldShow(TutorialStore.Step.TWO_GATES)) {
+                engine.coachFrozen = true
+                coach = Coach.TWO_GATES_INTRO
             } else if (LevelLibrary.slowsTime(id) &&
                        app.tutorial.shouldShow(TutorialStore.Step.SLOW_TIME)) {
                 // Yeni bir DÜĞME veriliyor: anlatılmazsa fark edilmez. Bölüm
@@ -429,6 +449,18 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                                     engine.coachFrozen = false; coach = null
                                     app.tutorial.markShown(TutorialStore.Step.SLOW_TIME)
                                 }
+                                Coach.INVERTED_INTRO -> {
+                                    engine.coachFrozen = false; coach = null
+                                    app.tutorial.markShown(TutorialStore.Step.INVERTED)
+                                }
+                                Coach.UPSIDE_DOWN_INTRO -> {
+                                    engine.coachFrozen = false; coach = null
+                                    app.tutorial.markShown(TutorialStore.Step.UPSIDE_DOWN)
+                                }
+                                Coach.TWO_GATES_INTRO -> {
+                                    engine.coachFrozen = false; coach = null
+                                    app.tutorial.markShown(TutorialStore.Step.TWO_GATES)
+                                }
                                 Coach.BOUNDS_INTRO -> {
                                     app.tutorial.markShown(TutorialStore.Step.BOUNDS)
                                     val id = (playMode as? PlayMode.LevelPlay)?.id
@@ -600,6 +632,12 @@ private fun CoachIntroOverlay(step: Coach, theme: Theme, onDismiss: () -> Unit) 
         Coach.TIMED_INTRO -> CoachCard("⏱", R.string.hint_timed_title, R.string.hint_timed_body)
         Coach.SLOW_TIME_INTRO ->
             CoachCard("⏳", R.string.hint_slow_time_title, R.string.hint_slow_time_body)
+        Coach.INVERTED_INTRO ->
+            CoachCard("◐", R.string.hint_inverted_title, R.string.hint_inverted_body)
+        Coach.UPSIDE_DOWN_INTRO ->
+            CoachCard("⇅", R.string.hint_upside_down_title, R.string.hint_upside_down_body)
+        Coach.TWO_GATES_INTRO ->
+            CoachCard("⑂", R.string.hint_two_gates_title, R.string.hint_two_gates_body)
         else -> CoachCard("🛑", R.string.hint_bounds_title, R.string.hint_bounds_body)
     }
     Box(

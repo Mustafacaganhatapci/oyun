@@ -244,4 +244,10 @@
     <string name="rule_slow_time">Maintiens pour ralentir le temps</string>
     <string name="hint_slow_time_title">Ici le temps se plie</string>
     <string name="hint_slow_time_body">Garde le doigt appuyé et le temps ralentit. Relâche et la sphère part. L’arc autour de la sphère est ta jauge : elle se vide quand tu maintiens et se remplit quand tu attends.</string>
+    <string name="hint_inverted_title">Ici le blanc brûle</string>
+    <string name="hint_inverted_body">Dans ce niveau les couleurs sont inversées. L’anneau lui-même est rouge et inoffensif — c’est l’arc BLANC qui te brûle désormais. Tout ce que tu as appris sur le rouge ne s’applique pas ici.</string>
+    <string name="hint_upside_down_title">Tout est à l’envers</string>
+    <string name="hint_upside_down_body">Ce niveau est construit à l’envers : la sphère démarre en haut et la porte est en bas. Rien d’autre ne change — seulement le sens auquel tu es habitué.</string>
+    <string name="hint_two_gates_title">Il y a deux sorties</string>
+    <string name="hint_two_gates_body">Il y a une seconde porte, blanche, à côté du chemin. Elle termine le niveau tout de suite — mais les étoiles au-delà restent là. La porte verte est le chemin le plus long et le plus riche.</string>
 </resources>
