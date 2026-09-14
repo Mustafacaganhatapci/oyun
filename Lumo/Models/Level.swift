@@ -217,14 +217,18 @@ enum LevelLibrary {
         return id % 11 == 4
     }
 
-    /// Zorluk zammı YALNIZCA 150'den sonrasına.
+    /// Zorluk zammı YAVAŞLATAN HER BÖLÜME — yayında olanlara da.
     ///
-    /// 21...150 yayında ve oynandı; oradaki bir bölümün DÜZENİNİ değiştirmek,
-    /// kuralını değiştirmekten başka bir şey. Ezberlenmiş bir bölüme geri
-    /// dönen oyuncu başka bir bölüm bulurdu. O aralıkta bölüm aynı bölüm
-    /// olarak kalıyor, üstüne yalnızca yetenek geliyor — yani orada
-    /// yavaşlatma saf bir hediye. 150'den sonra ise silaha dönüşüyor.
-    static func slowTimeIsHard(_ id: Int) -> Bool { slowsTime(id) && id > priorCount }
+    /// Bir ara bu yalnızca 150 sonrasına uygulanıyordu: 21...150 yayındaydı ve
+    /// oradaki bir bölümün DÜZENİNİ değiştirmek, kuralını değiştirmekten başka
+    /// bir şey sayılıyordu. Ama o kaygı kasıtlı olarak bırakıldı — yavaşlatma
+    /// zorluğun cevabı, ve zorlaşmayan bir bölümde cevap verilecek bir şey de
+    /// yok: yetenek orada yalnızca zaten geçilebilen bir bölümü kolaylaştıran
+    /// bir düğme olurdu. On iki bölümün ikisi zor, onu kolay olamaz.
+    ///
+    /// Kazanılmış yıldızlar ve tamamlanma kayıtları YERİNDE duruyor: bölümün
+    /// düzeni değişiyor, oyuncunun geçmişi değişmiyor.
+    static func slowTimeIsHard(_ id: Int) -> Bool { slowsTime(id) }
 
     /// Yavaşlatan bölümün zorluk zammı. Ayrı bir fonksiyon: kuralın hangi
     /// bölümde geçerli olduğu ile ne kadar zorlaştırdığı ayrı ayrı okunsun.
