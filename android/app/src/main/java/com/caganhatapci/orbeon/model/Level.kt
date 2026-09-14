@@ -242,14 +242,19 @@ object LevelLibrary {
      * oyuncuların çoğunun hiç görmemesi demekti. İlki 26'da; ilk yirmi bölüm
      * temel atlayışın öğrenildiği yer ve oraya yeni bir düğme koymak erken.
      *
-     * Bölen 11 kampanyanın tamamına eşit aralıklı on iki bölüm serpiyor:
-     * 26, 37, 59, 70, 92, 103, 125, 147, 158, 191, 213, 224.
+     * Bölen 6 kampanyanın tamamına otuz bir bölüm serpiyor; aralıklar 6 ile 18
+     * arasında, yani tür ne seyrekleşip unutuluyor ne de sıradanlaşıyor. Bonus
+     * da altıya bölünüyor ama kalanı 0 — çakışma yok.
+     *
+     * Önce on iki bölümdü (bölen 11). Bir türün oyuncuda iz bırakması için
+     * birkaç kez karşısına çıkması gerekiyor: on iki bölüm, iki yüz elli
+     * yedilik bir kampanyada iki oturumda bir denk gelen bir şey demekti.
      * iOS'takiyle BİREBİR aynı.
      */
     fun slowsTime(id: Int): Boolean {
         if (id <= 20 || isBonus(id) || isCollect(id)) return false
         if (isInverted(id) || isUpsideDown(id) || hasShortcutGate(id)) return false
-        return id % 11 == 4
+        return id % 6 == 2
     }
 
     /**
@@ -271,12 +276,20 @@ object LevelLibrary {
     /**
      * Yavaşlatan bölümün zorluk zammı. Ayrı bir fonksiyon: kuralın hangi
      * bölümde geçerli olduğu ile ne kadar zorlaştırdığı ayrı ayrı okunsun.
+     *
+     * TEHLİKE YOĞUNLUĞU yalnızca müsamaha varken artıyor (`HAZARD_GRACE_FROM`,
+     * 67). Öncesinde yaya değmek ANINDA öldürüyor; oraya %90 tehlike olasılığı
+     * koymak zor değil adaletsiz olurdu — 26. bölümdeki oyuncu henüz yayın ne
+     * zaman silahlandığını okumayı öğrenmiyor bile, çünkü o mekanik daha yok.
+     * Hız ve hareketli halka ise beceri zorluğu ve yavaşlatmanın doğrudan
+     * cevap verdiği şey tam olarak bu; onlar her yerde artıyor.
+     *
      * Katsayılar iOS'takiyle birebir aynı.
      */
-    fun slowTimeBoost(d: Difficulty): Difficulty = d.copy(
+    fun slowTimeBoost(d: Difficulty, graceful: Boolean): Difficulty = d.copy(
         speedFrom = d.speedFrom * 1.18f,
         speedTo = d.speedTo * 1.18f,
-        hazardChance = minOf(0.95f, d.hazardChance + 0.15f),
+        hazardChance = if (graceful) minOf(0.95f, d.hazardChance + 0.15f) else d.hazardChance,
         movingChance = minOf(1f, d.movingChance + 0.20f),
         hazardSpanFrom = d.hazardSpanFrom * 1.10f,
         hazardSpanTo = d.hazardSpanTo * 1.10f
@@ -371,7 +384,9 @@ object LevelLibrary {
     private fun normalLevel(id: Int): Level {
         // Yavaşlatan bölüm daha zor üretiliyor: yetenek zorluğun cevabı olsun,
         // zaten geçilebilen bir bölümü kolaylaştıran bir düğme olmasın
-        val d = if (slowTimeIsHard(id)) slowTimeBoost(difficulty(id)) else difficulty(id)
+        val d = if (slowTimeIsHard(id))
+            slowTimeBoost(difficulty(id), hasHazardGrace(id))
+        else difficulty(id)
         val rng = SplitMix64(0xC0FFEEL + id.toLong() * 7919L)
 
         val rings = mutableListOf<RingSpec>()

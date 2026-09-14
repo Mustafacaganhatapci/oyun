@@ -209,12 +209,17 @@ enum LevelLibrary {
     /// oyuncuların çoğunun hiç görmemesi demekti. İlki 26'da; ilk yirmi bölüm
     /// temel atlayışın öğrenildiği yer ve oraya yeni bir düğme koymak erken.
     ///
-    /// Bölen 11 kampanyanın tamamına eşit aralıklı on iki bölüm serpiyor:
-    /// 26, 37, 59, 70, 92, 103, 125, 147, 158, 191, 213, 224.
+    /// Bölen 6 kampanyanın tamamına otuz bir bölüm serpiyor; aralıklar 6 ile
+    /// 18 arasında, yani tür ne seyrekleşip unutuluyor ne de sıradanlaşıyor.
+    /// Bonus da altıya bölünüyor ama kalanı 0 — çakışma yok.
+    ///
+    /// Önce on iki bölümdü (bölen 11). Bir türün oyuncuda iz bırakması için
+    /// birkaç kez karşısına çıkması gerekiyor: on iki bölüm, iki yüz elli
+    /// yedilik bir kampanyada iki oturumda bir denk gelen bir şey demekti.
     static func slowsTime(_ id: Int) -> Bool {
         guard id > 20, !isBonus(id), !isCollect(id),
               !isInverted(id), !isUpsideDown(id), !hasShortcutGate(id) else { return false }
-        return id % 11 == 4
+        return id % 6 == 2
     }
 
     /// Zorluk zammı YAVAŞLATAN HER BÖLÜME — yayında olanlara da.
@@ -232,12 +237,20 @@ enum LevelLibrary {
 
     /// Yavaşlatan bölümün zorluk zammı. Ayrı bir fonksiyon: kuralın hangi
     /// bölümde geçerli olduğu ile ne kadar zorlaştırdığı ayrı ayrı okunsun.
-    static func slowTimeBoost(_ d: Difficulty) -> Difficulty {
+    ///
+    /// TEHLİKE YOĞUNLUĞU yalnızca müsamaha varken artıyor (`hazardGraceFrom`,
+    /// 67). Öncesinde yaya değmek ANINDA öldürüyor; oraya %90 tehlike
+    /// olasılığı koymak zor değil adaletsiz olurdu — 26. bölümdeki oyuncu
+    /// henüz yayın ne zaman silahlandığını okumayı öğrenmiyor bile, çünkü o
+    /// mekanik daha yok. Hız ve hareketli halka ise beceri zorluğu ve
+    /// yavaşlatmanın doğrudan cevap verdiği şey tam olarak bu; onlar her
+    /// yerde artıyor.
+    static func slowTimeBoost(_ d: Difficulty, graceful: Bool) -> Difficulty {
         var d = d
         d.speedRange = (d.speedRange.lowerBound * 1.18)...(d.speedRange.upperBound * 1.18)
-        d.hazardChance = min(0.95, d.hazardChance + 0.15)
         d.movingChance = min(1.0, d.movingChance + 0.20)
         d.hazardSpan = (d.hazardSpan.lowerBound * 1.10)...(d.hazardSpan.upperBound * 1.10)
+        if graceful { d.hazardChance = min(0.95, d.hazardChance + 0.15) }
         return d
     }
 
@@ -353,7 +366,9 @@ enum LevelLibrary {
     private static func normalLevel(_ id: Int) -> Level {
         // Yavaşlatan bölüm daha zor üretiliyor: yetenek zorluğun cevabı olsun,
         // zaten geçilebilen bir bölümü kolaylaştıran bir düğme olmasın
-        let d = slowTimeIsHard(id) ? slowTimeBoost(difficulty(for: id)) : difficulty(for: id)
+        let d = slowTimeIsHard(id)
+            ? slowTimeBoost(difficulty(for: id), graceful: hasHazardGrace(id))
+            : difficulty(for: id)
         var rng = SplitMix64(seed: 0xC0FFEE &+ UInt64(id) &* 7919)
 
         var rings: [RingSpec] = []
