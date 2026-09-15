@@ -3,7 +3,9 @@
 Aşağıdakiler doğrudan kopyalanabilir. Karakter sınırları Play Console'un
 kabul ettiği üst sınırlardır; yazılanlar sınırın altındadır.
 
-**Sürüm 2.2 (versionCode 8).** iOS 2.2 ile aynı içerik.
+**Sürüm 2.3 (versionCode 9).** iOS 2.3 ile aynı içerik.
+Sürüm notları `ios-store-assets/appstore-2.3.md` içinde (Play'in 500
+karakterlik kısaltılmışı da orada).
 
 Sayılar oyundan geliyor: **257 bölüm, 806 yıldız, 22 karakter, 10 tema,
 6 rütbe.** Değişirlerse buradaki metinlerin hepsini güncelle. Yirmi üçüncü
