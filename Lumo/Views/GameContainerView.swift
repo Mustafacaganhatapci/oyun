@@ -33,6 +33,7 @@ struct GameContainerView: View {
         case collectIntro                               // hepsi toplanmadan kapı açılmaz
         case dwellIntro                                 // halkada oyalanma süresi
         case grandStarIntro                             // tek iri yıldız, dört eder
+        case extraLifeIntro                             // sonsuz modda kalpler
         case boundsIntro                                // "kaçırmak artık elenmek" tanıtımı
         case bonusIntro                                 // bonus turu ne demek
     }
@@ -42,7 +43,7 @@ struct GameContainerView: View {
             || coach == .slowTimeIntro || coach == .invertedIntro
             || coach == .upsideDownIntro || coach == .twoGatesIntro
             || coach == .collectIntro || coach == .dwellIntro
-            || coach == .grandStarIntro
+            || coach == .grandStarIntro || coach == .extraLifeIntro
             || coach == .boundsIntro || coach == .bonusIntro
     }
 
@@ -393,6 +394,18 @@ struct GameContainerView: View {
 
         case .endlessScore(let score):
             endlessScore = score
+            // Kalpleri SONSUZ MODUN İÇİNDE, ona gelince anlatıyoruz. Bölüm
+            // başındaki kartlar gibi baştan anlatmak işe yaramazdı: ilk kalp
+            // 12. halkada ve çoğu tur oraya varmadan bitiyor, yani anlatılan
+            // şey henüz görülmemiş bir şey olurdu.
+            //
+            // Bir alt halkada çıkıyor: oyuncu kartı kapatınca kalbi yukarıda
+            // görüyor ve ona nişan alabiliyor.
+            if score == GameScene.endlessLifeFirstRing - 1,
+               tutorial.shouldShow(.extraLife) {
+                scene?.coachFrozen = true
+                coach = .extraLifeIntro
+            }
 
         case .extraLifeGained(let total):
             // Halka üstündeki kalp: yıldız sesinden ayrı bir ödül olarak duyulsun
@@ -997,6 +1010,10 @@ struct GameContainerView: View {
             scene?.coachFrozen = false
             coach = nil
             tutorial.markShown(.grandStar)
+        case .extraLifeIntro:
+            scene?.coachFrozen = false
+            coach = nil
+            tutorial.markShown(.extraLife)
         case .boundsIntro:
             tutorial.markShown(.bounds)
             // Aynı bölüm süreliyse sıradaki kartı göster (dondurma sürsün)
@@ -1026,6 +1043,8 @@ struct GameContainerView: View {
         case .collectIntro: hint = .collect; color = settings.theme.gate.color
         case .dwellIntro: hint = .dwell; color = settings.theme.hazard.color
         case .grandStarIntro: hint = .grandStar; color = settings.theme.lumen.color
+        // Kalp kırmızı çiziliyor; kart da onunla aynı renkte
+        case .extraLifeIntro: hint = .extraLife; color = settings.theme.hazard.color
         case .boundsIntro: hint = .bounds; color = settings.theme.hazard.color
         default:           hint = .moving; color = settings.theme.accent.color
         }

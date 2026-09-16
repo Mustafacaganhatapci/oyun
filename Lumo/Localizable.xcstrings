@@ -398,6 +398,88 @@
         }
       }
     },
+    "A heart is waiting on a ring just above. Take it and one mistake stops being the end of the run — you get to carry on from where you fell. They keep coming every eight rings, you can hold three at once, and the ring carrying one never has a hazard on it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A heart is waiting on a ring just above. Take it and one mistake stops being the end of the run — you get to carry on from where you fell. They keep coming every eight rings, you can hold three at once, and the ring carrying one never has a hazard on it."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hemen yukarıdaki halkada bir kalp var. Onu alırsan bir hata turun sonu olmaktan çıkıyor — düştüğün yerden devam ediyorsun. Sekiz halkada bir geliyorlar, aynı anda üç tane taşıyabiliyorsun ve kalp taşıyan halkada asla tehlike yayı olmuyor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf dem Ring direkt darüber wartet ein Herz. Nimm es, und ein Fehler ist nicht mehr das Ende des Laufs — du machst dort weiter, wo du gefallen bist. Sie kommen alle acht Ringe, du kannst drei gleichzeitig halten, und der Ring mit einem Herz hat nie einen Gefahrenbogen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En el anillo de arriba te espera un corazón. Cógelo y un error deja de ser el final de la partida: sigues desde donde caíste. Aparecen cada ocho anillos, puedes llevar tres a la vez y el anillo que lleva uno nunca tiene peligro."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un cœur attend sur l’anneau juste au-dessus. Prends-le et une erreur cesse d’être la fin de la partie — tu repars d’où tu es tombé. Ils reviennent tous les huit anneaux, tu peux en porter trois à la fois, et l’anneau qui en porte un n’a jamais d’arc dangereux."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すぐ上のリングにハートが待っています。取れば、一度のミスがランの終わりではなくなり、落ちた場所から続けられます。8リングごとに現れ、同時に3つまで持てます。ハートのあるリングには危険な弧は決して置かれません。"
+          }
+        }
+      }
+    },
+    "A heart on the ring": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A heart on the ring"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halkanın üstünde bir kalp"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Herz auf dem Ring"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un corazón en el anillo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un cœur sur l’anneau"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リングの上にハート"
+          }
+        }
+      }
+    },
     "Ad": {
       "extractionState": "manual",
       "localizations": {

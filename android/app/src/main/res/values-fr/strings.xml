@@ -259,4 +259,6 @@
     <string name="hint_dwell_body">À partir de maintenant tu ne peux plus rester sur un anneau. Un arc qui rétrécit décompte, et son dernier tiers passe au rouge en guise d’avertissement. À la fin, la sphère part toute seule — elle ne te tue pas, mais elle choisit le moment à ta place.</string>
     <string name="hint_grand_star_title">Une grande étoile</string>
     <string name="hint_grand_star_body">Ce niveau a une grande étoile au lieu de trois petites, et elle en vaut quatre. Elle est volontairement à l’écart de la ligne facile : l’atteindre coûte un détour.</string>
+    <string name="hint_extra_life_title">Un cœur sur l’anneau</string>
+    <string name="hint_extra_life_body">Un cœur attend sur l’anneau juste au-dessus. Prends-le et une erreur cesse d’être la fin de la partie — tu repars d’où tu es tombé. Ils reviennent tous les huit anneaux, tu peux en porter trois à la fois, et l’anneau qui en porte un n’a jamais d’arc dangereux.</string>
 </resources>

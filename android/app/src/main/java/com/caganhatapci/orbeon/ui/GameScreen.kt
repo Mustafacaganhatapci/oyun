@@ -76,6 +76,7 @@ private enum class Coach {
     COLLECT_INTRO,                                  // hepsi toplanmadan kapı açılmaz
     DWELL_INTRO,                                    // halkada oyalanma süresi
     GRAND_STAR_INTRO,                               // tek iri yıldız, dört eder
+    EXTRA_LIFE_INTRO,                               // sonsuz modda kalpler
     BOUNDS_INTRO;                                   // "kaçırmak artık elenmek"
 
     val isBlocking get() = this == HAZARD_INTRO || this == MOVING_INTRO ||
@@ -83,7 +84,7 @@ private enum class Coach {
                            this == SLOW_TIME_INTRO || this == INVERTED_INTRO ||
                            this == UPSIDE_DOWN_INTRO || this == TWO_GATES_INTRO ||
                            this == COLLECT_INTRO || this == DWELL_INTRO ||
-                           this == GRAND_STAR_INTRO
+                           this == GRAND_STAR_INTRO || this == EXTRA_LIFE_INTRO
 }
 
 /** 3/3 yıldız için rastgele seçilen tebrik başlıkları */
@@ -300,7 +301,21 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             }
             is GameEvent.BonusTick -> bonusRemaining = event.remaining
             is GameEvent.TimeTick -> timeRemaining = event.remaining
-            is GameEvent.EndlessScore -> endlessScore = event.score
+            is GameEvent.EndlessScore -> {
+                endlessScore = event.score
+                // Kalpleri SONSUZ MODUN İÇİNDE, ona gelince anlatıyoruz. Mod
+                // başında anlatmak işe yaramazdı: ilk kalp 12. halkada ve çoğu
+                // tur oraya varmadan bitiyor, yani anlatılan şey henüz
+                // görülmemiş bir şey olurdu.
+                //
+                // Bir alt halkada çıkıyor: oyuncu kartı kapatınca kalbi
+                // yukarıda görüyor ve ona nişan alabiliyor.
+                if (event.score == GameEngine.ENDLESS_LIFE_FIRST_RING - 1 &&
+                    app.tutorial.shouldShow(TutorialStore.Step.EXTRA_LIFE)) {
+                    engine.coachFrozen = true
+                    coach = Coach.EXTRA_LIFE_INTRO
+                }
+            }
             is GameEvent.ExtraLifeUsed -> {
                 extraLives = event.remaining
                 app.audio.playLifeLost()
@@ -496,6 +511,10 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                                     engine.coachFrozen = false; coach = null
                                     app.tutorial.markShown(TutorialStore.Step.GRAND_STAR)
                                 }
+                                Coach.EXTRA_LIFE_INTRO -> {
+                                    engine.coachFrozen = false; coach = null
+                                    app.tutorial.markShown(TutorialStore.Step.EXTRA_LIFE)
+                                }
                                 Coach.BOUNDS_INTRO -> {
                                     app.tutorial.markShown(TutorialStore.Step.BOUNDS)
                                     val id = (playMode as? PlayMode.LevelPlay)?.id
@@ -679,6 +698,8 @@ private fun CoachIntroOverlay(step: Coach, theme: Theme, onDismiss: () -> Unit) 
             CoachCard("⏱", R.string.hint_dwell_title, R.string.hint_dwell_body)
         Coach.GRAND_STAR_INTRO ->
             CoachCard("★", R.string.hint_grand_star_title, R.string.hint_grand_star_body)
+        Coach.EXTRA_LIFE_INTRO ->
+            CoachCard("❤️", R.string.hint_extra_life_title, R.string.hint_extra_life_body)
         else -> CoachCard("🛑", R.string.hint_bounds_title, R.string.hint_bounds_body)
     }
     Box(

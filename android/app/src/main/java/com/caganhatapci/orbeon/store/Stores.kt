@@ -415,7 +415,7 @@ class TutorialStore(context: Context) {
 
     enum class Step { LAUNCH, GATE, HAZARD, MOVING, TIMED, BOUNDS, SLOW_TIME,
                       INVERTED, UPSIDE_DOWN, TWO_GATES,
-                      COLLECT, DWELL, GRAND_STAR }
+                      COLLECT, DWELL, GRAND_STAR, EXTRA_LIFE }
 
     private var shown by mutableStateOf(
         (p.getStringSet("tutorial.shown", emptySet()) ?: emptySet()).toSet()

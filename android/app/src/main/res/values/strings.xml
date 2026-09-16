@@ -259,4 +259,6 @@
     <string name="hint_dwell_body">From now on you cannot rest on a ring. A shrinking arc around it counts you down, and its last third turns red as a warning. When it runs out the orb launches itself — it does not kill you, but it chooses the moment instead of you.</string>
     <string name="hint_grand_star_title">One big star</string>
     <string name="hint_grand_star_body">This level has one big star instead of three small ones, and it is worth four. It sits off the easy line on purpose: reaching it costs you a detour.</string>
+    <string name="hint_extra_life_title">A heart on the ring</string>
+    <string name="hint_extra_life_body">A heart is waiting on a ring just above. Take it and one mistake stops being the end of the run — you get to carry on from where you fell. They keep coming every eight rings, you can hold three at once, and the ring carrying one never has a hazard on it.</string>
 </resources>

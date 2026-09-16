@@ -259,4 +259,6 @@
     <string name="hint_dwell_body">Ab jetzt kannst du auf einem Ring nicht mehr verweilen. Ein schrumpfender Bogen zählt herunter, sein letztes Drittel wird zur Warnung rot. Läuft er ab, startet die Kugel von selbst — sie tötet dich nicht, aber sie wählt den Moment statt dir.</string>
     <string name="hint_grand_star_title">Ein großer Stern</string>
     <string name="hint_grand_star_body">In diesem Level gibt es statt drei kleiner Sterne einen großen, und er zählt vier. Er liegt absichtlich abseits der bequemen Linie: Ihn zu erreichen kostet dich einen Umweg.</string>
+    <string name="hint_extra_life_title">Ein Herz auf dem Ring</string>
+    <string name="hint_extra_life_body">Auf dem Ring direkt darüber wartet ein Herz. Nimm es, und ein Fehler ist nicht mehr das Ende des Laufs — du machst dort weiter, wo du gefallen bist. Sie kommen alle acht Ringe, du kannst drei gleichzeitig halten, und der Ring mit einem Herz hat nie einen Gefahrenbogen.</string>
 </resources>
