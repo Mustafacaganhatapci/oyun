@@ -356,7 +356,12 @@ final class AdMobRewardedProvider: NSObject, RewardedProvider, FullScreenContent
         // üstünde durduğu için de ödül hiç verilmiyordu.
         rewarded = nil
         presenting = ad
-        DispatchQueue.main.async {
+        // `[weak self]` DIŞ blokta da yazılı olmalı: yalnızca içteki bloğa
+        // yazıldığında dış blok `self`'i örtük olarak GÜÇLÜ yakalıyor, yani
+        // içteki `weak` hiçbir şey yapmıyordu (derleyici de bunu uyarıyor).
+        // Zincir kapanmazsa sızıntı gerçek: self → presenting → reklam →
+        // ödül bloğu → self.
+        DispatchQueue.main.async { [weak self] in
             ad.present(from: root) { [weak self] in
                 self?.earned = true
             }

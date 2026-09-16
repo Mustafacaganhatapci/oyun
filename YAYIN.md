@@ -95,10 +95,43 @@ $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
 > Yol bulunamazsa: Xcode → File → Packages → **Resolve Package Versions**
 > çalıştır, sonra tekrar dene.
 
-**c. Doğrula**
+**c. User Script Sandboxing'i kapat — BU OLMADAN ÇALIŞMIYOR**
+
+Derlemede şu ikisini görürsen sebebi budur:
+
+```
+Sandbox: upload-symbols(…) deny(1) file-read-data …/Lumo.app/GoogleService-Info.plist
+Could not get GOOGLE_APP_ID in Google Services file from build environment
+```
+
+Xcode 15'ten beri derleme script'leri kum havuzunda çalışıyor ve kendi
+uygulamanın içindeki `GoogleService-Info.plist`'i bile okuyamıyor. Crashlytics
+script'i o dosyadan hangi Firebase projesine yükleyeceğini öğreniyor;
+okuyamayınca **hiçbir dSYM yüklenmiyor**.
+
+**Bunu repoda ben çevirdim** (`ENABLE_USER_SCRIPT_SANDBOXING = NO`, Debug ve
+Release). Sende hâlâ eskisi varsa `git pull` yeter; elle bakmak istersen
+**TARGETS → Lumo → Build Settings** → arama kutusuna `User Script Sandboxing`
+→ değeri **No** olmalı.
+
+> Bu, script'lerin kendi proje klasörünü okumasına izin veriyor; ağa ya da
+> sistemin geri kalanına yeni bir erişim açmıyor.
+
+**d. "Run script will be run during every build" uyarısı**
+
+Bu bir hata değil, Xcode'un tembelliği: aşamanın çıktı dosyası bildirilmediği
+için her derlemede çalışacağını söylüyor. Zaten her derlemede çalışması
+gerekiyor — her build yeni bir dSYM üretiyor.
+
+Run Script aşamasında **"Based on dependency analysis"** kutusunun işaretini
+kaldır. Uyarı susar, davranış değişmez.
+
+**e. Doğrula**
 
 Derle, uygulamayı bir kez aç ve kapat. Firebase konsolu → **Crashlytics** →
 birkaç dakika içinde "uygulamanız algılandı" ekranı geçmeli.
+
+Derleme kaydında `Sandbox: upload-symbols … deny` satırı **kalmamalı**.
 
 ---
 
