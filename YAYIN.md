@@ -32,8 +32,11 @@ Derleme geçtiyse **gerçek cihazda ⌘R** ve şunları bir kez gör:
 - [ ] Öğreticiyi baştan oyna (Ayarlar → Nasıl oynanır). **Dört altyazının
       dördü de** çıkmalı; üçüncüsünde kapı sönük durmalı, yıldızı alınca
       yanmalı.
-- [ ] **39. bölüm** — kırmızı tuzak kapı. Üstüne git: ölmelisin, bölüm
-      bitmemeli. Kart bir kez çıkmalı.
+- [ ] **39. bölüm** — kırmızı tuzak kapı. Önce bir iki yıldız topla, sonra
+      bilerek üstüne git: bölüm **baştan** kurulmalı ve **yıldız sayacı
+      sıfırlanmalı** (kapı da yeniden sönmeli). Kart bir kez çıkmalı.
+- [ ] **Süreli bir bölüm (Android)** — süreyi bilerek doldur: bölüm baştan
+      kurulmalı, yıldızlar geri gitmeli. Bu Android'de hiç yoktu.
 - [ ] **26. bölüm** — basılı tut, zaman yavaşlamalı; kürenin çevresinde
       dolum yayı görünmeli.
 - [ ] Herhangi bir bölüm: yıldız almadan kapıya git — açılmamalı.

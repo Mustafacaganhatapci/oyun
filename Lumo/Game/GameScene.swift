@@ -92,6 +92,15 @@ final class GameScene: SKScene {
     /// yıldız daha ekleyerek bölüm sınırsız sürede bitirilebiliyordu — süre
     /// kuralının hiçbir hükmü kalmıyordu.
     private var failedByTimeout = false
+    /// Bu ölüm TUZAK KAPI yüzünden mi oldu? Öyleyse bölüm baştan kurulur ve
+    /// toplanan yıldızlar geri gelir.
+    ///
+    /// Tuzak zaten öldürüyordu ama ceza sıradan bir ölümdü: küre başa dönüyor,
+    /// yıldızlar cepte kalıyordu. Yani kırmızı kapıya girmenin bedeli birkaç
+    /// saniyeydi. Oyuncunun ona uzaktan bakıp "acaba" demesi için bedelin
+    /// hissedilmesi gerekiyor — bu, oyundaki en sert ceza ve tuzak da oyundaki
+    /// en açık uyarı. İkisi birbirini hak ediyor.
+    private var failedByTrap = false
     /// Premium'un sonsuz modda tur başına kullanabildiği can hakkı
     private(set) var extraLives = 0
     private weak var gateDashed: SKShapeNode?
@@ -1562,6 +1571,7 @@ final class GameScene: SKScene {
             // halkanın ÜSTÜNDE olması, bunun ise halkanın KENDİSİ olması.
             if ringSpecs[i].isTrapGate {
                 orbNode.position = ringCenter(i, at: elapsed)
+                failedByTrap = true
                 fail()
                 return
             }
@@ -1754,12 +1764,14 @@ final class GameScene: SKScene {
         onEvent?(.gateUnlocked)
     }
 
-    /// Topla-bitir bölümünde ölüm: bölüm sıfırdan kurulur, toplanan bütün
-    /// lumenler geri gelir. Yarım kalmış bir turu kurtarmak yok — baştan.
+    /// Bölüm sıfırdan kurulur, toplanan bütün lumenler geri gelir. Yarım
+    /// kalmış bir turu kurtarmak yok — baştan. Üç yoldan buraya geliniyor:
+    /// topla-bitir bölümünde ölüm, sürenin dolması ve tuzak kapı.
     private func restartLevel() {
         deadSince = nil
         combo = 0
         failedByTimeout = false
+        failedByTrap = false
         finished = false
         orbNode.isHidden = false
 
@@ -1954,13 +1966,14 @@ final class GameScene: SKScene {
 
     /// Ölümden sonra nereden devam edilecek.
     ///
-    /// Topla-bitir bölümü ve SÜRE DOLMASI bölümü baştan kurar — ikisinde de
-    /// oyuncunun elindeki ilerleme kuralın kendisi olduğu için, yalnızca küreyi
-    /// geri koymak kuralı boşa çıkarırdı. Gerisinde küre başa döner, toplanan
-    /// yıldızlar durur.
+    /// Topla-bitir bölümü, SÜRE DOLMASI ve TUZAK KAPI bölümü baştan kurar.
+    /// Üçünde de oyuncunun elindeki ilerleme kuralın kendisi olduğu için,
+    /// yalnızca küreyi geri koymak kuralı boşa çıkarırdı. Gerisinde küre başa
+    /// döner, toplanan yıldızlar durur.
     private func resumeAfterDeath() {
-        let restart = restartsOnDeath || failedByTimeout
+        let restart = restartsOnDeath || failedByTimeout || failedByTrap
         failedByTimeout = false
+        failedByTrap = false
         restart ? restartLevel() : respawn(animated: true)
     }
 

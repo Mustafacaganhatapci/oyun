@@ -248,7 +248,7 @@
     <string name="hint_upside_down_title">すべてさかさま</string>
     <string name="hint_upside_down_body">このレベルはさかさまに作られています。オーブは上から始まり、ゲートは下にあります。変わるのは慣れた向きだけです。</string>
     <string name="hint_two_gates_title">このゲートのひとつは死を招く</string>
-    <string name="hint_two_gates_body">道の脇に2つ目のゲートがあり、それは赤です。出口のように見えますが違います。触れれば挑戦は終わりです。赤は最初のレベルからずっと一つのことを意味してきました。ここでも同じです。レベルを終わらせるのは緑のゲートだけです。</string>
+    <string name="hint_two_gates_body">道の脇に2つ目のゲートがあり、それは赤です。出口のように見えますが違います。触れるとレベルの最初に戻され、集めたスターもすべて戻ります。赤は最初のレベルからずっと一つのことを意味してきました。ここでも同じです。レベルを終わらせるのは緑のゲートだけです。</string>
     <string name="tut_caption_freely">好きなだけ跳んでいい。制限も急ぐ必要もありません</string>
     <string name="tut_caption_stars">黄色いスターで新キャラが解放されます。最低1つ取ってください — それまでゲートは閉じたままです</string>
     <string name="tut_caption_gate">緑のゲートに着けばレベルクリアです</string>

@@ -154,6 +154,35 @@ class GameEngine(
      */
     private var gateOpenAnnounced = false
     private var restartsOnDeath = false
+    /**
+     * Bu ölüm SÜRE dolduğu için mi oldu? Öyleyse bölüm baştan kurulur.
+     *
+     * iOS'ta vardı, Android'de YOKTU. Süreli bölümde yalnızca küre başa
+     * dönüyor, toplanan yıldızlar duruyordu: yani süreyi bilerek doldurup her
+     * denemede birkaç yıldız daha ekleyerek bölüm sınırsız sürede
+     * bitirilebiliyordu. Süre kuralının hiçbir hükmü kalmıyordu.
+     */
+    private var failedByTimeout = false
+    /**
+     * Bu ölüm TUZAK KAPI yüzünden mi oldu? Öyleyse bölüm baştan kurulur ve
+     * toplanan yıldızlar geri gelir.
+     *
+     * Tuzak zaten öldürüyordu ama ceza sıradan bir ölümdü: küre başa dönüyor,
+     * yıldızlar cepte kalıyordu. Yani kırmızı kapıya girmenin bedeli birkaç
+     * saniyeydi. Oyuncunun ona uzaktan bakıp "acaba" demesi için bedelin
+     * hissedilmesi gerekiyor — bu, oyundaki en sert ceza ve tuzak da oyundaki
+     * en açık uyarı. İkisi birbirini hak ediyor.
+     */
+    private var failedByTrap = false
+
+    /**
+     * Ölümden sonra bölüm baştan mı kurulacak? Üç yol: topla-bitir bölümü,
+     * sürenin dolması ve tuzak kapı. Üçünde de oyuncunun elindeki ilerleme
+     * kuralın kendisi olduğu için, yalnızca küreyi geri koymak kuralı boşa
+     * çıkarırdı.
+     */
+    private val shouldRestartAfterDeath: Boolean
+        get() = restartsOnDeath || failedByTimeout || failedByTrap
     private var lumenSpecs: List<LumenSpec> = emptyList()
     /** Kilitli kapı sönük çizilsin diye tuvalin okuduğu bayrak */
     val gateLocked: Boolean get() = gateStartsLocked && !gateOpen
@@ -421,7 +450,7 @@ class GameEngine(
                 // Güvenlik ağı: yeniden doğma gecikirse dokunuş canlandırır
                 val since = deadSince
                 if (since != null && elapsed - since > 0.9 && mode !is GameMode.Endless) {
-                    if (restartsOnDeath) restartLevel() else respawn()
+                    if (shouldRestartAfterDeath) restartLevel() else respawn()
                 }
             }
             else -> Unit
@@ -482,7 +511,11 @@ class GameEngine(
                         lastTimeTickSent = remaining
                         onEvent?.invoke(GameEvent.TimeTick(remaining))
                     }
-                    if (elapsed >= deadline) fail()   // süre doldu — deneme yandı
+                    if (elapsed >= deadline) {
+                        // Süre doldu: deneme yandı VE bölüm baştan kurulacak
+                        failedByTimeout = true
+                        fail()
+                    }
                 }
             }
         }
@@ -559,7 +592,7 @@ class GameEngine(
                             onEvent?.invoke(GameEvent.EndlessGameOver(endlessScore))
                         }
                     } else if (!finished) {
-                        if (restartsOnDeath) restartLevel() else respawn()
+                        if (shouldRestartAfterDeath) restartLevel() else respawn()
                     }
                 }
             }
@@ -600,6 +633,7 @@ class GameEngine(
             if (ringSpecs[i].isTrapGate) {
                 val (tcx, tcy) = ringCenter(i)
                 orbX = tcx; orbY = tcy
+                failedByTrap = true
                 fail()
                 return
             }
@@ -909,6 +943,10 @@ class GameEngine(
     }
 
     private fun respawn() {
+        // Bayraklar burada da temizleniyor: bir sonraki ölüm kendi sebebini
+        // taşımalı, öncekinin sebebini değil
+        failedByTimeout = false
+        failedByTrap = false
         if (ringSpecs.isEmpty() || finished) return
         val start = level?.startRing ?: 0
         deadSince = null
@@ -935,6 +973,8 @@ class GameEngine(
     private fun restartLevel() {
         deadSince = null
         combo = 0
+        failedByTimeout = false
+        failedByTrap = false
         finished = false
         orbVisible = true
         lumenCollected = BooleanArray(lumenSpecs.size)

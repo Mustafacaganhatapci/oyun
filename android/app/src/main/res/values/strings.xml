@@ -248,7 +248,7 @@
     <string name="hint_upside_down_title">Everything is upside down</string>
     <string name="hint_upside_down_body">This level is built upside down: the orb starts at the top and the gate is at the bottom. Nothing else changes — only the direction you are used to.</string>
     <string name="hint_two_gates_title">One of these gates kills</string>
-    <string name="hint_two_gates_body">There is a second gate beside the path, and it is RED. It looks like a way out and it is not — touching it ends the attempt. Red has meant one thing since the very first level, and it still does here. Only the green gate finishes the level.</string>
+    <string name="hint_two_gates_body">There is a second gate beside the path, and it is RED. It looks like a way out and it is not — touching it throws you back to the start of the level and every star you had collected goes back too. Red has meant one thing since the very first level, and it still does here. Only the green gate finishes the level.</string>
     <string name="tut_caption_freely">Hop as often as you like. There's no limit and no hurry</string>
     <string name="tut_caption_stars">Yellow stars unlock new characters. Grab at least one — the gate stays shut until you do</string>
     <string name="tut_caption_gate">Reach the green gate to finish the level</string>

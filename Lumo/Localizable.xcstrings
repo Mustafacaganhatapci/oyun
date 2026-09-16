@@ -9521,43 +9521,43 @@
         }
       }
     },
-    "There is a second gate beside the path, and it is RED. It looks like a way out and it is not — touching it ends the attempt. Red has meant one thing since the very first level, and it still does here. Only the green gate finishes the level.": {
+    "There is a second gate beside the path, and it is RED. It looks like a way out and it is not — touching it throws you back to the start of the level and every star you had collected goes back too. Red has meant one thing since the very first level, and it still does here. Only the green gate finishes the level.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "There is a second gate beside the path, and it is RED. It looks like a way out and it is not — touching it ends the attempt. Red has meant one thing since the very first level, and it still does here. Only the green gate finishes the level."
+            "value": "There is a second gate beside the path, and it is RED. It looks like a way out and it is not — touching it throws you back to the start of the level and every star you had collected goes back too. Red has meant one thing since the very first level, and it still does here. Only the green gate finishes the level."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yolun yanında ikinci bir kapı var ve KIRMIZI. Çıkış gibi duruyor ama değil — dokunmak denemeyi bitiriyor. Kırmızı ilk bölümden beri tek bir şey demek, burada da aynı şeyi diyor. Bölümü yalnızca yeşil kapı bitiriyor."
+            "value": "Yolun yanında ikinci bir kapı var ve KIRMIZI. Çıkış gibi duruyor ama değil — dokunmak seni bölümün başına atıyor ve topladığın bütün yıldızlar da geri gidiyor. Kırmızı ilk bölümden beri tek bir şey demek, burada da aynı şeyi diyor. Bölümü yalnızca yeşil kapı bitiriyor."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Neben dem Weg steht ein zweites Tor, und es ist ROT. Es sieht aus wie ein Ausgang und ist keiner — es zu berühren beendet den Versuch. Rot bedeutet seit dem allerersten Level eine Sache, und hier ebenso. Nur das grüne Tor beendet das Level."
+            "value": "Neben dem Weg steht ein zweites Tor, und es ist ROT. Es sieht aus wie ein Ausgang und ist keiner — es zu berühren wirft dich an den Anfang des Levels zurück, und jeder gesammelte Stern geht ebenfalls zurück. Rot bedeutet seit dem allerersten Level eine Sache, und hier ebenso. Nur das grüne Tor beendet das Level."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hay una segunda puerta junto al camino, y es ROJA. Parece una salida pero no lo es: tocarla acaba el intento. El rojo ha significado una sola cosa desde el primer nivel, y aquí también. Solo la puerta verde completa el nivel."
+            "value": "Hay una segunda puerta junto al camino, y es ROJA. Parece una salida pero no lo es: tocarla te devuelve al principio del nivel y todas las estrellas que habías recogido vuelven también. El rojo ha significado una sola cosa desde el primer nivel, y aquí también. Solo la puerta verde completa el nivel."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Il y a une seconde porte à côté du chemin, et elle est ROUGE. Elle ressemble à une sortie sans en être une — la toucher met fin à l’essai. Le rouge veut dire la même chose depuis le tout premier niveau, et ici aussi. Seule la porte verte termine le niveau."
+            "value": "Il y a une seconde porte à côté du chemin, et elle est ROUGE. Elle ressemble à une sortie sans en être une — la toucher te renvoie au début du niveau et toutes les étoiles ramassées repartent avec. Le rouge veut dire la même chose depuis le tout premier niveau, et ici aussi. Seule la porte verte termine le niveau."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "道の脇に2つ目のゲートがあり、それは赤です。出口のように見えますが違います。触れれば挑戦は終わりです。赤は最初のレベルからずっと一つのことを意味してきました。ここでも同じです。レベルを終わらせるのは緑のゲートだけです。"
+            "value": "道の脇に2つ目のゲートがあり、それは赤です。出口のように見えますが違います。触れるとレベルの最初に戻され、集めたスターもすべて戻ります。赤は最初のレベルからずっと一つのことを意味してきました。ここでも同じです。レベルを終わらせるのは緑のゲートだけです。"
           }
         }
       }

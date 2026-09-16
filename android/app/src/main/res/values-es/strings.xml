@@ -248,7 +248,7 @@
     <string name="hint_upside_down_title">Todo está del revés</string>
     <string name="hint_upside_down_body">Este nivel está del revés: la esfera empieza arriba y la puerta está abajo. No cambia nada más, solo la dirección a la que estás acostumbrado.</string>
     <string name="hint_two_gates_title">Una de estas puertas mata</string>
-    <string name="hint_two_gates_body">Hay una segunda puerta junto al camino, y es ROJA. Parece una salida pero no lo es: tocarla acaba el intento. El rojo ha significado una sola cosa desde el primer nivel, y aquí también. Solo la puerta verde completa el nivel.</string>
+    <string name="hint_two_gates_body">Hay una segunda puerta junto al camino, y es ROJA. Parece una salida pero no lo es: tocarla te devuelve al principio del nivel y todas las estrellas que habías recogido vuelven también. El rojo ha significado una sola cosa desde el primer nivel, y aquí también. Solo la puerta verde completa el nivel.</string>
     <string name="tut_caption_freely">Salta tantas veces como quieras. Sin límite y sin prisa</string>
     <string name="tut_caption_stars">Las estrellas amarillas desbloquean personajes. Coge al menos una: la puerta sigue cerrada hasta entonces</string>
     <string name="tut_caption_gate">Llega a la puerta verde para completar el nivel</string>

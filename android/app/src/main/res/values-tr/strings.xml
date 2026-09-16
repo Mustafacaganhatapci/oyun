@@ -248,7 +248,7 @@
     <string name="hint_upside_down_title">Her şey baş aşağı</string>
     <string name="hint_upside_down_body">Bu bölüm baş aşağı kuruldu: küre yukarıda başlıyor, kapı aşağıda. Başka hiçbir şey değişmiyor — yalnızca alıştığın yön.</string>
     <string name="hint_two_gates_title">Bu kapılardan biri öldürüyor</string>
-    <string name="hint_two_gates_body">Yolun yanında ikinci bir kapı var ve KIRMIZI. Çıkış gibi duruyor ama değil — dokunmak denemeyi bitiriyor. Kırmızı ilk bölümden beri tek bir şey demek, burada da aynı şeyi diyor. Bölümü yalnızca yeşil kapı bitiriyor.</string>
+    <string name="hint_two_gates_body">Yolun yanında ikinci bir kapı var ve KIRMIZI. Çıkış gibi duruyor ama değil — dokunmak seni bölümün başına atıyor ve topladığın bütün yıldızlar da geri gidiyor. Kırmızı ilk bölümden beri tek bir şey demek, burada da aynı şeyi diyor. Bölümü yalnızca yeşil kapı bitiriyor.</string>
     <string name="tut_caption_freely">İstediğin kadar atla. Sınır da yok acele de</string>
     <string name="tut_caption_stars">Sarı yıldızlar yeni karakterler açıyor. En az birini al — kapı sen alana kadar kapalı kalıyor</string>
     <string name="tut_caption_gate">Bölümü bitirmek için yeşil kapıya ulaş</string>
