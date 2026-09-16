@@ -9,13 +9,21 @@ Sayılar değişmedi: **257 bölüm, 806 yıldız, 22 karakter, 10 tema, 6 rütb
 Ekran görüntüleri 2.2'dekiler geçerli — bu sürümde arayüz değişmedi, bölüm
 kuralları değişti.
 
+> **Kırmızı kapı EN BAŞTA yazıyor, bilerek.** Eski oyuncu beyaz kapıyı
+> "kısa yol" diye öğrendi; aynı yerde artık ölüyor. Bunu sürüm notunun
+> ortasına gömmek, oyuncunun onu ölerek öğrenmesi demek.
+
 ---
 
 ## App Store — Yenilikler
 
-### Türkçe (1034)
+### Türkçe (1589)
 ```
 Bu sürümün konusu bölümlerin kendisi.
+
+KIRMIZI KAPIYA DOKUNMA
+• Bazı bölümlerde yolun yanında ikinci bir kapı var ve kırmızı. Çıkış gibi duruyor ama değil — dokunmak denemeyi bitiriyor.
+• Eskiden beyazdı ve "buradan da çıkabilirsin, ama daha az yıldızla" demeye çalışıyordu. Kimse anlamadı.
 
 ZAMANIN YAVAŞLADIĞI BÖLÜMLER
 • 37 bölümde küreye basılı tutunca zaman ağırlaşıyor, bırakınca küre fırlıyor.
@@ -23,13 +31,16 @@ ZAMANIN YAVAŞLADIĞI BÖLÜMLER
 • Bu bölümler bilerek daha zor: halkalar daha hızlı, daha çok hareketli halka.
 
 ÜÇ ÇEŞİT ARTIK KAMPANYANIN TAMAMINDA
-• Baş aşağı bölümler 25'ten, iki çıkışlı bölümler 35'ten, renkleri ters bölümler 45'ten itibaren çıkıyor.
+• Baş aşağı bölümler 25'ten, tuzak kapılı bölümler 35'ten, renkleri ters bölümler 45'ten itibaren çıkıyor.
 • Eskiden üçü de yalnızca 150'den sonra vardı; oyuncuların çoğu hiçbirini görmüyordu.
-• Altısı da ilk karşılaşmada bir kez anlatılıyor.
 
 KAPI ARTIK BEDAVA AÇILMIYOR
 • En az bir yıldız toplanmadan kapı açılmıyor. Kilitliyken sönük ve asma kilitli duruyor.
 • Yıldızları atlayıp doğrudan kapıya gitmek bölümü geçmiyor artık.
+
+ARTIK HER KURAL ANLATILIYOR
+• Öğretici uzadı: dört adımın dördü de okunuyor artık, eskiden yarısı hiç çıkmıyordu.
+• Topla-bitir bölümlerinde ölünce bölümün baştan başladığı, halkada oyalanınca kürenin kendiliğinden fırladığı, dev yıldızın dört ettiği ve sonsuz moddaki kalplerin ne işe yaradığı — hiçbiri yazmıyordu, artık hepsi bir kez anlatılıyor.
 
 BİLDİRİMLER
 • İlk açılışta bir kez soruluyor: ne göndereceğimiz yazılı, istediğin an kapatabiliyorsun.
@@ -38,9 +49,13 @@ BİLDİRİMLER
 Kazandığın yıldızlar ve bitirdiğin bölümler yerinde duruyor.
 ```
 
-### English (1028)
+### English (1621)
 ```
 This one is about the levels themselves.
+
+DO NOT TOUCH THE RED GATE
+• Some levels have a second gate beside the path, and it is red. It looks like a way out and it is not — touching it ends the attempt.
+• It used to be white, trying to say "you can leave here, but with fewer stars". Nobody read it that way.
 
 LEVELS WHERE TIME SLOWS
 • In 37 levels, hold the orb and time slows to a crawl. Let go and it launches.
@@ -48,13 +63,16 @@ LEVELS WHERE TIME SLOWS
 • These levels are deliberately harder — faster rings, more of them drifting.
 
 THREE TWISTS NOW SPAN THE WHOLE CAMPAIGN
-• Upside-down levels from 25, two-exit levels from 35, inverted-colour levels from 45.
+• Upside-down levels from 25, trap-gate levels from 35, inverted-colour levels from 45.
 • All three used to live only past level 150, so most players never met them.
-• Each one is explained once, the first time you meet it.
 
 THE GATE IS NO LONGER FREE
 • The gate stays locked until you collect at least one star, and looks it.
 • Skipping the stars and heading straight for the gate no longer clears the level.
+
+EVERY RULE IS EXPLAINED NOW
+• The tutorial is longer: all four of its steps actually get read — half of them never appeared before.
+• That collect rounds restart from scratch when you fall, that lingering on a ring launches you by itself, that the giant star is worth four, and what the hearts in endless mode do — none of it was written down anywhere. Each is explained once now.
 
 NOTIFICATIONS
 • Asked once, on first launch — it says exactly what we send, and you can turn it off any time.
@@ -63,9 +81,13 @@ NOTIFICATIONS
 Your stars and finished levels stay exactly where they are.
 ```
 
-### Español (1076)
+### Español (1662)
 ```
 Esta versión trata de los niveles.
+
+NO TOQUES LA PUERTA ROJA
+• Algunos niveles tienen una segunda puerta junto al camino, y es roja. Parece una salida pero no lo es: tocarla acaba el intento.
+• Antes era blanca e intentaba decir "puedes salir por aquí, pero con menos estrellas". Nadie lo entendió así.
 
 NIVELES DONDE EL TIEMPO SE RALENTIZA
 • En 37 niveles, mantén pulsada la esfera y el tiempo se ralentiza. Al soltar, sale disparada.
@@ -73,13 +95,16 @@ NIVELES DONDE EL TIEMPO SE RALENTIZA
 • Estos niveles son más difíciles a propósito: anillos más rápidos y más en movimiento.
 
 TRES VARIANTES AHORA EN TODA LA CAMPAÑA
-• Niveles del revés desde el 25, de dos salidas desde el 35, de colores invertidos desde el 45.
+• Niveles del revés desde el 25, con puerta trampa desde el 35, de colores invertidos desde el 45.
 • Antes solo aparecían después del nivel 150 y la mayoría nunca los veía.
-• Cada una se explica una vez, la primera vez que aparece.
 
 LA PUERTA YA NO ES GRATIS
 • La puerta permanece cerrada hasta recoger al menos una estrella, y se nota.
 • Saltarse las estrellas e ir directo a la puerta ya no completa el nivel.
+
+AHORA SE EXPLICA CADA REGLA
+• El tutorial es más largo: sus cuatro pasos se leen de verdad; antes la mitad no aparecía nunca.
+• Que las rondas de recolección se reinicien al caer, que quedarse en un anillo te lance solo, que la estrella gigante valga cuatro y para qué sirven los corazones del modo infinito: nada de eso estaba escrito. Ahora se explica una vez cada cosa.
 
 NOTIFICACIONES
 • Se preguntan una vez, al empezar: dice exactamente qué enviamos y puedes desactivarlas cuando quieras.
@@ -92,28 +117,32 @@ Tus estrellas y niveles completados siguen donde estaban.
 
 ## Play Console — Yenilikler (en fazla 500 karakter)
 
-**Türkçe (329)**
+**Türkçe (352)**
 ```
-37 bölümde küreye basılı tutunca zaman yavaşlıyor. Bırakınca küre fırlıyor.
+Yolun yanındaki ikinci kapı artık KIRMIZI ve öldürüyor. Çıkış gibi duruyor ama değil.
 
-Baş aşağı, iki çıkışlı ve renkleri ters bölümler artık kampanyanın tamamında — eskiden yalnızca 150'den sonra vardı.
+37 bölümde küreye basılı tutunca zaman yavaşlıyor.
+
+Baş aşağı, tuzak kapılı ve renkleri ters bölümler artık kampanyanın tamamında.
 
 Kapı en az bir yıldız toplanmadan açılmıyor.
 
-Bildirimler ilk açılışta bir kez soruluyor.
+Öğretici uzadı; anlatılmayan her kural artık bir kez anlatılıyor.
 
-Yıldızların ve bitirdiğin bölümler yerinde.
+Yıldızların yerinde.
 ```
 
-**English (351)**
+**English (402)**
 ```
-In 37 levels, hold the orb and time slows down. Let go and it launches.
+The second gate beside the path is now RED and it kills. It looks like a way out and it is not.
 
-Upside-down, two-exit and inverted-colour levels now span the whole campaign — they used to live only past level 150.
+In 37 levels, hold the orb and time slows down.
+
+Upside-down, trap-gate and inverted-colour levels now span the whole campaign.
 
 The gate stays locked until you collect at least one star.
 
-Notifications are asked once, on first launch.
+The tutorial is longer, and every rule that went unexplained is now explained once.
 
-Your stars and finished levels stay where they are.
+Your stars stay where they are.
 ```
