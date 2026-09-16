@@ -69,12 +69,24 @@ Phase**. Adı önemli değil. İçine tek satır:
 "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
 ```
 
-Altındaki **Input Files** bölümüne **+** ile iki satır:
+Altındaki **Input Files** bölümüne **+** ile **İKİ AYRI SATIR** ekle. Yani
+**+**'ya iki kez basıyorsun; aşağıdaki metni tek satıra yapıştırma.
+
+1\. satır (dSYM):
 
 ```
 ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
+```
+
+2\. satır (Info.plist) — **`$(SRCROOT)/` yalnızca bu satırda var**:
+
+```
 $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
 ```
+
+> İkisi birleşip `$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/...` olursa dSYM yolu
+> yanlış yeri gösterir ve aşama sessizce işe yaramaz. Bitince Input Files
+> kutusunda **iki satır** görünmeli.
 
 > Bu aşama, çökme yığın izlerini okunabilir hâle getiren dSYM dosyasını
 > Firebase'e yüklüyor. Olmazsa çökmeler yine toplanır ama "0x1043f2a8"
