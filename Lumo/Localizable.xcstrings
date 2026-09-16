@@ -6239,6 +6239,88 @@
         }
       }
     },
+    "One gate is a trap": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One gate is a trap"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapılardan biri tuzak"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Tor ist eine Falle"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una puerta es una trampa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une porte est un piège"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲートのひとつは罠"
+          }
+        }
+      }
+    },
+    "One of these gates kills": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One of these gates kills"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kapılardan biri öldürüyor"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eines dieser Tore tötet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una de estas puertas mata"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une de ces portes tue"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このゲートのひとつは死を招く"
+          }
+        }
+      }
+    },
     "One run is enough to take a place on the board.": {
       "extractionState": "manual",
       "localizations": {
@@ -9439,84 +9521,43 @@
         }
       }
     },
-    "There are two ways out": {
+    "There is a second gate beside the path, and it is RED. It looks like a way out and it is not — touching it ends the attempt. Red has meant one thing since the very first level, and it still does here. Only the green gate finishes the level.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "There are two ways out"
+            "value": "There is a second gate beside the path, and it is RED. It looks like a way out and it is not — touching it ends the attempt. Red has meant one thing since the very first level, and it still does here. Only the green gate finishes the level."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "İki çıkış var"
+            "value": "Yolun yanında ikinci bir kapı var ve KIRMIZI. Çıkış gibi duruyor ama değil — dokunmak denemeyi bitiriyor. Kırmızı ilk bölümden beri tek bir şey demek, burada da aynı şeyi diyor. Bölümü yalnızca yeşil kapı bitiriyor."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Es gibt zwei Ausgänge"
+            "value": "Neben dem Weg steht ein zweites Tor, und es ist ROT. Es sieht aus wie ein Ausgang und ist keiner — es zu berühren beendet den Versuch. Rot bedeutet seit dem allerersten Level eine Sache, und hier ebenso. Nur das grüne Tor beendet das Level."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hay dos salidas"
+            "value": "Hay una segunda puerta junto al camino, y es ROJA. Parece una salida pero no lo es: tocarla acaba el intento. El rojo ha significado una sola cosa desde el primer nivel, y aquí también. Solo la puerta verde completa el nivel."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Il y a deux sorties"
+            "value": "Il y a une seconde porte à côté du chemin, et elle est ROUGE. Elle ressemble à une sortie sans en être une — la toucher met fin à l’essai. Le rouge veut dire la même chose depuis le tout premier niveau, et ici aussi. Seule la porte verte termine le niveau."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "出口はふたつ"
-          }
-        }
-      }
-    },
-    "There is a second, white gate beside the path. It finishes the level right away — but the stars past it stay behind. The green gate is the longer way and the richer one.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "There is a second, white gate beside the path. It finishes the level right away — but the stars past it stay behind. The green gate is the longer way and the richer one."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yolun yanında ikinci, beyaz bir kapı var. Bölümü hemen bitiriyor — ama arkasındaki yıldızlar orada kalıyor. Yeşil kapı daha uzun yol ve daha zengin olan."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neben dem Weg steht ein zweites, weißes Tor. Es beendet das Level sofort — aber die Sterne dahinter bleiben liegen. Das grüne Tor ist der längere und der reichere Weg."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hay una segunda puerta blanca junto al camino. Termina el nivel de inmediato, pero las estrellas que quedan detrás se quedan ahí. La puerta verde es el camino más largo y el más rico."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Il y a une seconde porte, blanche, à côté du chemin. Elle termine le niveau tout de suite — mais les étoiles au-delà restent là. La porte verte est le chemin le plus long et le plus riche."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "道の脇に2つ目の白いゲートがあります。すぐにレベルを終えられますが、その先のスターは残ったままです。緑のゲートは長い道、そして実り多い道です。"
+            "value": "道の脇に2つ目のゲートがあり、それは赤です。出口のように見えますが違います。触れれば挑戦は終わりです。赤は最初のレベルからずっと一つのことを意味してきました。ここでも同じです。レベルを終わらせるのは緑のゲートだけです。"
           }
         }
       }
@@ -10125,41 +10166,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "新しいモードが2つ"
-          }
-        }
-      }
-    },
-    "Two ways out": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zwei Ausgänge"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dos salidas"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deux sorties"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "出口はふたつ"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İki çıkış var"
           }
         }
       }

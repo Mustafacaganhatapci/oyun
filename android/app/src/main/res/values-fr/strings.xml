@@ -232,7 +232,6 @@
     <string name="all_rights_reserved">Tous droits réservés</string>
     <string name="rule_white_burns">Ici le blanc brûle</string>
     <string name="rule_upside_down">À l\'envers</string>
-    <string name="rule_two_ways_out">Deux sorties</string>
     <string name="rule_collect_every_star">Ramasse toutes les étoiles</string>
     <string name="rule_beat_the_clock">Bats le chrono</string>
     <string name="rule_giant_star">Étoile géante</string>
@@ -248,8 +247,8 @@
     <string name="hint_inverted_body">Dans ce niveau les couleurs sont inversées. L’anneau lui-même est rouge et inoffensif — c’est l’arc BLANC qui te brûle désormais. Tout ce que tu as appris sur le rouge ne s’applique pas ici.</string>
     <string name="hint_upside_down_title">Tout est à l’envers</string>
     <string name="hint_upside_down_body">Ce niveau est construit à l’envers : la sphère démarre en haut et la porte est en bas. Rien d’autre ne change — seulement le sens auquel tu es habitué.</string>
-    <string name="hint_two_gates_title">Il y a deux sorties</string>
-    <string name="hint_two_gates_body">Il y a une seconde porte, blanche, à côté du chemin. Elle termine le niveau tout de suite — mais les étoiles au-delà restent là. La porte verte est le chemin le plus long et le plus riche.</string>
+    <string name="hint_two_gates_title">Une de ces portes tue</string>
+    <string name="hint_two_gates_body">Il y a une seconde porte à côté du chemin, et elle est ROUGE. Elle ressemble à une sortie sans en être une — la toucher met fin à l’essai. Le rouge veut dire la même chose depuis le tout premier niveau, et ici aussi. Seule la porte verte termine le niveau.</string>
     <string name="tut_caption_freely">Saute autant que tu veux. Aucune limite, aucune hâte</string>
     <string name="tut_caption_stars">Les étoiles jaunes débloquent des personnages. Prends-en au moins une — la porte reste fermée sinon</string>
     <string name="tut_caption_gate">Atteins la porte verte pour terminer le niveau</string>
@@ -261,4 +260,5 @@
     <string name="hint_grand_star_body">Ce niveau a une grande étoile au lieu de trois petites, et elle en vaut quatre. Elle est volontairement à l’écart de la ligne facile : l’atteindre coûte un détour.</string>
     <string name="hint_extra_life_title">Un cœur sur l’anneau</string>
     <string name="hint_extra_life_body">Un cœur attend sur l’anneau juste au-dessus. Prends-le et une erreur cesse d’être la fin de la partie — tu repars d’où tu es tombé. Ils reviennent tous les huit anneaux, tu peux en porter trois à la fois, et l’anneau qui en porte un n’a jamais d’arc dangereux.</string>
+    <string name="rule_trap_gate">Une porte est un piège</string>
 </resources>

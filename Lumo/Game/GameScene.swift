@@ -834,20 +834,28 @@ final class GameScene: SKScene {
         // tam da ayırt edilemeyen renk; orada temanın güvenli kapı rengi kalır
         var gateColor = (isTutorial && !theme.isColorBlindSafe)
             ? UIColor.systemGreen : theme.gate.uiColor
-        // Kaçış kapısı BEYAZ: yeşil kapı "bölümün sonu", beyaz kapı "buradan
-        // da çıkabilirsin". İkisi aynı renk olsaydı seçim diye bir şey
-        // kalmaz, oyuncu yakın olana gider ve farkı hiç görmezdi.
-        if spec.isShortcutGate { gateColor = .white }
+        // TUZAK kapı KIRMIZI. Eskiden beyazdı ve "buradan da çıkabilirsin ama
+        // daha az yıldızla" demeye çalışıyordu — anlaşılmıyordu. Kırmızının
+        // açıklamaya ihtiyacı yok: bu oyunda kırmızı iki yüz bölümdür tek bir
+        // şey söylüyor, dokunma.
+        if spec.isTrapGate { gateColor = theme.hazard.uiColor }
+
+        // Tuzak kapı KAPI DEĞİL (`isGate` false) ama kapı GİBİ çiziliyor:
+        // kesikli dış çember, hâle, aynı silüet. Tuzağın işi zaten benzemek;
+        // benzemezse tuzak olmaz, yalnızca kırmızı bir halka olur.
+        let looksLikeGate = spec.isGate || spec.isTrapGate
 
         // Kapı, şartı karşılanana kadar sönük durur — "buraya gelmek
         // yetmiyor" bilgisi renkten okunsun. Tek uyarı bu: kilidin sebebini
         // yazıyla anlatmak yerine kapının kendisi söylüyor.
+        // Tuzak asla sönük değil: kilitli görünen bir kapı "henüz değil"
+        // diyor, oysa bunun cevabı hiçbir zaman.
         let locked = spec.isGate && gateStartsLocked
 
         let circle = SKShapeNode(circleOfRadius: r)
         // Ters bölümde halkanın KENDİSİ kırmızı. Bölüme girer girmez, tek bir
         // yazı okumadan, kuralın değiştiği anlaşılıyor.
-        circle.strokeColor = spec.isGate
+        circle.strokeColor = looksLikeGate
             ? gateColor
             : (invertedHazard ? theme.hazard.uiColor : theme.ring.uiColor)
         // Halka zeminden net ayrılsın: arka planlar koyulaştı, çizgi de
@@ -855,12 +863,12 @@ final class GameScene: SKScene {
         // kontrast, parlaklıktan daha çok göz yoruyor.
         circle.lineWidth = 3.5
         // Mat dil: parıltı yok, yalnızca kapı çok hafif bir hâle taşıyor
-        circle.glowWidth = spec.isGate ? 3 : 0
+        circle.glowWidth = looksLikeGate ? 3 : 0
         circle.alpha = locked ? 0.35 : 1.0
         circle.fillColor = .clear
         container.addChild(circle)
 
-        if spec.isGate {
+        if looksLikeGate {
             let dashed = SKShapeNode(path: CGPath(ellipseIn: CGRect(x: -r - 8, y: -r - 8,
                                                                     width: (r + 8) * 2, height: (r + 8) * 2),
                                                   transform: nil).copy(dashingWithPhase: 0, lengths: [8, 10]))
@@ -1549,6 +1557,15 @@ final class GameScene: SKScene {
             // açısal momentumundan çıkıyordu; aynı noktaya benzer görünen iki
             // atıştan farklı yönler çıkabildiği için nereye savrulacağı
             // önceden okunamıyordu. Bu kural her zaman aynı sonucu veriyor.
+            // TUZAK: kapıya benziyor, kapı gibi yakalıyor, ama tutunmak yerine
+            // öldürüyor. Tehlike yayına değmekle aynı son — fark, yayın bir
+            // halkanın ÜSTÜNDE olması, bunun ise halkanın KENDİSİ olması.
+            if ringSpecs[i].isTrapGate {
+                orbNode.position = ringCenter(i, at: elapsed)
+                fail()
+                return
+            }
+
             let direction: CGFloat = dx < 0 ? 1 : -1
             orbState = .attached(ring: i, angle: angle, direction: direction)
             startHazardGraceIfNeeded(ring: i)

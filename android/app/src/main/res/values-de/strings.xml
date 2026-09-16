@@ -232,7 +232,6 @@
     <string name="all_rights_reserved">Alle Rechte vorbehalten</string>
     <string name="rule_white_burns">Hier brennt Weiß</string>
     <string name="rule_upside_down">Kopfüber</string>
-    <string name="rule_two_ways_out">Zwei Ausgänge</string>
     <string name="rule_collect_every_star">Alle Sterne einsammeln</string>
     <string name="rule_beat_the_clock">Schlag die Uhr</string>
     <string name="rule_giant_star">Riesenstern</string>
@@ -248,8 +247,8 @@
     <string name="hint_inverted_body">In diesem Level sind die Farben vertauscht. Der Ring selbst ist rot und harmlos — es ist der WEISSE Bogen, der dich jetzt verbrennt. Alles, was du über Rot gelernt hast, gilt hier nicht.</string>
     <string name="hint_upside_down_title">Alles steht kopf</string>
     <string name="hint_upside_down_body">Dieses Level steht kopf: Die Kugel startet oben, das Tor ist unten. Sonst ändert sich nichts — nur die Richtung, die du gewohnt bist.</string>
-    <string name="hint_two_gates_title">Es gibt zwei Ausgänge</string>
-    <string name="hint_two_gates_body">Neben dem Weg steht ein zweites, weißes Tor. Es beendet das Level sofort — aber die Sterne dahinter bleiben liegen. Das grüne Tor ist der längere und der reichere Weg.</string>
+    <string name="hint_two_gates_title">Eines dieser Tore tötet</string>
+    <string name="hint_two_gates_body">Neben dem Weg steht ein zweites Tor, und es ist ROT. Es sieht aus wie ein Ausgang und ist keiner — es zu berühren beendet den Versuch. Rot bedeutet seit dem allerersten Level eine Sache, und hier ebenso. Nur das grüne Tor beendet das Level.</string>
     <string name="tut_caption_freely">Spring so oft du willst. Kein Limit, keine Eile</string>
     <string name="tut_caption_stars">Gelbe Sterne schalten neue Figuren frei. Nimm mindestens einen — bis dahin bleibt das Tor zu</string>
     <string name="tut_caption_gate">Erreiche das grüne Tor, um das Level zu beenden</string>
@@ -261,4 +260,5 @@
     <string name="hint_grand_star_body">In diesem Level gibt es statt drei kleiner Sterne einen großen, und er zählt vier. Er liegt absichtlich abseits der bequemen Linie: Ihn zu erreichen kostet dich einen Umweg.</string>
     <string name="hint_extra_life_title">Ein Herz auf dem Ring</string>
     <string name="hint_extra_life_body">Auf dem Ring direkt darüber wartet ein Herz. Nimm es, und ein Fehler ist nicht mehr das Ende des Laufs — du machst dort weiter, wo du gefallen bist. Sie kommen alle acht Ringe, du kannst drei gleichzeitig halten, und der Ring mit einem Herz hat nie einen Gefahrenbogen.</string>
+    <string name="rule_trap_gate">Ein Tor ist eine Falle</string>
 </resources>

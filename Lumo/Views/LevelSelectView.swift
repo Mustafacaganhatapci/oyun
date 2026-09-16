@@ -255,11 +255,13 @@ private struct LevelNode: View {
                             .foregroundStyle(.white.opacity(0.3))
                     }
 
-                    // İki kapılı bölüm: sağ altta ikinci, beyaz bir halka —
-                    // "burada iki çıkış var" demenin en sessiz yolu
+                    // Tuzak kapılı bölüm: sağ altta ikinci, KIRMIZI bir halka.
+                    // Beyazdı; haritada beyaz bir çember "ikinci bir çıkış"
+                    // gibi okunuyordu, oysa o çıkış değil tuzak. Renk, rozetin
+                    // anlattığı şeyle aynı şeyi söylemeli.
                     if hasTwoGates, unlocked {
                         Circle()
-                            .strokeBorder(.white.opacity(0.85), lineWidth: 2)
+                            .strokeBorder(theme.hazard.color.opacity(0.9), lineWidth: 2)
                             .frame(width: 13, height: 13)
                             .offset(x: 21, y: 21)
                     }

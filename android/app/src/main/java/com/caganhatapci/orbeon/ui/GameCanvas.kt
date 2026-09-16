@@ -121,18 +121,22 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
 
         // Öğreticide hedef bariz YEŞİL — ama renk körlüğü modunda o yeşil tam
         // da ayırt edilemeyen renk; orada temanın güvenli kapı rengi kalıyor
-        // Kaçış kapısı BEYAZ: yeşil kapı "bölümün sonu", beyaz kapı "buradan
-        // da çıkabilirsin". İkisi aynı renk olsaydı seçim diye bir şey kalmaz,
-        // oyuncu yakın olana gider ve farkı hiç görmezdi.
+        // TUZAK kapı KIRMIZI. Eskiden beyazdı ve "buradan da çıkabilirsin ama
+        // daha az yıldızla" demeye çalışıyordu — anlaşılmıyordu. Kırmızının
+        // açıklamaya ihtiyacı yok: bu oyunda kırmızı iki yüz bölümdür tek bir
+        // şey söylüyor, dokunma.
         val gateColor = when {
-            spec.isShortcutGate -> Color.White
+            spec.isTrapGate -> theme.hazard
             isTutorial && !theme.isColorBlindSafe -> Color(0xFF34C759)
             else -> theme.gate
         }
+        // Tuzak kapı KAPI DEĞİL (isGate false) ama kapı GİBİ çiziliyor: kesikli
+        // dış çember, hâle, aynı silüet. Tuzağın işi zaten benzemek.
+        val looksLikeGate = spec.isGate || spec.isTrapGate
         // Ters bölümde halkanın KENDİSİ kırmızı. Bölüme girer girmez, tek bir
         // yazı okumadan kuralın değiştiği anlaşılıyor.
         val color = when {
-            spec.isGate -> gateColor
+            looksLikeGate -> gateColor
             engine.invertedHazard -> theme.hazard
             else -> theme.ring
         }
@@ -144,7 +148,7 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
 
         // Dış parıltı + çizginin kendisi
         // Mat dil: parıltı yok, yalnızca kapı çok hafif bir hâle taşıyor
-        if (spec.isGate) {
+        if (looksLikeGate) {
             drawCircle(color.copy(alpha = 0.14f * dim), r, c,
                 style = Stroke(width = 12f * den))
         }
@@ -152,7 +156,7 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
         // opaklığa çıktı. Düşük kontrast, parlaklıktan çok göz yoruyor.
         drawCircle(color.copy(alpha = 1f * dim), r, c, style = Stroke(width = 3.5f * den))
 
-        if (spec.isGate) {
+        if (looksLikeGate) {
             drawCircle(gateColor.copy(alpha = 0.10f * dim), r, c)
             // Yavaşça dönen kesikli dış çember (kilitliyken 26 sn, açıkken 14)
             rotate(degrees = t * (360f / if (locked) 26f else 14f), pivot = c) {

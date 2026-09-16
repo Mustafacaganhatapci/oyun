@@ -232,7 +232,6 @@
     <string name="all_rights_reserved">Tüm hakları saklıdır</string>
     <string name="rule_white_burns">Burada beyaz yakar</string>
     <string name="rule_upside_down">Baş aşağı</string>
-    <string name="rule_two_ways_out">İki çıkış var</string>
     <string name="rule_collect_every_star">Bütün yıldızları topla</string>
     <string name="rule_beat_the_clock">Süreye yetiş</string>
     <string name="rule_giant_star">Dev yıldız</string>
@@ -248,8 +247,8 @@
     <string name="hint_inverted_body">Bu bölümde renkler yer değiştirdi. Halkanın kendisi kırmızı ve zararsız — artık seni BEYAZ yay yakıyor. Kırmızı hakkında öğrendiğin her şey burada geçersiz.</string>
     <string name="hint_upside_down_title">Her şey baş aşağı</string>
     <string name="hint_upside_down_body">Bu bölüm baş aşağı kuruldu: küre yukarıda başlıyor, kapı aşağıda. Başka hiçbir şey değişmiyor — yalnızca alıştığın yön.</string>
-    <string name="hint_two_gates_title">İki çıkış var</string>
-    <string name="hint_two_gates_body">Yolun yanında ikinci, beyaz bir kapı var. Bölümü hemen bitiriyor — ama arkasındaki yıldızlar orada kalıyor. Yeşil kapı daha uzun yol ve daha zengin olan.</string>
+    <string name="hint_two_gates_title">Bu kapılardan biri öldürüyor</string>
+    <string name="hint_two_gates_body">Yolun yanında ikinci bir kapı var ve KIRMIZI. Çıkış gibi duruyor ama değil — dokunmak denemeyi bitiriyor. Kırmızı ilk bölümden beri tek bir şey demek, burada da aynı şeyi diyor. Bölümü yalnızca yeşil kapı bitiriyor.</string>
     <string name="tut_caption_freely">İstediğin kadar atla. Sınır da yok acele de</string>
     <string name="tut_caption_stars">Sarı yıldızlar yeni karakterler açıyor. En az birini al — kapı sen alana kadar kapalı kalıyor</string>
     <string name="tut_caption_gate">Bölümü bitirmek için yeşil kapıya ulaş</string>
@@ -261,4 +260,5 @@
     <string name="hint_grand_star_body">Bu bölümde üç küçük yıldız yerine tek bir iri yıldız var ve dört ediyor. Kolay hattın dışında duruyor, bilerek: ona ulaşmak seni yoldan saptırıyor.</string>
     <string name="hint_extra_life_title">Halkanın üstünde bir kalp</string>
     <string name="hint_extra_life_body">Hemen yukarıdaki halkada bir kalp var. Onu alırsan bir hata turun sonu olmaktan çıkıyor — düştüğün yerden devam ediyorsun. Sekiz halkada bir geliyorlar, aynı anda üç tane taşıyabiliyorsun ve kalp taşıyan halkada asla tehlike yayı olmuyor.</string>
+    <string name="rule_trap_gate">Kapılardan biri tuzak</string>
 </resources>

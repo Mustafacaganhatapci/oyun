@@ -575,7 +575,9 @@ fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
                                     // Ters bölüm oyundaki hâliyle aynı renkte
                                     isInverted -> theme.hazard.copy(alpha = 0.14f)
                                     isUpsideDown -> theme.accent.copy(alpha = 0.16f)
-                                    twoGates -> Color.White.copy(alpha = 0.13f)
+                                    // Tuzak: haritada da KIRMIZI. Beyazken
+                                    // "ikinci bir çıkış" gibi okunuyordu.
+                                    twoGates -> theme.hazard.copy(alpha = 0.13f)
                                     else -> Color.White.copy(alpha = 0.07f)
                                 },
                                 RoundedCornerShape(14.dp)
@@ -585,7 +587,7 @@ fun LevelSelectScreen(onBack: () -> Unit, onPick: (Int) -> Unit) {
                                 when {
                                     !unlocked -> Color.Transparent
                                     isInverted -> theme.hazard.copy(alpha = 0.8f)
-                                    twoGates -> Color.White.copy(alpha = 0.6f)
+                                    twoGates -> theme.hazard.copy(alpha = 0.7f)
                                     else -> theme.ring.copy(alpha = 0.5f)
                                 },
                                 RoundedCornerShape(14.dp)

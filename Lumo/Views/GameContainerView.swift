@@ -1039,7 +1039,7 @@ struct GameContainerView: View {
         // Ters bölümün kartı BEYAZ: bölümde öldüren renk hangisiyse o
         case .invertedIntro: hint = .inverted; color = .white
         case .upsideDownIntro: hint = .upsideDown; color = settings.theme.accent.color
-        case .twoGatesIntro: hint = .twoGates; color = .white
+        case .twoGatesIntro: hint = .twoGates; color = settings.theme.hazard.color
         case .collectIntro: hint = .collect; color = settings.theme.gate.color
         case .dwellIntro: hint = .dwell; color = settings.theme.hazard.color
         case .grandStarIntro: hint = .grandStar; color = settings.theme.lumen.color
@@ -1129,7 +1129,7 @@ struct GameContainerView: View {
         // hazırlamazdı.
         if LevelLibrary.isInverted(id) { return "White burns here" }
         if LevelLibrary.isUpsideDown(id) { return "Upside down" }
-        if LevelLibrary.hasShortcutGate(id) { return "Two ways out" }
+        if LevelLibrary.hasShortcutGate(id) { return "One gate is a trap" }
         if LevelLibrary.isCollect(id) { return "Collect every star" }
         if LevelLibrary.hasTimer(id) { return "Beat the clock" }
         // Yavaşlatma bir KURAL değil yetenek: oyuncudan bir şey istemiyor.
@@ -1152,7 +1152,8 @@ struct GameContainerView: View {
         // Ters bölümün rozeti BEYAZ: bölümde öldüren renk hangisiyse o
         case "White burns here":   return .white
         case "Upside down":        return settings.theme.accent.color
-        case "Two ways out":       return .white
+        // Tuzak rozeti KIRMIZI: bölümde öldüren şey hangi renkse o
+        case "One gate is a trap": return settings.theme.hazard.color
         // Yavaşlatma rozeti mor: oyunun hiçbir kuralında olmayan bir renk,
         // yani "burada alışılmadık bir şey var" bilgisini renk taşıyor
         case "Hold to slow time":  return settings.theme.accent.color

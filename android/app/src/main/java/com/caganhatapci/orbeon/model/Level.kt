@@ -35,7 +35,19 @@ data class RingSpec(
     val isGate: Boolean = false,
     /** KAÇIŞ kapısı — zincirin dışında duran ikinci kapı. Beyaz çiziliyor,
      *  bölümü hemen bitiriyor, arkasındaki yıldızlar orada kalıyor. */
-    val isShortcutGate: Boolean = false
+    /**
+     * TUZAK kapı — kapı gibi duran, KIRMIZI çizilen ve dokununca öldüren halka.
+     *
+     * Önce beyaz bir "kaçış kapısı"ydı: bölümü hemen bitiriyor ama arkasındaki
+     * yıldızları bırakıyordu. Kimse anlamadı. Beyaz bir çemberin "buradan da
+     * çıkabilirsin ama daha az yıldızla" demesi için oyuncunun iki kapıyı
+     * karşılaştırması, sonucu görmesi ve bağlantıyı kurması gerekiyordu —
+     * bölümü bitiren bir kapıda bunu yapacak kimse yok.
+     *
+     * Kırmızının açıklamaya ihtiyacı yok. Bu oyunda kırmızı iki yüz bölümdür
+     * tek bir şey söylüyor: dokunma.
+     */
+    val isTrapGate: Boolean = false
 )
 
 data class LumenSpec(
@@ -515,7 +527,11 @@ object LevelLibrary {
             val spot = best ?: fallback
             if (spot != null) {
                 rings.add(RingSpec(spot, radius, 1.6f, 1f,
-                                   isGate = true, isShortcutGate = true))
+                                   // `isGate` BİLEREK false: kazanma sınamaları
+                                   // bu bayrağa bakıyor ve tuzak kazandırmamalı.
+                                   // Kapı görüntüsü isTrapGate'ten geliyor,
+                                   // kapı YETKİSİ gelmiyor.
+                                   isTrapGate = true))
                 shortcut = true
             }
         }

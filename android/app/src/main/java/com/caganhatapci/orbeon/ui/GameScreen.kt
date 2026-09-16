@@ -792,7 +792,7 @@ private fun levelRuleRes(id: Int): Int? {
     if (id == LevelLibrary.TUTORIAL_ID || LevelLibrary.isBonus(id)) return null
     if (LevelLibrary.isInverted(id)) return R.string.rule_white_burns
     if (LevelLibrary.isUpsideDown(id)) return R.string.rule_upside_down
-    if (LevelLibrary.hasShortcutGate(id)) return R.string.rule_two_ways_out
+    if (LevelLibrary.hasShortcutGate(id)) return R.string.rule_trap_gate
     if (LevelLibrary.isCollect(id)) return R.string.rule_collect_every_star
     if (LevelLibrary.hasTimer(id)) return R.string.rule_beat_the_clock
     // Yavaşlatma bir KURAL değil yetenek: oyuncudan bir şey istemiyor. Bu
@@ -816,7 +816,8 @@ private fun LevelIntroCard(id: Int, theme: Theme) {
         // Ters bölümün rozeti BEYAZ: bölümde öldüren renk hangisiyse o
         R.string.rule_white_burns -> Color.White
         R.string.rule_upside_down -> theme.accent
-        R.string.rule_two_ways_out -> Color.White
+        // Tuzak rozeti KIRMIZI: bölümde öldüren şey hangi renkse o
+        R.string.rule_trap_gate -> theme.hazard
         // Yavaşlatma rozeti mor: oyunun hiçbir kuralında olmayan bir renk,
         // yani "burada alışılmadık bir şey var" bilgisini renk taşıyor
         R.string.rule_slow_time -> theme.accent

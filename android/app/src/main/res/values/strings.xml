@@ -232,7 +232,6 @@
     <string name="all_rights_reserved">All rights reserved</string>
     <string name="rule_white_burns">White burns here</string>
     <string name="rule_upside_down">Upside down</string>
-    <string name="rule_two_ways_out">Two ways out</string>
     <string name="rule_collect_every_star">Collect every star</string>
     <string name="rule_beat_the_clock">Beat the clock</string>
     <string name="rule_giant_star">Giant star</string>
@@ -248,8 +247,8 @@
     <string name="hint_inverted_body">The colours are swapped in this level. The ring itself is red and harmless — it is the WHITE arc that burns you now. Everything you learned about red does not apply here.</string>
     <string name="hint_upside_down_title">Everything is upside down</string>
     <string name="hint_upside_down_body">This level is built upside down: the orb starts at the top and the gate is at the bottom. Nothing else changes — only the direction you are used to.</string>
-    <string name="hint_two_gates_title">There are two ways out</string>
-    <string name="hint_two_gates_body">There is a second, white gate beside the path. It finishes the level right away — but the stars past it stay behind. The green gate is the longer way and the richer one.</string>
+    <string name="hint_two_gates_title">One of these gates kills</string>
+    <string name="hint_two_gates_body">There is a second gate beside the path, and it is RED. It looks like a way out and it is not — touching it ends the attempt. Red has meant one thing since the very first level, and it still does here. Only the green gate finishes the level.</string>
     <string name="tut_caption_freely">Hop as often as you like. There's no limit and no hurry</string>
     <string name="tut_caption_stars">Yellow stars unlock new characters. Grab at least one — the gate stays shut until you do</string>
     <string name="tut_caption_gate">Reach the green gate to finish the level</string>
@@ -261,4 +260,5 @@
     <string name="hint_grand_star_body">This level has one big star instead of three small ones, and it is worth four. It sits off the easy line on purpose: reaching it costs you a detour.</string>
     <string name="hint_extra_life_title">A heart on the ring</string>
     <string name="hint_extra_life_body">A heart is waiting on a ring just above. Take it and one mistake stops being the end of the run — you get to carry on from where you fell. They keep coming every eight rings, you can hold three at once, and the ring carrying one never has a hazard on it.</string>
+    <string name="rule_trap_gate">One gate is a trap</string>
 </resources>

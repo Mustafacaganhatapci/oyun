@@ -22,10 +22,19 @@ struct RingSpec: Equatable {
     var hazardRotationSpeed: CGFloat = 0          // radyan/sn (tehlike yayları döner)
     var moving: MovingSpec? = nil
     var isGate: Bool = false
-    /// KAÇIŞ kapısı — zincirin ortasında duran ikinci kapı. Beyaz çiziliyor,
-    /// bölümü hemen bitiriyor, ama arkasındaki yıldızlar orada kalıyor.
-    /// Yeşil kapıya gitmek daha uzun yol ve daha çok yıldız demek.
-    var isShortcutGate: Bool = false
+    /// TUZAK kapı — kapı gibi duran, KIRMIZI çizilen ve dokununca öldüren halka.
+    ///
+    /// Önce beyaz bir "kaçış kapısı"ydı: bölümü hemen bitiriyor ama arkasındaki
+    /// yıldızları bırakıyordu. Kimse anlamadı. Beyaz bir çemberin "buradan da
+    /// çıkabilirsin ama daha az yıldızla" demesi için oyuncunun iki kapıyı
+    /// karşılaştırması, sonucu görmesi ve bağlantıyı kurması gerekiyordu —
+    /// bölümü bitiren bir kapıda bunu yapacak kimse yok.
+    ///
+    /// Kırmızının açıklamaya ihtiyacı yok. Bu oyunda kırmızı iki yüz bölümdür
+    /// tek bir şey söylüyor: dokunma. Aynı cümleyi bir kapının üstünde
+    /// söylemek, yeni bir kural öğretmek değil — var olan kuralı beklenmedik
+    /// bir yere koymak.
+    var isTrapGate: Bool = false
 }
 
 struct LumenSpec: Equatable {
@@ -499,8 +508,10 @@ enum LevelLibrary {
             if let p = best ?? fallback {
                 var gate = RingSpec(center: p, radius: radius,
                                     orbitSpeed: 1.6, direction: 1)
-                gate.isGate = true
-                gate.isShortcutGate = true
+                // `isGate` BİLEREK false: kazanma sınamaları bu bayrağa bakıyor
+                // ve tuzak kazandırmamalı. Kapı görüntüsü `isTrapGate`'ten
+                // geliyor, kapı YETKİSİ gelmiyor.
+                gate.isTrapGate = true
                 rings.append(gate)
                 shortcut = true
             }

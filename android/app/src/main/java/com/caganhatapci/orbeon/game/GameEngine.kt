@@ -594,6 +594,16 @@ class GameEngine(
             // Küre halkanın SOL yarısına geldiyse saat yönünün tersine, SAĞ
             // yarısına geldiyse saat yönünde döner. Ekran ekseni iOS'un tersi
             // olduğu için işaret de ters: aynı görüntüyü veren değer bu.
+            // TUZAK: kapıya benziyor, kapı gibi yakalıyor, ama tutunmak yerine
+            // öldürüyor. Tehlike yayına değmekle aynı son — fark, yayın bir
+            // halkanın ÜSTÜNDE olması, bunun ise halkanın KENDİSİ olması.
+            if (ringSpecs[i].isTrapGate) {
+                val (tcx, tcy) = ringCenter(i)
+                orbX = tcx; orbY = tcy
+                fail()
+                return
+            }
+
             val direction = if (dx < 0) -1f else 1f
             orbState = OrbState.Attached(i, angle, direction)
             startHazardGraceIfNeeded(i)
