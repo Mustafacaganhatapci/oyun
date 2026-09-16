@@ -2710,6 +2710,47 @@
         }
       }
     },
+    "Don't linger": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't linger"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oyalanma"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bleib nicht stehen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No te entretengas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne traîne pas"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "居座らないで"
+          }
+        }
+      }
+    },
     "Droplet": {
       "extractionState": "manual",
       "localizations": {
@@ -3039,6 +3080,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kuşanıldı"
+          }
+        }
+      }
+    },
+    "Every star, or no gate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every star, or no gate"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya hepsi, ya kapı yok"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Sterne, sonst kein Tor"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todas las estrellas o ninguna puerta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toutes les étoiles, sinon pas de porte"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部集めないとゲートは開かない"
           }
         }
       }
@@ -3512,6 +3594,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bedava yıldız"
+          }
+        }
+      }
+    },
+    "From now on you cannot rest on a ring. A shrinking arc around it counts you down, and its last third turns red as a warning. When it runs out the orb launches itself — it does not kill you, but it chooses the moment instead of you.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From now on you cannot rest on a ring. A shrinking arc around it counts you down, and its last third turns red as a warning. When it runs out the orb launches itself — it does not kill you, but it chooses the moment instead of you."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bundan sonra bir halkada dinlenemiyorsun. Çevresindeki küçülen yay geri sayıyor, son üçte biri uyarı olarak kırmızıya dönüyor. Süre bitince küre kendiliğinden fırlıyor — seni öldürmüyor ama anı senin yerine o seçiyor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ab jetzt kannst du auf einem Ring nicht mehr verweilen. Ein schrumpfender Bogen zählt herunter, sein letztes Drittel wird zur Warnung rot. Läuft er ab, startet die Kugel von selbst — sie tötet dich nicht, aber sie wählt den Moment statt dir."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A partir de ahora no puedes descansar en un anillo. Un arco que se encoge hace la cuenta atrás y su último tercio se vuelve rojo como aviso. Cuando se acaba, la esfera sale sola: no te mata, pero elige el momento en tu lugar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À partir de maintenant tu ne peux plus rester sur un anneau. Un arc qui rétrécit décompte, et son dernier tiers passe au rouge en guise d’avertissement. À la fin, la sphère part toute seule — elle ne te tue pas, mais elle choisit le moment à ta place."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "これからはリングの上で休めません。縮んでいく弧がカウントダウンし、最後の3分の1が警告として赤くなります。尽きるとオーブは自分から飛び出します。死にはしませんが、タイミングを選ぶのはあなたではなくなります。"
           }
         }
       }
@@ -5989,6 +6112,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Şimdi kesik çizgili kapıya ulaş — bölümü bitir!"
+          }
+        }
+      }
+    },
+    "One big star": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One big star"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tek büyük yıldız"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein großer Stern"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una estrella grande"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une grande étoile"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大きなスターがひとつ"
           }
         }
       }
@@ -9082,6 +9246,47 @@
         }
       }
     },
+    "The gate stays locked until every star on the map is collected — landing on it does nothing until then. And if you fall here, the whole level restarts with all the stars back.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gate stays locked until every star on the map is collected — landing on it does nothing until then. And if you fall here, the whole level restarts with all the stars back."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haritadaki bütün yıldızlar toplanmadan kapı kilitli kalıyor — üstüne konsan da açılmıyor. Ve burada düşersen bölüm sıfırdan başlıyor, toplanan yıldızların hepsi geri geliyor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Tor bleibt verschlossen, bis jeder Stern auf der Karte eingesammelt ist — darauf zu landen bringt bis dahin nichts. Und wenn du hier fällst, startet das ganze Level neu und alle Sterne sind zurück."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La puerta sigue cerrada hasta recoger todas las estrellas del mapa: aterrizar en ella no sirve de nada hasta entonces. Y si caes aquí, el nivel entero se reinicia con todas las estrellas de vuelta."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La porte reste verrouillée tant que toutes les étoiles de la carte ne sont pas ramassées — s’y poser ne sert à rien avant. Et si tu tombes ici, tout le niveau recommence avec toutes les étoiles de retour."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マップ上のスターをすべて集めるまでゲートは開きません。着いても何も起きません。そしてここで落ちると、レベル全体が最初からやり直しになり、スターも全部戻ります。"
+          }
+        }
+      }
+    },
     "The orb orbits a ring. Tap anywhere to launch it toward the next ring.": {
       "extractionState": "manual",
       "localizations": {
@@ -9300,6 +9505,47 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dünya sıralamasında görünecek ad budur. Bir kez seçilir, sonradan değiştirilemez."
+          }
+        }
+      }
+    },
+    "This level has one big star instead of three small ones, and it is worth four. It sits off the easy line on purpose: reaching it costs you a detour.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This level has one big star instead of three small ones, and it is worth four. It sits off the easy line on purpose: reaching it costs you a detour."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bölümde üç küçük yıldız yerine tek bir iri yıldız var ve dört ediyor. Kolay hattın dışında duruyor, bilerek: ona ulaşmak seni yoldan saptırıyor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In diesem Level gibt es statt drei kleiner Sterne einen großen, und er zählt vier. Er liegt absichtlich abseits der bequemen Linie: Ihn zu erreichen kostet dich einen Umweg."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este nivel tiene una estrella grande en vez de tres pequeñas, y vale cuatro. Está fuera de la línea fácil a propósito: llegar a ella te cuesta un desvío."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce niveau a une grande étoile au lieu de trois petites, et elle en vaut quatre. Elle est volontairement à l’écart de la ligne facile : l’atteindre coûte un détour."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このレベルには小さなスター3つの代わりに大きなスターが1つあり、4つ分の価値があります。わざと楽な線から外してあります。取りに行くには回り道が必要です。"
           }
         }
       }

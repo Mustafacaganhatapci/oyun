@@ -93,9 +93,10 @@ data class Level(
      * 1. bölümde kilitli bir kapıyla karşılaşıyor ve kimse ona sebebini
      * söylememiş oluyordu.
      *
-     * Öğreticinin üç yıldızından ikisi zaten uçuş hattının üstünde duruyor,
-     * yani kural burada oyuncuyu neredeyse hiç durdurmuyor — yalnızca
-     * öğretiyor.
+     * Öğreticide kural bilerek HİSSETTİRİLİYOR: ilk koridorda yıldız yok,
+     * yani oyuncu üçüncü altyazıyı okurken kapı gerçekten sönük duruyor.
+     * Hemen yanındaki yıldızı alınca kapı yanıyor — kural bir cümleyle değil,
+     * bir anla öğreniliyor.
      */
     val gateNeedsAnyLumen: Boolean
         get() = kind == LevelKind.NORMAL &&
@@ -335,18 +336,46 @@ object LevelLibrary {
     /** Kampanyadan toplanabilecek toplam yıldız (ana menüdeki "x / y") */
     val totalStarsAvailable: Int by lazy { (1..COUNT).sumOf { maxStars(it) } }
 
-    /** İlk açılışta oynatılan "nasıl oynanır" antrenman bölümü. */
+    /**
+     * İlk açılışta oynatılan "nasıl oynanır" antrenman bölümü.
+     * iOS'takiyle BİREBİR aynı koordinatlar.
+     *
+     * BEŞ halka = dört atlayış. Eskiden üç halka (iki atlayış) vardı ve altyazı
+     * dört adımdı: üçüncü metin oyuncu KAPIYA VARDIKTAN sonra çıkıyor,
+     * dördüncüsü hiç çıkmıyordu. Yani öğreticinin yarısı okunmadan bitiyordu.
+     *
+     * Halkalar büyük (0.105) ve yavaş (1.3): bu bölüm zorlamak için değil,
+     * dokunmanın ne yaptığını göstermek için var.
+     *
+     * İlk atlayış DÜMDÜZ yukarı — yeni oyuncuya en kolay hedef. Sonrakiler sağa
+     * sola kayıyor, çünkü gerçek oyun öyle: açıyı beklemeyi öğreten şey çapraz
+     * atlayış.
+     */
     val tutorialLevel: Level
         get() {
             val rings = listOf(
-                RingSpec(Pt(0.50f, 0.15f), 0.105f, 1.3f, 1f),
-                RingSpec(Pt(0.50f, 0.42f), 0.105f, 1.3f, -1f),
-                RingSpec(Pt(0.50f, 0.69f), 0.105f, 1.3f, 1f, isGate = true)
+                RingSpec(Pt(0.50f, 0.12f), 0.105f, 1.3f, 1f),
+                RingSpec(Pt(0.50f, 0.31f), 0.105f, 1.3f, -1f),
+                RingSpec(Pt(0.34f, 0.50f), 0.105f, 1.3f, 1f),
+                RingSpec(Pt(0.62f, 0.69f), 0.105f, 1.3f, -1f),
+                RingSpec(Pt(0.46f, 0.88f), 0.105f, 1.3f, 1f, isGate = true)
             )
+            // YILDIZLARIN YERİ ALTYAZIYA GÖRE SEÇİLDİ.
+            //
+            // İlk koridorda bilerek yıldız YOK. Üçüncü altyazı ("en az birini
+            // al, kapı ona kadar kapalı") ikinci atlayıştan sonra çıkıyor;
+            // oyuncu o cümleyi okuduğunda kapının gerçekten sönük durması,
+            // hemen yanında da alınacak bir yıldız olması gerekiyor. İlk
+            // koridora yıldız konsaydı kapı çoktan açılmış olurdu ve cümle
+            // yalan söylerdi.
+            //
+            // İlk yıldız üçüncü halkanın ÇEMBERİNDE: top dönerken üstünden
+            // geçip topluyor ("dönerken de toplanır" bunu öğretiyor) ve tam o
+            // anda kapı yanıyor. Merkeze konmaz — oraya top asla ulaşamaz.
             val lumens = listOf(
-                LumenSpec(Pt(0.50f, 0.285f)),
-                LumenSpec(Pt(0.50f, 0.555f)),
-                LumenSpec(Pt(0.605f, 0.42f))
+                LumenSpec(Pt(0.445f, 0.50f)),    // 3. halkanın çemberi
+                LumenSpec(Pt(0.48f, 0.595f)),    // 3 → 4 koridoru
+                LumenSpec(Pt(0.54f, 0.785f))     // 4 → kapı koridoru
             )
             return Level(TUTORIAL_ID, LevelKind.NORMAL, rings, lumens)
         }

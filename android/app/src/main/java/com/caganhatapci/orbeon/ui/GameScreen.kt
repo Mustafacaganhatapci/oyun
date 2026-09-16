@@ -73,12 +73,17 @@ private enum class Coach {
     INVERTED_INTRO,                                 // renkler ters
     UPSIDE_DOWN_INTRO,                              // bölüm baş aşağı
     TWO_GATES_INTRO,                                // ikinci, beyaz kapı
+    COLLECT_INTRO,                                  // hepsi toplanmadan kapı açılmaz
+    DWELL_INTRO,                                    // halkada oyalanma süresi
+    GRAND_STAR_INTRO,                               // tek iri yıldız, dört eder
     BOUNDS_INTRO;                                   // "kaçırmak artık elenmek"
 
     val isBlocking get() = this == HAZARD_INTRO || this == MOVING_INTRO ||
                            this == TIMED_INTRO || this == BOUNDS_INTRO ||
                            this == SLOW_TIME_INTRO || this == INVERTED_INTRO ||
-                           this == UPSIDE_DOWN_INTRO || this == TWO_GATES_INTRO
+                           this == UPSIDE_DOWN_INTRO || this == TWO_GATES_INTRO ||
+                           this == COLLECT_INTRO || this == DWELL_INTRO ||
+                           this == GRAND_STAR_INTRO
 }
 
 /** 3/3 yıldız için rastgele seçilen tebrik başlıkları */
@@ -174,6 +179,14 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
             } else if (LevelLibrary.hasTimer(id) && app.tutorial.shouldShow(TutorialStore.Step.TIMED)) {
                 engine.coachFrozen = true
                 coach = Coach.TIMED_INTRO
+            } else if (LevelLibrary.isCollect(id) &&
+                       app.tutorial.shouldShow(TutorialStore.Step.COLLECT)) {
+                // EN SERT KURAL VE HİÇ ANLATILMIYORDU. Rozet "bütün yıldızları
+                // topla" diyor ama ölünce bölümün SIFIRDAN kurulduğunu,
+                // toplanan yıldızların geri geldiğini söylemiyordu. Oyuncu
+                // ölüyor, her şey başa dönüyor ve sebebini bilmiyordu.
+                engine.coachFrozen = true
+                coach = Coach.COLLECT_INTRO
             } else if (LevelLibrary.isInverted(id) &&
                        app.tutorial.shouldShow(TutorialStore.Step.INVERTED)) {
                 // Bu ÜÇÜ artık kampanyanın başlarında da çıkıyor ve ikisi bir
@@ -190,6 +203,16 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                        app.tutorial.shouldShow(TutorialStore.Step.TWO_GATES)) {
                 engine.coachFrozen = true
                 coach = Coach.TWO_GATES_INTRO
+            } else if (LevelLibrary.dwellLimit(id) != null &&
+                       app.tutorial.shouldShow(TutorialStore.Step.DWELL)) {
+                // Küre bir anda kendiliğinden fırlıyor ve bu hiçbir yerde
+                // yazmıyordu: oyuncunun ilk tepkisi "oyun bozuk" oluyor.
+                engine.coachFrozen = true
+                coach = Coach.DWELL_INTRO
+            } else if (LevelLibrary.hasGrandStar(id) &&
+                       app.tutorial.shouldShow(TutorialStore.Step.GRAND_STAR)) {
+                engine.coachFrozen = true
+                coach = Coach.GRAND_STAR_INTRO
             } else if (LevelLibrary.slowsTime(id) &&
                        app.tutorial.shouldShow(TutorialStore.Step.SLOW_TIME)) {
                 // Yeni bir DÜĞME veriliyor: anlatılmazsa fark edilmez. Bölüm
@@ -461,6 +484,18 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                                     engine.coachFrozen = false; coach = null
                                     app.tutorial.markShown(TutorialStore.Step.TWO_GATES)
                                 }
+                                Coach.COLLECT_INTRO -> {
+                                    engine.coachFrozen = false; coach = null
+                                    app.tutorial.markShown(TutorialStore.Step.COLLECT)
+                                }
+                                Coach.DWELL_INTRO -> {
+                                    engine.coachFrozen = false; coach = null
+                                    app.tutorial.markShown(TutorialStore.Step.DWELL)
+                                }
+                                Coach.GRAND_STAR_INTRO -> {
+                                    engine.coachFrozen = false; coach = null
+                                    app.tutorial.markShown(TutorialStore.Step.GRAND_STAR)
+                                }
                                 Coach.BOUNDS_INTRO -> {
                                     app.tutorial.markShown(TutorialStore.Step.BOUNDS)
                                     val id = (playMode as? PlayMode.LevelPlay)?.id
@@ -638,6 +673,12 @@ private fun CoachIntroOverlay(step: Coach, theme: Theme, onDismiss: () -> Unit) 
             CoachCard("⇅", R.string.hint_upside_down_title, R.string.hint_upside_down_body)
         Coach.TWO_GATES_INTRO ->
             CoachCard("⑂", R.string.hint_two_gates_title, R.string.hint_two_gates_body)
+        Coach.COLLECT_INTRO ->
+            CoachCard("🔒", R.string.hint_collect_title, R.string.hint_collect_body)
+        Coach.DWELL_INTRO ->
+            CoachCard("⏱", R.string.hint_dwell_title, R.string.hint_dwell_body)
+        Coach.GRAND_STAR_INTRO ->
+            CoachCard("★", R.string.hint_grand_star_title, R.string.hint_grand_star_body)
         else -> CoachCard("🛑", R.string.hint_bounds_title, R.string.hint_bounds_body)
     }
     Box(

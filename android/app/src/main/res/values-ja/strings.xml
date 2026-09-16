@@ -253,4 +253,10 @@
     <string name="tut_caption_freely">好きなだけ跳んでいい。制限も急ぐ必要もありません</string>
     <string name="tut_caption_stars">黄色いスターで新キャラが解放されます。最低1つ取ってください — それまでゲートは閉じたままです</string>
     <string name="tut_caption_gate">緑のゲートに着けばレベルクリアです</string>
+    <string name="hint_collect_title">全部集めないとゲートは開かない</string>
+    <string name="hint_collect_body">マップ上のスターをすべて集めるまでゲートは開きません。着いても何も起きません。そしてここで落ちると、レベル全体が最初からやり直しになり、スターも全部戻ります。</string>
+    <string name="hint_dwell_title">居座らないで</string>
+    <string name="hint_dwell_body">これからはリングの上で休めません。縮んでいく弧がカウントダウンし、最後の3分の1が警告として赤くなります。尽きるとオーブは自分から飛び出します。死にはしませんが、タイミングを選ぶのはあなたではなくなります。</string>
+    <string name="hint_grand_star_title">大きなスターがひとつ</string>
+    <string name="hint_grand_star_body">このレベルには小さなスター3つの代わりに大きなスターが1つあり、4つ分の価値があります。わざと楽な線から外してあります。取りに行くには回り道が必要です。</string>
 </resources>

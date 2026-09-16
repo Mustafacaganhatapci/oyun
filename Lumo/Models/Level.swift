@@ -85,9 +85,10 @@ struct Level: Identifiable, Equatable {
     /// sonra 1. bölümde kilitli bir kapıyla karşılaşıyor ve kimse ona sebebini
     /// söylememiş oluyordu.
     ///
-    /// Öğreticinin üç yıldızından ikisi zaten uçuş hattının üstünde duruyor,
-    /// yani kural burada oyuncuyu neredeyse hiç durdurmuyor — yalnızca
-    /// öğretiyor.
+    /// Öğreticide kural bilerek HİSSETTİRİLİYOR: ilk koridorda yıldız yok,
+    /// yani oyuncu üçüncü altyazıyı okurken kapı gerçekten sönük duruyor.
+    /// Hemen yanındaki yıldızı alınca kapı yanıyor — kural bir cümleyle değil,
+    /// bir anla öğreniliyor.
     var gateNeedsAnyLumen: Bool {
         kind == .normal && !lumens.isEmpty && !gateNeedsAllLumens
     }
@@ -306,24 +307,42 @@ enum LevelLibrary {
     static let tutorialID = 0
 
     static var tutorialLevel: Level {
-        // 3 büyük, yavaş halka: alt (başlangıç) → orta (normal) → üst (YEŞİL hedef).
-        // İki atlayış = "adım adım ilerle, halkaya dokunarak fırla" öğretilir.
-        // Aralara sarı yıldızlar: uçuş hattı doğal olarak içlerinden geçer.
+        // BEŞ halka = dört atlayış. Eskiden üç halka (iki atlayış) vardı ve
+        // altyazı dört adımdı: üçüncü metin oyuncu KAPIYA VARDIKTAN sonra
+        // çıkıyor, dördüncüsü hiç çıkmıyordu. Yani öğreticinin yarısı
+        // okunmadan bitiyordu.
+        //
+        // Halkalar büyük (0.105) ve yavaş (1.3): bu bölüm zorlamak için değil,
+        // dokunmanın ne yaptığını göstermek için var.
+        //
+        // İlk atlayış DÜMDÜZ yukarı — yeni oyuncuya en kolay hedef. Sonrakiler
+        // sağa sola kayıyor, çünkü gerçek oyun öyle: açıyı beklemeyi öğreten
+        // şey çapraz atlayış.
         var rings: [RingSpec] = []
-        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.15), radius: 0.105, orbitSpeed: 1.3, direction: 1))
-        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.42), radius: 0.105, orbitSpeed: 1.3, direction: -1))
+        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.12), radius: 0.105, orbitSpeed: 1.3, direction: 1))
+        rings.append(RingSpec(center: CGPoint(x: 0.50, y: 0.31), radius: 0.105, orbitSpeed: 1.3, direction: -1))
+        rings.append(RingSpec(center: CGPoint(x: 0.34, y: 0.50), radius: 0.105, orbitSpeed: 1.3, direction: 1))
+        rings.append(RingSpec(center: CGPoint(x: 0.62, y: 0.69), radius: 0.105, orbitSpeed: 1.3, direction: -1))
 
-        var gate = RingSpec(center: CGPoint(x: 0.50, y: 0.69), radius: 0.105, orbitSpeed: 1.3, direction: 1)
+        var gate = RingSpec(center: CGPoint(x: 0.46, y: 0.88), radius: 0.105, orbitSpeed: 1.3, direction: 1)
         gate.isGate = true
         rings.append(gate)
 
-        // 2 yıldız koridorlarda (uçuş hattında), 1 yıldız orta halkanın
-        // ÇEMBERİNDE — top dönerken üzerinden geçip toplar ("dönerken de
-        // toplanır"ı öğretir). Merkeze koyma: oraya top asla ulaşamaz!
+        // YILDIZLARIN YERİ ALTYAZIYA GÖRE SEÇİLDİ.
+        //
+        // İlk koridorda bilerek yıldız YOK. Üçüncü altyazı ("en az birini al,
+        // kapı ona kadar kapalı") ikinci atlayıştan sonra çıkıyor; oyuncu o
+        // cümleyi okuduğunda kapının gerçekten sönük durması, hemen yanında da
+        // alınacak bir yıldız olması gerekiyor. İlk koridora yıldız konsaydı
+        // kapı çoktan açılmış olurdu ve cümle yalan söylerdi.
+        //
+        // İlk yıldız üçüncü halkanın ÇEMBERİNDE: top dönerken üstünden geçip
+        // topluyor ("dönerken de toplanır" bunu öğretiyor) ve tam o anda kapı
+        // yanıyor. Merkeze konmaz — oraya top asla ulaşamaz.
         let lumens = [
-            LumenSpec(position: CGPoint(x: 0.50, y: 0.285)),
-            LumenSpec(position: CGPoint(x: 0.50, y: 0.555)),
-            LumenSpec(position: CGPoint(x: 0.605, y: 0.42))
+            LumenSpec(position: CGPoint(x: 0.445, y: 0.50)),   // 3. halkanın çemberi
+            LumenSpec(position: CGPoint(x: 0.48,  y: 0.595)),  // 3 → 4 koridoru
+            LumenSpec(position: CGPoint(x: 0.54,  y: 0.785))   // 4 → kapı koridoru
         ]
 
         return Level(id: tutorialID, kind: .normal, rings: rings, lumens: lumens)

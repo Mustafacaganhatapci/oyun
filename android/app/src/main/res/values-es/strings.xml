@@ -253,4 +253,10 @@
     <string name="tut_caption_freely">Salta tantas veces como quieras. Sin límite y sin prisa</string>
     <string name="tut_caption_stars">Las estrellas amarillas desbloquean personajes. Coge al menos una: la puerta sigue cerrada hasta entonces</string>
     <string name="tut_caption_gate">Llega a la puerta verde para completar el nivel</string>
+    <string name="hint_collect_title">Todas las estrellas o ninguna puerta</string>
+    <string name="hint_collect_body">La puerta sigue cerrada hasta recoger todas las estrellas del mapa: aterrizar en ella no sirve de nada hasta entonces. Y si caes aquí, el nivel entero se reinicia con todas las estrellas de vuelta.</string>
+    <string name="hint_dwell_title">No te entretengas</string>
+    <string name="hint_dwell_body">A partir de ahora no puedes descansar en un anillo. Un arco que se encoge hace la cuenta atrás y su último tercio se vuelve rojo como aviso. Cuando se acaba, la esfera sale sola: no te mata, pero elige el momento en tu lugar.</string>
+    <string name="hint_grand_star_title">Una estrella grande</string>
+    <string name="hint_grand_star_body">Este nivel tiene una estrella grande en vez de tres pequeñas, y vale cuatro. Está fuera de la línea fácil a propósito: llegar a ella te cuesta un desvío.</string>
 </resources>

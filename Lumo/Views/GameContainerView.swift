@@ -30,6 +30,9 @@ struct GameContainerView: View {
         case invertedIntro                              // renkler ters
         case upsideDownIntro                            // bölüm baş aşağı
         case twoGatesIntro                              // ikinci, beyaz kapı
+        case collectIntro                               // hepsi toplanmadan kapı açılmaz
+        case dwellIntro                                 // halkada oyalanma süresi
+        case grandStarIntro                             // tek iri yıldız, dört eder
         case boundsIntro                                // "kaçırmak artık elenmek" tanıtımı
         case bonusIntro                                 // bonus turu ne demek
     }
@@ -38,6 +41,8 @@ struct GameContainerView: View {
         coach == .hazardIntro || coach == .movingIntro || coach == .timedIntro
             || coach == .slowTimeIntro || coach == .invertedIntro
             || coach == .upsideDownIntro || coach == .twoGatesIntro
+            || coach == .collectIntro || coach == .dwellIntro
+            || coach == .grandStarIntro
             || coach == .boundsIntro || coach == .bonusIntro
     }
 
@@ -891,6 +896,13 @@ struct GameContainerView: View {
         } else if LevelLibrary.hasTimer(id), tutorial.shouldShow(.timed) {
             scene?.coachFrozen = true
             coach = .timedIntro
+        } else if LevelLibrary.isCollect(id), tutorial.shouldShow(.collect) {
+            // EN SERT KURAL VE HİÇ ANLATILMIYORDU. Rozet "bütün yıldızları
+            // topla" diyor ama ölünce bölümün SIFIRDAN kurulduğunu, toplanan
+            // yıldızların geri geldiğini söylemiyordu. Oyuncu ölüyor, her şey
+            // başa dönüyor ve sebebini bilmiyordu.
+            scene?.coachFrozen = true
+            coach = .collectIntro
         } else if LevelLibrary.isInverted(id), tutorial.shouldShow(.inverted) {
             // Bu ÜÇÜ artık kampanyanın başlarında da çıkıyor ve ikisi bir
             // kuralı tersine çeviriyor. Giriş kartındaki tek satır okunmazsa
@@ -904,6 +916,14 @@ struct GameContainerView: View {
         } else if LevelLibrary.hasShortcutGate(id), tutorial.shouldShow(.twoGates) {
             scene?.coachFrozen = true
             coach = .twoGatesIntro
+        } else if LevelLibrary.dwellLimit(for: id) != nil, tutorial.shouldShow(.dwell) {
+            // Küre bir anda kendiliğinden fırlıyor ve bu hiçbir yerde
+            // yazmıyordu: oyuncunun ilk tepkisi "oyun bozuk" oluyor.
+            scene?.coachFrozen = true
+            coach = .dwellIntro
+        } else if LevelLibrary.hasGrandStar(id), tutorial.shouldShow(.grandStar) {
+            scene?.coachFrozen = true
+            coach = .grandStarIntro
         } else if LevelLibrary.slowsTime(id), tutorial.shouldShow(.slowTime) {
             // Yeni bir DÜĞME veriliyor: anlatılmazsa fark edilmez. Bölüm
             // kartındaki tek satır "basılı tut" diyor ama neyin ne kadar
@@ -965,6 +985,18 @@ struct GameContainerView: View {
             scene?.coachFrozen = false
             coach = nil
             tutorial.markShown(.twoGates)
+        case .collectIntro:
+            scene?.coachFrozen = false
+            coach = nil
+            tutorial.markShown(.collect)
+        case .dwellIntro:
+            scene?.coachFrozen = false
+            coach = nil
+            tutorial.markShown(.dwell)
+        case .grandStarIntro:
+            scene?.coachFrozen = false
+            coach = nil
+            tutorial.markShown(.grandStar)
         case .boundsIntro:
             tutorial.markShown(.bounds)
             // Aynı bölüm süreliyse sıradaki kartı göster (dondurma sürsün)
@@ -991,6 +1023,9 @@ struct GameContainerView: View {
         case .invertedIntro: hint = .inverted; color = .white
         case .upsideDownIntro: hint = .upsideDown; color = settings.theme.accent.color
         case .twoGatesIntro: hint = .twoGates; color = .white
+        case .collectIntro: hint = .collect; color = settings.theme.gate.color
+        case .dwellIntro: hint = .dwell; color = settings.theme.hazard.color
+        case .grandStarIntro: hint = .grandStar; color = settings.theme.lumen.color
         case .boundsIntro: hint = .bounds; color = settings.theme.hazard.color
         default:           hint = .moving; color = settings.theme.accent.color
         }

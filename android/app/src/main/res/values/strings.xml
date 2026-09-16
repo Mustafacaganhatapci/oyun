@@ -253,4 +253,10 @@
     <string name="tut_caption_freely">Hop as often as you like. There's no limit and no hurry</string>
     <string name="tut_caption_stars">Yellow stars unlock new characters. Grab at least one — the gate stays shut until you do</string>
     <string name="tut_caption_gate">Reach the green gate to finish the level</string>
+    <string name="hint_collect_title">Every star, or no gate</string>
+    <string name="hint_collect_body">The gate stays locked until every star on the map is collected — landing on it does nothing until then. And if you fall here, the whole level restarts with all the stars back.</string>
+    <string name="hint_dwell_title">Don't linger</string>
+    <string name="hint_dwell_body">From now on you cannot rest on a ring. A shrinking arc around it counts you down, and its last third turns red as a warning. When it runs out the orb launches itself — it does not kill you, but it chooses the moment instead of you.</string>
+    <string name="hint_grand_star_title">One big star</string>
+    <string name="hint_grand_star_body">This level has one big star instead of three small ones, and it is worth four. It sits off the easy line on purpose: reaching it costs you a detour.</string>
 </resources>

@@ -414,7 +414,8 @@ class TutorialStore(context: Context) {
     private val p = prefs(context)
 
     enum class Step { LAUNCH, GATE, HAZARD, MOVING, TIMED, BOUNDS, SLOW_TIME,
-                      INVERTED, UPSIDE_DOWN, TWO_GATES }
+                      INVERTED, UPSIDE_DOWN, TWO_GATES,
+                      COLLECT, DWELL, GRAND_STAR }
 
     private var shown by mutableStateOf(
         (p.getStringSet("tutorial.shown", emptySet()) ?: emptySet()).toSet()

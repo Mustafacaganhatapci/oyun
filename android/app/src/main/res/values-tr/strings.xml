@@ -253,4 +253,10 @@
     <string name="tut_caption_freely">İstediğin kadar atla. Sınır da yok acele de</string>
     <string name="tut_caption_stars">Sarı yıldızlar yeni karakterler açıyor. En az birini al — kapı sen alana kadar kapalı kalıyor</string>
     <string name="tut_caption_gate">Bölümü bitirmek için yeşil kapıya ulaş</string>
+    <string name="hint_collect_title">Ya hepsi, ya kapı yok</string>
+    <string name="hint_collect_body">Haritadaki bütün yıldızlar toplanmadan kapı kilitli kalıyor — üstüne konsan da açılmıyor. Ve burada düşersen bölüm sıfırdan başlıyor, toplanan yıldızların hepsi geri geliyor.</string>
+    <string name="hint_dwell_title">Oyalanma</string>
+    <string name="hint_dwell_body">Bundan sonra bir halkada dinlenemiyorsun. Çevresindeki küçülen yay geri sayıyor, son üçte biri uyarı olarak kırmızıya dönüyor. Süre bitince küre kendiliğinden fırlıyor — seni öldürmüyor ama anı senin yerine o seçiyor.</string>
+    <string name="hint_grand_star_title">Tek büyük yıldız</string>
+    <string name="hint_grand_star_body">Bu bölümde üç küçük yıldız yerine tek bir iri yıldız var ve dört ediyor. Kolay hattın dışında duruyor, bilerek: ona ulaşmak seni yoldan saptırıyor.</string>
 </resources>

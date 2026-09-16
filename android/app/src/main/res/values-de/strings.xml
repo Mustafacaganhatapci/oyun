@@ -253,4 +253,10 @@
     <string name="tut_caption_freely">Spring so oft du willst. Kein Limit, keine Eile</string>
     <string name="tut_caption_stars">Gelbe Sterne schalten neue Figuren frei. Nimm mindestens einen — bis dahin bleibt das Tor zu</string>
     <string name="tut_caption_gate">Erreiche das grüne Tor, um das Level zu beenden</string>
+    <string name="hint_collect_title">Alle Sterne, sonst kein Tor</string>
+    <string name="hint_collect_body">Das Tor bleibt verschlossen, bis jeder Stern auf der Karte eingesammelt ist — darauf zu landen bringt bis dahin nichts. Und wenn du hier fällst, startet das ganze Level neu und alle Sterne sind zurück.</string>
+    <string name="hint_dwell_title">Bleib nicht stehen</string>
+    <string name="hint_dwell_body">Ab jetzt kannst du auf einem Ring nicht mehr verweilen. Ein schrumpfender Bogen zählt herunter, sein letztes Drittel wird zur Warnung rot. Läuft er ab, startet die Kugel von selbst — sie tötet dich nicht, aber sie wählt den Moment statt dir.</string>
+    <string name="hint_grand_star_title">Ein großer Stern</string>
+    <string name="hint_grand_star_body">In diesem Level gibt es statt drei kleiner Sterne einen großen, und er zählt vier. Er liegt absichtlich abseits der bequemen Linie: Ihn zu erreichen kostet dich einen Umweg.</string>
 </resources>

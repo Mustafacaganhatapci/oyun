@@ -253,4 +253,10 @@
     <string name="tut_caption_freely">Saute autant que tu veux. Aucune limite, aucune hâte</string>
     <string name="tut_caption_stars">Les étoiles jaunes débloquent des personnages. Prends-en au moins une — la porte reste fermée sinon</string>
     <string name="tut_caption_gate">Atteins la porte verte pour terminer le niveau</string>
+    <string name="hint_collect_title">Toutes les étoiles, sinon pas de porte</string>
+    <string name="hint_collect_body">La porte reste verrouillée tant que toutes les étoiles de la carte ne sont pas ramassées — s’y poser ne sert à rien avant. Et si tu tombes ici, tout le niveau recommence avec toutes les étoiles de retour.</string>
+    <string name="hint_dwell_title">Ne traîne pas</string>
+    <string name="hint_dwell_body">À partir de maintenant tu ne peux plus rester sur un anneau. Un arc qui rétrécit décompte, et son dernier tiers passe au rouge en guise d’avertissement. À la fin, la sphère part toute seule — elle ne te tue pas, mais elle choisit le moment à ta place.</string>
+    <string name="hint_grand_star_title">Une grande étoile</string>
+    <string name="hint_grand_star_body">Ce niveau a une grande étoile au lieu de trois petites, et elle en vaut quatre. Elle est volontairement à l’écart de la ligne facile : l’atteindre coûte un détour.</string>
 </resources>

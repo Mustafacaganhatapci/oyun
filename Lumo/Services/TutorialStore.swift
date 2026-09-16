@@ -42,6 +42,9 @@ enum TutorialHint: String, CaseIterable, Identifiable {
     case inverted   // renkler ters: beyaz öldürür
     case upsideDown // bölüm baş aşağı
     case twoGates   // ikinci, beyaz kaçış kapısı
+    case collect    // kapı hepsi toplanmadan açılmaz + ölünce bölüm baştan
+    case dwell      // halkada oyalanma süresi: küre kendiliğinden fırlar
+    case grandStar  // tek iri yıldız, dört eder
     case modes      // 10. bölümde açılan sonsuz mod ve hız turu
 
     var id: String { rawValue }
@@ -60,6 +63,9 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .inverted: return "White burns here"
         case .upsideDown: return "Everything is upside down"
         case .twoGates: return "There are two ways out"
+        case .collect: return "Every star, or no gate"
+        case .dwell: return "Don't linger"
+        case .grandStar: return "One big star"
         case .modes:  return "Two new modes"
         }
     }
@@ -76,6 +82,9 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .inverted: return "The colours are swapped in this level. The ring itself is red and harmless — it is the WHITE arc that burns you now. Everything you learned about red does not apply here."
         case .upsideDown: return "This level is built upside down: the orb starts at the top and the gate is at the bottom. Nothing else changes — only the direction you are used to."
         case .twoGates: return "There is a second, white gate beside the path. It finishes the level right away — but the stars past it stay behind. The green gate is the longer way and the richer one."
+        case .collect: return "The gate stays locked until every star on the map is collected — landing on it does nothing until then. And if you fall here, the whole level restarts with all the stars back."
+        case .dwell: return "From now on you cannot rest on a ring. A shrinking arc around it counts you down, and its last third turns red as a warning. When it runs out the orb launches itself — it does not kill you, but it chooses the moment instead of you."
+        case .grandStar: return "This level has one big star instead of three small ones, and it is worth four. It sits off the easy line on purpose: reaching it costs you a detour."
         case .modes:  return "Endless Mode and Speed Run are open. Both go on the weekly board, and it resets every Monday — see if you can take a place in the top three."
         }
     }
@@ -92,6 +101,9 @@ enum TutorialHint: String, CaseIterable, Identifiable {
         case .inverted: return "circle.lefthalf.filled"
         case .upsideDown: return "arrow.up.arrow.down"
         case .twoGates: return "arrow.triangle.branch"
+        case .collect: return "lock.fill"
+        case .dwell: return "timer"
+        case .grandStar: return "star.circle.fill"
         case .modes:  return "trophy.fill"
         }
     }
