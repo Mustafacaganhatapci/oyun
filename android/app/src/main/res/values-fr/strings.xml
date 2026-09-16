@@ -250,4 +250,7 @@
     <string name="hint_upside_down_body">Ce niveau est construit à l’envers : la sphère démarre en haut et la porte est en bas. Rien d’autre ne change — seulement le sens auquel tu es habitué.</string>
     <string name="hint_two_gates_title">Il y a deux sorties</string>
     <string name="hint_two_gates_body">Il y a une seconde porte, blanche, à côté du chemin. Elle termine le niveau tout de suite — mais les étoiles au-delà restent là. La porte verte est le chemin le plus long et le plus riche.</string>
+    <string name="tut_caption_freely">Saute autant que tu veux. Aucune limite, aucune hâte</string>
+    <string name="tut_caption_stars">Les étoiles jaunes débloquent des personnages. Prends-en au moins une — la porte reste fermée sinon</string>
+    <string name="tut_caption_gate">Atteins la porte verte pour terminer le niveau</string>
 </resources>

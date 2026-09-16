@@ -10461,43 +10461,43 @@
         }
       }
     },
-    "Yellow stars unlock new characters. Skip them now if you want, the level stays open": {
+    "Yellow stars unlock new characters. Grab at least one — the gate stays shut until you do": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yellow stars unlock new characters. Skip them now if you want, the level stays open"
+            "value": "Yellow stars unlock new characters. Grab at least one — the gate stays shut until you do"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sarı yıldızlar yeni karakterler açıyor. İstemezsen şimdi toplama, bölüm açık kalıyor"
+            "value": "Sarı yıldızlar yeni karakterler açıyor. En az birini al — kapı sen alana kadar kapalı kalıyor"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gelbe Sterne schalten neue Charaktere frei. Lass sie ruhig liegen, das Level bleibt offen"
+            "value": "Gelbe Sterne schalten neue Figuren frei. Nimm mindestens einen — bis dahin bleibt das Tor zu"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Las estrellas amarillas desbloquean personajes. Puedes dejarlas, el nivel sigue disponible"
+            "value": "Las estrellas amarillas desbloquean personajes. Coge al menos una: la puerta sigue cerrada hasta entonces"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les étoiles jaunes débloquent des personnages. Tu peux les laisser, le niveau reste ouvert"
+            "value": "Les étoiles jaunes débloquent des personnages. Prends-en au moins une — la porte reste fermée sinon"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "黄色い星は新しいキャラを解放します。今は取らなくても、レベルはいつでも戻れます"
+            "value": "黄色いスターで新キャラが解放されます。最低1つ取ってください — それまでゲートは閉じたままです"
           }
         }
       }

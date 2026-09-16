@@ -250,4 +250,7 @@
     <string name="hint_upside_down_body">Dieses Level steht kopf: Die Kugel startet oben, das Tor ist unten. Sonst ändert sich nichts — nur die Richtung, die du gewohnt bist.</string>
     <string name="hint_two_gates_title">Es gibt zwei Ausgänge</string>
     <string name="hint_two_gates_body">Neben dem Weg steht ein zweites, weißes Tor. Es beendet das Level sofort — aber die Sterne dahinter bleiben liegen. Das grüne Tor ist der längere und der reichere Weg.</string>
+    <string name="tut_caption_freely">Spring so oft du willst. Kein Limit, keine Eile</string>
+    <string name="tut_caption_stars">Gelbe Sterne schalten neue Figuren frei. Nimm mindestens einen — bis dahin bleibt das Tor zu</string>
+    <string name="tut_caption_gate">Erreiche das grüne Tor, um das Level zu beenden</string>
 </resources>

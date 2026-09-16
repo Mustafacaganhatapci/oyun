@@ -687,9 +687,22 @@ private fun CoachBanner(step: Coach, theme: Theme) {
 
 @Composable
 private fun TutorialCaption(hops: Int) {
+    // Dört adım — iOS'takiyle aynı. Android'de ikiydi ve iki şeyi hiç
+    // söylemiyordu: atlayış sayısının serbest olduğunu, sarı yıldızların ne
+    // işe yaradığını.
+    //
+    // Üçüncü adım kapının en az bir yıldız istediğini söylüyor. Kural oyunun
+    // tamamında geçerli; öğretici onu öğretmezse oyuncu 1. bölümde kilitli
+    // bir kapıyla karşılaşıp sebebini bilemiyor.
+    val res = when (hops) {
+        0 -> R.string.tut_caption_launch
+        1 -> R.string.tut_caption_freely
+        2 -> R.string.tut_caption_stars
+        else -> R.string.tut_caption_gate
+    }
     Box(Modifier.fillMaxSize().padding(bottom = 44.dp), contentAlignment = Alignment.BottomCenter) {
         Text(
-            stringResource(if (hops == 0) R.string.tut_caption_launch else R.string.tut_caption_collect),
+            stringResource(res),
             color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 30.dp)

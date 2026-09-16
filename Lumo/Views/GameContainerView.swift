@@ -1145,11 +1145,15 @@ struct GameContainerView: View {
     private var tutorialCaption: some View {
         // Dört adım. Eskiden ikiydi ve iki şeyi hiç söylemiyordu: atlayış
         // sayısının serbest olduğunu, sarı yıldızların ne işe yaradığını.
+        //
+        // Üçüncü adım eskiden "istersen atla, bölüm açık kalır" diyordu ve bu
+        // artık YANLIŞ: kapı en az bir yıldız toplanmadan açılmıyor. Öğreticiyi
+        // güncellemeden kuralı değiştirmek, oyuncuya yanlış oyunu öğretmekti.
         let text: LocalizedStringKey
         switch tutorialHops {
         case 0:  text = "Tap anywhere — launch the orb toward the next ring"
         case 1:  text = "Hop as often as you like. There's no limit and no hurry"
-        case 2:  text = "Yellow stars unlock new characters. Skip them now if you want, the level stays open"
+        case 2:  text = "Yellow stars unlock new characters. Grab at least one — the gate stays shut until you do"
         default: text = "Reach the green gate to finish the level"
         }
         return VStack {

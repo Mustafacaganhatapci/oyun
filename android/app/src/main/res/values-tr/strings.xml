@@ -250,4 +250,7 @@
     <string name="hint_upside_down_body">Bu bölüm baş aşağı kuruldu: küre yukarıda başlıyor, kapı aşağıda. Başka hiçbir şey değişmiyor — yalnızca alıştığın yön.</string>
     <string name="hint_two_gates_title">İki çıkış var</string>
     <string name="hint_two_gates_body">Yolun yanında ikinci, beyaz bir kapı var. Bölümü hemen bitiriyor — ama arkasındaki yıldızlar orada kalıyor. Yeşil kapı daha uzun yol ve daha zengin olan.</string>
+    <string name="tut_caption_freely">İstediğin kadar atla. Sınır da yok acele de</string>
+    <string name="tut_caption_stars">Sarı yıldızlar yeni karakterler açıyor. En az birini al — kapı sen alana kadar kapalı kalıyor</string>
+    <string name="tut_caption_gate">Bölümü bitirmek için yeşil kapıya ulaş</string>
 </resources>

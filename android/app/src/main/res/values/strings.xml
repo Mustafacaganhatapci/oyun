@@ -250,4 +250,7 @@
     <string name="hint_upside_down_body">This level is built upside down: the orb starts at the top and the gate is at the bottom. Nothing else changes — only the direction you are used to.</string>
     <string name="hint_two_gates_title">There are two ways out</string>
     <string name="hint_two_gates_body">There is a second, white gate beside the path. It finishes the level right away — but the stars past it stay behind. The green gate is the longer way and the richer one.</string>
+    <string name="tut_caption_freely">Hop as often as you like. There's no limit and no hurry</string>
+    <string name="tut_caption_stars">Yellow stars unlock new characters. Grab at least one — the gate stays shut until you do</string>
+    <string name="tut_caption_gate">Reach the green gate to finish the level</string>
 </resources>

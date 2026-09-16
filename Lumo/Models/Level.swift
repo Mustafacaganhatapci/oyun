@@ -79,11 +79,17 @@ struct Level: Identifiable, Equatable {
     /// topla-bitir bölümüne çevirirdi ve o türün ayrı bir tür olmasının
     /// anlamı kalmazdı.
     ///
-    /// Öğretici bölüm dışarıda: orada kural sırayla öğretiliyor, daha
-    /// anlatılmamış bir şartın kapıyı kilitlemesi yardım değil engel olur.
+    /// ÖĞRETİCİ DE DÂHİL. Bir ara dışarıda bırakılmıştı — "orada kural sırayla
+    /// öğretiliyor" diye. Tam tersiydi: öğretici, kuralın öğretilmesi gereken
+    /// YER. Muaf tutulunca oyuncu antrenmanı "kapıya git" diye bitiriyor,
+    /// sonra 1. bölümde kilitli bir kapıyla karşılaşıyor ve kimse ona sebebini
+    /// söylememiş oluyordu.
+    ///
+    /// Öğreticinin üç yıldızından ikisi zaten uçuş hattının üstünde duruyor,
+    /// yani kural burada oyuncuyu neredeyse hiç durdurmuyor — yalnızca
+    /// öğretiyor.
     var gateNeedsAnyLumen: Bool {
-        kind == .normal && id != LevelLibrary.tutorialID
-            && !lumens.isEmpty && !gateNeedsAllLumens
+        kind == .normal && !lumens.isEmpty && !gateNeedsAllLumens
     }
 
     /// Ölünce son halkaya değil, bölümün başına dönülür ve lumenler geri gelir.
