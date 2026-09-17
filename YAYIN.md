@@ -159,16 +159,25 @@ App Store Connect → Orbeon → sol üstte **+ Version or Platform** → `2.3`
 
 **b. Yenilikler**
 
-`ios-store-assets/appstore-2.3.md` dosyasındaki metinleri yapıştır:
-TR, EN, ES için ayrı ayrı (dil seçici sayfanın üstünde).
+`ios-store-assets/Orbeon-2.3-magaza-metinleri.pdf` dosyasını aç. Her dil ayrı
+sayfada (TR · EN · ES), her sayfada üç alan var: **tanıtım metni**,
+**yenilikler**, **Play sürüm notu**. Kutuların içindekini olduğu gibi kopyala,
+dil seçici App Store Connect sayfasının üstünde.
 
 > **Kırmızı kapı en başta yazıyor, bilerek.** Eski oyuncu beyaz kapıyı
 > "kısa yol" diye öğrendi, aynı yerde artık ölüyor. Bu cümleyi aşağı
 > çekme — oyuncu onu ölerek öğrenmesin.
 
-**c. Ekran görüntüleri**
+**c. Ekran görüntüleri — DEĞİŞTİ, yenilerini yükle**
 
-2.2'dekiler geçerli, dokunma. Bu sürümde arayüz değişmedi.
+Altı panelin de metni yeniden yazıldı, 36 PNG yeniden üretildi. 2.2'dekiler
+artık geçerli değil.
+
+- 6.9" → `ios-store-assets/appstore-<dil>-<n>-<ad>.png`
+- 6.5" → `ios-store-assets/6.5-inch/` altında aynı isimler
+
+Eskileri sil, altısını sırayla yükle (core · hazard · collect · characters ·
+endless · lives). Çizim değişmedi, yalnızca üstündeki yazı.
 
 **d. App Privacy — BU ADIM YAYINI ENGELLİYOR**
 
@@ -204,8 +213,8 @@ Build işlenince sürüme ekle → **Add for Review** → **Submit**.
 
 1. Android Studio → **Build → Generate Signed Bundle / APK → Android App Bundle**
 2. Play Console → Production → **Create new release** → AAB'yi yükle
-3. Sürüm notlarına `ios-store-assets/appstore-2.3.md` içindeki
-   **Play (500 karakter)** bölümünü yapıştır
+3. Sürüm notlarına PDF'in her dil sayfasındaki **Play sürüm notu** kutusunu
+   yapıştır; ekran görüntüleri `android/store-assets/` altında, onlar da yeni
 4. **Veri güvenliği formunu güncelle** — `android/store-listing.md` içindeki
    tabloya göre. 2.2'de "kilitlenme/analiz SDK'sı eklenmedi" yazıyordu,
    artık yanlış: Crashlytics ve görüş kutusu eklendi.
