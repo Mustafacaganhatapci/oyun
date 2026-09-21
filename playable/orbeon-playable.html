@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Orbeon</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0C0C0F;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    user-select:none;-webkit-user-select:none;touch-action:none}
+  #c{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+  .layer{position:absolute;inset:0;pointer-events:none}
+
+  /* Üst bilgi: bölüm ve yıldız */
+  #hud{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;
+    justify-content:space-between;padding:16px 20px;color:#fff;font-size:15px;
+    font-weight:600;letter-spacing:.5px;opacity:.85}
+  #stars{display:flex;gap:6px}
+  .pip{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18)}
+  .pip.on{background:#B59450}
+
+  /* Bölüm başı açıklaması */
+  #coach{position:absolute;left:0;right:0;top:62px;padding:0 26px;text-align:center;
+    color:#fff;font-size:16px;line-height:1.45;font-weight:400;
+    text-shadow:0 2px 18px rgba(0,0,0,.9);opacity:0;transition:opacity .45s}
+  #coach.show{opacity:.92}
+  #coach b{font-weight:700}
+
+  /* Sürekli görünen indirme düğmesi — çoğu reklam ağı bunu şart koşuyor */
+  #cta{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);
+    pointer-events:auto;cursor:pointer;border:0;border-radius:999px;
+    padding:13px 30px;font-size:15px;font-weight:700;letter-spacing:.2px;
+    color:#0C0C0F;background:#F0F1F3;box-shadow:0 8px 28px rgba(0,0,0,.55);
+    opacity:.94;white-space:nowrap}
+  #cta:active{transform:translateX(-50%) scale(.96)}
+
+  /* Bitiş kartı */
+  #end{position:absolute;inset:0;display:none;flex-direction:column;
+    align-items:center;justify-content:center;gap:0;padding:0 34px;
+    background:radial-gradient(120% 70% at 50% 42%,rgba(24,22,28,.86) 0%,rgba(12,12,15,.97) 70%);
+    pointer-events:auto;text-align:center}
+  #end.show{display:flex}
+  #endMark{width:76px;height:76px;margin-bottom:26px}
+  #endTitle{color:#fff;font-size:27px;font-weight:300;letter-spacing:-.4px;line-height:1.2}
+  #endTitle b{font-weight:700}
+  #endSub{color:rgba(255,255,255,.52);font-size:15px;line-height:1.45;margin-top:12px}
+  #endCta{margin-top:34px;border:0;border-radius:999px;padding:16px 42px;
+    font-size:17px;font-weight:700;color:#0C0C0F;background:#F0F1F3;cursor:pointer;
+    box-shadow:0 10px 34px rgba(0,0,0,.6)}
+  #endCta:active{transform:scale(.97)}
+  #replay{margin-top:16px;background:none;border:0;cursor:pointer;
+    color:rgba(255,255,255,.45);font-size:14px;font-weight:500;
+    text-decoration:underline;text-underline-offset:3px;padding:8px}
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div class="layer">
+  <div id="hud"><span id="lvl"></span><span id="stars"></span></div>
+  <div id="coach"></div>
+</div>
+
+<button id="cta"></button>
+
+<div id="end">
+  <svg id="endMark" viewBox="0 0 100 100" fill="none">
+    <circle cx="50" cy="50" r="38" stroke="#D3F3EC" stroke-width="3" opacity=".9"/>
+    <circle cx="50" cy="50" r="46" stroke="#746E87" stroke-width="2"
+            stroke-dasharray="7 9" opacity=".65"/>
+    <circle cx="50" cy="12" r="6" fill="#F0F1F3"/>
+  </svg>
+  <div id="endTitle"></div>
+  <div id="endSub"></div>
+  <button id="endCta"></button>
+  <button id="replay"></button>
+</div>
+
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════════════════════════════
+   AYARLAR — yayına vermeden önce burayı doldur
+   ═══════════════════════════════════════════════════════════════════ */
+var CONFIG = {
+  // App Store kimliği henüz yok. App Store Connect → Orbeon →
+  // App Information → General Information → Apple ID (10 haneli sayı).
+  // Doldurulmazsa iOS tıklaması App Store arama sayfasına düşer.
+  appStoreId: "",
+  androidPackage: "com.caganhatapci.orbeon",
+  // Dil: "" bırakırsan cihazın dilinden seçilir. Zorlamak için "tr"/"en"/"es".
+  // ?lang=es ile de geçersiz kılınabiliyor (test için).
+  lang: ""
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   METİNLER
+   ═══════════════════════════════════════════════════════════════════ */
+var STR = {
+  tr: {
+    lvl: "BÖLÜM",
+    coach: [
+      "Dokununca küre fırlıyor.<br>Yıldızı al, kapı ona kadar açılmıyor.",
+      "Kırmızı yay yakar.<br>Yeşilken güvenlisin ama yeşil eriyor.",
+      "<b>Kırmızı kapıya dokunma.</b><br>Bölüm baştan başlar."
+    ],
+    cta: "Ücretsiz indir",
+    endTitle: "Geri kalan <b>254 bölüm</b><br>seni bekliyor",
+    endSub: "Bu üçü sadece başlangıçtı.",
+    endCta: "Ücretsiz indir",
+    replay: "Baştan oyna"
+  },
+  en: {
+    lvl: "LEVEL",
+    coach: [
+      "Tap and the orb launches.<br>Take the star, the gate needs one.",
+      "The red arc burns.<br>Green is safe, but it melts away.",
+      "<b>Don\u0027t touch the red gate.</b><br>The level starts over."
+    ],
+    cta: "Download free",
+    endTitle: "The other <b>254 levels</b><br>are waiting",
+    endSub: "Those three were just the start.",
+    endCta: "Download free",
+    replay: "Play again"
+  },
+  es: {
+    lvl: "NIVEL",
+    coach: [
+      "Toca y la esfera sale disparada.<br>Coge la estrella: la puerta la pide.",
+      "El arco rojo quema.<br>El verde es seguro, pero se gasta.",
+      "<b>No toques la puerta roja.</b><br>El nivel vuelve a empezar."
+    ],
+    cta: "Descarga gratis",
+    endTitle: "Te esperan los otros<br><b>254 niveles</b>",
+    endSub: "Esos tres eran solo el principio.",
+    endCta: "Descarga gratis",
+    replay: "Jugar otra vez"
+  }
+};
+
+function pickLang() {
+  var q = (location.search.match(/[?&]lang=(\w\w)/) || [])[1];
+  var want = (q || CONFIG.lang || navigator.language || "en").slice(0, 2).toLowerCase();
+  return STR[want] ? want : "en";
+}
+var L = pickLang();
+var T = STR[L];
+
+/* ═══════════════════════════════════════════════════════════════════
+   MAĞAZAYA GÖNDER
+   Reklam ağları tıklamayı kendi köprüleriyle yakalıyor; hangisinin
+   içinde çalıştığımızı bilmediğimiz için hepsi sırayla deneniyor.
+   ═══════════════════════════════════════════════════════════════════ */
+function storeURL() {
+  var ios = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (ios) {
+    return CONFIG.appStoreId
+      ? "https://apps.apple.com/app/id" + CONFIG.appStoreId
+      : "https://apps.apple.com/search?term=orbeon";
+  }
+  return "https://play.google.com/store/apps/details?id=" + CONFIG.androidPackage;
+}
+
+var ctaFired = false;
+function openStore() {
+  if (ctaFired) return;
+  ctaFired = true;
+  setTimeout(function () { ctaFired = false; }, 1200);   // çift dokunuşa karşı
+  var url = storeURL();
+  try {
+    if (typeof mraid !== "undefined" && mraid.open) { mraid.open(url); return; }          // AppLovin, ironSource, Unity, Vungle
+    if (typeof FbPlayableAd !== "undefined") { FbPlayableAd.onCTAClick(); return; }        // Meta
+    if (typeof ExitApi !== "undefined") { ExitApi.exit(); return; }                        // Google Ads
+    if (window.gameend) { window.gameend(); return; }                                      // Moloco / bazı SSP'ler
+    if (window.parent && window.parent !== window && window.parent.postMessage) {
+      window.parent.postMessage({ type: "playable_cta", url: url }, "*");
+    }
+  } catch (e) { /* köprü yoksa aşağı düş */ }
+  window.open(url, "_blank");
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PALET — oyunun Theme.nebula değerleriyle birebir
+   ═══════════════════════════════════════════════════════════════════ */
+var COL = {
+  bgTop: "#0C0C0F", bgBottom: "#18161C",
+  ring: "#807F8A", gate: "#D3F3EC", orb: "#F0F1F3",
+  hazard: "#D1495B", hazSafe: "#537658", lumen: "#B59450", accent: "#746E87"
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   BÖLÜMLER
+   Koordinatlar oyundaki gibi normalize: x genişliğe, y YÜKSEKLİĞE,
+   yarıçap GENİŞLİĞE oranlı. y=0 altta, y=1 üstte.
+   ═══════════════════════════════════════════════════════════════════ */
+// YILDIZLAR HALKALARIN ÇEMBERİNDE duruyor, koridorların ortasında değil.
+// Küre halkadan TEĞET ayrıldığı için merkezden merkeze giden çizgide hiç
+// ilerlemiyor; oraya konan yıldız hiçbir zaman toplanmıyordu (ölçtüm:
+// başlangıç halkasından yıldız toplama ihtimali %0). Çemberdeki yıldızı ise
+// küre dönerken kendiliğinden topluyor ve kapı o anda yanıyor — oyunun kendi
+// öğreticisi de tam olarak bunu yapıyor.
+//
+// Halkalar oyundakinden BİLEREK büyük (0.13–0.145 yerine 0.09–0.105) ve daha
+// yavaş. Oyunun kendi ölçüleriyle ölçtüğümde başlangıç halkasından 240 dokunuş
+// anının 217'si ıskalıyordu; oyunda bu doğru, çünkü oyuncunun öğrenecek vakti
+// var. On beş saniyelik reklamda ilk dokunuşun tutması gerekiyor.
+// Bu ölçülerle birinci bölümde hedefe nişan alma penceresi 0,8 saniye.
+var LEVELS = [
+  { // 1 — temel atlayış, kapı bir yıldız istiyor
+    rings: [
+      { x: 0.50, y: 0.15, r: 0.145, spd: 1.00, dir:  1 },
+      { x: 0.50, y: 0.35, r: 0.145, spd: 1.00, dir: -1 },
+      { x: 0.36, y: 0.55, r: 0.140, spd: 1.10, dir:  1 },
+      { x: 0.58, y: 0.75, r: 0.145, spd: 1.00, dir: -1, gate: true }
+    ],
+    lumens: [{ x: 0.355, y: 0.350 }, { x: 0.220, y: 0.550 }]
+  },
+  { // 2 — tehlike yayı; ilk tur yakmıyor
+    rings: [
+      { x: 0.50, y: 0.15, r: 0.140, spd: 1.15, dir:  1 },
+      { x: 0.31, y: 0.35, r: 0.135, spd: 1.40, dir: -1, haz: [[-0.5, 1.5]] },
+      { x: 0.67, y: 0.55, r: 0.135, spd: 1.50, dir:  1, haz: [[2.2, 4.0]] },
+      { x: 0.44, y: 0.76, r: 0.145, spd: 1.15, dir: -1, gate: true }
+    ],
+    lumens: [{ x: 0.175, y: 0.350 }, { x: 0.805, y: 0.550 }],
+    grace: true
+  },
+  { // 3 — kırmızı tuzak kapı: 2.3'ün asıl konusu
+    // Tuzak yukarı giden yolun tam ortasında duruyor, gerçek kapı sağda.
+    // Yani "en kısa yol" gibi görünen şey öldürüyor — reklamın anlatacağı
+    // şey bu. Yarıçapı küçük (0.105) tutuldu: kazara çarpma oranı son
+    // halkadan %21'den %11'e indi, bir kere yanmak öğretiyor, üç kere
+    // yanmak sinir bozuyor.
+    rings: [
+      { x: 0.50, y: 0.14, r: 0.135, spd: 1.25, dir:  1 },
+      { x: 0.28, y: 0.33, r: 0.130, spd: 1.45, dir: -1 },
+      { x: 0.64, y: 0.46, r: 0.130, spd: 1.55, dir:  1 },
+      { x: 0.44, y: 0.65, r: 0.105, spd: 1.50, dir:  1, trap: true },
+      { x: 0.71, y: 0.71, r: 0.155, spd: 1.10, dir: -1, gate: true }
+    ],
+    lumens: [{ x: 0.150, y: 0.330 }, { x: 0.770, y: 0.460 }],
+    grace: true
+  }
+];
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOTOR — sabitler oyunun GameScene.swift değerleri
+   ═══════════════════════════════════════════════════════════════════ */
+var FLIGHT_SPEED = 1.55;    // ekran genişliği / saniye
+var ORB_R        = 9 / 390; // 390pt referans genişlikte 9pt
+var COLLECT_D    = 26 / 390;
+var MAX_FLIGHT   = 4.0;
+// Oyunda 0.55. Reklamda ıska sık olacak ve her ıskadan sonra beklenen her
+// salise oyuncunun vazgeçme ihtimali. Kısaltıldı.
+var RESPAWN      = 0.42;
+
+var cv = document.getElementById("c");
+var ctx = cv.getContext("2d");
+var DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+var play = { x: 0, y: 0, w: 0, h: 0 };   // oyun alanı (mektup kutulu)
+
+function resize() {
+  var cw = window.innerWidth, ch = window.innerHeight;
+  cv.width = Math.round(cw * DPR);
+  cv.height = Math.round(ch * DPR);
+  cv.style.width = cw + "px";
+  cv.style.height = ch + "px";
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+  // Oyun 2.05 en-boy oranında kurulu. Reklam çerçevesi ne olursa olsun
+  // halkaların arası bozulmasın diye alan ortalanıp kırpılıyor.
+  // Üstte bilgi şeridi, altta indirme düğmesi için yer ayrılıyor. Alan
+  // ortalanınca ikisi de halkaların üstüne biniyordu: düğme başlangıç
+  // halkasını, açıklama yazısı da kapıyı örtüyordu — hem de "kapı
+  // açılmıyor" derken tam kapıyı.
+  var TOP = 56, BOTTOM = 96;
+  var availH = Math.max(120, ch - TOP - BOTTOM);
+  var w = Math.min(cw, availH / 2.05);
+  var h = w * 2.05;
+  play.w = w; play.h = h;
+  play.x = (cw - w) / 2;
+  play.y = TOP + (availH - h) / 2;
+}
+window.addEventListener("resize", resize);
+resize();
+
+// Normalize koordinat → ekran pikseli (y ters çevriliyor)
+function SX(nx) { return play.x + nx * play.w; }
+function SY(ny) { return play.y + (1 - ny) * play.h; }
+function SR(nr) { return nr * play.w; }
+
+var G = null;   // oyun durumu
+
+function loadLevel(i) {
+  var spec = LEVELS[i];
+  G = {
+    index: i,
+    spec: spec,
+    rings: spec.rings,
+    lumens: spec.lumens.map(function (p) { return { x: p.x, y: p.y, got: false }; }),
+    t: 0,
+    state: "attached",           // attached | flying | dead | won
+    ring: 0,
+    angle: -Math.PI / 2,
+    dir: spec.rings[0].dir,
+    ox: 0, oy: 0,                // uçarken piksel konumu
+    vx: 0, vy: 0,
+    flightT: 0,
+    lastRing: 0,
+    exited: false,
+    deadAt: 0,
+    graceUntil: -1,              // tehlike müsamahası biteceği an
+    graceRing: -1,
+    trail: [],
+    pops: [],
+    wonAt: 0,
+    flash: 0                     // tuzağa değince ekran kızarması
+  };
+  showCoach(i);
+  drawHUD();
+}
+
+/* ─────────── tehlike ─────────── */
+function hazardHit(ring, angle) {
+  var r = G.rings[ring];
+  if (!r.haz) return false;
+  for (var k = 0; k < r.haz.length; k++) {
+    var a0 = r.haz[k][0], a1 = r.haz[k][1];
+    var rel = (angle - a0) % (Math.PI * 2);
+    if (rel < 0) rel += Math.PI * 2;
+    if (rel <= a1 - a0) return true;
+  }
+  return false;
+}
+
+// Müsamaha açıkken bir tam tur (2π/hız) boyunca yay yeşil, sonra kırmızı
+function graceLeft() {
+  if (G.graceUntil < 0) return 0;
+  var left = G.graceUntil - G.t;
+  return left > 0 ? left : 0;
+}
+
+function startGrace(ring) {
+  var r = G.rings[ring];
+  if (!G.spec.grace || !r.haz) { G.graceUntil = -1; G.graceRing = -1; return; }
+  G.graceUntil = G.t + (Math.PI * 2) / Math.max(0.1, r.spd);
+  G.graceRing = ring;
+}
+
+/* ─────────── fırlatma / yakalama ─────────── */
+function launch() {
+  var r = G.rings[G.ring];
+  var cx = SX(r.x), cy = SY(r.y), rad = SR(r.r);
+  G.ox = cx + Math.cos(G.angle) * rad;
+  G.oy = cy - Math.sin(G.angle) * rad;      // ekranda y ters
+  var sp = FLIGHT_SPEED * play.w;
+  G.vx = -Math.sin(G.angle) * G.dir * sp;
+  G.vy = -Math.cos(G.angle) * G.dir * sp;   // ekranda y ters
+  G.state = "flying";
+  G.flightT = 0;
+  G.lastRing = G.ring;
+  G.exited = false;
+  G.graceUntil = -1;
+  G.graceRing = -1;
+}
+
+function gateOpen() {
+  for (var i = 0; i < G.lumens.length; i++) if (G.lumens[i].got) return true;
+  return G.lumens.length === 0;
+}
+
+function pop(x, y, color, n) {
+  for (var i = 0; i < n; i++) {
+    var a = Math.random() * Math.PI * 2, s = (0.4 + Math.random()) * play.w * 0.28;
+    G.pops.push({ x: x, y: y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 0.5, color: color });
+  }
+}
+
+function die(byTrap) {
+  if (G.state === "dead" || G.state === "won") return;
+  G.state = "dead";
+  G.deadAt = G.t;
+  G.byTrap = !!byTrap;
+  if (byTrap) G.flash = 1;
+  pop(G.ox, G.oy, byTrap ? COL.hazard : COL.hazard, byTrap ? 30 : 18);
+}
+
+function capture() {
+  for (var i = 0; i < G.rings.length; i++) {
+    var r = G.rings[i];
+    var cx = SX(r.x), cy = SY(r.y), rad = SR(r.r);
+    var dx = G.ox - cx, dy = G.oy - cy;
+    var d = Math.sqrt(dx * dx + dy * dy);
+
+    if (i === G.lastRing && !G.exited) {
+      if (d > rad + SR(ORB_R) * 2) G.exited = true;
+      continue;
+    }
+    if (d > rad) continue;
+
+    // atan2: oyun y'si yukarı, ekran y'si aşağı
+    var ang = Math.atan2(-dy, dx);
+
+    // TUZAK KAPI — kapıya benziyor, yakalıyor, ama öldürüyor
+    if (r.trap) { G.ox = cx; G.oy = cy; die(true); return; }
+
+    if (!G.spec.grace && hazardHit(i, ang)) { die(false); return; }
+
+    G.ring = i;
+    G.angle = ang;
+    G.dir = dx < 0 ? 1 : -1;
+    G.state = "attached";
+    startGrace(i);
+    pop(G.ox, G.oy, COL.accent, 10);
+
+    if (r.gate && gateOpen()) { G.state = "won"; G.wonAt = G.t; }
+    return;
+  }
+}
+
+function collectLumens() {
+  for (var i = 0; i < G.lumens.length; i++) {
+    var l = G.lumens[i];
+    if (l.got) continue;
+    var dx = SX(l.x) - G.ox, dy = SY(l.y) - G.oy;
+    if (Math.sqrt(dx * dx + dy * dy) < SR(COLLECT_D)) {
+      l.got = true;
+      pop(SX(l.x), SY(l.y), COL.lumen, 16);
+      drawHUD();
+    }
+  }
+}
+
+function outOfBounds() {
+  return G.ox < play.x - play.w * 0.15 || G.ox > play.x + play.w * 1.15 ||
+         G.oy < play.y - play.h * 0.12 || G.oy > play.y + play.h * 1.12;
+}
+
+/* ─────────── güncelleme ─────────── */
+function update(dt) {
+  G.t += dt;
+  if (G.flash > 0) G.flash = Math.max(0, G.flash - dt * 2.2);
+
+  for (var i = G.pops.length - 1; i >= 0; i--) {
+    var p = G.pops[i];
+    p.life -= dt;
+    if (p.life <= 0) { G.pops.splice(i, 1); continue; }
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    p.vx *= 0.92; p.vy *= 0.92;
+  }
+
+  if (G.state === "attached") {
+    var r = G.rings[G.ring];
+    G.angle += r.spd * G.dir * dt;
+    var cx = SX(r.x), cy = SY(r.y), rad = SR(r.r);
+    G.ox = cx + Math.cos(G.angle) * rad;
+    G.oy = cy - Math.sin(G.angle) * rad;
+    collectLumens();
+
+    // Müsamaha bittiyse ve hâlâ kırmızının üstündeysen yanarsın
+    if (r.haz) {
+      var inside = hazardHit(G.ring, G.angle);
+      if (inside && (!G.spec.grace || graceLeft() <= 0)) { die(false); return; }
+    }
+    if (r.gate && gateOpen()) { G.state = "won"; G.wonAt = G.t; }
+
+  } else if (G.state === "flying") {
+    G.flightT += dt;
+    G.ox += G.vx * dt;
+    G.oy += G.vy * dt;
+    G.trail.push({ x: G.ox, y: G.oy, life: 0.32 });
+    capture();
+    if (G.state !== "flying") return;
+    collectLumens();
+    if (outOfBounds() || G.flightT > MAX_FLIGHT) die(false);
+
+  } else if (G.state === "dead") {
+    if (G.t - G.deadAt >= RESPAWN) {
+      // Tuzak kapı bölümü baştan kurar ve yıldızları geri alır.
+      // Sıradan ölümde küre son halkaya döner, yıldızlar durur.
+      if (G.byTrap) {
+        var keep = G.index;
+        loadLevel(keep);
+      } else {
+        // Oyundaki gibi BAŞLANGIÇ halkasına dönülüyor, son halkaya değil.
+        // Önce son halkaya döndürüyordum; tehlikeli bir halkada ölen oyuncu
+        // oraya müsamahasız geri konuyor ve yörünge onu yayın içine taşır
+        // taşımaz yeniden yanıyordu — çıkışı olmayan bir ölüm döngüsü.
+        G.state = "attached";
+        G.ring = 0;
+        G.angle = -Math.PI / 2;
+        G.dir = G.rings[0].dir;
+        G.lastRing = 0;
+        G.exited = true;
+        G.trail.length = 0;
+        startGrace(0);
+      }
+    }
+
+  } else if (G.state === "won") {
+    if (G.t - G.wonAt > 0.85) {
+      if (G.index + 1 < LEVELS.length) loadLevel(G.index + 1);
+      else showEnd();
+    }
+  }
+
+  for (var j = G.trail.length - 1; j >= 0; j--) {
+    G.trail[j].life -= dt;
+    if (G.trail[j].life <= 0) G.trail.splice(j, 1);
+  }
+}
+
+/* ─────────── çizim ─────────── */
+function drawBg() {
+  var g = ctx.createLinearGradient(0, 0, 0, window.innerHeight);
+  g.addColorStop(0, COL.bgTop);
+  g.addColorStop(1, COL.bgBottom);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+}
+
+function drawRing(i) {
+  var r = G.rings[i];
+  var cx = SX(r.x), cy = SY(r.y), rad = SR(r.r);
+  var lw = Math.max(1.5, play.w * 0.0045);
+
+  if (r.trap) {
+    // Kırmızı tuzak: kapı gibi çizilir (kesikli dış çember) ama kırmızıdır.
+    // Asla sönük çizilmiyor — uyarının her an okunur olması gerekiyor.
+    ctx.save();
+    ctx.strokeStyle = COL.hazard;
+    ctx.lineWidth = lw * 1.5;
+    ctx.globalAlpha = 0.92 + Math.sin(G.t * 3.4) * 0.08;
+    ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = 0.5;
+    ctx.setLineDash([rad * 0.16, rad * 0.2]);
+    ctx.lineWidth = lw;
+    ctx.beginPath(); ctx.arc(cx, cy, rad * 1.16, G.t * -0.5, G.t * -0.5 + Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 0.1 + Math.sin(G.t * 3.4) * 0.03;
+    ctx.fillStyle = COL.hazard;
+    ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    return;
+  }
+
+  if (r.gate) {
+    var open = gateOpen();
+    ctx.save();
+    ctx.strokeStyle = COL.gate;
+    ctx.globalAlpha = open ? 0.95 : 0.34;      // kilitliyken sönük
+    ctx.lineWidth = lw * 1.4;
+    var pulse = open ? 1 + Math.sin(G.t * 2) * 0.022 : 1;
+    ctx.beginPath(); ctx.arc(cx, cy, rad * pulse, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = open ? 0.55 : 0.2;
+    ctx.setLineDash([rad * 0.16, rad * 0.2]);
+    ctx.lineWidth = lw;
+    ctx.beginPath(); ctx.arc(cx, cy, rad * 1.16, G.t * 0.5, G.t * 0.5 + Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    return;
+  }
+
+  ctx.save();
+  ctx.strokeStyle = COL.ring;
+  ctx.globalAlpha = 0.72;
+  ctx.lineWidth = lw;
+  ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+
+  if (r.haz) {
+    // Yay yeşilden kırmızıya eriyor: kalan müsamaha ne kadarsa o kadar yeşil
+    var onThis = (G.state === "attached" && G.ring === i);
+    var frac = 0;
+    if (G.spec.grace && onThis && G.graceRing === i) {
+      var total = (Math.PI * 2) / Math.max(0.1, r.spd);
+      frac = Math.max(0, Math.min(1, graceLeft() / total));
+    }
+    var col = G.spec.grace ? (onThis && frac > 0 ? COL.hazSafe : COL.hazard) : COL.hazard;
+    ctx.save();
+    ctx.strokeStyle = col;
+    ctx.globalAlpha = 0.95;
+    ctx.lineWidth = lw * 2.6;
+    ctx.lineCap = "round";
+    for (var k = 0; k < r.haz.length; k++) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, rad, -r.haz[k][1], -r.haz[k][0]);   // ekran y'si ters
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
+function drawLumen(l) {
+  if (l.got) return;
+  var x = SX(l.x), y = SY(l.y), s = play.w * 0.021;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = COL.lumen;
+  ctx.shadowColor = COL.lumen;
+  ctx.shadowBlur = s * 2.4;
+  ctx.beginPath();
+  for (var i = 0; i < 10; i++) {
+    var rr = i % 2 ? s * 0.44 : s;
+    var a = -Math.PI / 2 + i * Math.PI / 5;
+    i ? ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr)
+      : ctx.moveTo(Math.cos(a) * rr, Math.sin(a) * rr);
+  }
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+function drawOrb() {
+  if (G.state === "dead") return;
+  var s = SR(ORB_R);
+  ctx.save();
+  for (var i = 0; i < G.trail.length; i++) {
+    var p = G.trail[i];
+    ctx.globalAlpha = (p.life / 0.32) * 0.28;
+    ctx.fillStyle = COL.orb;
+    ctx.beginPath(); ctx.arc(p.x, p.y, s * 0.55, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = COL.orb;
+  ctx.shadowColor = COL.orb;
+  ctx.shadowBlur = s * 2.6;
+  ctx.beginPath(); ctx.arc(G.ox, G.oy, s, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+// Nişan çizgisi: dokununca nereye gideceğini gösteriyor.
+// Oyunda yalnızca öğreticide var; reklamda hep açık, çünkü oyuncunun
+// öğrenecek on beş saniyesi var.
+function drawAim() {
+  if (G.state !== "attached") return;
+  var len = play.w * 0.16;
+  var dx = -Math.sin(G.angle) * G.dir, dy = -Math.cos(G.angle) * G.dir;
+  ctx.save();
+  ctx.globalAlpha = 0.3 + Math.sin(G.t * 4) * 0.08;
+  ctx.strokeStyle = COL.orb;
+  ctx.lineWidth = Math.max(1.5, play.w * 0.006);
+  ctx.lineCap = "round";
+  ctx.setLineDash([play.w * 0.014, play.w * 0.022]);
+  ctx.beginPath();
+  ctx.moveTo(G.ox + dx * SR(ORB_R) * 2.2, G.oy + dy * SR(ORB_R) * 2.2);
+  ctx.lineTo(G.ox + dx * len, G.oy + dy * len);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawPops() {
+  for (var i = 0; i < G.pops.length; i++) {
+    var p = G.pops[i];
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.life / 0.5) * 0.9;
+    ctx.fillStyle = p.color;
+    ctx.beginPath(); ctx.arc(p.x, p.y, play.w * 0.006, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function draw() {
+  drawBg();
+  if (!G) return;
+  for (var i = 0; i < G.rings.length; i++) drawRing(i);
+  for (var j = 0; j < G.lumens.length; j++) drawLumen(G.lumens[j]);
+  drawAim();
+  drawOrb();
+  drawPops();
+  if (G.flash > 0) {
+    ctx.save();
+    ctx.globalAlpha = G.flash * 0.3;
+    ctx.fillStyle = COL.hazard;
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    ctx.restore();
+  }
+}
+
+/* ─────────── arayüz ─────────── */
+var elLvl = document.getElementById("lvl");
+var elStars = document.getElementById("stars");
+var elCoach = document.getElementById("coach");
+
+function drawHUD() {
+  elLvl.textContent = T.lvl + " " + (G.index + 1) + "/" + LEVELS.length;
+  var h = "";
+  for (var i = 0; i < G.lumens.length; i++) {
+    h += '<span class="pip' + (G.lumens[i].got ? " on" : "") + '"></span>';
+  }
+  elStars.innerHTML = h;
+}
+
+var coachTimer = null;
+function showCoach(i) {
+  elCoach.innerHTML = T.coach[i];
+  elCoach.classList.add("show");
+  clearTimeout(coachTimer);
+  coachTimer = setTimeout(function () { elCoach.classList.remove("show"); }, 4200);
+}
+
+function showEnd() {
+  document.getElementById("end").classList.add("show");
+  document.getElementById("cta").style.display = "none";
+  // Bilgi şeridi ve açıklama kartın arkasından sızıyordu
+  document.querySelector(".layer").style.display = "none";
+}
+
+document.getElementById("endTitle").innerHTML = T.endTitle;
+document.getElementById("endSub").textContent = T.endSub;
+document.getElementById("endCta").textContent = T.endCta;
+document.getElementById("replay").textContent = T.replay;
+document.getElementById("cta").textContent = T.cta;
+
+document.getElementById("cta").addEventListener("click", function (e) {
+  e.stopPropagation(); openStore();
+});
+document.getElementById("endCta").addEventListener("click", function (e) {
+  e.stopPropagation(); openStore();
+});
+document.getElementById("replay").addEventListener("click", function (e) {
+  e.stopPropagation();
+  document.getElementById("end").classList.remove("show");
+  document.getElementById("cta").style.display = "";
+  document.querySelector(".layer").style.display = "";
+  loadLevel(0);
+});
+
+/* ─────────── girdi: tek dokunuş, tüm ekran ─────────── */
+function tap(e) {
+  if (e.target.closest && e.target.closest("button")) return;
+  if (!G || G.state !== "attached") return;
+  e.preventDefault();
+  launch();
+}
+window.addEventListener("pointerdown", tap, { passive: false });
+
+/* ─────────── döngü ─────────── */
+var last = 0;
+function frame(now) {
+  if (!last) last = now;
+  var dt = Math.min(0.05, (now - last) / 1000);   // sekme geri gelince sıçramasın
+  last = now;
+  if (G) update(dt);
+  draw();
+  requestAnimationFrame(frame);
+}
+
+// MRAID kullanan ağlarda (AppLovin, ironSource, Unity, Vungle) reklam
+// "loading" durumundayken başlatılmamalı; o ağlar hazır olduklarında haber
+// veriyor. Köprü yoksa doğrudan başlıyor.
+function boot() {
+  loadLevel(0);
+  requestAnimationFrame(frame);
+}
+if (typeof mraid !== "undefined" && mraid.getState && mraid.getState() === "loading") {
+  mraid.addEventListener("ready", boot);
+} else {
+  boot();
+}
+</script>
+</body>
+</html>
