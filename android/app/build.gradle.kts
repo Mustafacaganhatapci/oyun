@@ -22,7 +22,17 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.caganhatapci.orbeon"
+        // Play'deki paket adı. BİR KEZ BELİRLENİYOR, sonra değişmiyor —
+        // listeleme `com.caganhatapci.orbeon.game` ile kurulduğu için bundle
+        // da bu adla çıkmak zorunda. Düz `com.caganhatapci.orbeon` ile
+        // yüklemeyi Play iki ayrı sebeple reddediyordu: paket adı tutmuyor,
+        // bir de androidx-startup / firebaseinitprovider / mobileadsinit-
+        // provider yetkileri (hepsi ${applicationId}'den türüyor) başka bir
+        // uygulamada kayıtlı.
+        //
+        // `namespace` BİLEREK farklı: o Kotlin paketini ve R sınıfını
+        // belirliyor, kaynak ağacında hiçbir şey değişmesin diye öyle kaldı.
+        applicationId = "com.caganhatapci.orbeon.game"
         minSdk = 24
         targetSdk = 35
         versionCode = 9

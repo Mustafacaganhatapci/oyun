@@ -70,7 +70,7 @@ enabled       true                      ← BOOLEAN, tırnaksız
 id            v2.2
 minVersion    2.2
 appStoreID    <App Store Connect → App Information → Apple ID>
-playStoreId   com.caganhatapci.orbeon
+playStoreId   com.caganhatapci.orbeon.game
 
 title         Orbeon 2.2 is out
 body          Record the game's sounds in your own voice, and meet seven new characters.

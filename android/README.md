@@ -22,6 +22,51 @@ Derleme durumu: `assembleDebug` ve R8 küçültmesi açık `bundleRelease`
 (AGP 8.6 / Gradle 8.14 / JDK 21, compileSdk 35) temiz bir ortamda
 hatasız tamamlanıyor.
 
+## Paket adı: `com.caganhatapci.orbeon.game`
+
+Play'deki listeleme bu adla kurulu ve **paket adı bir kez belirlenince
+değişmiyor**. `applicationId` bir süre düz `com.caganhatapci.orbeon`
+duruyordu; Play yüklemeyi iki ayrı sebeple reddediyordu:
+
+```
+APK'nızın veya Android App Bundle'ınızın paket adının
+com.caganhatapci.orbeon.game olması gerekiyor.
+
+Şu içerik sağlayıcı yetkilileri başka geliştiriciler tarafından kullanılıyor:
+com.caganhatapci.orbeon.androidx-startup,
+com.caganhatapci.orbeon.firebaseinitprovider,
+com.caganhatapci.orbeon.mobileadsinitprovider
+```
+
+İkinci mesaj ayrı bir sorun değil: o üç yetki de kütüphanelerin
+`${applicationId}` yer tutucusundan türüyor, paket adı düzelince üçü
+birden düzeliyor. Manifestte elle tanımlı sağlayıcı yok.
+
+`namespace` bilerek `com.caganhatapci.orbeon` kaldı — o Kotlin paketini ve
+R sınıfını belirliyor, `applicationId`'den bağımsız. Kaynak ağacında
+hiçbir şey değişmedi.
+
+### google-services.json güncellenmeli
+
+Dosya hâlâ yalnızca eski paketi tanıyor. Güncellenmeden derlersen Google
+Services eklentisi şununla durur:
+
+```
+No matching client found for package name 'com.caganhatapci.orbeon.game'
+```
+
+1. Firebase konsolu → proje **lumo-890fb** → ⚙ Proje ayarları
+2. **Uygulamalarınız** → **Uygulama ekle** → Android
+3. Paket adı: `com.caganhatapci.orbeon.game` (takma ad fark etmez)
+4. `google-services.json`'u indir → `android/app/google-services.json`
+   üzerine yaz
+
+Eski kaydı silme; indirilen dosya iki istemciyi birden taşır, Gradle
+eşleşeni kendi seçer.
+
+> İmzalama anahtarı da öncekiyle **aynı** olmalı, yoksa Play bundle'ı
+> anahtar uyuşmazlığından reddeder.
+
 ## Metin eklerken: kesme işaretini kaçır
 
 `res/values*/strings.xml` içinde düz `'` karakteri **\\'** yazılmalı.
