@@ -207,7 +207,30 @@ Build işlenince sürüme ekle → **Add for Review** → **Submit**.
 
 ---
 
-## 4. Play Console (Android)
+## 4. Play Console (Android) — GOOGLE'IN ONAYINI BEKLİYOR
+
+> **2 Eki 2026: yükleme anahtarı sıfırlama isteği gönderildi.** Google
+> onaylayana kadar (genelde 1–2 iş günü) hiçbir bundle kabul edilmiyor.
+> iOS bunu beklemiyor, 0–3 arası adımlar Android'den bağımsız.
+
+Olan şuydu: Play'in beklediği yükleme anahtarı
+`85:59:77:0D:14:DE:6E:3F:95:F1:57:F5:DE:EB:57:88:14:75:B3:11` sabah bir
+bundle yüklenirken kaydolmuş, sonra o anahtar deposunun üstüne yenileri
+yazılınca kaybolmuştu. Play yüklemeyi "yanlış anahtarla imzalanmış" diye
+reddediyordu.
+
+**Anahtar artık `~/Desktop/orbeon.jks`** (takma ad `key0`), parmak izi
+`20:30:ED:FA:F0:5D:50:FB:16:D7:5D:5C:69:C9:0C:35:91:24:51:CE`.
+`android/keystore.properties` ona bakıyor, Google'a gönderilen sertifika da
+aynı depodan çıktı — üçü karşılaştırılıp doğrulandı. Onaydan sonra Play bu
+parmak izini bekleyecek.
+
+> **Bu dosyanın üstüne bir daha yazma.** Android Studio'da
+> **Generate Signed Bundle → Choose existing…** yolunu kullan; "Create new"
+> düğmesi bugün dört anahtarı birden harcattı. Yedeği ve parolası makine
+> dışında bir yerde durmalı.
+
+Onay e-postası gelince:
 
 `versionCode 9 / versionName 2.3` repoda ayarlı.
 
@@ -218,6 +241,10 @@ Build işlenince sürüme ekle → **Add for Review** → **Submit**.
 4. **Veri güvenliği formunu güncelle** — `android/store-listing.md` içindeki
    tabloya göre. 2.2'de "kilitlenme/analiz SDK'sı eklenmedi" yazıyordu,
    artık yanlış: Crashlytics ve görüş kutusu eklendi.
+
+> Paket adı **`com.caganhatapci.orbeon.game`** oldu (Play'deki listeleme
+> öyle kurulu, değiştirilemiyor). `google-services.json` da bu paket için
+> Firebase konsolundan yeniden indirildi. Ayrıntısı `android/README.md`'de.
 
 ---
 
