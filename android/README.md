@@ -22,6 +22,38 @@ Derleme durumu: `assembleDebug` ve R8 küçültmesi açık `bundleRelease`
 (AGP 8.6 / Gradle 8.14 / JDK 21, compileSdk 35) temiz bir ortamda
 hatasız tamamlanıyor.
 
+## Metin eklerken: kesme işaretini kaçır
+
+`res/values*/strings.xml` içinde düz `'` karakteri **\\'** yazılmalı.
+Kaçırılmazsa derleme şu mesajla ölür:
+
+```
+:app:mergeReleaseResources
+Can not extract resource from com.android.aaptcompiler.ParsedResource@413218e
+```
+
+Mesaj hangi dosya, hangi satır olduğunu söylemiyor — sadece bir nesne
+adresi veriyor ve dosya XML olarak kusursuz olduğu için doğrulayıcıdan da
+geçiyor. Kaç tane `ParsedResource` yazıyorsa o kadar bozuk metin var.
+
+Hangisi olduğunu bulmanın kestirme yolu, aapt2'yi tek başına çalıştırmak —
+o açık açık söylüyor:
+
+```sh
+# AGP sürümüyle aynı aapt2
+curl -o aapt2.jar https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/8.5.2-11315950/aapt2-8.5.2-11315950-linux.jar
+unzip -o aapt2.jar aapt2 && chmod +x aapt2
+for f in $(find app/src/main/res -type f); do ./aapt2 compile -o /tmp/out "$f"; done
+```
+
+```
+strings.xml:252: error: unescaped apostrophe in string
+  "Hop as often as you like. There's no limit and no hurry"
+```
+
+Türkçe ve Fransızcada kesme işareti göze çarptığı için zaten kaçırılıyor;
+tuzak İngilizce metinlerde (`don't`, `there's`, `you're`).
+
 ## Yayına çıkmadan önce yapılacaklar
 
 1. ~~**Firebase**~~ — bağlandı. `app/google-services.json` iOS ile **aynı**
