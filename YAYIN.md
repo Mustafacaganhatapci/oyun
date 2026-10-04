@@ -232,7 +232,20 @@ parmak izini bekleyecek.
 
 Onay e-postası gelince:
 
-`versionCode 9 / versionName 2.3` repoda ayarlı.
+`versionCode 10 / versionName 2.3` repoda ayarlı (9 Play'e yüklendi, aynı
+sürüm kodu bir daha kabul edilmiyor).
+
+Play ilk denemede iki hatayla reddetti, ikisi de repoda düzeltildi:
+**Play Faturalandırma 7.1.1 → 8.0.0** ve **targetSdk 35 → 36** (AGP de
+8.5.2'den 8.9.1'e çıktı, compileSdk 36 bunu gerektiriyor). Üçüncü mesaj
+(yerel kod hata ayıklama sembolleri) yalnızca uyarıydı; semboller
+Firebase/AdMob'un `.so` dosyalarından geliyor, bizim üretmediğimiz için
+sağlanamıyor ve yayını engellemiyor.
+
+> **Satın almayı gerçek cihazda bir kez dene.** Faturalandırma 8'de
+> `queryProductDetailsAsync` geri çağrısının imzası değişti; kod güncellendi
+> ama buradan satın alma akışı çalıştırılamıyor. Premium ekranında fiyatlar
+> görünüyorsa ürün sorgusu çalışıyor demektir.
 
 1. Android Studio → **Build → Generate Signed Bundle / APK → Android App Bundle**
 2. Play Console → Production → **Create new release** → AAB'yi yükle

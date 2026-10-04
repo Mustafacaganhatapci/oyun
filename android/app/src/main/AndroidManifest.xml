@@ -27,6 +27,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Orbeon">
 
+        <!-- Android 16 (API 36) hedeflenince sw600dp ve üstü ekranlarda
+             screenOrientation YOK SAYILIYOR: tablet ve açık katlanabilirde
+             oyun yatay açılırdı. Motor x'i genişliğe, y'yi yüksekliğe
+             ölçeklediği (halka yarıçapı da genişliğe bağlı) için yatay
+             tuvalde halkalar devleşip üst üste biner — oyun oynanmaz hale
+             gelir.
+
+             Bu, Google'ın resmi çıkış yolu ve GEÇİCİ: API 37 hedeflendiğinde
+             artık işe yaramayacak. Kalıcı çözüm tuvali dikey orana sabitleyip
+             geniş ekranda ortalamak (mektup kutusu), tıpkı
+             playable/orbeon-playable.html'de yapıldığı gibi. -->
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
+            android:value="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

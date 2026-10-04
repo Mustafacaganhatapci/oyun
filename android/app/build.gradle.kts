@@ -19,7 +19,7 @@ val hasKeystore = keystoreProps.getProperty("storeFile") != null
 
 android {
     namespace = "com.caganhatapci.orbeon"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         // Play'deki paket adı. BİR KEZ BELİRLENİYOR, sonra değişmiyor —
@@ -34,8 +34,12 @@ android {
         // belirliyor, kaynak ağacında hiçbir şey değişmesin diye öyle kaldı.
         applicationId = "com.caganhatapci.orbeon.game"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 9
+        // Play artık API 36 şart koşuyor: "hedeflemesi gereken en düşük
+        // API düzeyi 36". 35 ile yüklenen bundle reddediliyor.
+        targetSdk = 36
+        // 9 Play'e yüklendi ve orada işlendi; aynı sürüm kodu bir daha
+        // kabul edilmiyor.
+        versionCode = 10
         versionName = "2.3"
         resourceConfigurations += listOf("en", "tr", "de", "fr", "es", "ja")
     }
@@ -102,7 +106,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
 
     // Google Play Faturalandırma — Premium ve bahşişler
-    implementation("com.android.billingclient:billing-ktx:7.1.1")
+    // Play 8.0.0'dan düşüğünü kabul etmiyor. Tek kırıcı değişiklik
+    // queryProductDetailsAsync geri çağrısında, BillingManager'da düzeltildi.
+    implementation("com.android.billingclient:billing-ktx:8.0.0")
 
     // AdMob + GDPR onay formu (UMP)
     implementation("com.google.android.gms:play-services-ads:23.3.0")

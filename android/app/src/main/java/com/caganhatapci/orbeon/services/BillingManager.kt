@@ -173,14 +173,24 @@ class BillingManager(private val context: Context) {
             .setProductList(productList)
             .build()
 
-        client.queryProductDetailsAsync(params) { result, list ->
+        // Faturalandırma 8'de geri çağrının ikinci parametresi artık düz bir
+        // List<ProductDetails> değil, QueryProductDetailsResult. Çekilebilen
+        // ürünler `productDetailsList`te; çekilemeyenler eskiden sessizce
+        // düşüyordu, artık `unfetchedProductList`te sebebiyle geliyor.
+        client.queryProductDetailsAsync(params) { result, details ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                val list = details.productDetailsList
                 // Sabit sırada göster: premium, küçük bahşiş, büyük bahşiş
                 products = ids.mapNotNull { id -> list.firstOrNull { it.productId == id } }
                 // Fiyatı önbelleğe al: çevrimdışıyken Play ürün döndüremez ama
                 // "premium ne kadar?" sorusuna yine de doğru yanıt verebilelim.
                 premiumProduct?.oneTimePurchaseOfferDetails?.formattedPrice?.let {
                     p.edit().putString(KEY_PREMIUM_PRICE, it).apply()
+                }
+                // Eksik ürünün sebebi artık öğrenilebiliyor: Play Console'da
+                // etkin değil, ülkede satılmıyor, kimlik yanlış yazılmış…
+                for (u in details.unfetchedProductList) {
+                    Log.e(TAG, "Ürün çekilemedi: ${u.productId} (${u.statusCode})")
                 }
             } else {
                 Log.e(TAG, "Ürünler yüklenemedi: ${result.debugMessage}")
