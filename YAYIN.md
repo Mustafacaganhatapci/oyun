@@ -1,4 +1,4 @@
-# Yayın kontrol listesi — 2.3 (build 10)
+# Yayın kontrol listesi — 2.4 (build 11)
 
 Sıra önemli: yukarıdakiler yayını **engelliyor**, aşağıdakiler engellemiyor.
 Bugün göndermek istiyorsan 0–4 arası yeter; 5 ve sonrası bu akşam ya da
@@ -10,7 +10,7 @@ Projenin sayıları (adımlarda lazım olacak):
 |---|---|
 | Bundle ID | `com.caganhatapci.lumo` |
 | Team ID | `TDJ59SWRZJ` |
-| Sürüm / build | **2.3 / 10** (repoda ayarlı, dokunma) |
+| Sürüm / build | **2.4 / 11** (repoda ayarlı, dokunma) |
 | Firebase projesi | `lumo-890fb` |
 
 ---
@@ -155,11 +155,11 @@ Bu sırada 3. adımı yap.
 
 **a. Yeni sürüm oluştur**
 
-App Store Connect → Orbeon → sol üstte **+ Version or Platform** → `2.3`
+App Store Connect → Orbeon → sol üstte **+ Version or Platform** → `2.4`
 
 **b. Yenilikler**
 
-`ios-store-assets/Orbeon-2.3-magaza-metinleri.pdf` dosyasını aç. Her dil ayrı
+`ios-store-assets/Orbeon-2.4-magaza-metinleri.pdf` dosyasını aç. Her dil ayrı
 sayfada (TR · EN · ES), her sayfada üç alan var: **tanıtım metni**,
 **yenilikler**, **Play sürüm notu**. Kutuların içindekini olduğu gibi kopyala,
 dil seçici App Store Connect sayfasının üstünde.
@@ -168,16 +168,9 @@ dil seçici App Store Connect sayfasının üstünde.
 > "kısa yol" diye öğrendi, aynı yerde artık ölüyor. Bu cümleyi aşağı
 > çekme — oyuncu onu ölerek öğrenmesin.
 
-**c. Ekran görüntüleri — DEĞİŞTİ, yenilerini yükle**
+**c. Ekran görüntüleri — 2.3'tekiler geçerli**
 
-Altı panelin de metni yeniden yazıldı, 36 PNG yeniden üretildi. 2.2'dekiler
-artık geçerli değil.
-
-- 6.9" → `ios-store-assets/appstore-<dil>-<n>-<ad>.png`
-- 6.5" → `ios-store-assets/6.5-inch/` altında aynı isimler
-
-Eskileri sil, altısını sırayla yükle (core · hazard · collect · characters ·
-endless · lives). Çizim değişmedi, yalnızca üstündeki yazı.
+2.3'te yenilenmişti ve arayüz o günden beri değişmedi. Dokunma.
 
 **d. App Privacy — BU ADIM YAYINI ENGELLİYOR**
 
