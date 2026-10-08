@@ -37,10 +37,10 @@ android {
         // Play artık API 36 şart koşuyor: "hedeflemesi gereken en düşük
         // API düzeyi 36". 35 ile yüklenen bundle reddediliyor.
         targetSdk = 36
-        // 9 Play'e yüklendi ve orada işlendi; aynı sürüm kodu bir daha
-        // kabul edilmiyor.
-        versionCode = 10
-        versionName = "2.3"
+        // Yüklenen her sürüm kodu Play'de yanar, bir daha kabul edilmiyor.
+        // 9 ve 10 harcandı.
+        versionCode = 11
+        versionName = "2.4"
         resourceConfigurations += listOf("en", "tr", "de", "fr", "es", "ja")
     }
 
