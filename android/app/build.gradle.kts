@@ -39,8 +39,8 @@ android {
         targetSdk = 36
         // Yüklenen her sürüm kodu Play'de yanar, bir daha kabul edilmiyor.
         // 9 ve 10 harcandı.
-        versionCode = 11
-        versionName = "2.4"
+        versionCode = 12
+        versionName = "2.5"
         resourceConfigurations += listOf("en", "tr", "de", "fr", "es", "ja")
     }
 

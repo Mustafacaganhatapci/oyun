@@ -71,6 +71,39 @@ class BillingManager(private val context: Context) {
          * çalışması gerekiyor ve sınır kişi başına, toplam kullanıma değil.
          */
         val TRIAL_PROMO_CODES = mapOf("ictenmimar100" to 10)
+
+        /**
+         * Kodu karşılaştırmaya hazırlar: Türkçe harfleri ASCII karşılığına
+         * indirger, harf ve rakam dışındaki her şeyi atar, küçük harfe çevirir.
+         *
+         * Buna ihtiyaç var çünkü düz `lowercase()` üç ayrı yerde patlıyordu:
+         *
+         *  1. `lowercase()` CİHAZIN DİLİNİ kullanıyor. Türkçe telefonda
+         *     "ICTENMIMAR100" → "ıctenmımar100" (noktasız ı) oluyor ve hiçbir
+         *     zaman eşleşmiyordu. Oyunun ana kitlesi Türkçe, yani bu hata
+         *     kodu çoğu kullanıcı için bozuyordu.
+         *  2. Kodun markası "İçten Mimar" — insan doğal olarak
+         *     `içtenmimar100` yazıyor, bizdeki `c` ise düz.
+         *  3. Boşluk ve noktalama: kopyala-yapıştırda araya boşluk giriyor.
+         *
+         * Noktalama atıldığı için `ays123.` ile `ays123` artık aynı şey.
+         */
+        fun normalizeCode(raw: String): String {
+            val sb = StringBuilder(raw.length)
+            for (ch in raw) when (ch) {
+                'ı', 'İ', 'I', 'i' -> sb.append('i')
+                'ş', 'Ş' -> sb.append('s')
+                'ğ', 'Ğ' -> sb.append('g')
+                'ç', 'Ç' -> sb.append('c')
+                'ö', 'Ö' -> sb.append('o')
+                'ü', 'Ü' -> sb.append('u')
+                // Birleşen nokta (U+0307) ve diğer işaretler burada eleniyor
+                else -> if (ch.isLetterOrDigit()) sb.append(ch)
+            }
+            // Locale.ROOT ŞART: varsayılan yerel kullanılırsa 1. maddedeki
+            // hata geri gelir.
+            return sb.toString().lowercase(java.util.Locale.ROOT)
+        }
         const val PROMO_FAIL_BONUS_THRESHOLD = 5
         const val PROMO_FAIL_BONUS_STARS = 100
 
@@ -334,12 +367,15 @@ class BillingManager(private val context: Context) {
         private set
 
     fun redeem(code: String, playerId: String, onResult: (RedeemResult) -> Unit) {
-        val normalized = code.trim().lowercase()
+        val normalized = normalizeCode(code)
         if (normalized.isEmpty()) { onResult(RedeemResult.INVALID); return }
 
         // SÜRELİ deneme en başta sınanıyor: kalıcı listeye de yazılmış olsaydı
-        // oyuncu süresiz premium alırdı.
-        TRIAL_PROMO_CODES[normalized]?.let { days ->
+        // oyuncu süresiz premium alırdı. Liste de aynı sadeleştirmeden
+        // geçiriliyor — iki taraf aynı kurala uymazsa hiçbir kod tutmaz.
+        TRIAL_PROMO_CODES.entries.firstOrNull {
+            normalizeCode(it.key) == normalized
+        }?.value?.let { days ->
             // trialUntil geçmişte bile olsa hak harcanmış sayılır
             if (trialUntil > 0L) { onResult(RedeemResult.TRIAL_ALREADY_USED); return }
             grantTrial(days)
@@ -347,7 +383,7 @@ class BillingManager(private val context: Context) {
             return
         }
 
-        if (PROMO_CODES.contains(normalized)) {
+        if (PROMO_CODES.any { normalizeCode(it) == normalized }) {
             grantPromo()
             onResult(RedeemResult.PREMIUM)
             return

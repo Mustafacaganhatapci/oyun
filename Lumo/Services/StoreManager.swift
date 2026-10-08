@@ -243,6 +243,36 @@ final class StoreManager: ObservableObject {
         if isPremium != shouldBePremium { recomputePremium() }
     }
 
+    /// Kodu karşılaştırmaya hazırlar: Türkçe harfleri ASCII karşılığına
+    /// indirger, harf ve rakam dışındaki her şeyi atar, küçük harfe çevirir.
+    ///
+    /// Buna ihtiyaç var çünkü düz `lowercased()` üç ayrı yerde patlıyordu:
+    ///
+    ///  1. `İ` küçültülünce `i` + AYRI bir birleşen nokta karakteri oluyor,
+    ///     yani "İCTENMIMAR100" hiçbir zaman "ictenmimar100" etmiyordu.
+    ///  2. Kodun markası "İçten Mimar" — insan doğal olarak `içtenmimar100`
+    ///     yazıyor, bizdeki `c` ise düz. Bir harf yüzünden kod geçersizdi.
+    ///  3. Boşluk ve noktalama: kopyala-yapıştırda araya boşluk giriyor.
+    ///
+    /// Noktalama atıldığı için `ays123.` ile `ays123` artık aynı şey.
+    static func normalizeCode(_ raw: String) -> String {
+        var s = ""
+        for ch in raw {
+            switch ch {
+            case "ı", "İ", "I", "i": s.append("i")
+            case "ş", "Ş": s.append("s")
+            case "ğ", "Ğ": s.append("g")
+            case "ç", "Ç": s.append("c")
+            case "ö", "Ö": s.append("o")
+            case "ü", "Ü": s.append("u")
+            default:
+                // Birleşen nokta (U+0307) ve diğer işaretler burada eleniyor
+                if ch.isLetter || ch.isNumber { s.append(ch) }
+            }
+        }
+        return s.lowercased()
+    }
+
     /// Tanıdık kodunu dener.
     /// Kodu önce SÜRELİ deneme listesinde, sonra koda gömülü kalıcı listede,
     /// en son Firestore'daki `promoCodes` koleksiyonunda arar.
@@ -252,12 +282,15 @@ final class StoreManager: ObservableObject {
     /// yönetiliyor — kaç kez kullanılacağını, açık mı kapalı mı olduğunu sen
     /// belirliyorsun.
     func redeem(code: String) async -> RedeemResult {
-        let normalized = code.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let normalized = Self.normalizeCode(code)
         guard !normalized.isEmpty else { return .invalid }
 
         // SÜRELİ deneme en başta sınanıyor: kalıcı listeye de yazılmış olsaydı
-        // oyuncu süresiz premium alırdı.
-        if let days = Self.trialPromoCodes[normalized] {
+        // oyuncu süresiz premium alırdı. Liste de aynı sadeleştirmeden
+        // geçiriliyor — iki taraf aynı kurala uymazsa hiçbir kod tutmaz.
+        if let days = Self.trialPromoCodes.first(where: {
+            Self.normalizeCode($0.key) == normalized
+        })?.value {
             // `trialUntil` geçmişte bile olsa hak harcanmış sayılır
             guard trialUntil == nil else { return .trialAlreadyUsed }
             grantTrial(days: days)
@@ -265,7 +298,7 @@ final class StoreManager: ObservableObject {
         }
 
         // Gömülü liste: çevrimdışıyken de çalışsın
-        if Self.promoCodes.contains(normalized) {
+        if Self.promoCodes.contains(where: { Self.normalizeCode($0) == normalized }) {
             grantPromo()
             return .premium
         }
