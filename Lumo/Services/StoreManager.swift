@@ -283,6 +283,19 @@ final class StoreManager: ObservableObject {
     /// belirliyorsun.
     func redeem(code: String) async -> RedeemResult {
         let normalized = Self.normalizeCode(code)
+        #if DEBUG
+        // Kodun neden tutmadığını cihazda görebilmek için. Ekranda "geçersiz"
+        // yazarken metnin GERÇEKTEN ne olduğu burada okunuyor: görünmez
+        // karakter, farklı bir harf ya da listenin hiç gelmemiş olması —
+        // üçü de aynı mesajı veriyordu ve ayırt edilemiyordu.
+        print("""
+        [Kod] girilen=\(code.debugDescription)
+        [Kod] sadelestirilmis=\(normalized.debugDescription)
+        [Kod] skalalar=\(Array(normalized.unicodeScalars.map { String(format: "U+%04X", $0.value) }))
+        [Kod] denemeListesi=\(Self.trialPromoCodes.keys.sorted())
+        [Kod] trialUntil=\(String(describing: trialUntil))
+        """)
+        #endif
         guard !normalized.isEmpty else { return .invalid }
 
         // SÜRELİ deneme en başta sınanıyor: kalıcı listeye de yazılmış olsaydı
