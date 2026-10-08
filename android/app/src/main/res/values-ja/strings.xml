@@ -261,4 +261,7 @@
     <string name="hint_extra_life_title">リングの上にハート</string>
     <string name="hint_extra_life_body">すぐ上のリングにハートが待っています。取れば、一度のミスがランの終わりではなくなり、落ちた場所から続けられます。8リングごとに現れ、同時に3つまで持てます。ハートのあるリングには危険な弧は決して置かれません。</string>
     <string name="rule_trap_gate">ゲートのひとつは罠</string>
+    <string name="code_trial">コードが有効です。%1$d日間プレミアムをお楽しみください。</string>
+    <string name="code_trial_used">このコードはすでに使用済みです。</string>
+    <string name="trial_days_left">プレミアム体験 — 残り%1$d日</string>
 </resources>

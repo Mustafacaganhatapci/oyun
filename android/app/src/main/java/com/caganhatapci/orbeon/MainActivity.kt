@@ -119,6 +119,8 @@ class MainActivity : ComponentActivity() {
         state.daily.refresh()
         state.missions.reloadForToday()
         state.billing.refreshEntitlements()
+        // Süreli deneme de arka plandayken dolmuş olabilir
+        state.billing.refreshTrialState()
         // Abonelik durumu değişmiş olabilir: kendi seslerin buna göre açılır/kapanır
         state.customSounds.premiumActive = state.billing.isPremium
         state.customSounds.applyToEngine(state.audio)

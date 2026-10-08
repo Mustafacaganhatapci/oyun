@@ -261,4 +261,7 @@
     <string name="hint_extra_life_title">Un corazón en el anillo</string>
     <string name="hint_extra_life_body">En el anillo de arriba te espera un corazón. Cógelo y un error deja de ser el final de la partida: sigues desde donde caíste. Aparecen cada ocho anillos, puedes llevar tres a la vez y el anillo que lleva uno nunca tiene peligro.</string>
     <string name="rule_trap_gate">Una puerta es una trampa</string>
+    <string name="code_trial">Código aceptado: Premium es tuyo durante %1$d días.</string>
+    <string name="code_trial_used">Ya usaste este código una vez.</string>
+    <string name="trial_days_left">Prueba Premium: quedan %1$d días</string>
 </resources>

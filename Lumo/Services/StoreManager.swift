@@ -27,6 +27,17 @@ final class StoreManager: ObservableObject {
     /// bu yüzden burada hepsi küçük harfle yazılır).
     static let promoCodes: Set<String> = ["axiumdynamicsisking", "ays123."]
 
+    /// SÜRELİ deneme kodları: kod → kaç gün premium.
+    ///
+    /// Kalıcı premium veren `promoCodes`ten ayrı tutuluyor, çünkü üç farkı var:
+    /// süresi dolar, kullanıcı başına BİR KEZ verilir ve süresi dolduktan
+    /// sonra aynı kod bir daha çalışmaz. İkisini tek listede toplamak
+    /// "neden bu kod bana premium vermedi" sorusunu doğururdu.
+    ///
+    /// Koda gömülü, Firestore'a sorulmuyor: tanıtım kodunun çevrimdışı da
+    /// çalışması gerekiyor ve sınırı kişi başına, toplam kullanıma değil.
+    static let trialPromoCodes: [String: Int] = ["ictenmimar100": 10]
+
     /// Kod 5'ten fazla kez yanlış girilirse (bir kereye mahsus) üzülmesin diye
     /// teselli olarak 100 yıldız verilir — premium'la hiçbir ilgisi yoktur.
     static let promoFailBonusThreshold = 5
@@ -67,6 +78,10 @@ final class StoreManager: ObservableObject {
     private var entitled = false        // gerçek IAP satın alması var mı
     private var promoGranted = false    // kodla açıldı mı
     private var starGranted = false     // yıldız eşiği geçilerek kazanıldı mı
+    /// Süreli denemenin bitiş anı. nil = hiç kullanılmadı.
+    /// GEÇMİŞ bir tarih de "kullanıldı" sayılır: hak bitmiştir ama kod da
+    /// harcanmıştır, aynı kişiye ikinci bir on gün verilmez.
+    private var trialUntil: Date?
     private var promoFailCount = 0
     private var promoBonusGranted = false
     private var updatesTask: Task<Void, Never>?
@@ -91,12 +106,20 @@ final class StoreManager: ObservableObject {
         // yıldızların KENDİSİ zaten (ProgressStore), eşik orada yeniden
         // geçiliyor ve hak kendiliğinden veriliyor.
         let stars = UserDefaults.standard.bool(forKey: Self.starGrantKey)
+        // Deneme: cihaz ile iCloud'dan HANGİSİ DAHA İLERİYSE o geçerli.
+        // iCloud'un boş olması "hak yok" değil, "henüz senkron olmadı"
+        // olabilir; yerelin boş olması da başka cihazda alınmış olabilir.
+        let localTrial = UserDefaults.standard.double(forKey: Self.trialUntilKey)
+        let cloudTrial = EntitlementSync.shared.trialUntil?.timeIntervalSince1970 ?? 0
+        let trial = max(localTrial, cloudTrial)
 
         entitled = premiumCache
         promoGranted = promo
         starGranted = stars
         isSupporter = supporter
+        trialUntil = trial > 0 ? Date(timeIntervalSince1970: trial) : nil
         isPremium = premiumCache || promo || supporter || stars
+            || (trial > Date().timeIntervalSince1970)
         promoFailCount = UserDefaults.standard.integer(forKey: "lumo.store.promoFailCount")
         promoBonusGranted = UserDefaults.standard.bool(forKey: "lumo.store.promoBonusGranted")
 
@@ -104,6 +127,7 @@ final class StoreManager: ObservableObject {
         // gelmiş olabilir, bir dahaki açılışta çevrimdışıyken de dursun.
         if promoGranted { UserDefaults.standard.set(true, forKey: "lumo.store.promo") }
         if isSupporter { UserDefaults.standard.set(true, forKey: "lumo.store.supporter") }
+        if trial > localTrial { UserDefaults.standard.set(trial, forKey: Self.trialUntilKey) }
 
         updatesTask = Task { [weak self] in
             for await update in Transaction.updates {
@@ -186,33 +210,82 @@ final class StoreManager: ObservableObject {
         recomputePremium()
     }
 
-    /// Tanıdık kodunu dener. Geçerliyse premium'u kalıcı açar ve true döner.
-    ///
-    /// Kodu önce koda gömülü listede, sonra Firestore'daki `promoCodes`
-    /// koleksiyonunda arar.
+    /// Kod denemesinin sonucu. Eskiden düz `Bool`du; süreli deneme gelince
+    /// "kabul edilmedi"nin iki ayrı sebebi oldu ve oyuncuya hangisi olduğunu
+    /// söylemek gerekiyor — "geçersiz kod" ile "bu kodu zaten kullandın"
+    /// aynı şey değil.
+    enum RedeemResult: Equatable {
+        case premium                 // kalıcı premium açıldı
+        case trial(days: Int)        // süreli premium başladı
+        case trialAlreadyUsed        // deneme hakkı daha önce harcanmış
+        case invalid                 // böyle bir kod yok
+    }
+
+    /// Süreli deneme şu anda işliyor mu?
+    var trialActive: Bool {
+        guard let until = trialUntil else { return false }
+        return until > Date()
+    }
+
+    /// Denemenin bitmesine kaç gün kaldı. İşlemiyorsa nil.
+    /// Yukarı yuvarlanıyor: son günün ortasındaki oyuncuya "0 gün kaldı"
+    /// demek, hakkı varken bitmiş gibi göstermek olurdu.
+    var trialDaysLeft: Int? {
+        guard let until = trialUntil, until > Date() else { return nil }
+        return max(1, Int(ceil(until.timeIntervalSinceNow / 86_400)))
+    }
+
+    /// Süreli denemenin bitip bitmediğini yeniden değerlendirir.
+    /// Oyun açıkken süre dolabiliyor; uygulama öne geldiğinde çağrılıyor.
+    func refreshTrialState() {
+        let shouldBePremium = entitled || promoGranted || isSupporter
+            || starGranted || trialActive
+        if isPremium != shouldBePremium { recomputePremium() }
+    }
+
+    /// Tanıdık kodunu dener.
+    /// Kodu önce SÜRELİ deneme listesinde, sonra koda gömülü kalıcı listede,
+    /// en son Firestore'daki `promoCodes` koleksiyonunda arar.
     ///
     /// Gömülü liste sürüm gönderilmeden değiştirilemiyordu: birine kod vermek
     /// için yeni derleme çıkmak gerekiyordu. Firestore tarafı konsoldan anında
     /// yönetiliyor — kaç kez kullanılacağını, açık mı kapalı mı olduğunu sen
     /// belirliyorsun.
-    func redeem(code: String) async -> Bool {
+    func redeem(code: String) async -> RedeemResult {
         let normalized = code.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard !normalized.isEmpty else { return false }
+        guard !normalized.isEmpty else { return .invalid }
 
-        // Gömülü liste önce: çevrimdışıyken de çalışsın
+        // SÜRELİ deneme en başta sınanıyor: kalıcı listeye de yazılmış olsaydı
+        // oyuncu süresiz premium alırdı.
+        if let days = Self.trialPromoCodes[normalized] {
+            // `trialUntil` geçmişte bile olsa hak harcanmış sayılır
+            guard trialUntil == nil else { return .trialAlreadyUsed }
+            grantTrial(days: days)
+            return .trial(days: days)
+        }
+
+        // Gömülü liste: çevrimdışıyken de çalışsın
         if Self.promoCodes.contains(normalized) {
             grantPromo()
-            return true
+            return .premium
         }
         #if canImport(FirebaseCore)
         let playerID = UserDefaults.standard.string(forKey: "lumo.player.id") ?? "anonymous"
         if let accepted = await FirebaseBridge.redeemPromoCode(normalized, playerID: playerID),
            accepted {
             grantPromo()
-            return true
+            return .premium
         }
         #endif
-        return false
+        return .invalid
+    }
+
+    private func grantTrial(days: Int) {
+        let until = Date().addingTimeInterval(Double(days) * 86_400)
+        trialUntil = until
+        UserDefaults.standard.set(until.timeIntervalSince1970, forKey: Self.trialUntilKey)
+        EntitlementSync.shared.markTrial(until: until)
+        recomputePremium()
     }
 
     private func grantPromo() {
@@ -352,13 +425,14 @@ final class StoreManager: ObservableObject {
 
     /// premium = gerçek satın alma VEYA tanıdık kodu VEYA bahşiş VEYA yıldız eşiği
     private func recomputePremium() {
-        isPremium = entitled || promoGranted || isSupporter || starGranted
+        isPremium = entitled || promoGranted || isSupporter || starGranted || trialActive
         UserDefaults.standard.set(entitled, forKey: "lumo.store.premiumCache")
     }
 
     // MARK: Yıldızla premium
 
     private static let starGrantKey = "lumo.store.starPremium"
+    private static let trialUntilKey = "lumo.store.trialUntil"
 
     /// Yıldız sayısı değiştiğinde çağrılır. Eşik geçildiyse premium'u kalıcı
     /// verir ve `true` döner.

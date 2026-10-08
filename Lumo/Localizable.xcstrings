@@ -11647,6 +11647,108 @@
     },
     "🌟": {
       "shouldTranslate": false
+    },
+    "Code accepted — Premium is yours for %lld days!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kod kabul edildi — %lld gün boyunca premium senin!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code akzeptiert — Premium gehört dir für %lld Tage!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Código aceptado: Premium es tuyo durante %lld días."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code accepté — Premium est à toi pendant %lld jours !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コードが有効です。%lld日間プレミアムをお楽しみください。"
+          }
+        }
+      }
+    },
+    "You've already used this code once.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kodu bir kez kullandın."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diesen Code hast du schon einmal eingelöst."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya usaste este código una vez."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu as déjà utilisé ce code une fois."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このコードはすでに使用済みです。"
+          }
+        }
+      }
+    },
+    "Premium trial — %lld days left": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium denemesi — %lld gün kaldı"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium-Test — noch %lld Tage"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prueba Premium: quedan %lld días"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Essai Premium — %lld jours restants"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレミアム体験 — 残り%lld日"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -261,4 +261,7 @@
     <string name="hint_extra_life_title">Ein Herz auf dem Ring</string>
     <string name="hint_extra_life_body">Auf dem Ring direkt darüber wartet ein Herz. Nimm es, und ein Fehler ist nicht mehr das Ende des Laufs — du machst dort weiter, wo du gefallen bist. Sie kommen alle acht Ringe, du kannst drei gleichzeitig halten, und der Ring mit einem Herz hat nie einen Gefahrenbogen.</string>
     <string name="rule_trap_gate">Ein Tor ist eine Falle</string>
+    <string name="code_trial">Code akzeptiert — Premium gehört dir für %1$d Tage!</string>
+    <string name="code_trial_used">Diesen Code hast du schon einmal eingelöst.</string>
+    <string name="trial_days_left">Premium-Test — noch %1$d Tage</string>
 </resources>
