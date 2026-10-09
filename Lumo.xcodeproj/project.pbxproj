@@ -11,6 +11,7 @@
 		A1B2C3D4E5F6000000000043 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000044 /* FirebaseAuth */; };
 		A1B2C3D4E5F6000000000045 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000046 /* FirebaseFirestore */; };
 		A1B2C3D4E5F6000000000060 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D4E5F6000000000061 /* FirebaseMessaging */; };
+		CA3D25A730791CF300C13087 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CA3D25A630791CF300C13087 /* FirebaseCrashlytics */; };
 		CA7000000000000000000001 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = CA7000000000000000000002 /* RevenueCat */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +48,7 @@
 				CA7000000000000000000001 /* RevenueCat in Frameworks */,
 				A1B2C3D4E5F6000000000040 /* GoogleMobileAds in Frameworks */,
 				A1B2C3D4E5F6000000000043 /* FirebaseAuth in Frameworks */,
+				CA3D25A730791CF300C13087 /* FirebaseCrashlytics in Frameworks */,
 				A1B2C3D4E5F6000000000045 /* FirebaseFirestore in Frameworks */,
 				A1B2C3D4E5F6000000000060 /* FirebaseMessaging in Frameworks */,
 			);
@@ -59,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				A1B2C3D4E5F6000000000001 /* Lumo */,
+				CA3D25A530791CF300C13087 /* Frameworks */,
 				A1B2C3D4E5F6000000000004 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -71,6 +74,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		CA3D25A530791CF300C13087 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -81,6 +91,7 @@
 				A1B2C3D4E5F6000000000011 /* Sources */,
 				A1B2C3D4E5F6000000000012 /* Frameworks */,
 				A1B2C3D4E5F6000000000013 /* Resources */,
+				CA3D25A830791D1000C13087 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -96,6 +107,7 @@
 				A1B2C3D4E5F6000000000044 /* FirebaseAuth */,
 				A1B2C3D4E5F6000000000046 /* FirebaseFirestore */,
 				A1B2C3D4E5F6000000000061 /* FirebaseMessaging */,
+				CA3D25A630791CF300C13087 /* FirebaseCrashlytics */,
 			);
 			productName = Lumo;
 			productReference = A1B2C3D4E5F6000000000002 /* Lumo.app */;
@@ -154,6 +166,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		CA3D25A830791D1000C13087 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A1B2C3D4E5F6000000000011 /* Sources */ = {
@@ -410,6 +444,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A1B2C3D4E5F6000000000047 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		CA3D25A630791CF300C13087 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D4E5F6000000000047 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 		CA7000000000000000000002 /* RevenueCat */ = {
 			isa = XCSwiftPackageProductDependency;
