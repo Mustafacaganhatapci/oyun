@@ -264,4 +264,5 @@
     <string name="code_trial">Kod kabul edildi — %1$d gün boyunca premium senin!</string>
     <string name="code_trial_used">Bu kodu bir kez kullandın.</string>
     <string name="trial_days_left">Premium denemesi — %1$d gün kaldı</string>
+    <string name="code_trial_brand">%1$s kodunu kullandın. %2$d gün premiumun tadını çıkar!</string>
 </resources>

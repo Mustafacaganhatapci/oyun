@@ -17,11 +17,20 @@ struct UsernameView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                // Geri çıkmak da "soruldu" sayılır: sıralamaya katılmak isteğe
-                // bağlı, adı boş bırakan oyuncuya her açılışta sormayız.
-                BackButton {
-                    player.markUsernamePrompted()
-                    app.route = app.usernameDestination
+                // İlk açılışta geri düğmesi YOK: oyuncu adını verene kadar
+                // devam edemiyor. Eskiden buradan çıkılıyordu ve çıkmak
+                // "soruldu" sayıldığı için bir daha hiç sorulmuyordu —
+                // oyuncuların çoğu adsız kalıp sıralamayı hiç görmüyordu.
+                //
+                // Menüden girildiğinde düğme yerinde: orada ad vermek isteğe
+                // bağlı ve kapatamamak oyuncuyu ekranda hapsetmek olurdu.
+                if app.usernameIsMandatory {
+                    Color.clear.frame(width: 44, height: 44)
+                } else {
+                    BackButton {
+                        player.markUsernamePrompted()
+                        app.route = app.usernameDestination
+                    }
                 }
                 Spacer()
                 Text("Username")
@@ -180,6 +189,7 @@ struct UsernameView: View {
         }
         AudioEngine.shared.playTap()
         player.markUsernamePrompted()
+        app.usernameIsMandatory = false
         app.route = app.usernameDestination
     }
 }

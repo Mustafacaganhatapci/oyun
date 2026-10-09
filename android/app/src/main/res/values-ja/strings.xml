@@ -264,4 +264,5 @@
     <string name="code_trial">コードが有効です。%1$d日間プレミアムをお楽しみください。</string>
     <string name="code_trial_used">このコードはすでに使用済みです。</string>
     <string name="trial_days_left">プレミアム体験 — 残り%1$d日</string>
+    <string name="code_trial_brand">%1$s のコードを使いました。%2$d日間プレミアムをお楽しみください。</string>
 </resources>

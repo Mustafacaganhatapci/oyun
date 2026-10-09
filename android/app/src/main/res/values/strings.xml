@@ -264,4 +264,5 @@
     <string name="code_trial">Code accepted — Premium is yours for %1$d days!</string>
     <string name="code_trial_used">You\'ve already used this code once.</string>
     <string name="trial_days_left">Premium trial — %1$d days left</string>
+    <string name="code_trial_brand">You used the %1$s code. Enjoy %2$d days of Premium!</string>
 </resources>

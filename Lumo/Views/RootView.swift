@@ -238,6 +238,7 @@ struct RootView: View {
         let tutorialRoute: Route = .game(LevelLibrary.tutorialID)
         if player.shouldPromptForUsername {
             app.usernameDestination = tutorial.shouldShow(.launch) ? tutorialRoute : .menu
+            app.usernameIsMandatory = true
             app.route = .username
         } else if tutorial.shouldShow(.launch) {
             app.route = tutorialRoute

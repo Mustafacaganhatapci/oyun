@@ -67,6 +67,8 @@ struct LeaderboardEntry: Identifiable {
 /// bir kampanyanın ortasında anlaşıldı.
 struct PromoRedemption {
     let trialDays: Int
+    /// Belgedeki `brand` alanı. Boşsa genel mesaj gösterilir.
+    let brand: String
 }
 
 final class LeaderboardService: ObservableObject {
@@ -644,6 +646,7 @@ enum FirebaseBridge {
     ///   uses     (int)    — kaç kez kullanıldı (biz artırırız)
     ///   note     (string) — kimin için verildiği, yalnızca senin için
     ///   trialDays(int)    — 0/yok: kalıcı premium. >0: o kadar günlük deneme
+    ///   brand    (string) — ekranda görünen kampanya adı, örn. "İçten Mimar"
     ///
     /// İşlem (transaction) içinde okunup artırılır: aynı anda iki kişi son
     /// hakkı kullanamaz. Aynı oyuncu kodu tekrar girerse hak harcanmaz —
@@ -663,10 +666,17 @@ enum FirebaseBridge {
 
                     // 0 = kalıcı premium, >0 = o kadar günlük deneme
                     let trialDays = max(0, data["trialDays"] as? Int ?? 0)
+                    // Ekranda görünecek kampanya adı, örn. "İçten Mimar"
+                    let brand = (data["brand"] as? String) ?? ""
+                    // İşlemden ikisi birden dönüyor. Markayı dışarıdaki bir
+                    // değişkene yazmak daha kısa olurdu ama kapanış başka bir
+                    // iş parçacığında çalışıyor; yakalanan bir `var`a yazmak
+                    // Swift 6'nın eşzamanlılık denetimine takılıyor.
+                    func accept(_ d: Int) -> [String: Any] { ["days": d, "brand": brand] }
 
                     // Bu oyuncu daha önce kullandıysa hak düşmez
                     var redeemers = data["redeemedBy"] as? [String] ?? []
-                    if redeemers.contains(playerID) { return trialDays }
+                    if redeemers.contains(playerID) { return accept(trialDays) }
 
                     let uses = data["uses"] as? Int ?? 0
                     let maxUses = data["maxUses"] as? Int ?? 0
@@ -681,7 +691,7 @@ enum FirebaseBridge {
                         "redeemedBy": redeemers,
                         "lastRedeemedAt": FieldValue.serverTimestamp()
                     ], forDocument: doc)
-                    return trialDays
+                    return accept(trialDays)
                 } catch let error as NSError {
                     errorPointer?.pointee = error
                     return nil
@@ -689,8 +699,9 @@ enum FirebaseBridge {
             }
             // -1 = reddedildi. Ağ hatasında nil dönülüyor; çağıran o zaman
             // gömülü listeye düşüyor.
-            guard let days = result as? Int, days >= 0 else { return nil }
-            return PromoRedemption(trialDays: days)
+            guard let d = result as? [String: Any], let days = d["days"] as? Int
+            else { return nil }
+            return PromoRedemption(trialDays: days, brand: d["brand"] as? String ?? "")
         } catch {
             leaderboardLog("KOD OKUNAMADI promoCodes/\(code): \(error.localizedDescription)",
                            isError: true)

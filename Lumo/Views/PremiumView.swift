@@ -21,7 +21,7 @@ struct PremiumView: View {
 
     private enum CodeState: Equatable {
         case idle, success, failure, bonusGranted
-        case trial(days: Int)      // süreli premium başladı
+        case trial(days: Int, brand: String)   // süreli premium başladı
         case trialUsed             // deneme hakkı daha önce harcanmış
     }
 
@@ -359,8 +359,8 @@ struct PremiumView: View {
                             codeState = .success
                             AudioEngine.shared.playWin()
                             Haptics.shared.win()
-                        case .trial(let days):
-                            codeState = .trial(days: days)
+                        case .trial(let days, let brand):
+                            codeState = .trial(days: days, brand: brand)
                             AudioEngine.shared.playWin()
                             Haptics.shared.win()
                         case .trialAlreadyUsed:
@@ -413,8 +413,12 @@ struct PremiumView: View {
                       systemImage: "star.circle.fill")
                     .font(.system(.caption, design: .rounded).bold())
                     .foregroundStyle(settings.theme.lumen.color)
-            case .trial(let days):
-                Label("Code accepted — Premium is yours for \(days) days!",
+            case .trial(let days, let brand):
+                // Kampanya adı varsa onunla: kodun nereden geldiğini
+                // hatırlatmak, genel bir "kabul edildi"den çok daha sıcak.
+                Label(brand.isEmpty
+                      ? "Code accepted — Premium is yours for \(days) days!"
+                      : "You used the \(brand) code. Enjoy \(days) days of Premium!",
                       systemImage: "checkmark.circle.fill")
                     .font(.system(.caption, design: .rounded).bold())
                     .foregroundStyle(settings.theme.gate.color)

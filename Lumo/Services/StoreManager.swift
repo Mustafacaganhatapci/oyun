@@ -36,7 +36,20 @@ final class StoreManager: ObservableObject {
     ///
     /// Koda gömülü, Firestore'a sorulmuyor: tanıtım kodunun çevrimdışı da
     /// çalışması gerekiyor ve sınırı kişi başına, toplam kullanıma değil.
-    static let trialPromoCodes: [String: Int] = ["ictenmimar100": 10]
+    /// Süreli bir kampanya kodunun verdikleri.
+    ///
+    /// `brand` ekranda görünüyor: "İçten Mimar kodunu kullandın — 10 gün
+    /// premium senin." Kampanyayı veren kişinin adını görmek, kodun
+    /// nereden geldiğini hatırlatıyor ve genel bir "kod kabul edildi"
+    /// mesajından çok daha sıcak.
+    struct TrialOffer {
+        let days: Int
+        let brand: String
+    }
+
+    static let trialPromoCodes: [String: TrialOffer] = [
+        "ictenmimar100": TrialOffer(days: 10, brand: "İçten Mimar")
+    ]
 
     /// Kod 5'ten fazla kez yanlış girilirse (bir kereye mahsus) üzülmesin diye
     /// teselli olarak 100 yıldız verilir — premium'la hiçbir ilgisi yoktur.
@@ -215,10 +228,11 @@ final class StoreManager: ObservableObject {
     /// söylemek gerekiyor — "geçersiz kod" ile "bu kodu zaten kullandın"
     /// aynı şey değil.
     enum RedeemResult: Equatable {
-        case premium                 // kalıcı premium açıldı
-        case trial(days: Int)        // süreli premium başladı
-        case trialAlreadyUsed        // deneme hakkı daha önce harcanmış
-        case invalid                 // böyle bir kod yok
+        case premium                       // kalıcı premium açıldı
+        /// Süreli premium başladı. `brand` boşsa genel mesaj gösterilir.
+        case trial(days: Int, brand: String)
+        case trialAlreadyUsed              // deneme hakkı daha önce harcanmış
+        case invalid                       // böyle bir kod yok
     }
 
     /// Süreli deneme şu anda işliyor mu?
@@ -301,13 +315,13 @@ final class StoreManager: ObservableObject {
         // SÜRELİ deneme en başta sınanıyor: kalıcı listeye de yazılmış olsaydı
         // oyuncu süresiz premium alırdı. Liste de aynı sadeleştirmeden
         // geçiriliyor — iki taraf aynı kurala uymazsa hiçbir kod tutmaz.
-        if let days = Self.trialPromoCodes.first(where: {
+        if let offer = Self.trialPromoCodes.first(where: {
             Self.normalizeCode($0.key) == normalized
         })?.value {
             // `trialUntil` geçmişte bile olsa hak harcanmış sayılır
             guard trialUntil == nil else { return .trialAlreadyUsed }
-            grantTrial(days: days)
-            return .trial(days: days)
+            grantTrial(days: offer.days)
+            return .trial(days: offer.days, brand: offer.brand)
         }
 
         // Gömülü liste: çevrimdışıyken de çalışsın
@@ -323,7 +337,8 @@ final class StoreManager: ObservableObject {
             if reward.trialDays > 0 {
                 guard trialUntil == nil else { return .trialAlreadyUsed }
                 grantTrial(days: reward.trialDays)
-                return .trial(days: reward.trialDays)
+                // Firestore belgesine `brand` yazılırsa o da ekranda çıkar
+                return .trial(days: reward.trialDays, brand: reward.brand)
             }
             grantPromo()
             return .premium

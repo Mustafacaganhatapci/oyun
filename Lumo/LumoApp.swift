@@ -144,11 +144,22 @@ final class AppModel: ObservableObject {
     /// antrenman bölümüne göndermek gerekiyor.
     @Published var usernameDestination: Route = .ranking
 
+    /// Ad ekranından geri çıkılabilir mi?
+    ///
+    /// İLK AÇILIŞTA hayır: geri düğmesi "soruldu" sayılıp ekranı kapatıyordu
+    /// ve oyuncuların çoğu adsız devam ediyordu. Adsız oyuncu sıralamaya
+    /// giremiyor, yani oyunun yarısını hiç görmüyor.
+    ///
+    /// Menüden ya da sıralamadan girildiğinde EVET: orada ad vermek isteğe
+    /// bağlı, kapatamamak oyuncuyu ekranda hapsetmek olurdu.
+    @Published var usernameIsMandatory = false
+
     /// Ad ekranını açar ve kapandığında nereye dönüleceğini de belirler.
     /// Hedefi her açılışta yeniden yazmak, ilk açılışta kurulan hedefin
     /// sonraki ziyaretlere sızmasını engeller.
     func openUsername(then destination: Route = .ranking) {
         usernameDestination = destination
+        usernameIsMandatory = false
         route = .username
     }
 }

@@ -70,7 +70,17 @@ class BillingManager(private val context: Context) {
          * Koda gömülü, Firestore'a sorulmuyor: tanıtım kodunun çevrimdışı da
          * çalışması gerekiyor ve sınır kişi başına, toplam kullanıma değil.
          */
-        val TRIAL_PROMO_CODES = mapOf("ictenmimar100" to 10)
+        /**
+         * Süreli bir kampanya kodunun verdikleri. `brand` ekranda görünüyor:
+         * "İçten Mimar kodunu kullandın — 10 gün premium senin." Kodun
+         * nereden geldiğini hatırlatmak, genel bir "kod kabul edildi"
+         * mesajından çok daha sıcak.
+         */
+        data class TrialOffer(val days: Int, val brand: String)
+
+        val TRIAL_PROMO_CODES = mapOf(
+            "ictenmimar100" to TrialOffer(10, "İçten Mimar")
+        )
 
         /**
          * Kodu karşılaştırmaya hazırlar: Türkçe harfleri ASCII karşılığına
@@ -365,6 +375,9 @@ class BillingManager(private val context: Context) {
     /** Son kabul edilen süreli denemenin gün sayısı; arayüz mesajı için. */
     var lastTrialDays = 0
         private set
+    /** Son kabul edilen kampanyanın adı. Boşsa genel mesaj gösterilir. */
+    var lastTrialBrand = ""
+        private set
 
     fun redeem(code: String, playerId: String, onResult: (RedeemResult) -> Unit) {
         val normalized = normalizeCode(code)
@@ -375,10 +388,10 @@ class BillingManager(private val context: Context) {
         // geçiriliyor — iki taraf aynı kurala uymazsa hiçbir kod tutmaz.
         TRIAL_PROMO_CODES.entries.firstOrNull {
             normalizeCode(it.key) == normalized
-        }?.value?.let { days ->
+        }?.value?.let { offer ->
             // trialUntil geçmişte bile olsa hak harcanmış sayılır
             if (trialUntil > 0L) { onResult(RedeemResult.TRIAL_ALREADY_USED); return }
-            grantTrial(days)
+            grantTrial(offer.days, offer.brand)
             onResult(RedeemResult.TRIAL)
             return
         }
@@ -395,16 +408,21 @@ class BillingManager(private val context: Context) {
                 reward == null -> onResult(RedeemResult.INVALID)
                 reward.trialDays > 0 -> {
                     if (trialUntil > 0L) onResult(RedeemResult.TRIAL_ALREADY_USED)
-                    else { grantTrial(reward.trialDays); onResult(RedeemResult.TRIAL) }
+                    else {
+                        // Firestore belgesine brand yazılırsa o da ekranda çıkar
+                        grantTrial(reward.trialDays, reward.brand)
+                        onResult(RedeemResult.TRIAL)
+                    }
                 }
                 else -> { grantPromo(); onResult(RedeemResult.PREMIUM) }
             }
         }
     }
 
-    private fun grantTrial(days: Int) {
+    private fun grantTrial(days: Int, brand: String = "") {
         trialUntil = System.currentTimeMillis() + days * 86_400_000L
         lastTrialDays = days
+        lastTrialBrand = brand
         p.edit().putLong(KEY_TRIAL_UNTIL, trialUntil).apply()
         recomputePremium()
     }

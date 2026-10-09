@@ -967,8 +967,15 @@ fun PremiumScreen(onBack: () -> Unit) {
                                 1 -> Text(stringResource(R.string.code_accepted), color = theme.gate, fontSize = 12.sp)
                                 2 -> Text(stringResource(R.string.invalid_code), color = theme.hazard, fontSize = 12.sp)
                                 3 -> Text(stringResource(R.string.code_bonus), color = theme.lumen, fontSize = 12.sp)
-                                4 -> Text(stringResource(R.string.code_trial, app.billing.lastTrialDays),
-                                          color = theme.gate, fontSize = 12.sp)
+                                // Kampanya adı varsa onunla: kodun nereden
+                                // geldiğini hatırlatmak daha sıcak.
+                                4 -> Text(
+                                    if (app.billing.lastTrialBrand.isEmpty())
+                                        stringResource(R.string.code_trial, app.billing.lastTrialDays)
+                                    else stringResource(R.string.code_trial_brand,
+                                                        app.billing.lastTrialBrand,
+                                                        app.billing.lastTrialDays),
+                                    color = theme.gate, fontSize = 12.sp)
                                 5 -> Text(stringResource(R.string.code_trial_used), color = theme.hazard, fontSize = 12.sp)
                                 // Deneme işliyorsa kalan süre burada duruyor. Bir sabah
                                 // premium'un sessizce kaybolması, en baştan verilmemesinden kötü.

@@ -11749,6 +11749,40 @@
           }
         }
       }
+    },
+    "You used the %@ code. Enjoy %lld days of Premium!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ kodunu kullandın. %2$lld gün premiumun tadını çıkar!"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du hast den %1$@-Code eingelöst. Genieß %2$lld Tage Premium!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Has usado el código de %1$@. Disfruta %2$lld días de Premium."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu as utilisé le code %1$@. Profite de %2$lld jours de Premium !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ のコードを使いました。%2$lld日間プレミアムをお楽しみください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
