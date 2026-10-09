@@ -12,3 +12,11 @@ keystore.properties
 *.jks
 *.keystore
 .kotlin/
+
+# Derleme ciktilari: imzali paketler depoya girmez. 8 MB'lik bir .aab
+# yanlislikla eklenmisti; her surumde yenisi uretiliyor, surum gecmisini
+# sisirmekten baska bir ise yaramiyor.
+app/release/
+app/debug/
+*.aab
+*.apk
