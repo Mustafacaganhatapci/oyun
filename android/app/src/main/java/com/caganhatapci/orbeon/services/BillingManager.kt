@@ -388,9 +388,17 @@ class BillingManager(private val context: Context) {
             onResult(RedeemResult.PREMIUM)
             return
         }
-        PromoCodes.redeem(normalized, playerId) { accepted ->
-            if (accepted) grantPromo()
-            onResult(if (accepted) RedeemResult.PREMIUM else RedeemResult.INVALID)
+        PromoCodes.redeem(normalized, playerId) { reward ->
+            // Belgede trialDays varsa süreli, yoksa kalıcı. Kampanya ödülü
+            // böylece konsoldan değiştirilebiliyor.
+            when {
+                reward == null -> onResult(RedeemResult.INVALID)
+                reward.trialDays > 0 -> {
+                    if (trialUntil > 0L) onResult(RedeemResult.TRIAL_ALREADY_USED)
+                    else { grantTrial(reward.trialDays); onResult(RedeemResult.TRIAL) }
+                }
+                else -> { grantPromo(); onResult(RedeemResult.PREMIUM) }
+            }
         }
     }
 

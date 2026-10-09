@@ -317,8 +317,14 @@ final class StoreManager: ObservableObject {
         }
         #if canImport(FirebaseCore)
         let playerID = UserDefaults.standard.string(forKey: "lumo.player.id") ?? "anonymous"
-        if let accepted = await FirebaseBridge.redeemPromoCode(normalized, playerID: playerID),
-           accepted {
+        if let reward = await FirebaseBridge.redeemPromoCode(normalized, playerID: playerID) {
+            // Belgede `trialDays` varsa süreli, yoksa kalıcı. Kampanya ödülü
+            // böylece konsoldan değiştirilebiliyor.
+            if reward.trialDays > 0 {
+                guard trialUntil == nil else { return .trialAlreadyUsed }
+                grantTrial(days: reward.trialDays)
+                return .trial(days: reward.trialDays)
+            }
             grantPromo()
             return .premium
         }

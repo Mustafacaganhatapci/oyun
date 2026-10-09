@@ -59,6 +59,16 @@ struct LeaderboardEntry: Identifiable {
 ///  3. Firestore'u "test mode" veya uygun kurallarla aç
 /// SDK ya da plist yoksa uygulama çökmeden yerel modda çalışır.
 @MainActor
+/// Firestore'dan gelen kodun ne verdiği.
+///
+/// `trialDays > 0` ise SÜRELİ premium, 0 ise kalıcı. Belgeye `trialDays`
+/// alanı yazarak kampanyanın ödülü konsoldan ayarlanıyor — yeni bir kod ya
+/// da farklı bir süre için artık sürüm göndermek gerekmiyor. Bu eksikti ve
+/// bir kampanyanın ortasında anlaşıldı.
+struct PromoRedemption {
+    let trialDays: Int
+}
+
 final class LeaderboardService: ObservableObject {
     @Published private(set) var isAvailable = false      // SDK + plist mevcut mu
     @Published private(set) var isLoading = false
@@ -633,30 +643,34 @@ enum FirebaseBridge {
     ///   maxUses  (int)    — 0 ya da yok: sınırsız
     ///   uses     (int)    — kaç kez kullanıldı (biz artırırız)
     ///   note     (string) — kimin için verildiği, yalnızca senin için
+    ///   trialDays(int)    — 0/yok: kalıcı premium. >0: o kadar günlük deneme
     ///
     /// İşlem (transaction) içinde okunup artırılır: aynı anda iki kişi son
     /// hakkı kullanamaz. Aynı oyuncu kodu tekrar girerse hak harcanmaz —
     /// telefon değiştiren biri kodunu yeniden kullanabilsin diye.
     ///
-    /// true = kabul, false = geçersiz/bitmiş, nil = ağ hatası (çağıran yerel
-    /// listeye düşer)
-    static func redeemPromoCode(_ code: String, playerID: String) async -> Bool? {
+    /// Kabul edilirse ödül, geçersizse nil, ağ hatasında da nil (çağıran
+    /// o zaman gömülü listeye düşer).
+    static func redeemPromoCode(_ code: String, playerID: String) async -> PromoRedemption? {
         let db = Firestore.firestore()
         let doc = db.collection("promoCodes").document(code)
         do {
             let result = try await db.runTransaction { transaction, errorPointer -> Any? in
                 do {
                     let snapshot = try transaction.getDocument(doc)
-                    guard snapshot.exists, let data = snapshot.data() else { return false }
-                    if let active = data["active"] as? Bool, !active { return false }
+                    guard snapshot.exists, let data = snapshot.data() else { return -1 }
+                    if let active = data["active"] as? Bool, !active { return -1 }
+
+                    // 0 = kalıcı premium, >0 = o kadar günlük deneme
+                    let trialDays = max(0, data["trialDays"] as? Int ?? 0)
 
                     // Bu oyuncu daha önce kullandıysa hak düşmez
                     var redeemers = data["redeemedBy"] as? [String] ?? []
-                    if redeemers.contains(playerID) { return true }
+                    if redeemers.contains(playerID) { return trialDays }
 
                     let uses = data["uses"] as? Int ?? 0
                     let maxUses = data["maxUses"] as? Int ?? 0
-                    if maxUses > 0, uses >= maxUses { return false }
+                    if maxUses > 0, uses >= maxUses { return -1 }
 
                     // Liste sınırsız büyümesin: son 50 kullanan tutulur
                     redeemers.append(playerID)
@@ -667,13 +681,16 @@ enum FirebaseBridge {
                         "redeemedBy": redeemers,
                         "lastRedeemedAt": FieldValue.serverTimestamp()
                     ], forDocument: doc)
-                    return true
+                    return trialDays
                 } catch let error as NSError {
                     errorPointer?.pointee = error
                     return nil
                 }
             }
-            return result as? Bool
+            // -1 = reddedildi. Ağ hatasında nil dönülüyor; çağıran o zaman
+            // gömülü listeye düşüyor.
+            guard let days = result as? Int, days >= 0 else { return nil }
+            return PromoRedemption(trialDays: days)
         } catch {
             leaderboardLog("KOD OKUNAMADI promoCodes/\(code): \(error.localizedDescription)",
                            isError: true)
@@ -879,7 +896,7 @@ enum FirebaseBridge {
         if FirebaseApp.app() == nil { FirebaseApp.configure() }
     }
     static func claimUsername(_ name: String, playerID: String) async -> Bool? { nil }
-    static func redeemPromoCode(_ code: String, playerID: String) async -> Bool? { nil }
+    static func redeemPromoCode(_ code: String, playerID: String) async -> PromoRedemption? { nil }
     static func recordSupporter(playerID: String, username: String,
                                 productID: String, price: String) async {}
     static func sendFeedback(message: String, playerID: String, username: String,
