@@ -24,6 +24,12 @@
 	<string>ca-app-pub-2696377554654488~9123400876</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.games</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAccentColorName</key>
+	<string>AccentColor</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Premium players can record their own sound effects — a hop, a fail, a fanfare. The recordings stay on your device and are never uploaded.</string>
 	<key>NSUserTrackingUsageDescription</key>
@@ -231,12 +237,6 @@
 			<string>3qcr597p9d.skadnetwork</string>
 		</dict>
 	</array>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.games</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAccentColorName</key>
-	<string>AccentColor</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIRequiresFullScreen</key>

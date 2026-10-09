@@ -1,8 +1,6 @@
 import Foundation
 import StoreKit
-#if canImport(RevenueCat)
 import RevenueCat
-#endif
 
 /// RevenueCat — GÖZLEMCİ kipinde.
 ///
@@ -15,9 +13,8 @@ import RevenueCat
 /// Android'e geçince ortak entitlement. İkisi de gözlemci kipiyle geliyor.
 /// Para akışını çalışan bir koddan çıkarıp yenisine taşımanın karşılığı yok.
 ///
-/// XCODE'DA GEREKEN: Package Dependencies → `https://github.com/RevenueCat/purchases-ios`
-/// ekle, hedefe **RevenueCat** ürününü bağla. Paket yokken bu dosya derleniyor
-/// ama hiçbir şey yapmıyor — projedeki Firebase kalıbının aynısı.
+/// RevenueCat paketi Lumo hedefine bağlıdır. Zorunlu import sayesinde paket
+/// bağlantısı koparsa entegrasyon sessizce kapanmak yerine derleme hatası verir.
 ///
 /// SÜRÜM NOTU: aşağıdaki çağrılar RevenueCat **5.x** API'sine göre yazıldı.
 /// 4.x kurarsan gözlemci kipi `.with(observerMode: true)` oluyor ve
