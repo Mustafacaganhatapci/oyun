@@ -261,4 +261,7 @@
     <string name="hint_extra_life_title">Un cœur sur l’anneau</string>
     <string name="hint_extra_life_body">Un cœur attend sur l’anneau juste au-dessus. Prends-le et une erreur cesse d’être la fin de la partie — tu repars d’où tu es tombé. Ils reviennent tous les huit anneaux, tu peux en porter trois à la fois, et l’anneau qui en porte un n’a jamais d’arc dangereux.</string>
     <string name="rule_trap_gate">Une porte est un piège</string>
+    <string name="code_trial">Code accepté — Premium est à toi pendant %1$d jours !</string>
+    <string name="code_trial_used">Tu as déjà utilisé ce code une fois.</string>
+    <string name="trial_days_left">Essai Premium — %1$d jours restants</string>
 </resources>

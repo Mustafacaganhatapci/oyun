@@ -59,11 +59,57 @@ class BillingManager(private val context: Context) {
 
         /** Tanıdıklara verilen premium kodları (küçük harfe çevrilip karşılaştırılır) */
         val PROMO_CODES = setOf("axiumdynamicsisking", "ays123.")
+
+        /**
+         * SÜRELİ deneme kodları: kod → kaç gün premium.
+         *
+         * Kalıcı premium veren PROMO_CODES'tan ayrı tutuluyor, çünkü üç farkı
+         * var: süresi dolar, kullanıcı başına BİR KEZ verilir ve süresi
+         * dolduktan sonra aynı kod bir daha çalışmaz.
+         *
+         * Koda gömülü, Firestore'a sorulmuyor: tanıtım kodunun çevrimdışı da
+         * çalışması gerekiyor ve sınır kişi başına, toplam kullanıma değil.
+         */
+        val TRIAL_PROMO_CODES = mapOf("ictenmimar100" to 10)
+
+        /**
+         * Kodu karşılaştırmaya hazırlar: Türkçe harfleri ASCII karşılığına
+         * indirger, harf ve rakam dışındaki her şeyi atar, küçük harfe çevirir.
+         *
+         * Buna ihtiyaç var çünkü düz `lowercase()` üç ayrı yerde patlıyordu:
+         *
+         *  1. `lowercase()` CİHAZIN DİLİNİ kullanıyor. Türkçe telefonda
+         *     "ICTENMIMAR100" → "ıctenmımar100" (noktasız ı) oluyor ve hiçbir
+         *     zaman eşleşmiyordu. Oyunun ana kitlesi Türkçe, yani bu hata
+         *     kodu çoğu kullanıcı için bozuyordu.
+         *  2. Kodun markası "İçten Mimar" — insan doğal olarak
+         *     `içtenmimar100` yazıyor, bizdeki `c` ise düz.
+         *  3. Boşluk ve noktalama: kopyala-yapıştırda araya boşluk giriyor.
+         *
+         * Noktalama atıldığı için `ays123.` ile `ays123` artık aynı şey.
+         */
+        fun normalizeCode(raw: String): String {
+            val sb = StringBuilder(raw.length)
+            for (ch in raw) when (ch) {
+                'ı', 'İ', 'I', 'i' -> sb.append('i')
+                'ş', 'Ş' -> sb.append('s')
+                'ğ', 'Ğ' -> sb.append('g')
+                'ç', 'Ç' -> sb.append('c')
+                'ö', 'Ö' -> sb.append('o')
+                'ü', 'Ü' -> sb.append('u')
+                // Birleşen nokta (U+0307) ve diğer işaretler burada eleniyor
+                else -> if (ch.isLetterOrDigit()) sb.append(ch)
+            }
+            // Locale.ROOT ŞART: varsayılan yerel kullanılırsa 1. maddedeki
+            // hata geri gelir.
+            return sb.toString().lowercase(java.util.Locale.ROOT)
+        }
         const val PROMO_FAIL_BONUS_THRESHOLD = 5
         const val PROMO_FAIL_BONUS_STARS = 100
 
         private const val TAG = "Orbeon.Billing"
         private const val KEY_PREMIUM_PRICE = "billing.premiumPrice"
+        private const val KEY_TRIAL_UNTIL = "store.trialUntil"
     }
 
     enum class Status { SUCCESS, PENDING, FAILED, RESTORED, NOTHING_TO_RESTORE }
@@ -98,6 +144,14 @@ class BillingManager(private val context: Context) {
     private var starGranted = false   // yıldız eşiği geçilerek kazanıldı mı
     private var promoFailCount = 0
     private var promoBonusGranted = false
+    /**
+     * Süreli denemenin bitiş anı (epoch ms). 0 = hiç kullanılmadı.
+     * GEÇMİŞ bir değer de "kullanıldı" sayılır: hak bitmiştir ama kod da
+     * harcanmıştır, aynı kişiye ikinci bir on gün verilmez. Değer
+     * orbeon.prefs.xml'de ve o dosya Google yedeğine dahil, yani telefon
+     * değişince deneme yeniden başlamıyor.
+     */
+    private var trialUntil = 0L
 
     val premiumProduct: ProductDetails? get() = products.firstOrNull { it.productId == PREMIUM_ID }
 
@@ -138,6 +192,7 @@ class BillingManager(private val context: Context) {
         starGranted = p.getBoolean("store.starPremium", false)
         promoFailCount = p.getInt("store.promoFailCount", 0)
         promoBonusGranted = p.getBoolean("store.promoBonusGranted", false)
+        trialUntil = p.getLong(KEY_TRIAL_UNTIL, 0L)
         recomputePremium()
         connect()
     }
@@ -299,18 +354,59 @@ class BillingManager(private val context: Context) {
      * Firestore'daki `promoCodes` koleksiyonuna sorar. İkincisi konsoldan
      * anında yönetiliyor: kod vermek için yeni sürüm çıkmak gerekmiyor.
      */
-    fun redeem(code: String, playerId: String, onResult: (Boolean) -> Unit) {
-        val normalized = code.trim().lowercase()
-        if (normalized.isEmpty()) { onResult(false); return }
-        if (PROMO_CODES.contains(normalized)) {
-            grantPromo()
-            onResult(true)
+    /**
+     * Kod denemesinin sonucu. Eskiden düz Boolean'dı; süreli deneme gelince
+     * "kabul edilmedi"nin iki ayrı sebebi oldu ve oyuncuya hangisi olduğunu
+     * söylemek gerekiyor — "geçersiz kod" ile "bu kodu zaten kullandın"
+     * aynı şey değil.
+     */
+    enum class RedeemResult { PREMIUM, TRIAL, TRIAL_ALREADY_USED, INVALID }
+
+    /** Son kabul edilen süreli denemenin gün sayısı; arayüz mesajı için. */
+    var lastTrialDays = 0
+        private set
+
+    fun redeem(code: String, playerId: String, onResult: (RedeemResult) -> Unit) {
+        val normalized = normalizeCode(code)
+        if (normalized.isEmpty()) { onResult(RedeemResult.INVALID); return }
+
+        // SÜRELİ deneme en başta sınanıyor: kalıcı listeye de yazılmış olsaydı
+        // oyuncu süresiz premium alırdı. Liste de aynı sadeleştirmeden
+        // geçiriliyor — iki taraf aynı kurala uymazsa hiçbir kod tutmaz.
+        TRIAL_PROMO_CODES.entries.firstOrNull {
+            normalizeCode(it.key) == normalized
+        }?.value?.let { days ->
+            // trialUntil geçmişte bile olsa hak harcanmış sayılır
+            if (trialUntil > 0L) { onResult(RedeemResult.TRIAL_ALREADY_USED); return }
+            grantTrial(days)
+            onResult(RedeemResult.TRIAL)
             return
         }
-        PromoCodes.redeem(normalized, playerId) { accepted ->
-            if (accepted) grantPromo()
-            onResult(accepted)
+
+        if (PROMO_CODES.any { normalizeCode(it) == normalized }) {
+            grantPromo()
+            onResult(RedeemResult.PREMIUM)
+            return
         }
+        PromoCodes.redeem(normalized, playerId) { reward ->
+            // Belgede trialDays varsa süreli, yoksa kalıcı. Kampanya ödülü
+            // böylece konsoldan değiştirilebiliyor.
+            when {
+                reward == null -> onResult(RedeemResult.INVALID)
+                reward.trialDays > 0 -> {
+                    if (trialUntil > 0L) onResult(RedeemResult.TRIAL_ALREADY_USED)
+                    else { grantTrial(reward.trialDays); onResult(RedeemResult.TRIAL) }
+                }
+                else -> { grantPromo(); onResult(RedeemResult.PREMIUM) }
+            }
+        }
+    }
+
+    private fun grantTrial(days: Int) {
+        trialUntil = System.currentTimeMillis() + days * 86_400_000L
+        lastTrialDays = days
+        p.edit().putLong(KEY_TRIAL_UNTIL, trialUntil).apply()
+        recomputePremium()
     }
 
     private fun grantPromo() {
@@ -335,8 +431,32 @@ class BillingManager(private val context: Context) {
     /** premium = gerçek satın alma VEYA tanıdık kodu */
     /** premium = satın alma VEYA tanıdık kodu VEYA bahşiş VEYA yıldız eşiği */
     private fun recomputePremium() {
-        isPremium = entitled || promoGranted || isSupporter || starGranted
+        isPremium = entitled || promoGranted || isSupporter || starGranted || trialActive
         p.edit().putBoolean("store.premiumCache", entitled).apply()
+    }
+
+    /** Süreli deneme şu anda işliyor mu? */
+    val trialActive: Boolean get() = trialUntil > System.currentTimeMillis()
+
+    /**
+     * Denemenin bitmesine kaç gün kaldı. İşlemiyorsa null.
+     * Yukarı yuvarlanıyor: son günün ortasındaki oyuncuya "0 gün kaldı"
+     * demek, hakkı varken bitmiş gibi göstermek olurdu.
+     */
+    val trialDaysLeft: Int?
+        get() {
+            val ms = trialUntil - System.currentTimeMillis()
+            if (ms <= 0) return null
+            return maxOf(1, Math.ceil(ms / 86_400_000.0).toInt())
+        }
+
+    /**
+     * Süreli denemenin bitip bitmediğini yeniden değerlendirir.
+     * Oyun açıkken süre dolabiliyor; uygulama öne geldiğinde çağrılıyor.
+     */
+    fun refreshTrialState() {
+        val shouldBe = entitled || promoGranted || isSupporter || starGranted || trialActive
+        if (isPremium != shouldBe) recomputePremium()
     }
 
     // MARK: Yıldızla premium

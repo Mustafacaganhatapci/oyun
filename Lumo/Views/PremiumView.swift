@@ -19,7 +19,11 @@ struct PremiumView: View {
     @State private var shimmer = false
     @State private var crownPulse = false
 
-    private enum CodeState { case idle, success, failure, bonusGranted }
+    private enum CodeState: Equatable {
+        case idle, success, failure, bonusGranted
+        case trial(days: Int)      // süreli premium başladı
+        case trialUsed             // deneme hakkı daha önce harcanmış
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -348,20 +352,33 @@ struct PremiumView: View {
                     // beklerken düğmenin yerinde bir çember dönüyor.
                     checkingCode = true
                     Task {
-                        let accepted = await store.redeem(code: codeInput)
+                        let result = await store.redeem(code: codeInput)
                         checkingCode = false
-                        if accepted {
+                        switch result {
+                        case .premium:
                             codeState = .success
                             AudioEngine.shared.playWin()
                             Haptics.shared.win()
-                        } else if store.recordFailedPromoAttempt() {
-                            progress.grantBonusStars(StoreManager.promoFailBonusStars)
-                            codeState = .bonusGranted
+                        case .trial(let days):
+                            codeState = .trial(days: days)
                             AudioEngine.shared.playWin()
                             Haptics.shared.win()
-                        } else {
-                            codeState = .failure
+                        case .trialAlreadyUsed:
+                            // Yanlış kod DEĞİL: teselli yıldızı sayacını
+                            // harcatmıyoruz, doğru kodu girmiş olan oyuncu
+                            // "geçersiz" cevabını hak etmiyor.
+                            codeState = .trialUsed
                             AudioEngine.shared.playFail()
+                        case .invalid:
+                            if store.recordFailedPromoAttempt() {
+                                progress.grantBonusStars(StoreManager.promoFailBonusStars)
+                                codeState = .bonusGranted
+                                AudioEngine.shared.playWin()
+                                Haptics.shared.win()
+                            } else {
+                                codeState = .failure
+                                AudioEngine.shared.playFail()
+                            }
                         }
                     }
                 } label: {
@@ -396,8 +413,26 @@ struct PremiumView: View {
                       systemImage: "star.circle.fill")
                     .font(.system(.caption, design: .rounded).bold())
                     .foregroundStyle(settings.theme.lumen.color)
+            case .trial(let days):
+                Label("Code accepted — Premium is yours for \(days) days!",
+                      systemImage: "checkmark.circle.fill")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.gate.color)
+            case .trialUsed:
+                Label("You've already used this code once.", systemImage: "clock.badge.xmark")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundStyle(settings.theme.hazard.color)
             case .idle:
-                EmptyView()
+                // Deneme işliyorsa kalan süre burada duruyor. Bir sabah
+                // premium'un sessizce kaybolması, en baştan verilmemesinden
+                // kötü.
+                if let left = store.trialDaysLeft {
+                    Label("Premium trial — \(left) days left", systemImage: "hourglass")
+                        .font(.system(.caption, design: .rounded).bold())
+                        .foregroundStyle(settings.theme.lumen.color)
+                } else {
+                    EmptyView()
+                }
             }
         }
         .padding(20)

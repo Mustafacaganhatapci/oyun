@@ -937,17 +937,26 @@ fun PremiumScreen(onBack: () -> Unit) {
                                         // anında dönmüyor; sonuç geri çağrımla gelir
                                         .clickable(enabled = codeInput.isNotEmpty() && !checkingCode) {
                                             checkingCode = true
-                                            app.billing.redeem(codeInput, app.player.playerId) { accepted ->
+                                            app.billing.redeem(codeInput, app.player.playerId) { result ->
                                                 checkingCode = false
-                                                codeState = when {
-                                                    accepted -> {
+                                                codeState = when (result) {
+                                                    BillingManager.RedeemResult.PREMIUM -> {
                                                         app.audio.playWin(); app.haptics.win(); 1
                                                     }
-                                                    app.billing.recordFailedPromoAttempt() -> {
-                                                        app.progress.grantBonusStars(BillingManager.PROMO_FAIL_BONUS_STARS)
-                                                        app.audio.playWin(); 3
+                                                    BillingManager.RedeemResult.TRIAL -> {
+                                                        app.audio.playWin(); app.haptics.win(); 4
                                                     }
-                                                    else -> { app.audio.playFail(); 2 }
+                                                    // Yanlış kod DEĞİL: teselli yıldızı sayacını
+                                                    // harcatmıyoruz, doğru kodu girmiş olan oyuncu
+                                                    // "geçersiz" cevabını hak etmiyor.
+                                                    BillingManager.RedeemResult.TRIAL_ALREADY_USED -> {
+                                                        app.audio.playFail(); 5
+                                                    }
+                                                    BillingManager.RedeemResult.INVALID ->
+                                                        if (app.billing.recordFailedPromoAttempt()) {
+                                                            app.progress.grantBonusStars(BillingManager.PROMO_FAIL_BONUS_STARS)
+                                                            app.audio.playWin(); 3
+                                                        } else { app.audio.playFail(); 2 }
                                                 }
                                             }
                                         }
@@ -958,6 +967,15 @@ fun PremiumScreen(onBack: () -> Unit) {
                                 1 -> Text(stringResource(R.string.code_accepted), color = theme.gate, fontSize = 12.sp)
                                 2 -> Text(stringResource(R.string.invalid_code), color = theme.hazard, fontSize = 12.sp)
                                 3 -> Text(stringResource(R.string.code_bonus), color = theme.lumen, fontSize = 12.sp)
+                                4 -> Text(stringResource(R.string.code_trial, app.billing.lastTrialDays),
+                                          color = theme.gate, fontSize = 12.sp)
+                                5 -> Text(stringResource(R.string.code_trial_used), color = theme.hazard, fontSize = 12.sp)
+                                // Deneme işliyorsa kalan süre burada duruyor. Bir sabah
+                                // premium'un sessizce kaybolması, en baştan verilmemesinden kötü.
+                                else -> app.billing.trialDaysLeft?.let {
+                                    Text(stringResource(R.string.trial_days_left, it),
+                                         color = theme.lumen, fontSize = 12.sp)
+                                }
                             }
                         }
                     }

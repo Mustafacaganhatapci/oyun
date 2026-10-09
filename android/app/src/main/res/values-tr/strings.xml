@@ -261,4 +261,7 @@
     <string name="hint_extra_life_title">Halkanın üstünde bir kalp</string>
     <string name="hint_extra_life_body">Hemen yukarıdaki halkada bir kalp var. Onu alırsan bir hata turun sonu olmaktan çıkıyor — düştüğün yerden devam ediyorsun. Sekiz halkada bir geliyorlar, aynı anda üç tane taşıyabiliyorsun ve kalp taşıyan halkada asla tehlike yayı olmuyor.</string>
     <string name="rule_trap_gate">Kapılardan biri tuzak</string>
+    <string name="code_trial">Kod kabul edildi — %1$d gün boyunca premium senin!</string>
+    <string name="code_trial_used">Bu kodu bir kez kullandın.</string>
+    <string name="trial_days_left">Premium denemesi — %1$d gün kaldı</string>
 </resources>

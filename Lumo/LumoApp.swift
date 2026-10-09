@@ -109,6 +109,8 @@ struct LumoApp: App {
                         // Uygulama açıkken gece yarısı geçilmiş olabilir
                         daily.refresh()
                         missions.reloadForToday()
+                        // Süreli deneme de arka plandayken dolmuş olabilir
+                        store.refreshTrialState()
                     case .background, .inactive: AudioEngine.shared.stop()
                     @unknown default: break
                     }

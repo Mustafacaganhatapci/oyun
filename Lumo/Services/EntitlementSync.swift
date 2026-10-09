@@ -29,14 +29,36 @@ final class EntitlementSync {
     private let cloud = NSUbiquitousKeyValueStore.default
     private static let supporterKey = "lumo.cloud.supporter"
     private static let promoKey = "lumo.cloud.promo"
+    /// Süreli deneme kodunun bitiş anı (1970'ten saniye).
+    ///
+    /// Burada tutulmasının sebebi hakkı TAŞIMAK değil, bir daha VERMEMEK:
+    /// deneme kullanıcı başına bir kez. Yalnızca cihazda saklansaydı aynı
+    /// kişi her telefonda yeniden on gün alırdı.
+    private static let trialUntilKey = "lumo.cloud.trialUntil"
 
     private init() {}
 
     var isSupporter: Bool { cloud.bool(forKey: Self.supporterKey) }
     var isPromoGranted: Bool { cloud.bool(forKey: Self.promoKey) }
 
+    /// Deneme hiç kullanılmadıysa nil. Geçmiş bir tarih "kullanıldı, süresi
+    /// doldu" demek — yine de yeni bir deneme verilmez.
+    var trialUntil: Date? {
+        let t = cloud.double(forKey: Self.trialUntilKey)
+        return t > 0 ? Date(timeIntervalSince1970: t) : nil
+    }
+
     func markSupporter() { set(Self.supporterKey) }
     func markPromoGranted() { set(Self.promoKey) }
+
+    /// Daha ileri bir tarih varsa korunur: iki cihaz arasında yarış olursa
+    /// oyuncunun aleyhine sonuçlanmasın.
+    func markTrial(until date: Date) {
+        let new = date.timeIntervalSince1970
+        guard new > cloud.double(forKey: Self.trialUntilKey) else { return }
+        cloud.set(new, forKey: Self.trialUntilKey)
+        cloud.synchronize()
+    }
 
     private func set(_ key: String) {
         guard !cloud.bool(forKey: key) else { return }
