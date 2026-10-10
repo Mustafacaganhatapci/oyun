@@ -79,7 +79,8 @@ class BillingManager(private val context: Context) {
         data class TrialOffer(val days: Int, val brand: String)
 
         val TRIAL_PROMO_CODES = mapOf(
-            "ictenmimar100" to TrialOffer(10, "İçten Mimar")
+            "ictenmimar100" to TrialOffer(10, "İçten Mimar"),
+            "vedat100" to TrialOffer(10, "Vedat")
         )
 
         /**

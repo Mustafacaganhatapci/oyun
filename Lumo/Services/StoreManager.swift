@@ -48,7 +48,8 @@ final class StoreManager: ObservableObject {
     }
 
     static let trialPromoCodes: [String: TrialOffer] = [
-        "ictenmimar100": TrialOffer(days: 10, brand: "İçten Mimar")
+        "ictenmimar100": TrialOffer(days: 10, brand: "İçten Mimar"),
+        "vedat100": TrialOffer(days: 10, brand: "Vedat")
     ]
 
     /// Kod 5'ten fazla kez yanlış girilirse (bir kereye mahsus) üzülmesin diye
