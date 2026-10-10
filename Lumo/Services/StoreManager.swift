@@ -494,6 +494,11 @@ final class StoreManager: ObservableObject {
     private func recomputePremium() {
         isPremium = entitled || promoGranted || isSupporter || starGranted || trialActive
         UserDefaults.standard.set(entitled, forKey: "lumo.store.premiumCache")
+        #if DEBUG
+        print("[Premium] isPremium=\(isPremium) satinAlma=\(entitled) kod=\(promoGranted) "
+            + "destekci=\(isSupporter) yildiz=\(starGranted) deneme=\(trialActive) "
+            + "denemeBitis=\(String(describing: trialUntil))")
+        #endif
     }
 
     // MARK: Yıldızla premium

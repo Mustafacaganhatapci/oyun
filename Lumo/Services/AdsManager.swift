@@ -93,6 +93,9 @@ final class AdsManager: ObservableObject {
     /// ve reklam kapandığında `completion` çalışır.
     func levelCompleted(level: Int, isPremium: Bool, completion: @escaping () -> Void) -> Bool {
         #if DEBUG
+        // Reklam kapısının GERÇEKTE gördüğü değer. "Premium aldım ama reklam
+        // çıkıyor" şikayetinde tek belirleyici bilgi bu.
+        print("[Reklam] bolum=\(level) isPremium=\(isPremium)")
         // İlk 10 bölüm (adFreeLevels) HER ZAMAN reklamsızdır — yeni oyuncu
         // deneyimi kutsaldır. Premium'da da hiçbir zaman reklam yok.
         // (DEBUG'da 11+ bölümlerde her tamamlamada test reklamı gösterilir.)
