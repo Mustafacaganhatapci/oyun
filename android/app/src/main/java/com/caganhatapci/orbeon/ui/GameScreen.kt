@@ -137,7 +137,13 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
     var timeRemaining by remember { mutableIntStateOf(-1) }
     var tutorialHops by remember { mutableIntStateOf(0) }
     var levelIntroVisible by remember { mutableStateOf(false) }
-    var frame by remember { mutableIntStateOf(0) }
+    // DİKKAT: `by` ile okunmuyor. Bu sayaç saniyede 60 kez artıyor ve
+    // besteleme (composition) içinde OKUNURSA bütün ekran — HUD, metinler,
+    // düzen, hepsi — 60 kez yeniden besteleniyordu. Android'de görünen
+    // takılmanın ana sebebi buydu. Durum nesnesinin KENDİSİ aşağı
+    // geçiriliyor; okuma yalnızca Canvas'ın çizim bloğunda yapılıyor, orada
+    // yapılan okuma da yalnızca çizim fazını geçersiz kılıyor.
+    val frame = remember { mutableIntStateOf(0) }
 
     val engine = remember(currentLevelId, playMode, runId) {
         val mode = if (playMode == PlayMode.Endless) GameMode.Endless
@@ -389,7 +395,7 @@ fun GameScreen(playMode: PlayMode, onExit: () -> Unit, onReplay: (PlayMode) -> U
                 val dt = if (last == 0L) 1.0 / 60.0 else (now - last) / 1_000_000_000.0
                 last = now
                 if (overlay == Overlay.None) engine.update(dt)
-                frame++
+                frame.intValue++
             }
         }
     }

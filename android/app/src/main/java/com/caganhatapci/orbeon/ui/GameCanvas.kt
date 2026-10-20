@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -40,12 +41,44 @@ import kotlin.math.sin
  * çemberi, küre stilleri, iz, patlamalar) burada, `elapsed` üzerinden
  * deterministik olarak üretilir.
  */
+/**
+ * Her karede yeniden üretilmemesi gereken çizim nesneleri.
+ *
+ * Kesikli çizgi efektleri, katman boyası ve kürenin parıltı fırçası eskiden
+ * çizim bloğunun içinde kuruluyordu, yani saniyede 60 kez. Fırça en
+ * pahalısıydı: `Brush.radialGradient` her seferinde yeni bir gölgelendirici
+ * (shader) derliyordu. Üretilen çöp de düzenli GC duraklamaları demekti —
+ * takılmanın ikinci sebebi buydu.
+ *
+ * Hepsi yalnızca yoğunluk ve temaya bağlı, yani ekran boyunca sabit.
+ */
+private class DrawCache(den: Float, theme: Theme) {
+    val gateDash = PathEffect.dashPathEffect(floatArrayOf(8f * den, 10f * den))
+    val aimDash = PathEffect.dashPathEffect(floatArrayOf(10f * den, 9f * den))
+    val atomDash = PathEffect.dashPathEffect(floatArrayOf(5f * den, 6f * den))
+    val layerPaint = androidx.compose.ui.graphics.Paint()
+
+    /// Küre parıltısı. Merkez (0,0): çizerken tuval kürenin üstüne
+    /// taşınıyor, böylece fırça küre hareket etse de sabit kalabiliyor.
+    val orbGlow = Brush.radialGradient(
+        listOf(theme.orb.copy(alpha = 0.55f), Color.Transparent),
+        center = Offset.Zero, radius = 9f * den * 3.5f
+    )
+}
+
 @Composable
-fun GameCanvas(engine: GameEngine, theme: Theme, orbStyle: OrbStyle, orbPhoto: Bitmap?, frame: Int) {
+fun GameCanvas(
+    engine: GameEngine, theme: Theme, orbStyle: OrbStyle, orbPhoto: Bitmap?,
+    frame: androidx.compose.runtime.IntState
+) {
     val photoImage: ImageBitmap? = remember(orbPhoto) { orbPhoto?.asImageBitmap() }
+    val den0 = LocalDensity.current.density
+    val cache = remember(den0, theme) { DrawCache(den0, theme) }
 
     Canvas(Modifier.fillMaxSize()) {
-        @Suppress("UNUSED_EXPRESSION") frame   // her karede yeniden çiz
+        // Okuma BURADA: çizim bloğundaki durum okuması yalnızca çizim fazını
+        // geçersiz kılıyor, besteleme tekrarlanmıyor.
+        @Suppress("UNUSED_EXPRESSION") frame.intValue
         if (size.minDimension < 4f) return@Canvas
         engine.resize(size.width, size.height, density)
         if (engine.ringSpecs.isEmpty()) return@Canvas
@@ -64,11 +97,11 @@ fun GameCanvas(engine: GameEngine, theme: Theme, orbStyle: OrbStyle, orbPhoto: B
 
         translate(left = shake, top = camShift) {
             drawTrail(engine, theme, orbStyle, den)
-            drawRings(engine, theme, t, den)
+            drawRings(engine, theme, t, den, cache)
             drawLumens(engine, theme, t, den)
             drawLifePickups(engine, theme, t, den)
-            drawAimLine(engine, theme, t, den)
-            drawOrb(engine, theme, orbStyle, photoImage, t, den)
+            drawAimLine(engine, theme, t, den, cache)
+            drawOrb(engine, theme, orbStyle, photoImage, t, den, cache)
             drawBursts(engine, theme, den)
         }
 
@@ -104,7 +137,7 @@ private fun DrawScope.drawTrail(engine: GameEngine, theme: Theme, orbStyle: OrbS
     }
 }
 
-private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den: Float) {
+private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den: Float, cache: DrawCache) {
     val isTutorial = engine.isTutorial
     for (i in engine.ringSpecs.indices) {
         val spec = engine.ringSpecs[i]
@@ -163,7 +196,7 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
                 drawCircle(
                     gateColor.copy(alpha = 0.7f * dim), r + 12f * den, c,
                     style = Stroke(width = 2f * den,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f * den, 10f * den)))
+                        pathEffect = cache.gateDash)
                 )
             }
         }
@@ -187,7 +220,10 @@ private fun DrawScope.drawRings(engine: GameEngine, theme: Theme, t: Float, den:
             // Ters bölümde öldüren yay BEYAZ; halka zaten kırmızı çizildi
             val deadly = if (engine.invertedHazard) Color.White else theme.hazard
             if (redSweep > 0.05f) {
-                for (rs in listOf(startDeg, safeStart + safeSweep)) {
+                // İki uç; liste üretmeden. Eskiden her yay için her karede
+                // bir `listOf` ayrılıyordu.
+                for (k in 0..1) {
+                    val rs = if (k == 0) startDeg else safeStart + safeSweep
                     drawArc(deadly.copy(alpha = 0.16f), rs, redSweep, false,
                         topLeft = box.topLeft, size = Size(box.width, box.height),
                         style = Stroke(width = 11f * den, cap = StrokeCap.Round))
@@ -303,7 +339,7 @@ private fun DrawScope.drawLumens(engine: GameEngine, theme: Theme, t: Float, den
 }
 
 /** Antrenman: küre O AN fırlatılırsa gideceği yönü gösteren kesikli çizgi. */
-private fun DrawScope.drawAimLine(engine: GameEngine, theme: Theme, t: Float, den: Float) {
+private fun DrawScope.drawAimLine(engine: GameEngine, theme: Theme, t: Float, den: Float, cache: DrawCache) {
     // Antrenman çizgisi sabit boyda; chrono çizgisi çarpacağı halkada
     // KESİLİYOR ve oraya nabız atan bir nokta koyuyor.
     if (!engine.isTutorial && !engine.usesChronoAim) return
@@ -328,7 +364,7 @@ private fun DrawScope.drawAimLine(engine: GameEngine, theme: Theme, t: Float, de
         color, start = start, end = end,
         strokeWidth = 3f * den,
         cap = StrokeCap.Round,
-        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f * den, 9f * den))
+        pathEffect = cache.aimDash
     )
 
     if (hit != null) {
@@ -353,16 +389,19 @@ private fun DrawScope.drawTapHint(theme: Theme, t: Float, den: Float) {
 // MARK: Küre — seçilen stile göre çizilir (iOS setupOrb'un karşılığı)
 
 private fun DrawScope.drawOrb(
-    engine: GameEngine, theme: Theme, style: OrbStyle, photo: ImageBitmap?, t: Float, den: Float
+    engine: GameEngine, theme: Theme, style: OrbStyle, photo: ImageBitmap?, t: Float, den: Float,
+    cache: DrawCache
 ) {
     if (!engine.orbVisible) return
     val c = Offset(engine.orbX, engine.orbY)
     val r = engine.orbRadiusPx   // 9 punto × yoğunluk
 
-    // Ortak parıltı havuzu
-    drawCircle(Brush.radialGradient(
-        listOf(theme.orb.copy(alpha = 0.55f), Color.Transparent),
-        center = c, radius = r * 3.5f), r * 3.5f, c)
+    // Ortak parıltı havuzu. Fırça önbellekte ve merkezi (0,0); tuvali
+    // kürenin üstüne taşıyıp öyle çiziyoruz ki her karede yeni bir
+    // gölgelendirici derlenmesin.
+    translate(left = c.x, top = c.y) {
+        drawCircle(cache.orbGlow, r * 3.5f, Offset.Zero)
+    }
 
     when (style.kind) {
         OrbStyle.Kind.CLASSIC -> drawCircle(theme.orb, r, c)
@@ -463,7 +502,7 @@ private fun DrawScope.drawOrb(
             // değişince hilal bozulmasın.
             val mr = r * 1.15f
             val layer = Rect(c.x - mr * 2, c.y - mr * 2, c.x + mr * 2, c.y + mr * 2)
-            drawContext.canvas.saveLayer(layer, androidx.compose.ui.graphics.Paint())
+            drawContext.canvas.saveLayer(layer, cache.layerPaint)
             drawCircle(theme.orb, mr, c)
             drawCircle(
                 Color.Transparent, r * 1.0f,
@@ -570,7 +609,7 @@ private fun DrawScope.drawOrb(
             rotate(-t * 72f, c) {
                 drawCircle(gold.copy(alpha = 0.85f), r * 2.1f, c,
                     style = Stroke(width = 2f * den,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f * den, 6f * den))))
+                        pathEffect = cache.atomDash))
             }
         }
 

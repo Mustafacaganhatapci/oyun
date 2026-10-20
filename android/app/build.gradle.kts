@@ -127,4 +127,9 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     // Haftalık yarış hatırlatması — sunucu istemeyen yerel bildirim
     implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    // Compose'un kendi temel profillerini (baseline profile) kuruyor.
+    // Olmadan ilk açılışlarda kodun tamamı yorumlanarak çalışıyor ve
+    // oyun ısınana kadar gözle görülür şekilde takılıyor.
+    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
 }
